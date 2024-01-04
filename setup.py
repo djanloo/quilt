@@ -67,7 +67,7 @@ setup(  name='quilt',
         include_dirs=includedDir,
         ext_modules=ext_modules,
         script_args=["build_ext", f"--build-lib=./{BIN_FOLDER}"],
-        options={"build_ext": {"inplace": True, "force": True, "parallel":True}},
+        options={"build_ext": {"inplace": False, "force": True, "parallel":True}},
 )
 
 os.chdir(old_dir)
