@@ -16,13 +16,13 @@
 
 void Synapse::fire(EvolutionContext * evo){
     this->postsynaptic->incoming_spikes.emplace(this->weight, evo->now + this->delay);
-    return;
 }
 
 Neuron::Neuron(Population * population){
     // TODO: too much redundancy in parameters. 
     // If parameter is the same for the population
     // use a this -> population -> value
+    // or use static attributes
     this->E_exc = 0.0;      // mV
     this->E_inh = -80.0;    // mV
     this->E_rest = -60.0;   // mV
@@ -71,7 +71,7 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
                 // Spurious zero-weight
                 else{
                     cout << "Warning: a zero-weighted spike was received" << endl;
-                    cout << "\tweight is " << spike.weight<< endl; 
+                    cout << "\tweight is " << spike.weight << endl; 
                 }
                 spike.processed = true;
 
@@ -111,12 +111,21 @@ void Neuron::emit_spike(EvolutionContext * evo){
     this-> on_spike(evo);
 }
 
-void Neuron::on_spike(EvolutionContext * evo){
+void Neuron::on_spike(EvolutionContext * /*evo*/){
     this->state[0] = this->E_rest;
 }
 
-// *************************** More detailed models ************************ //
-
+/**
+ * Real models
+ * -----------
+ * 
+ * Each model must override these functions:
+ * - the constructor
+ * - evolve_state
+ * 
+ * Each model can override these functions:
+ * - on_spike
+*/
 
 
 void aqif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
@@ -155,8 +164,7 @@ void izhikevich_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt 
     dxdt[2] = - x[2]/tau_i;
 }
 
-void izhikevich_neuron::on_spike(EvolutionContext * evo){ 
-    // Does not depend on evolution context
+void izhikevich_neuron::on_spike(EvolutionContext * /*evo*/){ 
     this->state[0]  = this->E_rest;
     this->state[3] += this->d;
 }
@@ -168,7 +176,7 @@ aeif_neuron::aeif_neuron(Population * population): Neuron(population){
     this->E_exc = 0.;
     this->E_inh = -65.;
     this->E_reset = -60.;
-    this->E_thr = -54.7;
+    this->E_thr = 0.1;
     this->g_L = 1.;
     this->tau_refrac = 0.0;
     this->tau_e= 10.;
@@ -177,6 +185,7 @@ aeif_neuron::aeif_neuron(Population * population): Neuron(population){
     this->b = 70.;
     this->tau_w = 20.;
     this->Delta =  1.7;
+    this->exp_threshold = -54;
 
     this->state = {this->E_rest + ((double)rand())/RAND_MAX , 0.0, 0.0, 0.0};
 
@@ -184,40 +193,21 @@ aeif_neuron::aeif_neuron(Population * population): Neuron(population){
 
 void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
 
-    // if (t - last_spike_time > tau_refrac ){
-    //     dxdt[0] = 1.0/C_m * (-g_L*((x[0] - E_rest) \
-    //                         + Delta * std::exp((x[0] - E_rest)/Delta ))\
-    //                         + x[3]\
-    //                         + (x[1])*( x[0] - E_exc)
-    //                         + (x[2])*( x[0] - E_inh)
-    //                         );
-    // }else{
-    //     // Refractory period
-    //     // NOTE: must be set to v_res somewhere else
-    //     dxdt[0] = 0;
-    // }
-    // dxdt[3] = - x[3] / tau_w + a/tau_w*(x[0] - E_rest);
-    // dxdt[1] = x[1]/this->tau_e;
-    // dxdt[2] = x[2]/this->tau_i;
-
     if (t - last_spike_time > tau_refrac ){
-        dxdt[0] = 1.0/C_m * ( - g_L*(x[0]-E_rest) + g_L*Delta*exp((x[0]- E_thr)/Delta) \
-                            - x[1]*(x[0]- E_exc) - x[2]*(x[0] - E_inh) - x[3]
+        dxdt[0] = 1.0/C_m * ( - g_L*(x[0]-E_rest) + g_L*Delta*std::exp((x[0] - exp_threshold)/Delta) \
+                            - x[1]*(x[0]- E_exc) - x[2]*(x[0] - E_inh) - x[3] +\
+                            300\
                             );            
     }else{
-        // Refractory period
-        // NOTE: must be set to v_res somewhere else
         dxdt[0] = 0;
     }
-    dxdt[0] = 1.0/C_m * ( - g_L*(x[0]-E_rest) + g_L*Delta*exp((x[0]- E_thr)/Delta) \
-                          - x[1]*(x[0]- E_exc) - x[2]*(x[0] - E_inh) - x[3]
-                        );                                     
+
     dxdt[1] = -x[1]/tau_e;                                                                       
     dxdt[2] = -x[2]/tau_i;                                                                      
     dxdt[3] = -x[3]/tau_w + a/tau_w * (x[0]-E_rest);                                               
 }
 
 void aeif_neuron::on_spike(EvolutionContext * evo){
-    this->state[0] = this->E_reset;
+    this->state[0]  = this->E_reset;
     this->state[3] += this->b;
 }

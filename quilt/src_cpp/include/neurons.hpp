@@ -103,16 +103,21 @@ class Neuron{
 };
 
 
-/*------------------- MORE DETAILED NEURONS ------------------*/
-
 /**
- * Still a dummy neuron for now. The name makes sense but the dynamical evolution is completely nonsense.
+ * Real models
+ * -----------
+ * 
+ * Each model must override these functions:
+ * - the constructor
+ * - evolve_state
+ * 
+ * Each model can override these functions:
+ * - on_spike
 */
+
 class aqif_neuron : public Neuron {
     public:
         aqif_neuron(Population * population) : Neuron(population){this -> nt = neuron_type::aqif;};
-
-        // Explicitly override the evolution function
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
 };
 
@@ -125,16 +130,11 @@ class izhikevich_neuron : public Neuron {
         double a,b,c,d;
 };
 
-/**
- * The adaptive exponential integrate and fire
- * data took from https://neuronaldynamics.epfl.ch/online/Ch6.S2.html
-*/
-
 class aeif_neuron : public Neuron {
     public:
         aeif_neuron(Population * population);
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
     private:
-        double a, b,tau_w, Delta, R, E_reset, C_m, g_L;
+        double a, b,tau_w, Delta, R, E_reset, C_m, g_L, exp_threshold;
 };
