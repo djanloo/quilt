@@ -1,0 +1,43 @@
+populations:
+  - name: Albert
+    size: 4000
+    neuron_type: aeif
+  - name: MonaLisa
+    size: 400
+    neuron_type: aeif
+
+projections:
+  - name: AtoM 
+    efferent: Albert
+    afferent: MonaLisa
+    features:
+      exc_fraction: 0.1
+      max_exc: 0.001
+      min_delay: 0.3
+      max_delay: 0.8
+      
+  - name: albert-self
+    efferent: Albert
+    afferent: Albert
+    features:
+      inh_fraction: 0.05
+      max_inh: 0.1
+      min_delay: 0.1
+      exc_fraction: 0.0
+
+  - name: MtoA
+    efferent: MonaLisa
+    afferent: Albert
+    features:
+      exc_fraction: 0.1
+      max_exc: 0.001
+      min_delay: 0.3
+      max_delay: 0.8
+
+  - name: monalisa-self
+    efferent: MonaLisa
+    afferent: MonaLisa
+    features:
+      inh_fraction: 0.05
+      max_inh: 0.1
+      exc_fraction: 0.0

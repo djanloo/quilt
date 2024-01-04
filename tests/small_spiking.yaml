@@ -1,0 +1,21 @@
+populations:
+  - name: Albert
+    size: 5
+    neuron_type: aqif
+  - name: MonaLisa
+    size: 5000
+    neuron_type: aqif
+
+projections:
+  - name: AtoM 
+    efferent: Albert
+    afferent: MonaLisa
+    features:
+      exc_fraction: 0.1
+      max_exc: 0.5
+  - name: MtoA
+    efferent: MonaLisa
+    afferent: Albert
+    features:
+      inh_fraction: 0.1
+      max_inh: 0.03
