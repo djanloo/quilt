@@ -1,0 +1,16 @@
+# This file is intended for linking the source file while building the cython
+# extension. For each .pyx file must be specified which .cpp files it takes
+# stuff from. Not doing this will result in a 'undefined symbol' when
+# importing the module
+
+# .hpp files must not be written here
+# as long as they are used in 'extern' blocks
+
+neur:
+  sources:
+    - src_cython/neur.pyx
+    - src_cpp/neurons.cpp
+    - src_cpp/network.cpp
+    - src_cpp/devices.cpp
+  include_dirs:
+    - quilt/include
