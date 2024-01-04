@@ -12,10 +12,10 @@ import yaml
 BIN_FOLDER = 'bin'
 CYTHON_GEN_FOLDER = './cython_generated'
 DEPENDENCIES = "dependencies.yaml"
+DEFAULT_INCLUDES = [".", "./quilt", np.get_include()]
 
 old_dir = os.getcwd()
 packageDir = "./quilt"
-includedDir = [".", packageDir, np.get_include()]
 
 try:
     with open(DEPENDENCIES, "r") as dependencies:
@@ -31,10 +31,10 @@ if not os.path.exists(CYTHON_GEN_FOLDER):
     os.mkdir(CYTHON_GEN_FOLDER)
 
 extension_kwargs = dict( 
-        include_dirs=includedDir,
+        include_dirs = DEFAULT_INCLUDES,
         language="c++",
-        libraries=["m"],                       # Unix-like specific link to C math libraries
-        extra_compile_args=["-fopenmp", "-O3"],# Links OpenMP for parallel computing
+        libraries=["m"],                      
+        extra_compile_args=["-fopenmp", "-O3", "-std=c++11"],
         extra_link_args=["-fopenmp"],
         define_macros= [('NPY_NO_DEPRECATED_API','NPY_1_7_API_VERSION')] #Silences npy deprecated warn
         )
@@ -48,7 +48,9 @@ for extension_name in dependencies.keys():
     print(dependencies[extension_name])
 
     current_extension_kwargs = extension_kwargs.copy()
-    current_extension_kwargs['include_dirs'] = dependencies[extension_name]['include_dirs']
+    includes = [os.path.abspath(include_folder) for include_folder in dependencies[extension_name]['include_dirs']]
+    current_extension_kwargs['include_dirs'] += includes
+    print("include is ",  current_extension_kwargs['include_dirs'])
     extensions.append(Extension(extension_name, dependencies[extension_name]['sources'], **extension_kwargs))
 
 print(extensions)
@@ -64,7 +66,7 @@ print(ext_modules)
 
 setup(  name='quilt',
         cmdclass={"build_ext": build_ext},
-        include_dirs=includedDir,
+        include_dirs=DEFAULT_INCLUDES,
         ext_modules=ext_modules,
         script_args=["build_ext", f"--build-lib=./{BIN_FOLDER}"],
         options={"build_ext": {"inplace": False, "force": True, "parallel":True}},
