@@ -1,6 +1,6 @@
 from libcpp.vector cimport vector
 
-cdef extern from "include/base_objects.hpp":
+cdef extern from "../src_cpp/include/base_objects.hpp":
     cdef cppclass EvolutionContext:
         double dt
         double now
@@ -9,7 +9,7 @@ cdef extern from "include/base_objects.hpp":
     cdef cppclass HierarchicalID:
         pass
 
-cdef extern from "include/devices.hpp":
+cdef extern from "../src_cpp/include/devices.hpp":
     cdef cppclass PopulationSpikeMonitor:
         PopulationMonitor(Population * pop)
         void gather()
@@ -24,17 +24,17 @@ cdef extern from "include/devices.hpp":
         PopCurrentInjector(Population * pop, double I, double t_max)
         void inject(EvolutionContext * evo)
 
-cdef extern from "include/neurons.hpp":
+cdef extern from "../src_cpp/include/neurons.hpp":
     cdef cppclass neuron_type:
         pass
 
-cdef extern from "include/neurons.hpp" namespace "neuron_type":
+cdef extern from "../src_cpp/include/neurons.hpp" namespace "neuron_type":
     cdef neuron_type dummy
     cdef neuron_type aqif
     cdef neuron_type izhikevich
     cdef neuron_type aeif
 
-cdef extern from "include/network.hpp":
+cdef extern from "../src_cpp/include/network.hpp":
     cdef cppclass Projection:
         int start_dimension, end_dimension
         Projection(double ** weights, double ** delays, int start_dimension, int end_dimension)

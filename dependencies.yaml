@@ -13,4 +13,4 @@ neur:
     - src_cpp/network.cpp
     - src_cpp/devices.cpp
   include_dirs:
-    - quilt/include
+    - src_cpp/include
