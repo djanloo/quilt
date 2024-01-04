@@ -97,16 +97,9 @@ class Neuron{
         void evolve(EvolutionContext * evo);
         void emit_spike(EvolutionContext * evo);
 
-        // Monitor function returns the state
-        // (Maybe later I will divide V from gsyn, too much data otherwise)
-        vector<double> monitor(){
-            return this->state;
-        };
-
         // These must be implemented for each specific neuron
         virtual void on_spike(EvolutionContext * evo);
-        virtual void evolve_state(EvolutionContext * evo){cout << "WARNING: using virtual evolve_state of <Neuron>";};
-        virtual void evolve_synapses(EvolutionContext * evo){cout << "WARNING: using virtual evolve_synapses of <Neuron>";};
+        virtual void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){cout << "WARNING: using virtual evolve_state of <Neuron>";};
 };
 
 
@@ -120,14 +113,13 @@ class aqif_neuron : public Neuron {
         aqif_neuron(Population * population) : Neuron(population){this -> nt = neuron_type::aqif;};
 
         // Explicitly override the evolution function
-        void evolve_state(EvolutionContext * evo) override;
-
+        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
 };
 
 class izhikevich_neuron : public Neuron {
     public:
         izhikevich_neuron(Population * population);
-        void evolve_state(EvolutionContext * evo) override;
+        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
     private:
         double a,b,c,d;
@@ -141,7 +133,7 @@ class izhikevich_neuron : public Neuron {
 class aeif_neuron : public Neuron {
     public:
         aeif_neuron(Population * population);
-        void evolve_state(EvolutionContext * evo) override;
+        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
     private:
         double a, b,tau_w, Delta, R, E_reset, C_m, g_L;
