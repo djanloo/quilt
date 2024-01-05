@@ -36,10 +36,14 @@ if __name__=="__main__":
     spikenet.populations["MonaLisa"].monitorize_spikes()
     spikenet.populations["MonaLisa"].monitorize_states()
 
-    spikenet.interface.run(dt=0.1, time=10)
+    spikenet.interface.run(dt=0.1, time=200)
 
-    plt.plot(spikenet.populations['Albert'].get_data()["spikes"])
-    plt.plot(spikenet.populations['MonaLisa'].get_data()["spikes"])
+    albert_spikes = spikenet.populations['Albert'].get_data()["spikes"]
+    monalisa_spikes = spikenet.populations['MonaLisa'].get_data()["spikes"]
+    plt.step(np.arange(len(albert_spikes)), albert_spikes, alpha=0.3)
+    plt.step(np.arange(len(albert_spikes)), monalisa_spikes, alpha=0.3)
+    N = 10
+    plt.plot(np.convolve(albert_spikes, np.ones(N)/N))
 
     states = np.array(spikenet.populations['Albert'].get_data()['states'])
     print(states.shape)

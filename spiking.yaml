@@ -1,9 +1,9 @@
 populations:
   - name: Albert
-    size: 4000
+    size: 500
     neuron_type: aeif
   - name: MonaLisa
-    size: 400
+    size: 500
     neuron_type: aeif
 
 projections:
@@ -11,10 +11,10 @@ projections:
     efferent: Albert
     afferent: MonaLisa
     features:
-      exc_fraction: 0.1
-      max_exc: 0.001
-      min_delay: 0.3
-      max_delay: 0.8
+      inh_fraction: 0.5
+      max_inh: 0.1
+      min_delay: 10.7
+      max_delay: 15.0
       
   - name: albert-self
     efferent: Albert
@@ -29,10 +29,10 @@ projections:
     efferent: MonaLisa
     afferent: Albert
     features:
-      exc_fraction: 0.1
-      max_exc: 0.001
-      min_delay: 0.3
-      max_delay: 0.8
+      inh_fraction: 0.5
+      max_inh: 0.1
+      min_delay: 10.7
+      max_delay: 15.0
 
   - name: monalisa-self
     efferent: MonaLisa
