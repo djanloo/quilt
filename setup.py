@@ -17,14 +17,14 @@ DEFAULT_INCLUDES = [".", "./quilt", np.get_include()]
 old_dir = os.getcwd()
 packageDir = "./quilt"
 
+os.chdir(packageDir)
+
 try:
     with open(DEPENDENCIES, "r") as dependencies:
         dependencies = yaml.safe_load(dependencies)
 except FileNotFoundError:
     dependencies = dict()
     pass
-
-os.chdir(packageDir)
 
 # Creates directory for generated files if not existing
 if not os.path.exists(CYTHON_GEN_FOLDER):
