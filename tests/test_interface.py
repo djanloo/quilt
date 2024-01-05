@@ -30,13 +30,13 @@ if __name__=="__main__":
     import matplotlib.pyplot as plt 
 
     spikenet = SpikingNetwork.from_yaml("spiking.yaml")
-    spikenet.populations["Albert"].add_injector(0.5, 10)
+    # spikenet.populations["Albert"].add_injector(0, 0)
     spikenet.populations["Albert"].monitorize_spikes()
     spikenet.populations["Albert"].monitorize_states()
     spikenet.populations["MonaLisa"].monitorize_spikes()
     spikenet.populations["MonaLisa"].monitorize_states()
 
-    spikenet.interface.run(dt=0.01, time=10)
+    spikenet.interface.run(dt=0.1, time=10)
 
     plt.plot(spikenet.populations['Albert'].get_data()["spikes"])
     plt.plot(spikenet.populations['MonaLisa'].get_data()["spikes"])
@@ -44,8 +44,9 @@ if __name__=="__main__":
     states = np.array(spikenet.populations['Albert'].get_data()['states'])
     print(states.shape)
     plt.figure(2)
-    for i in range(20):
+    for i in range(1):
         plt.plot(states[:, i, 0],marker=".")
+        print(states[:, i, 0])
         plt.title("V")
     plt.figure(3)
     for i in range(5):
