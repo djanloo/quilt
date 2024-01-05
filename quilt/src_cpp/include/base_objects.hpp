@@ -1,5 +1,8 @@
 #pragma once
 #include <cstddef>
+#include <cmath>
+#include <stdexcept>
+#include <vector>
 
 /**
  * @class HierarchicalID
