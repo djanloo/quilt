@@ -27,21 +27,23 @@ class Projection;
  */
 class Spike{
     public:
-        Spike(double weight, double arrival_time): weight(weight), arrival_time(arrival_time){
-            this -> processed = false;
-        }
         double weight, arrival_time;
         bool processed;
+
+        Spike(double weight, double arrival_time):
+        weight(weight), arrival_time(arrival_time), processed(false){}
+
+        bool operator<(const Spike& other) const { return this->arrival_time > other.arrival_time; }
 };
 
 /*
  *  The function used to insert the spike in the queue.
  */
-struct CompareSpike {
-    bool operator()(const Spike& spike1, const Spike& spike2) const {
-        return spike1.arrival_time > spike2.arrival_time;
-    }
-};
+// struct CompareSpike {
+//     bool operator()(const Spike& spike1, const Spike& spike2) const {
+//         return spike1.arrival_time > spike2.arrival_time;
+//     }
+// };
 /**
  * The synapse stores the presynaptic and postsynaptic neurons, the weight and the delay.
 */
@@ -73,9 +75,10 @@ class Synapse{
  *  - add the neuron to neuron_type enum class
 */
 class Neuron{
+    protected:
+        neuron_state state;
     public:
         // Base properties
-        vector<double> state; // boost::odeint format, just in case I have to implement it
         neuron_type nt = neuron_type::dummy;
         HierarchicalID * id;
         Population * population;
@@ -86,13 +89,14 @@ class Neuron{
 
         // Spike stuff
         vector<Synapse*> efferent_synapses;
-        priority_queue<Spike, vector<Spike>, CompareSpike> incoming_spikes;
+        priority_queue<Spike> incoming_spikes;
         double last_spike_time;
 
         // Yeah I know, not beautiful but think about it
         // nobody has ever to initialize a neuron outside a population
         Neuron(Population * population); 
         void connect(Neuron * neuron, double weight, double delay);
+        neuron_state get_state(){return state;}
         void handle_incoming_spikes(EvolutionContext * evo);
         void evolve(EvolutionContext * evo);
         void emit_spike(EvolutionContext * evo);
