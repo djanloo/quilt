@@ -15,6 +15,7 @@
 #include <boost/numeric/odeint.hpp>
 
 #define MAX_POTENTIAL_INCREMENT 10 // mV
+#define MAX_POTENTIAL_SLOPE 10/0.1
 
 namespace utilities{
 
@@ -100,11 +101,13 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
                     cout << "\tweight is " << spike.weight << endl; 
                 }
                 spike.processed = true;
+                // cout << this->id->get_id() << ") processed spike\t" << spike.arrival_time <<endl;
 
                 // Removes the spike from the incoming spikes
                 this->incoming_spikes.pop();
             } else {
                 // If a spike is not to process, neither the rest will be
+                // cout << this->id->get_id() <<") stopped at spike\t" << spike.arrival_time << " since now it's "<< evo->now << endl;
                 break;
             }
         }else{
@@ -220,7 +223,7 @@ aeif_neuron::aeif_neuron(Population * population): Neuron(population){
 
     // Exp pars
     this->Delta =  1.7;
-    this->exp_threshold = -50;
+    this->exp_threshold = -40;
 
     // Adapting pars
     this->a = 0.0;
@@ -239,13 +242,13 @@ aeif_neuron::aeif_neuron(Population * population): Neuron(population){
 
 void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
     double piece1, piece2, piece3, piece4;
+    // cout << "Neuron (" << this->id->get_id() << "):\t" << x[0] << endl;
+    if (t > last_spike_time + tau_refrac){
 
-    if (t - last_spike_time > tau_refrac ){
-
-        piece1 =  1.0/tau_m * ( - (x[0]-E_rest) );
-        piece2 =  1.0/tau_m * ( Delta*std::exp((x[0] - exp_threshold)/Delta) );
-        piece3 =  1.0/C_m * ( - x[1]*(x[0]-E_exc) - x[2]*(x[0]-E_inh));
-        piece4 =  1.0/C_m * ( - x[3] + 300.0); 
+        piece1 =  1.0 / tau_m * ( - (x[0]-E_rest) );
+        piece2 =  1.0 / tau_m * ( Delta*std::exp((x[0] - exp_threshold)/Delta) );
+        piece3 =  1.0 / C_m * ( - x[1]*(x[0]-E_exc) - x[2]*(x[0]-E_inh));
+        piece4 =  1.0 / C_m * ( - x[3] + 100.0); 
 
         // dxdt[0] = 1.0/tau_m * ( - (x[0]-E_rest) + Delta*std::exp((x[0] - exp_threshold)/Delta)) \
         //         + 1.0/C_m * ( - x[1]*(x[0]-E_exc) - x[2]*(x[0]-E_inh) - x[3] + 300.0);      
@@ -253,6 +256,8 @@ void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , cons
     }else{
         dxdt[0] = 0.0;
     }
+
+    if (dxdt[0] > MAX_POTENTIAL_SLOPE){dxdt[0] = MAX_POTENTIAL_SLOPE;}
 
     dxdt[1] = -x[1]/tau_e;                                                                       
     dxdt[2] = -x[2]/tau_i;                                                                      
