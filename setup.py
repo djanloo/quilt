@@ -45,15 +45,12 @@ cython_compiler_directives['warn'] = True
 
 extensions = []
 for extension_name in dependencies.keys():
-    print(dependencies[extension_name])
 
     current_extension_kwargs = extension_kwargs.copy()
     includes = [os.path.abspath(include_folder) for include_folder in dependencies[extension_name]['include_dirs']]
     current_extension_kwargs['include_dirs'] += includes
-    print("include is ",  current_extension_kwargs['include_dirs'])
     extensions.append(Extension(extension_name, dependencies[extension_name]['sources'], **extension_kwargs))
 
-print(extensions)
 ext_modules = cythonize(extensions, 
                         nthreads=8,
                         compiler_directives=cython_compiler_directives,
@@ -62,7 +59,6 @@ ext_modules = cythonize(extensions,
                         force=False,
                         annotate=False
 )
-print(ext_modules)
 
 setup(  name='quilt',
         cmdclass={"build_ext": build_ext},
