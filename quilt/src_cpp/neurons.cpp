@@ -15,7 +15,7 @@
 #include <boost/numeric/odeint.hpp>
 
 #define MAX_POTENTIAL_INCREMENT 10 // mV
-#define MAX_POTENTIAL_SLOPE 10/0.1
+#define MAX_POTENTIAL_SLOPE 50/0.1 // mV/ms
 
 namespace utilities{
 
@@ -60,6 +60,9 @@ Neuron::Neuron(Population * population){
     this->tau_i = 10;
     this->tau_e = 5;
     this->tau_m = 15;
+    I = 0.0;
+    I_osc = 0.0;
+    omega_I = 0.0;
 
     this -> state = vector<double> { 
                                     this -> E_rest + ((double)rand())/RAND_MAX, 
@@ -82,9 +85,9 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
 
 void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 
-    while (!(this->incoming_spikes.empty())){
-        
-        auto spike = this->incoming_spikes.top();
+    while (!(incoming_spikes.empty())){
+
+        auto spike = incoming_spikes.top();
 
         if ((spike.arrival_time < evo->now)&(!spike.processed)){cout << "ERROR: spike missed" << endl;} 
 
@@ -92,9 +95,9 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
             utilities::nan_check(spike.weight, "NaN in spike weight");
             if ((spike.arrival_time >= evo->now ) && (spike.arrival_time < evo->now + evo->dt)){
                 // Excitatory
-                if (spike.weight > 0.0){ this->state[1] += spike.weight;} 
+                if (spike.weight > 0.0){ state[1] += spike.weight;} 
                 // Inhibitory
-                else if (spike.weight < 0.0){ this->state[2] -= spike.weight;}
+                else if (spike.weight < 0.0){ state[2] -= spike.weight;}
                 // Spurious zero-weight
                 else{
                     cout << "Warning: a zero-weighted spike was received" << endl;
@@ -104,7 +107,7 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
                 // cout << this->id->get_id() << ") processed spike\t" << spike.arrival_time <<endl;
 
                 // Removes the spike from the incoming spikes
-                this->incoming_spikes.pop();
+                incoming_spikes.pop();
             } else {
                 // If a spike is not to process, neither the rest will be
                 // cout << this->id->get_id() <<") stopped at spike\t" << spike.arrival_time << " since now it's "<< evo->now << endl;
@@ -133,9 +136,7 @@ void Neuron::evolve(EvolutionContext * evo){
         utilities::nan_check_vect(this->state, "NaN in neuron state");
     }catch (const std::runtime_error &e){
         cerr << "State before step: ";
-        for (auto val : before_step){
-            cerr << val << " ";
-        }
+        for (auto val : before_step){ cerr << val << " ";}
         cerr << endl;
         throw e;
     }
@@ -241,45 +242,27 @@ aeif_neuron::aeif_neuron(Population * population): Neuron(population){
 }
 
 void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
-    double piece1, piece2, piece3, piece4;
-    // cout << "Neuron (" << this->id->get_id() << "):\t" << x[0] << endl;
+
     if (t > last_spike_time + tau_refrac){
-
-        piece1 =  1.0 / tau_m * ( - (x[0]-E_rest) );
-        piece2 =  1.0 / tau_m * ( Delta*std::exp((x[0] - exp_threshold)/Delta) );
-        piece3 =  1.0 / C_m * ( - x[1]*(x[0]-E_exc) - x[2]*(x[0]-E_inh));
-        piece4 =  1.0 / C_m * ( - x[3] + 100.0); 
-
-        // dxdt[0] = 1.0/tau_m * ( - (x[0]-E_rest) + Delta*std::exp((x[0] - exp_threshold)/Delta)) \
-        //         + 1.0/C_m * ( - x[1]*(x[0]-E_exc) - x[2]*(x[0]-E_inh) - x[3] + 300.0);      
-        dxdt[0] = piece1 + piece2 + piece3 + piece4;  
+        dxdt[0] = 1.0/tau_m * ( - (x[0]-E_rest) + Delta*std::exp((x[0] - exp_threshold)/Delta)) \
+                + 1.0/C_m * ( - x[1]*(x[0]-E_exc) - x[2]*(x[0]-E_inh) - x[3])\
+                + 1.0/C_m * (I  + I_osc*sin(omega_I*t)); 
     }else{
         dxdt[0] = 0.0;
     }
 
+    // This neuron suffers from slope divergence
+    // and this way is the easiest to solve the issue
     if (dxdt[0] > MAX_POTENTIAL_SLOPE){dxdt[0] = MAX_POTENTIAL_SLOPE;}
 
     dxdt[1] = -x[1]/tau_e;                                                                       
     dxdt[2] = -x[2]/tau_i;                                                                      
     dxdt[3] = -x[3]/tau_w + a/tau_w*(x[0]-E_rest);       
     
+    // These two lines take time
+    // but are necessary for now
     utilities::nan_check_vect(x, "NaN in x");
-    try{
-        utilities::nan_check_vect(dxdt, "NaN in dxdt");
-    } catch (const std::runtime_error& e){
-        cerr << e.what() << endl;
-        cerr << "linear: " << piece1 <<endl;
-        cerr << "exp: " << piece2 << endl;
-        cerr << "synaptic: " << piece3<<endl;
-        cerr << "adapt+extern: " << piece4 << endl;
-
-        cerr << "linear is due to: " <<endl;
-        cerr << "1/tau_m " << 1.0/tau_m << endl;
-        cerr << "x[0] " << x[0] << endl;
-        cerr << "E_rest " << E_rest << endl;
-        throw std::runtime_error("AAAA");
-    }
-                                            
+    utilities::nan_check_vect(dxdt, "NaN in dxdt");                                     
 }
 
 void aeif_neuron::on_spike(EvolutionContext * evo){

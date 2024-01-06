@@ -33,17 +33,10 @@ class Spike{
         Spike(double weight, double arrival_time):
         weight(weight), arrival_time(arrival_time), processed(false){}
 
+        // Set the importance: the smaller the arrival time the greater the importance
         bool operator<(const Spike& other) const { return this->arrival_time > other.arrival_time; }
 };
 
-/*
- *  The function used to insert the spike in the queue.
- */
-// struct CompareSpike {
-//     bool operator()(const Spike& spike1, const Spike& spike2) const {
-//         return spike1.arrival_time > spike2.arrival_time;
-//     }
-// };
 /**
  * The synapse stores the presynaptic and postsynaptic neurons, the weight and the delay.
 */
@@ -82,21 +75,24 @@ class Neuron{
         neuron_type nt = neuron_type::dummy;
         HierarchicalID * id;
         Population * population;
+        neuron_state get_state(){return state;}
+
 
         // Physiological properties
         float tau_refrac, tau_e, tau_i, tau_m;
         float E_exc, E_inh, E_rest, E_thr;
+
+        // External currents
+        float I, I_osc, omega_I;
+
 
         // Spike stuff
         vector<Synapse*> efferent_synapses;
         priority_queue<Spike> incoming_spikes;
         double last_spike_time;
 
-        // Yeah I know, not beautiful but think about it
-        // nobody has ever to initialize a neuron outside a population
         Neuron(Population * population); 
         void connect(Neuron * neuron, double weight, double delay);
-        neuron_state get_state(){return state;}
         void handle_incoming_spikes(EvolutionContext * evo);
         void evolve(EvolutionContext * evo);
         void emit_spike(EvolutionContext * evo);
@@ -131,7 +127,7 @@ class izhikevich_neuron : public Neuron {
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
     private:
-        double a,b,c,d;
+        float a,b,c,d;
 };
 
 class aeif_neuron : public Neuron {
@@ -140,5 +136,5 @@ class aeif_neuron : public Neuron {
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
     private:
-        double a, b,tau_w, Delta, R, E_reset, C_m, g_L, exp_threshold;
+        float a, b,tau_w, Delta, R, E_reset, C_m, g_L, exp_threshold;
 };
