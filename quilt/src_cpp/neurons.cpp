@@ -19,14 +19,14 @@
 
 namespace utilities{
 
-    void nan_check(double value, const string& str){
+    void nan_check(double value, const std::string& str){
         if (std::isnan(value)){
             throw std::runtime_error(str);
         }
     }
 
-    void nan_check_vect(std::vector<double> vect, const string& str){
-        vector<bool> are_nan;
+    void nan_check_vect(std::vector<double> vect, const std::string& str){
+        std::vector<bool> are_nan;
         bool somebody_is_nan = false;
 
         for (auto value : vect){
@@ -35,7 +35,7 @@ namespace utilities{
         }
         if (somebody_is_nan){
             std::cerr << "vector is nan: [" ;
-            for (auto val : are_nan) {cerr << val <<" ";} cerr << " ]" << endl;
+            for (auto val : are_nan) {std::cerr << val <<" ";} std::cerr << " ]" << std::endl;
             
             throw std::runtime_error(str);
         }
@@ -64,7 +64,7 @@ Neuron::Neuron(Population * population){
     I_osc = 0.0;
     omega_I = 0.0;
 
-    this -> state = vector<double> { 
+    this -> state = neuron_state { 
                                     this -> E_rest + ((double)rand())/RAND_MAX, 
                                     0.0, 
                                     0.0
@@ -89,7 +89,7 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 
         auto spike = incoming_spikes.top();
 
-        if ((spike.arrival_time < evo->now)&(!spike.processed)){cout << "ERROR: spike missed" << endl;} 
+        if ((spike.arrival_time < evo->now)&(!spike.processed)){std::cout << "ERROR: spike missed" << std::endl;} 
 
         if (!(spike.processed)){
             utilities::nan_check(spike.weight, "NaN in spike weight");
@@ -100,21 +100,21 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
                 else if (spike.weight < 0.0){ state[2] -= spike.weight;}
                 // Spurious zero-weight
                 else{
-                    cout << "Warning: a zero-weighted spike was received" << endl;
-                    cout << "\tweight is " << spike.weight << endl; 
+                    std::cout << "Warning: a zero-weighted spike was received" << std::endl;
+                    std::cout << "\tweight is " << spike.weight << std::endl; 
                 }
                 spike.processed = true;
-                // cout << this->id->get_id() << ") processed spike\t" << spike.arrival_time <<endl;
+                // std::cout << this->id->get_id() << ") processed spike\t" << spike.arrival_time <<std::endl;
 
                 // Removes the spike from the incoming spikes
                 incoming_spikes.pop();
             } else {
                 // If a spike is not to process, neither the rest will be
-                // cout << this->id->get_id() <<") stopped at spike\t" << spike.arrival_time << " since now it's "<< evo->now << endl;
+                // std::cout << this->id->get_id() <<") stopped at spike\t" << spike.arrival_time << " since now it's "<< evo->now << std::endl;
                 break;
             }
         }else{
-            cout << "spike already processed" << endl;
+            std::cout << "spike already processed" << std::endl;
         }
     }
 }
@@ -135,9 +135,9 @@ void Neuron::evolve(EvolutionContext * evo){
         stepper.do_step(lambda, this->state, evo->now, evo->dt);
         utilities::nan_check_vect(this->state, "NaN in neuron state");
     }catch (const std::runtime_error &e){
-        cerr << "State before step: ";
-        for (auto val : before_step){ cerr << val << " ";}
-        cerr << endl;
+        std::cerr << "State before step: ";
+        for (auto val : before_step){ std::cerr << val << " ";}
+        std::cerr << std::endl;
         throw e;
     }
 
@@ -181,7 +181,7 @@ void aqif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , cons
 izhikevich_neuron::izhikevich_neuron(Population * population): Neuron(population){
     this->nt = neuron_type::izhikevich;
 
-    this -> state = vector<double> { 
+    this -> state = neuron_state { 
                                     this -> E_rest + ((double)rand())/RAND_MAX, // V
                                     0.0, // g_syn_exc
                                     0.0, // g_syn_inh

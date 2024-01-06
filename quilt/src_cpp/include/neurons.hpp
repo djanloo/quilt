@@ -6,10 +6,8 @@
 #define MAX_GSYN_EXC 15.0
 #define MAX_GSYN_INH 15.0
 
-using namespace std;
-
 enum class neuron_type : unsigned int {dummy, aqif, izhikevich, aeif};
-typedef vector<double> neuron_state;
+typedef std::vector<double> neuron_state;
 
 // The menu:
 class EvolutionContext;
@@ -87,8 +85,8 @@ class Neuron{
 
 
         // Spike stuff
-        vector<Synapse*> efferent_synapses;
-        priority_queue<Spike> incoming_spikes;
+        std::vector<Synapse*> efferent_synapses;
+        std::priority_queue<Spike> incoming_spikes;
         double last_spike_time;
 
         Neuron(Population * population); 
@@ -99,7 +97,7 @@ class Neuron{
 
         // These must be implemented for each specific neuron
         virtual void on_spike(EvolutionContext * evo);
-        virtual void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){cout << "WARNING: using virtual evolve_state of <Neuron>";};
+        virtual void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){std::cout << "WARNING: using virtual evolve_state of <Neuron>";};
 };
 
 
