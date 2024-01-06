@@ -4,14 +4,6 @@
 #include "include/base_objects.hpp"
 #include "include/devices.hpp"
 
-void PopCurrentInjector::inject(EvolutionContext * evo){
-    throw std::runtime_error("PopCurrentInjector is now deprecated!");
-    // if (evo->now < this->t_max){
-    //     for (auto neuron : this-> pop->neurons){
-    //         neuron->state[0] += (this->I) * (evo->dt);
-    //     }
-    // }
-}
 
 void PopulationSpikeMonitor::gather(){
     this->history.push_back(this->monitored_pop->n_spikes_last_step);
@@ -25,3 +17,21 @@ void PopulationStateMonitor::gather(){
     }
     this->history.push_back(current_state);
 }  
+
+void PopCurrentInjector::inject(EvolutionContext * evo){
+    if (!activated & (evo->now > t_min)){
+        for (auto neuron : pop->neurons){
+            neuron->I = this->I;
+        }
+        activated = true;
+        // std::cout << "ACTIVATED CURRENT" << std::endl;
+    }
+
+    if (!deactivated & (evo->now >= t_max)){
+        for (auto neuron : pop->neurons){
+            neuron->I = 0;
+        }
+        deactivated = true;
+        // std::cout << "DEACTIVATED CURRENT" << std::endl;
+    }
+}
