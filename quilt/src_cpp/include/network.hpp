@@ -43,7 +43,6 @@ class Population{
         Population(int n_neurons, neuron_type nt, SpikingNetwork * spiking_network);
         void project(Projection * projection, Population * child_pop);
         void evolve(EvolutionContext * evo);
-        int monitor();
 };
 
 class SpikingNetwork{

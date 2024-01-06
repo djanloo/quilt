@@ -1,13 +1,14 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include <chrono>
-
 #include "include/base_objects.hpp"
 #include "include/neurons.hpp"
 #include "include/network.hpp"
 #include "include/devices.hpp"
 
+#include <iomanip>
+#include <chrono>
+#include <boost/timer/progress_display.hpp>
 
 Population::Population(int n_neurons, neuron_type nt, SpikingNetwork * spiking_network){
     this -> n_neurons = n_neurons;
@@ -48,7 +49,7 @@ Projection::Projection(double ** _weights, double ** _delays, int _start_dimensi
             }
         }
     }
-    cout << "projection has density "<< ((float)n_links)/_start_dimension/_end_dimension * 100 << "%" << endl;
+    cout << "Projection has density "<< std::fixed << std::setprecision(2) << ((float)n_links)/_start_dimension/_end_dimension * 100 << "%" << endl;
 }
 
 void Population::project(Projection * projection, Population * efferent_population){
@@ -63,8 +64,9 @@ void Population::project(Projection * projection, Population * efferent_populati
         }
     }
     auto end = chrono::high_resolution_clock::now();
-    cout << "performing " << connections << " connections took " << (chrono::duration_cast<chrono::milliseconds>(end -start)).count() << " ms   (";
-    cout << ((double)(chrono::duration_cast<chrono::microseconds>(end -start)).count())/connections << " us/link)" << endl;
+    cout << "Performing " << connections << " connections took ";
+    cout << std::fixed <<std::setprecision(2) << (chrono::duration_cast<chrono::milliseconds>(end -start)).count() << " ms   (";
+    cout << std::fixed << std::setprecision(3) << ((double)(chrono::duration_cast<chrono::microseconds>(end -start)).count())/connections << " us/link)" << endl;
 }
 
 void Population::evolve(EvolutionContext * evo){
@@ -74,7 +76,7 @@ void Population::evolve(EvolutionContext * evo){
         avg_synaptic_queue_size += neuron -> incoming_spikes.size();
     }
     avg_synaptic_queue_size /= this->n_neurons;
-    cout << "pop " << this->id->get_id() << ") average synaptic queue is long " << avg_synaptic_queue_size << endl;
+    // cout << "pop " << this->id->get_id() << ") average synaptic queue is long " << avg_synaptic_queue_size << endl;
 
     this->n_spikes_last_step = 0;
     auto start = chrono::high_resolution_clock::now();
@@ -82,9 +84,9 @@ void Population::evolve(EvolutionContext * evo){
         neuron -> evolve(evo);
     }
     auto end = chrono::high_resolution_clock::now();
-    cout << "pop " <<this->id->get_id() << ") evolving took " << ((double)(chrono::duration_cast<chrono::milliseconds>(end-start)).count()) << " ms (";
-    cout << ((double)(chrono::duration_cast<chrono::microseconds>(end-start)).count())/this->n_neurons;
-    cout << " us/neur )" << endl;
+    // cout << "pop " <<this->id->get_id() << ") evolving took " << ((double)(chrono::duration_cast<chrono::milliseconds>(end-start)).count()) << " ms (";
+    // cout << ((double)(chrono::duration_cast<chrono::microseconds>(end-start)).count())/this->n_neurons;
+    // cout << " us/neur )" << endl;
 }
 
 SpikingNetwork::SpikingNetwork(){
@@ -92,14 +94,12 @@ SpikingNetwork::SpikingNetwork(){
 }
 
 PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population){
-            std::cout<< "Adding spike monitor" << std::endl;
             PopulationSpikeMonitor * new_monitor = new PopulationSpikeMonitor(population);
             this->population_spike_monitors.push_back(new_monitor);
             return new_monitor;
             };
 
 PopulationStateMonitor * SpikingNetwork::add_state_monitor(Population * population){
-    std::cout<< "Adding state monitor" << std::endl;
     PopulationStateMonitor * new_monitor = new PopulationStateMonitor(population);
     this->population_state_monitors.push_back(new_monitor);
     return new_monitor;
@@ -127,14 +127,16 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
      */
 
     auto start = chrono::high_resolution_clock::now();
-    int n_steps = 0;
+    int n_steps_done  = 0;
+    int n_steps_total = static_cast<int>(time / evo->dt) ;
+    boost::timer::progress_display progress(n_steps_total);
+
 
     auto gather_time = chrono::duration_cast<chrono::microseconds>(start-start).count();
     auto inject_time = chrono::duration_cast<chrono::microseconds>(start-start).count();
 
     // Evolve
     while (evo -> now < time){
-        cout << "------ Time: " << evo-> now << "---------" << endl;
         auto start_gather = chrono::high_resolution_clock::now();
         for (const auto& population_monitor : this->population_spike_monitors){
             population_monitor->gather();
@@ -156,15 +158,16 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
             population -> evolve(evo);
         }
         evo -> do_step();
-        n_steps++;
+        n_steps_done++;
+        ++progress;
     }
 
     auto end = chrono::high_resolution_clock::now();
-    cout << "simulation took " << (chrono::duration_cast<chrono::seconds>(end -start)).count() << " s";
-    cout << "\t(" << ((double)(chrono::duration_cast<chrono::seconds>(end -start)).count())/n_steps << " s/step)" << endl;
+    cout << "Simulation took " << (chrono::duration_cast<chrono::seconds>(end -start)).count() << " s";
+    cout << "\t(" << ((double)(chrono::duration_cast<chrono::seconds>(end -start)).count())/n_steps_done << " s/step)" << endl;
 
-    cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps << " us/step" << endl;
-    cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps << " us/step" << endl;
+    cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << endl;
+    cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << endl;
 
 
 }
