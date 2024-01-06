@@ -10,7 +10,7 @@
 #include <chrono>
 #include <boost/timer/progress_display.hpp>
 
-Population::Population(int n_neurons, neuron_type nt, SpikingNetwork * spiking_network){
+Population::Population(int n_neurons, neuron_type neur_type, SpikingNetwork * spiking_network){
     this -> n_neurons = n_neurons;
     this -> n_spikes_last_step = 0;
     this -> id = new HierarchicalID(spiking_network->id);
@@ -19,7 +19,7 @@ Population::Population(int n_neurons, neuron_type nt, SpikingNetwork * spiking_n
 
     for ( int i = 0; i < n_neurons; i++){
         // This can be avoided, probably using <variant>
-        switch(nt){
+        switch(neur_type){
         case neuron_type::dummy: new Neuron(this); break;       // remember not to push_back here
         case neuron_type::aqif: new aqif_neuron(this); break;   // calling the constructor is enough
         case neuron_type::izhikevich: new izhikevich_neuron(this); break;
@@ -71,11 +71,11 @@ void Population::project(Projection * projection, Population * efferent_populati
 
 void Population::evolve(EvolutionContext * evo){
 
-    double avg_synaptic_queue_size = 0;
-    for (auto neuron : this->neurons){
-        avg_synaptic_queue_size += neuron -> incoming_spikes.size();
-    }
-    avg_synaptic_queue_size /= this->n_neurons;
+    // double avg_synaptic_queue_size = 0;
+    // for (auto neuron : this->neurons){
+    //     avg_synaptic_queue_size += neuron -> incoming_spikes.size();
+    // }
+    // avg_synaptic_queue_size /= this->n_neurons;
     // std::cout << "pop " << this->id->get_id() << ") average synaptic queue is long " << avg_synaptic_queue_size << std::endl;
 
     this->n_spikes_last_step = 0;
@@ -105,31 +105,11 @@ PopulationStateMonitor * SpikingNetwork::add_state_monitor(Population * populati
     return new_monitor;
     };
 
-void  SpikingNetwork::evolve(EvolutionContext * evo){
-    for (auto population : this -> populations){
-        population -> evolve(evo);
-    }
-    evo -> do_step();
-}
-
 void SpikingNetwork::run(EvolutionContext * evo, double time){  
-
-    /**
-     * Gets the values form monitors. 
-     * This may be a little too formal, but 
-     *      - cycles on auto references of variant (auto&)
-     *      - avoid modification of reference (const)
-     * 
-     * Also maybe too pythonic. I just have to quit heterogeneous iterables.
-     * 
-     * TODO: check timing. This is a lot of overhead I see here.
-     * 
-     */
 
     auto start = std::chrono::high_resolution_clock::now();
     int n_steps_done  = 0;
     int n_steps_total = static_cast<int>(time / evo->dt) ;
-
 
     auto gather_time = std::chrono::duration_cast<std::chrono::microseconds>(start-start).count();
     auto inject_time = std::chrono::duration_cast<std::chrono::microseconds>(start-start).count();
@@ -142,16 +122,20 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
     boost::timer::progress_display progress(n_steps_total);
 
     while (evo -> now < time){
+
+        // Gathering of spikes
         auto start_gather = std::chrono::high_resolution_clock::now();
         for (const auto& population_monitor : this->population_spike_monitors){
             population_monitor->gather();
         }
+        // Gathering of states
         for (const auto& population_monitor : this->population_state_monitors){
             population_monitor->gather();
         }
         auto end_gather = std::chrono::high_resolution_clock::now();
         gather_time += std::chrono::duration_cast<std::chrono::microseconds>(end_gather-start_gather).count();
 
+        // Injection of currents
         auto start_inject = std::chrono::high_resolution_clock::now();
         for (auto injector : this->injectors){
             injector->inject(evo);
@@ -159,10 +143,12 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
         auto end_inject = std::chrono::high_resolution_clock::now();
         inject_time += std::chrono::duration_cast<std::chrono::microseconds>(end_inject-start_inject).count();
 
+        // Evolution of each population
         for (auto population : this -> populations){
             population -> evolve(evo);
         }
         evo -> do_step();
+
         n_steps_done++;
         ++progress;
     }

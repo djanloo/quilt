@@ -20,7 +20,7 @@ NEURON_TYPES = {"dummy":0, "aqif":1, "izhikevich":2, "aeif":3}
 
 ctypedef vector[double] neuron_state
 
-cdef class Projection():
+cdef class Projection:
 
     cdef int start_dimension, end_dimension
     cdef double ** _weights
