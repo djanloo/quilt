@@ -249,7 +249,7 @@ aeif_neuron::aeif_neuron(Population * population): Neuron(population){
     this->E_exc = 0.;
     this->E_inh = -65.;
 
-    this->state = {this->E_rest + ((double)rand())/RAND_MAX , 0.0, 0.0, 0.0};
+    this->state = {this->E_rest + 10*(((double)rand())/RAND_MAX - 0.5 ), 0.0, 0.0, 0.0};
 
 }
 
