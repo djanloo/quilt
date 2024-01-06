@@ -42,8 +42,8 @@ int main(){
     Population a = Population(Na, neuron_type::aqif, &sn);
     Population b = Population(Nb, neuron_type::aqif, &sn);
 
-    cout << "size of neuron is " << sizeof(*(a.neurons[0])) << " bytes" <<endl ;
-    cout << "size of population is " << sizeof(a) << " bytes" << endl;
+    std::cout << "size of neuron is " << sizeof(*(a.neurons[0])) << " bytes" << std::endl ;
+    std::cout << "size of population is " << sizeof(a) << " bytes" << std::endl;
 
     double ** weights, **delays;
 

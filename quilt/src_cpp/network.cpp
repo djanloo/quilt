@@ -15,7 +15,7 @@ Population::Population(int n_neurons, neuron_type nt, SpikingNetwork * spiking_n
     this -> n_spikes_last_step = 0;
     this -> id = new HierarchicalID(spiking_network->id);
     
-    auto start = chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
 
     for ( int i = 0; i < n_neurons; i++){
         // This can be avoided, probably using <variant>
@@ -27,9 +27,9 @@ Population::Population(int n_neurons, neuron_type nt, SpikingNetwork * spiking_n
         };
     }
 
-    auto end = chrono::high_resolution_clock::now();
-    cout << "Building population "<< this->id->get_id() << " took " << (chrono::duration_cast<chrono::milliseconds>(end -start)).count() << " ms    (";
-    cout << ((double)(chrono::duration_cast<chrono::microseconds>(end-start)).count())/n_neurons << " us/neur)" << endl;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Building population "<< this->id->get_id() << " took " << (std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count() << " ms    (";
+    std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start)).count())/n_neurons << " us/neur)" << std::endl;
     
     // Adds itself to the spiking network populations
     (spiking_network->populations).push_back(this);
@@ -49,24 +49,24 @@ Projection::Projection(double ** _weights, double ** _delays, int _start_dimensi
             }
         }
     }
-    cout << "Projection has density "<< std::fixed << std::setprecision(2) << ((float)n_links)/_start_dimension/_end_dimension * 100 << "%" << endl;
+    std::cout << "Projection has density " << ((float)n_links)/_start_dimension/_end_dimension * 100 << "%" << std::endl;
 }
 
 void Population::project(Projection * projection, Population * efferent_population){
     int connections = 0;
-    auto start = chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     for (int i = 0; i < projection -> start_dimension; i++){
         for (int j = 0; j < projection -> end_dimension; j++){
-            if (abs((projection -> weights)[i][j]) > WEIGHT_EPS){
+            if (std::abs((projection -> weights)[i][j]) > WEIGHT_EPS){
                 connections ++;
                 (this -> neurons)[i] -> connect(efferent_population -> neurons[j], (projection -> weights)[i][j], (projection -> delays)[i][j]);
             }
         }
     }
-    auto end = chrono::high_resolution_clock::now();
-    cout << "Performing " << connections << " connections took ";
-    cout << std::fixed <<std::setprecision(2) << (chrono::duration_cast<chrono::milliseconds>(end -start)).count() << " ms   (";
-    cout << std::fixed << std::setprecision(3) << ((double)(chrono::duration_cast<chrono::microseconds>(end -start)).count())/connections << " us/link)" << endl;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Performing " << connections << " connections took ";
+    std::cout << (std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count() << " ms   (";
+    std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end -start)).count())/connections << " us/link)" << std::endl;
 }
 
 void Population::evolve(EvolutionContext * evo){
@@ -76,17 +76,17 @@ void Population::evolve(EvolutionContext * evo){
         avg_synaptic_queue_size += neuron -> incoming_spikes.size();
     }
     avg_synaptic_queue_size /= this->n_neurons;
-    // cout << "pop " << this->id->get_id() << ") average synaptic queue is long " << avg_synaptic_queue_size << endl;
+    // std::cout << "pop " << this->id->get_id() << ") average synaptic queue is long " << avg_synaptic_queue_size << std::endl;
 
     this->n_spikes_last_step = 0;
-    auto start = chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     for (auto neuron : this -> neurons){
         neuron -> evolve(evo);
     }
-    auto end = chrono::high_resolution_clock::now();
-    // cout << "pop " <<this->id->get_id() << ") evolving took " << ((double)(chrono::duration_cast<chrono::milliseconds>(end-start)).count()) << " ms (";
-    // cout << ((double)(chrono::duration_cast<chrono::microseconds>(end-start)).count())/this->n_neurons;
-    // cout << " us/neur )" << endl;
+    auto end = std::chrono::high_resolution_clock::now();
+    // std::cout << "pop " <<this->id->get_id() << ") evolving took " << ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(end-start)).count()) << " ms (";
+    // std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start)).count())/this->n_neurons;
+    // std::cout << " us/neur )" << std::endl;
 }
 
 SpikingNetwork::SpikingNetwork(){
@@ -126,33 +126,38 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
      * 
      */
 
-    auto start = chrono::high_resolution_clock::now();
+    auto start = std::chrono::high_resolution_clock::now();
     int n_steps_done  = 0;
     int n_steps_total = static_cast<int>(time / evo->dt) ;
-    boost::timer::progress_display progress(n_steps_total);
 
 
-    auto gather_time = chrono::duration_cast<chrono::microseconds>(start-start).count();
-    auto inject_time = chrono::duration_cast<chrono::microseconds>(start-start).count();
+    auto gather_time = std::chrono::duration_cast<std::chrono::microseconds>(start-start).count();
+    auto inject_time = std::chrono::duration_cast<std::chrono::microseconds>(start-start).count();
+
+    int n_neurons_total = 0;
+    for (auto pop : populations){n_neurons_total += pop->n_neurons;}
+    std::cout << "Running network consisting of " << n_neurons_total << " neurons for " << n_steps_total <<" timesteps";
 
     // Evolve
+    boost::timer::progress_display progress(n_steps_total);
+
     while (evo -> now < time){
-        auto start_gather = chrono::high_resolution_clock::now();
+        auto start_gather = std::chrono::high_resolution_clock::now();
         for (const auto& population_monitor : this->population_spike_monitors){
             population_monitor->gather();
         }
         for (const auto& population_monitor : this->population_state_monitors){
             population_monitor->gather();
         }
-        auto end_gather = chrono::high_resolution_clock::now();
-        gather_time += chrono::duration_cast<chrono::microseconds>(end_gather-start_gather).count();
+        auto end_gather = std::chrono::high_resolution_clock::now();
+        gather_time += std::chrono::duration_cast<std::chrono::microseconds>(end_gather-start_gather).count();
 
-        auto start_inject = chrono::high_resolution_clock::now();
+        auto start_inject = std::chrono::high_resolution_clock::now();
         for (auto injector : this->injectors){
             injector->inject(evo);
         }
-        auto end_inject = chrono::high_resolution_clock::now();
-        inject_time += chrono::duration_cast<chrono::microseconds>(end_inject-start_inject).count();
+        auto end_inject = std::chrono::high_resolution_clock::now();
+        inject_time += std::chrono::duration_cast<std::chrono::microseconds>(end_inject-start_inject).count();
 
         for (auto population : this -> populations){
             population -> evolve(evo);
@@ -162,12 +167,12 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
         ++progress;
     }
 
-    auto end = chrono::high_resolution_clock::now();
-    cout << "Simulation took " << (chrono::duration_cast<chrono::seconds>(end -start)).count() << " s";
-    cout << "\t(" << ((double)(chrono::duration_cast<chrono::seconds>(end -start)).count())/n_steps_done << " s/step)" << endl;
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Simulation took " << (std::chrono::duration_cast<std::chrono::seconds>(end -start)).count() << " s";
+    std::cout << "\t(" << ((double)(std::chrono::duration_cast<std::chrono::seconds>(end -start)).count())/n_steps_done << " s/step)" << std::endl;
 
-    cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << endl;
-    cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << endl;
+    std::cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << std::endl;
+    std::cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << std::endl;
 
 
 }
