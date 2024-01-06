@@ -149,5 +149,4 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
     std::cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << std::endl;
     std::cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << std::endl;
 
-
 }
