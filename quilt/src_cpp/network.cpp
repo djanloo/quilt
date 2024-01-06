@@ -71,22 +71,11 @@ void Population::project(Projection * projection, Population * efferent_populati
 
 void Population::evolve(EvolutionContext * evo){
 
-    // double avg_synaptic_queue_size = 0;
-    // for (auto neuron : this->neurons){
-    //     avg_synaptic_queue_size += neuron -> incoming_spikes.size();
-    // }
-    // avg_synaptic_queue_size /= this->n_neurons;
-    // std::cout << "pop " << this->id->get_id() << ") average synaptic queue is long " << avg_synaptic_queue_size << std::endl;
-
     this->n_spikes_last_step = 0;
-    auto start = std::chrono::high_resolution_clock::now();
+
     for (auto neuron : this -> neurons){
         neuron -> evolve(evo);
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    // std::cout << "pop " <<this->id->get_id() << ") evolving took " << ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(end-start)).count()) << " ms (";
-    // std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start)).count())/this->n_neurons;
-    // std::cout << " us/neur )" << std::endl;
 }
 
 SpikingNetwork::SpikingNetwork(){
