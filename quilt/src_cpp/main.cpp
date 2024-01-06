@@ -74,7 +74,7 @@ int main(){
     free_proj_mat(delays, Nb);
 
 
-    PopCurrentInjector stimulus = PopCurrentInjector(&a, 15, 2);
+    PopCurrentInjector stimulus = PopCurrentInjector(&a, 15.0, 0.0, 2.0);
     sn.add_injector(&stimulus);
 
     EvolutionContext evo = EvolutionContext(0.1);
