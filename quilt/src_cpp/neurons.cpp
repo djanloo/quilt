@@ -102,7 +102,7 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
         } 
 
         if (!(spike.processed)){
-            utilities::nan_check(spike.weight, "NaN in spike weight"); // This might be removed in future
+            // utilities::nan_check(spike.weight, "NaN in spike weight"); // This might be removed in future
 
             if ((spike.arrival_time >= evo->now ) && (spike.arrival_time < evo->now + evo->dt)){
 
@@ -273,8 +273,8 @@ void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , cons
     
     // These two lines take time
     // but are necessary for now
-    utilities::nan_check_vect(x, "NaN in x");
-    utilities::nan_check_vect(dxdt, "NaN in dxdt");                                     
+    // utilities::nan_check_vect(x, "NaN in x");
+    // utilities::nan_check_vect(dxdt, "NaN in dxdt");                                     
 }
 
 void aeif_neuron::on_spike(EvolutionContext * evo){
