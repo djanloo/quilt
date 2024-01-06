@@ -22,7 +22,7 @@ def test_state_monitor():
 
 def test_injector():
     spikenet = SpikingNetwork.from_yaml(TEST_NET)
-    spikenet.populations["Albert"].add_injector(0.5, 2)
+    spikenet.populations["Albert"].add_injector(0.5, 0.0, 2)
 
 if __name__=="__main__":
     
@@ -30,7 +30,7 @@ if __name__=="__main__":
     import matplotlib.pyplot as plt 
 
     spikenet = SpikingNetwork.from_yaml("spiking.yaml")
-    # spikenet.populations["Albert"].add_injector(0, 0)
+    spikenet.populations["Albert"].add_injector(200, 0, 100.0)
     spikenet.populations["Albert"].monitorize_spikes()
     spikenet.populations["Albert"].monitorize_states()
     spikenet.populations["MonaLisa"].monitorize_spikes()
@@ -50,7 +50,7 @@ if __name__=="__main__":
     plt.figure(2)
     for i in range(1):
         plt.plot(states[:, i, 0],marker=".")
-        print(states[:, i, 0])
+        # print(states[:, i, 0])
         plt.title("V")
     plt.figure(3)
     for i in range(5):
