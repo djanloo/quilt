@@ -21,7 +21,7 @@ cdef extern from "../src_cpp/include/devices.hpp":
         vector[vector[vector[double]]] get_history()
     
     cdef cppclass PopCurrentInjector:
-        PopCurrentInjector(Population * pop, double I, double t_max)
+        PopCurrentInjector(Population * pop, double I, double t_min, double t_max)
         void inject(EvolutionContext * evo)
 
 cdef extern from "../src_cpp/include/neurons.hpp":

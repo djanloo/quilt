@@ -90,8 +90,8 @@ cdef class Population:
     def project(self, Projection proj, Population efferent_pop):
         self._population.project(proj._projection, efferent_pop._population)
 
-    def add_injector(self, current, time):
-        cdef cinter.PopCurrentInjector * injector = new cinter.PopCurrentInjector(self._population, current, time)
+    def add_injector(self, I, t_min, t_max):
+        cdef cinter.PopCurrentInjector * injector = new cinter.PopCurrentInjector(self._population, I, t_min, t_max)
         self.spikenet._spiking_network.add_injector(injector)
 
     def monitorize_spikes(self):
@@ -174,7 +174,7 @@ class RandomProjector:
         delays[(~active_inh_syn)&(~active_exc_syn)] = 0.0
 
         end = time()
-        print(f"generating weights and delays took {end-start} seconds")
+        print(f"Generating weights and delays took {end-start:.3f} seconds")
 
         self.last_weights = weights
         self.last_delays = delays
