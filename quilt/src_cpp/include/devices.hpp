@@ -35,33 +35,14 @@ class PopulationStateMonitor{
 };
 
 
-/**
- * The input for neurons.
-// */
-// template <typename var>
-// class Injector {
-// public:
-//     Injector( var * _variable_ptr, double rate, double t_max)
-//         : variable_ptr(_variable_ptr), rate(rate), t_max(t_max) {}
-
-//     virtual void inject(EvolutionContext *evo) {
-//         // if (evo->now < t_max && variable_ptr) {
-//         //     *variable_ptr += rate * evo->dt;
-//         // }
-//     }
-
-//     protected:
-//         var * variable_ptr;
-//         double rate, t_max;
-// };
-
-
 class PopCurrentInjector{
     public:
-        PopCurrentInjector(Population * pop, double I, double t_max):pop(pop), I(I), t_max(t_max){}
+        PopCurrentInjector(Population * pop, float I, float t_min, float t_max):
+        pop(pop), I(I), t_min(t_min), t_max(t_max), activated(false), deactivated(false){}
         void inject(EvolutionContext * evo);
         
     private:
         Population * pop;
-        double I, t_max;
+        double I, t_min, t_max;
+        bool activated, deactivated;
 };
