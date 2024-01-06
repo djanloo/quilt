@@ -18,11 +18,14 @@ class Neuron;
 class Population;
 class Projection;
 
-/*
- * Here a spike is just a weight and an arrival time. 
- * Due to the way they are processed, the natural structure is
- * a priority queue.
- */
+/**
+ * @class Spike
+ * @brief A spike object is a weight and arrival time
+ * 
+ * This object is the one through which neurons communicate.
+ * The overriden 'operator <' is used to insert the spike in the priority queue 
+ * of the neuron. 
+*/
 class Spike{
     public:
         double weight, arrival_time;
@@ -36,7 +39,11 @@ class Spike{
 };
 
 /**
- * The synapse stores the presynaptic and postsynaptic neurons, the weight and the delay.
+ * @class Synapse
+ * @brief A weight-delay connection object between two neurons
+ * 
+ * The method fire() of the synapse creates a spike and adds it to the spike queue
+ * of the postsynaptic neuron. 
 */
 class Synapse{
     public:
@@ -52,7 +59,10 @@ class Synapse{
 };
 
 /**
- * The base dynamical object.
+ * @class Neuron
+ * @brief The base dynamical object
+ * 
+ * 
  * The 9 to 5 job of a neuron is:
  *  - process incoming spikes
  *  - evolve the state
@@ -64,6 +74,10 @@ class Synapse{
  * To declare a new neuron:
  *  - override the `evolve_state` method
  *  - add the neuron to neuron_type enum class
+ * 
+ * After profiling, it became evident that spike processing has a significantly greater impact on computational 
+ * cost than I had initially anticipated. Therefore, each improvement attempt should start with an analysis 
+ * of handle_incoming_spikes()
 */
 class Neuron{
     protected:
@@ -113,12 +127,22 @@ class Neuron{
  * - on_spike
 */
 
+
+/**
+ * @class aqif_neuron
+ * @brief The adaptive quadratic integrate and fire model
+ * 
+*/
 class aqif_neuron : public Neuron {
     public:
         aqif_neuron(Population * population) : Neuron(population){this -> nt = neuron_type::aqif;};
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
 };
 
+/**
+ * @class izhikevich_neuron
+ * @brief The adaptive quadratic neuron model of Izhikevich
+*/
 class izhikevich_neuron : public Neuron {
     public:
         izhikevich_neuron(Population * population);
@@ -128,6 +152,12 @@ class izhikevich_neuron : public Neuron {
         float a,b,c,d;
 };
 
+
+/**
+ * @class aeif_neuron
+ * @brief The adaptive exponential integrate-and-fire model
+ * 
+*/
 class aeif_neuron : public Neuron {
     public:
         aeif_neuron(Population * population);

@@ -43,6 +43,7 @@ namespace utilities{
 }
 
 void Synapse::fire(EvolutionContext * evo){
+    // Adds a (weight, delay) spike in the spike queue of the postsynaptic neuron
     this->postsynaptic->incoming_spikes.emplace(this->weight, evo->now + this->delay);
 }
 
@@ -83,34 +84,43 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
     (this -> efferent_synapses).push_back(new Synapse(this, neuron, weight, delay));
 }
 
+
+/**
+ * 
+ * This is the single most important function of the code.
+ * 
+*/
 void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 
     while (!(incoming_spikes.empty())){
 
         auto spike = incoming_spikes.top();
 
-        if ((spike.arrival_time < evo->now)&(!spike.processed)){std::cout << "ERROR: spike missed" << std::endl;} 
+        if ((spike.arrival_time < evo->now)&(!spike.processed)){
+            throw std::runtime_error("Spike missed.\
+                                     Please reduce the timestep or increase the delays.");
+        } 
 
         if (!(spike.processed)){
-            utilities::nan_check(spike.weight, "NaN in spike weight");
+            utilities::nan_check(spike.weight, "NaN in spike weight"); // This might be removed in future
+
             if ((spike.arrival_time >= evo->now ) && (spike.arrival_time < evo->now + evo->dt)){
+
                 // Excitatory
                 if (spike.weight > 0.0){ state[1] += spike.weight;} 
                 // Inhibitory
                 else if (spike.weight < 0.0){ state[2] -= spike.weight;}
-                // Spurious zero-weight
-                else{
-                    std::cout << "Warning: a zero-weighted spike was received" << std::endl;
-                    std::cout << "\tweight is " << spike.weight << std::endl; 
+
+                else{ 
+                    throw std::runtime_error("A zero-weighted spike was received. \
+                                              Value is " + std::to_string(spike.weight));
                 }
                 spike.processed = true;
-                // std::cout << this->id->get_id() << ") processed spike\t" << spike.arrival_time <<std::endl;
 
                 // Removes the spike from the incoming spikes
                 incoming_spikes.pop();
             } else {
                 // If a spike is not to process, neither the rest will be
-                // std::cout << this->id->get_id() <<") stopped at spike\t" << spike.arrival_time << " since now it's "<< evo->now << std::endl;
                 break;
             }
         }else{
@@ -120,8 +130,9 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 }
 
 void Neuron::evolve(EvolutionContext * evo){
-    // Gather spikes
-    this-> handle_incoming_spikes(evo);
+
+    // Process incoming spikes
+    handle_incoming_spikes(evo);
 
     // Evolve
     boost::numeric::odeint::runge_kutta4<neuron_state> stepper;
@@ -129,8 +140,9 @@ void Neuron::evolve(EvolutionContext * evo){
                                     this->evolve_state(state, dxdt, t);
                                 };
 
-    auto before_step = this->state;
+    auto before_step = state;
 
+    // Checks for NaNs after the step
     try{
         stepper.do_step(lambda, this->state, evo->now, evo->dt);
         utilities::nan_check_vect(this->state, "NaN in neuron state");
@@ -142,7 +154,7 @@ void Neuron::evolve(EvolutionContext * evo){
     }
 
     // Spike generation
-    if ((this -> state[0]) > this->E_thr){ this -> emit_spike(evo);}
+    if ((state[0]) > E_thr){ emit_spike(evo);}
 }
 
 void Neuron::emit_spike(EvolutionContext * evo){
