@@ -1,9 +1,9 @@
 populations:
   - name: Albert
-    size: 2000
+    size: 5500
     neuron_type: aeif
   - name: MonaLisa
-    size: 2000
+    size: 5500
     neuron_type: aeif
 
 projections:
