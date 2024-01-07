@@ -1,11 +1,12 @@
+#include "include/base_objects.hpp"
+#include "include/neurons_base.hpp"
+#include "include/network.hpp"
+#include "include/devices.hpp"
+#include "include/neuron_models.hpp"
+
 #include <iostream>
 #include <vector>
 #include <map>
-#include "include/base_objects.hpp"
-#include "include/neurons.hpp"
-#include "include/network.hpp"
-#include "include/devices.hpp"
-
 #include <iomanip>
 #include <chrono>
 #include <boost/timer/progress_display.hpp>

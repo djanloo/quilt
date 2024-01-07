@@ -1,8 +1,9 @@
-#include <stdexcept>
-#include "include/neurons.hpp"
+#include "include/neurons_base.hpp"
 #include "include/network.hpp"
 #include "include/base_objects.hpp"
 #include "include/devices.hpp"
+
+#include <stdexcept>
 
 
 void PopulationSpikeMonitor::gather(){
@@ -21,7 +22,7 @@ void PopulationStateMonitor::gather(){
 void PopCurrentInjector::inject(EvolutionContext * evo){
     if (!activated & (evo->now > t_min)){
         for (auto neuron : pop->neurons){
-            neuron->I = this->I;
+            neuron->I_ext = this->I;
         }
         activated = true;
         // std::cout << "ACTIVATED CURRENT" << std::endl;
@@ -29,7 +30,7 @@ void PopCurrentInjector::inject(EvolutionContext * evo){
 
     if (!deactivated & (evo->now >= t_max)){
         for (auto neuron : pop->neurons){
-            neuron->I = 0;
+            neuron->I_ext = 0;
         }
         deactivated = true;
         // std::cout << "DEACTIVATED CURRENT" << std::endl;

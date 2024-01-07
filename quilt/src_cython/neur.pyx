@@ -112,7 +112,7 @@ cdef class Population:
         return data
 
     def __dealloc__(self):
-        print("Deallocating a population")
+        # print("Deallocating a population")
         if self._population != NULL:
             del self._population
 
@@ -132,7 +132,7 @@ cdef class SpikingNetwork:
         self._spiking_network.run(self._evo, time)
 
     def __dealloc__(self):
-        print("Deallocating a spiking network")
+        # print("Deallocating a spiking network")
         del self._spiking_network
         del self._evo
 

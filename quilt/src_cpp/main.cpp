@@ -3,7 +3,8 @@
 
 #include "include/base_objects.hpp"
 #include "include/devices.hpp"
-#include "include/neurons.hpp"
+#include "include/neurons_base.hpp"
+#include "include/neuron_models.hpp"
 #include "include/network.hpp"
 
 // ulimit -c unlimited

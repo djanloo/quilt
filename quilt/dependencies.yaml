@@ -9,7 +9,8 @@
 neur:
   sources:
     - src_cython/neur.pyx
-    - src_cpp/neurons.cpp
+    - src_cpp/neurons_base.cpp
+    - src_cpp/neuron_models.cpp
     - src_cpp/network.cpp
     - src_cpp/devices.cpp
   include_dirs:

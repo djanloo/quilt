@@ -6,6 +6,9 @@
 #define MAX_GSYN_EXC 15.0
 #define MAX_GSYN_INH 15.0
 
+#define MAX_POTENTIAL_INCREMENT 10 // mV
+#define MAX_POTENTIAL_SLOPE 50/0.1 // mV/ms
+
 enum class neuron_type : unsigned int {dummy, aqif, izhikevich, aeif};
 typedef std::vector<double> neuron_state;
 
@@ -99,7 +102,7 @@ class Neuron{
         float ada_a, ada_b, ada_tau_w;
 
         // External currents
-        float I, I_osc, omega_I;
+        float I_ext, I_osc, omega_I;
 
 
         // Spike stuff
@@ -118,58 +121,3 @@ class Neuron{
         virtual void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){std::cout << "WARNING: using virtual evolve_state of <Neuron>";};
 };
 
-
-/**
- * Real models
- * -----------
- * 
- * Each model must override these functions:
- * - the constructor
- * - evolve_state
- * 
- * Each model can override these functions:
- * - on_spike
-*/
-
-
-/**
- * @class aqif_neuron
- * @brief The adaptive quadratic integrate and fire model
- * 
-*/
-class aqif_neuron : public Neuron {
-    public:
-        aqif_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
-    private:
-        float k;
-};
-
-/**
- * @class izhikevich_neuron
- * @brief The adaptive quadratic neuron model of Izhikevich
-*/
-class izhikevich_neuron : public Neuron {
-    public:
-        izhikevich_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
-    private:
-        float a,b,c,d;
-};
-
-
-/**
- * @class aeif_neuron
- * @brief The adaptive exponential integrate-and-fire model
- * 
-*/
-class aeif_neuron : public Neuron {
-    public:
-        aeif_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
-    private:
-        float  Delta, R, E_reset, C_m, g_L, exp_threshold;
-};
