@@ -1,5 +1,3 @@
-
-
 // The menu:
 class EvolutionContext;
 class HierarchicalID;

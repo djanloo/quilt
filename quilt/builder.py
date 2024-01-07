@@ -25,11 +25,12 @@ class SpikingNetwork:
         
         for pop in net.features_dict['populations']:
             net.populations[pop['name']] = neur.Population(pop['size'], pop['neuron_type'], net.interface )
-
-        for proj in net.features_dict['projections']:
-            projector = neur.RandomProjector(**(proj['features']))
-            efferent = net.populations[proj['efferent']]
-            afferent = net.populations[proj['afferent']]
-            efferent.project(projector.get_projection(efferent, afferent), afferent)
         
+        if "projections" in net.features_dict and net.features_dict['projections'] is not None:
+            for proj in net.features_dict['projections']:
+                projector = neur.RandomProjector(**(proj['features']))
+                efferent = net.populations[proj['efferent']]
+                afferent = net.populations[proj['afferent']]
+                efferent.project(projector.get_projection(efferent, afferent), afferent)
+            
         return net
