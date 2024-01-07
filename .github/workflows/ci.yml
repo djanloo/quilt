@@ -26,4 +26,5 @@ jobs:
       run: make
 
     - name: Run tests
+      run: export PYTHONPATH=$(pwd):$PYTHONPATH
       run: pytest tests
