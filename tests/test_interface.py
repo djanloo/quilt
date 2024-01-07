@@ -1,12 +1,17 @@
 from quilt.builder import SpikingNetwork
 
-TEST_NET="tests/small_spiking.yaml"
+TEST_NET="tests/test_spiking.yaml"
+TEST_NEURONS = "tests/test_neurons.yaml"
 
 def test_yaml_builder():
     SpikingNetwork.from_yaml(TEST_NET)
 
 def test_run():
     spikenet = SpikingNetwork.from_yaml(TEST_NET)
+    spikenet.interface.run(dt=0.1, time=10)
+
+def test_neuorons():
+    spikenet = SpikingNetwork.from_yaml(TEST_NEURONS)
     spikenet.interface.run(dt=0.1, time=10)
 
 """
