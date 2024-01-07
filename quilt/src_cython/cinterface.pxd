@@ -24,11 +24,11 @@ cdef extern from "../src_cpp/include/devices.hpp":
         PopCurrentInjector(Population * pop, double I, double t_min, double t_max)
         void inject(EvolutionContext * evo)
 
-cdef extern from "../src_cpp/include/neurons.hpp":
+cdef extern from "../src_cpp/include/neurons_base.hpp":
     cdef cppclass neuron_type:
         pass
 
-cdef extern from "../src_cpp/include/neurons.hpp" namespace "neuron_type":
+cdef extern from "../src_cpp/include/neurons_base.hpp" namespace "neuron_type":
     cdef neuron_type dummy
     cdef neuron_type aqif
     cdef neuron_type izhikevich
