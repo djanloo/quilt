@@ -4,7 +4,7 @@ A multiscale neural simulator.
 
 Requires boost. On linux
 ```
-sudo apt-get install boost
+sudo apt-get install libboost-all-dev
 ```
 on MacOs
 ```
