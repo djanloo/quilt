@@ -1,3 +1,5 @@
+[![CI](https://github.com/djanloo/quilt/actions/workflows/ci.yml/badge.svg)](https://github.com/djanloo/quilt/actions/workflows/ci.yml)
+
 # quilt
 
 A multiscale neural simulator.
