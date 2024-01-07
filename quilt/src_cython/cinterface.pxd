@@ -58,4 +58,4 @@ cdef extern from "../src_cpp/include/network.hpp":
         PopulationSpikeMonitor * add_spike_monitor(Population * population)
         PopulationStateMonitor * add_state_monitor(Population * population)
 
-        void run(EvolutionContext * evo, double time)
+        void run(EvolutionContext * evo, double time) except +

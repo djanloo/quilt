@@ -13,6 +13,7 @@ projections:
     features:
       exc_fraction: 0.1
       max_exc: 0.5
+      min_delay: 0.1
   - name: MtoA
     efferent: MonaLisa
     afferent: Albert

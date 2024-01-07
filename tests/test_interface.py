@@ -10,9 +10,19 @@ def test_run():
     spikenet = SpikingNetwork.from_yaml(TEST_NET)
     spikenet.interface.run(dt=0.1, time=10)
 
-def test_neuorons():
+def test_neurons():
     spikenet = SpikingNetwork.from_yaml(TEST_NEURONS)
     spikenet.interface.run(dt=0.1, time=10)
+
+def test_delay_control():
+    spikenet = SpikingNetwork.from_yaml(TEST_NET)
+    try:
+        spikenet.interface.run(dt=2.0, time=10)
+    except RuntimeError:
+        print("This thest successfully failed.")
+    else:
+        raise RuntimeError("Synaptic delay test check did not fail, but it was supposed to")
+
 
 """
 Input/Output devices
@@ -41,7 +51,7 @@ if __name__=="__main__":
     spikenet.populations["MonaLisa"].monitorize_spikes()
     spikenet.populations["MonaLisa"].monitorize_states()
 
-    spikenet.interface.run(dt=0.1, time=300)
+    spikenet.interface.run(dt=0.1, time=200)
 
     albert_spikes = spikenet.populations['Albert'].get_data()["spikes"]
     monalisa_spikes = spikenet.populations['MonaLisa'].get_data()["spikes"]
@@ -51,12 +61,12 @@ if __name__=="__main__":
     plt.plot(np.convolve(albert_spikes, np.ones(N)/N))
 
     states = np.array(spikenet.populations['Albert'].get_data()['states'])
-    # print(states.shape)
+
     plt.figure(2)
     for i in range(1):
         plt.plot(states[:, i, 0],marker=".")
-        # print(states[:, i, 0])
         plt.title("V")
+
     plt.figure(3)
     for i in range(5):
         plt.plot(states[:, i, 1],marker=".")

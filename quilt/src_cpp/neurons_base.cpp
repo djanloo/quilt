@@ -38,9 +38,11 @@ namespace utilities{
         }
     }
 }
+double Synapse::min_delay = std::numeric_limits<double>::infinity();
 
 void Synapse::fire(EvolutionContext * evo){
     // Adds a (weight, delay) spike in the spike queue of the postsynaptic neuron
+    if (this->delay < evo->dt){throw std::runtime_error("Synapse has delay less than timestep");}
     this->postsynaptic->incoming_spikes.emplace(this->weight, evo->now + this->delay);
 }
 
@@ -64,12 +66,7 @@ Neuron::Neuron(Population * population){
     I_osc = 0.0;
     omega_I = 0.0;
 
-    this -> state = neuron_state { 
-                                    this -> E_rest + ((double)rand())/RAND_MAX, 
-                                    0.0, 
-                                    0.0
-                                    };
-
+    this -> state = neuron_state { E_rest + ((double)rand())/RAND_MAX, 0.0, 0.0};
 
     this -> id = new HierarchicalID( population -> id);
     this -> population = population;
@@ -90,14 +87,21 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
  * 
 */
 void Neuron::handle_incoming_spikes(EvolutionContext * evo){
-
+    // if (incoming_spikes.empty()) {
+    //     std::cout << population->id->get_id() << " - " << id->get_id() << ") -- " ;
+    //     std::cout << "\tnow: "<<evo->now<<std::endl;
+    // }
     while (!(incoming_spikes.empty())){
 
         auto spike = incoming_spikes.top();
 
+        // Check for missed spikes
         if ((spike.arrival_time < evo->now)&(!spike.processed)){
-            throw std::runtime_error("Spike missed.\
-                                     Please reduce the timestep or increase the delays.");
+            std::string message = "Spike Missed\n";
+            message += "Spike arrival time: " + std::to_string(spike.arrival_time) + "\n";
+            message += "t: " + std::to_string(evo->now) + "\n";
+            message += "Please reduce the timestep or increase the delays.\n";
+            throw std::runtime_error(message);
         } 
 
         if (!(spike.processed)){
@@ -116,9 +120,15 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
                 }
                 spike.processed = true;
 
+                // std::cout << population->id->get_id() << " - " << id->get_id() << ") processed spike with t = " << spike.arrival_time;
+                // std::cout << "\tnow: "<<evo->now<<std::endl;
+
                 // Removes the spike from the incoming spikes
                 incoming_spikes.pop();
             } else {
+                // std::cout << population->id->get_id() << " - " << id->get_id()  << ") stopped at spike with t = " << spike.arrival_time;
+                // std::cout << "\tnow: "<<evo->now<<std::endl;
+
                 // If a spike is not to process, neither the rest will be
                 break;
             }

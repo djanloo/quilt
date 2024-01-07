@@ -141,7 +141,8 @@ class RandomProjector:
     """Not an interface nor a C++ object, but stick to the convention"""
     def __init__(self,  inh_fraction=0.0, exc_fraction=0.0, 
                         max_inh = 0.1, max_exc=0.1, 
-                        min_delay=0.1, max_delay=0.5):
+                        min_delay=0.3, max_delay=0.5):
+
         assert max_inh > 0, "AAAAA"
         self.max_inh = max_inh
         self.max_exc = max_exc
@@ -175,6 +176,7 @@ class RandomProjector:
 
         end = time()
         print(f"Generating weights and delays took {end-start:.3f} seconds")
+        print(f"Min delay {np.min(delays[delays != 0])}")
 
         self.last_weights = weights
         self.last_delays = delays
