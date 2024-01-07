@@ -91,8 +91,12 @@ class Neuron{
 
 
         // Physiological properties
+        float C_m;
         float tau_refrac, tau_e, tau_i, tau_m;
-        float E_exc, E_inh, E_rest, E_thr;
+        float E_exc, E_inh, E_rest, E_thr, E_reset;
+
+        // Adaptive variables
+        float ada_a, ada_b, ada_tau_w;
 
         // External currents
         float I, I_osc, omega_I;
@@ -135,8 +139,11 @@ class Neuron{
 */
 class aqif_neuron : public Neuron {
     public:
-        aqif_neuron(Population * population) : Neuron(population){this -> nt = neuron_type::aqif;};
+        aqif_neuron(Population * population);
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
+        void on_spike(EvolutionContext * evo) override;
+    private:
+        float k;
 };
 
 /**
@@ -164,5 +171,5 @@ class aeif_neuron : public Neuron {
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
     private:
-        float a, b,tau_w, Delta, R, E_reset, C_m, g_L, exp_threshold;
+        float  Delta, R, E_reset, C_m, g_L, exp_threshold;
 };
