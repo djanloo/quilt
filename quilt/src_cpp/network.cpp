@@ -9,6 +9,7 @@
 #include <map>
 #include <iomanip>
 #include <chrono>
+#include <string>
 #include <boost/timer/progress_display.hpp>
 
 Population::Population(int n_neurons, neuron_type neur_type, SpikingNetwork * spiking_network){
@@ -106,7 +107,17 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
 
     int n_neurons_total = 0;
     for (auto pop : populations){n_neurons_total += pop->n_neurons;}
-    std::cout << "Running network consisting of " << n_neurons_total << " neurons for " << n_steps_total <<" timesteps";
+        
+    std::cout << "Minimum synaptic delay is " << Synapse::min_delay << std::endl;
+
+    // A check on minimum delays
+    if (Synapse::min_delay < evo->dt){
+        std::string message = "Globally minimum synaptic delay is " + std::to_string(Synapse::min_delay);
+        message += " while dt is " + std::to_string(evo->dt);
+        throw std::runtime_error(message);
+    }
+
+    std::cout << "Running network consisting of " << n_neurons_total << " neurons for " << n_steps_total <<" timesteps"<<std::endl;
 
     // Evolve
     boost::timer::progress_display progress(n_steps_total);

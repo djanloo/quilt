@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <queue>
+#include <limits>
 
 #define MAX_GSYN_EXC 15.0
 #define MAX_GSYN_INH 15.0
@@ -52,13 +53,20 @@ class Synapse{
     public:
         Synapse(Neuron * presynaptic, Neuron * postsynaptic, double weight, double delay):
             presynaptic(presynaptic),postsynaptic(postsynaptic),
-            weight(weight), delay(delay){}
+            weight(weight), delay(delay){
+                if (this->delay < min_delay){
+                    min_delay = this->delay;
+                }
+            }
             
         void fire(EvolutionContext * evo);
+        static double min_delay;
+    
     private:
         Neuron * presynaptic;
         Neuron * postsynaptic;
         double weight, delay;
+
 };
 
 /**
