@@ -70,8 +70,9 @@ cdef extern from "../src_cpp/include/oscillators.hpp":
 
     cdef cppclass OscillatorNetwork:
         vector[Oscillator] oscillators
-
+        OscillatorNetwork()
         void add_oscillator(Oscillator * oscillator)
+        void run(EvolutionContext * evo, double t)
 
     cdef cppclass dummy_osc:
         vector[double] state

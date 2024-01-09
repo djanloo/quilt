@@ -13,6 +13,7 @@
 #include "include/network.hpp"
 #include "include/oscillators.hpp"
 
+using namespace std;
 // ulimit -c unlimited
 // sudo sysctl -w kernel.core_pattern=/tmp/core-%e.%p.%h.%t
 
@@ -96,29 +97,51 @@ int main(){
     // for (auto val : sn.population_spike_monitors[0]->get_history()){
     //     std::cout << val << " "; 
     // }
+    int N = 4;
+    double ** weights, **delays;
+
+    weights = get_rand_proj_mat(N, N, 0.01, 0.05);
+    delays = get_rand_proj_mat(N, N, 10.0, 20.0);
+    Projection proj = Projection(weights, delays, N, N);
+
+    cout << "Preparing params" << endl;
+    std::vector<ParaMap*> params(4);
+
+    params[0] = new ParaMap();
+    params[0]->add("x0", 0.0);
+    params[0]->add("v0", 1.0);
+    params[0]->add("k", 1.0);
+
+    params[1] = new ParaMap();
+    params[1]->add("x0", 0.0);
+    params[1]->add("v0", 0.0);
+    params[1]->add("k", 5.0);
+
+    params[2] = new ParaMap();
+    params[2]->add("x0", 0.0);
+    params[2]->add("v0", 0.0);
+    params[2]->add("k", 2.0);
+
+    params[3] = new ParaMap();
+    params[3]->add("x0", 0.0);
+    params[3]->add("v0", 0.0);
+    params[3]->add("k", 2.5);
+    
+    cout << "params done "<< endl;
+    OscillatorNetwork osc_net = OscillatorNetwork(oscillator_type::harmonic, params, proj);    
 
     EvolutionContext evo = EvolutionContext(0.1);
-    dummy_osc a = dummy_osc(1.0, 0.0, 0.0);
-    dummy_osc b = dummy_osc(1.5, 0.0, 0.5);
 
-    b.connect(&a, 0.1, 10.51);
-    a.connect(&b, 0.1, 11.24);
+    std::ofstream file("output.txt");
+    osc_net.run(&evo, 900.0);
 
-    std::ofstream outputFile("output.txt");
-    
-    for (int i = 0; i < 3000; i++){
-        std::cout <<"----- Time: "<< evo.now << std::endl;
-        a.evolve(&evo);
-        b.evolve(&evo);
-        evo.do_step();
-        for (auto val : a.state){
-            outputFile << val << " ";
+    for (int i=0; i < osc_net.oscillators[0]->history.size(); i++){
+        for (auto osc : osc_net.oscillators){
+            for (auto val : osc->history[i]){
+                file << val << " ";
+            }
         }
-        for (auto val : b.state){
-            outputFile << val << " ";
-        }
-        outputFile << std::endl;
+        file << endl;
     }
-
 }
 
