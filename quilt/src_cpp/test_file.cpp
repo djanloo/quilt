@@ -98,15 +98,15 @@ int main(){
     // }
 
     EvolutionContext evo = EvolutionContext(0.1);
-    dummy_osc a = dummy_osc(1.0, 0.5, 0.0);
-    dummy_osc b = dummy_osc(1.5, 0.0, 0.0);
+    dummy_osc a = dummy_osc(1.0, 0.0, 0.0);
+    dummy_osc b = dummy_osc(1.5, 0.0, 0.5);
 
-    b.connect(&a, 0.01, 6.51);
-    a.connect(&b, 0.1, 3.24);
+    b.connect(&a, 0.1, 10.51);
+    a.connect(&b, 0.1, 11.24);
 
     std::ofstream outputFile("output.txt");
     
-    for (int i = 0; i < 1000; i++){
+    for (int i = 0; i < 3000; i++){
         std::cout <<"----- Time: "<< evo.now << std::endl;
         a.evolve(&evo);
         b.evolve(&evo);

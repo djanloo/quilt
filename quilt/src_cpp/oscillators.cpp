@@ -14,12 +14,12 @@ osc_state Link<Oscillator,Oscillator>::get(double now){
     int n = static_cast<int>((now-delay)/timestep);
     float delta = ((now - delay)/timestep) - static_cast<float>(n);
 
-    cout <<"Getting from link"<<endl;
-    cout << "\tdt = " << Link::timestep<<endl;
-    cout <<"\tdelay = " << delay << " (" << static_cast<int>(delay/timestep) << " steps)"<<endl;
-    cout <<"\thistory size = " << source->history.size() << endl;
-    cout <<"\trequested = " << n << endl;
-    cout << "\tdelta = "<<delta<<endl;
+    // cout <<"Getting from link"<<endl;
+    // cout << "\tdt = " << Link::timestep<<endl;
+    // cout <<"\tdelay = " << delay << " (" << static_cast<int>(delay/timestep) << " steps)"<<endl;
+    // cout <<"\thistory size = " << source->history.size() << endl;
+    // cout <<"\trequested = " << n << endl;
+    // cout << "\tdelta = "<<delta<<endl;
 
     if ( n < 0 ){
         cout << "\tPast does not exist ( n = " << n <<" ) passing the none state" << endl;
@@ -44,18 +44,17 @@ osc_state Link<Oscillator,Oscillator>::get(double now){
         past_state_weighted[i] *= weight;
     }
 
-    cout << "Returning from link: ";
-    for (auto val : past_state_weighted){
-        cout << val << " "; 
-    }
-    cout << endl;
+    // cout << "Returning from link: ";
+    // for (auto val : past_state_weighted){
+    //     cout << val << " "; 
+    // }
+    // cout << endl;
 
     return past_state_weighted ;
 }
 
 template <class SOURCE, class DESTINATION>
 float Link<SOURCE, DESTINATION>::timestep = 0.0;
-
 
 void Oscillator::connect(Oscillator * osc, float weight, float delay){
     osc->incoming_osc.push_back(Link<Oscillator, Oscillator>(this, osc, weight, delay));
@@ -73,6 +72,19 @@ void Oscillator::evolve(EvolutionContext * evo){
 
     stepper.do_step(lambda, this->state, evo->now, evo->dt);
 }
+
+
+void OscillatorNetwork::add_oscillator(Oscillator * oscillator){
+    this->oscillators.push_back(oscillator);
+}
+
+void OscillatorNetwork::run(EvolutionContext * evo, double time){
+    for (auto oscillator : oscillators){
+        oscillator->evolve(evo);
+    }
+    evo->do_step();
+}
+
 
 osc_state Oscillator::none_state = {0.0, 0.0};
 

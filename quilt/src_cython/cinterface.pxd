@@ -59,3 +59,25 @@ cdef extern from "../src_cpp/include/network.hpp":
         PopulationStateMonitor * add_state_monitor(Population * population)
 
         void run(EvolutionContext * evo, double time) except +
+
+cdef extern from "../src_cpp/include/oscillators.hpp":
+    cdef cppclass Oscillator:
+        vector[double] state
+        vector[vector[double]] history
+
+        void connect(Oscillator * osc, float weight, float delay)
+        void evolve(EvolutionContext * evo)
+
+    cdef cppclass OscillatorNetwork:
+        vector[Oscillator] oscillators
+
+        void add_oscillator(Oscillator * oscillator)
+
+    cdef cppclass dummy_osc:
+        vector[double] state
+        vector[vector[double]] history
+
+        dummy_osc(float k, double x, double v)
+        void connect(Oscillator * osc, float weight, float delay)
+        void evolve(EvolutionContext * evo)
+        
