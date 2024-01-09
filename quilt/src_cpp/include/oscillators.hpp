@@ -46,6 +46,14 @@ class Oscillator{
             };
 };
 
+class OscillatorNetwork{
+    public:
+        vector<Oscillator*> oscillators;
+        void run(EvolutionContext * evo, double time);
+        void add_oscillator(Oscillator * oscillator);
+};
+
+
 class dummy_osc : public Oscillator{
     public:
         float k;
