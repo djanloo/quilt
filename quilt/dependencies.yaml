@@ -15,3 +15,10 @@ neur:
     - src_cpp/devices.cpp
   include_dirs:
     - src_cpp/include
+  
+oscill:
+  sources:
+    - src_cython/oscill.pyx
+    - src_cpp/oscillators.cpp
+  include_dirs:
+    - src_cpp/include
