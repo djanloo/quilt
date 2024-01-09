@@ -44,7 +44,7 @@ if __name__=="__main__":
     import numpy as np
     import matplotlib.pyplot as plt 
 
-    spikenet = SpikingNetwork.from_yaml("spiking.yaml")
+    spikenet = SpikingNetwork.from_yaml("test/spiking.yaml")
     spikenet.populations["Albert"].add_injector(300, 0, 20.0)
     spikenet.populations["Albert"].monitorize_spikes()
     spikenet.populations["Albert"].monitorize_states()
