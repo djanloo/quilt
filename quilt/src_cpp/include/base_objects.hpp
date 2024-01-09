@@ -3,6 +3,7 @@
 #include <cmath>
 #include <stdexcept>
 #include <vector>
+#include <map>
 
 /**
  * @class HierarchicalID
@@ -47,4 +48,19 @@ class EvolutionContext{
         void do_step(){
             this -> now += this -> dt;
         }
+};
+
+/**
+ * 
+ * @class ParaMap
+ * @brief a dictionary class
+ * 
+ * It's just a bridge between python and C++
+ * 
+*/
+class ParaMap{
+    public:
+        std::map<std::string, float> value_map;
+        void add(const std::string& key, float value){value_map[key] = value;}
+        float get(const std::string& key) const { return value_map.at(key);}
 };
