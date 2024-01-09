@@ -73,27 +73,69 @@ void Oscillator::evolve(EvolutionContext * evo){
     stepper.do_step(lambda, this->state, evo->now, evo->dt);
 }
 
+OscillatorNetwork::OscillatorNetwork(oscillator_type osc_type, vector<ParaMap*> params, const Projection & self_projection){
+
+    if (self_projection.start_dimension != self_projection.end_dimension){
+        throw std::runtime_error("Oscillator Network: projection is not between the same objects.");
+    }
+    if (self_projection.start_dimension != params.size()){
+        throw std::runtime_error("Oscillator Network: number of ParaMaps does not match space dimension.");
+    }
+
+    int N = self_projection.start_dimension;
+
+    oscillators.reserve(self_projection.start_dimension);
+    for (int i = 0; i < self_projection.start_dimension; i++){
+        switch (osc_type)
+        {
+        case oscillator_type::harmonic:
+            oscillators.push_back(new harmonic(*(params[i])));
+            break;
+        
+        case oscillator_type::jensen_rit:
+            break;
+
+        default:
+            throw std::runtime_error("OscillatorNetwork: the given oscillator type is not acceptable");
+            break;
+        }
+    }
+    for (int i = 0; i<N; i++){
+        for (int j = 0; j<N; j++){
+            if (i !=j ){
+                if (std::abs(self_projection.weights[i][j]) > WEIGHT_EPS){
+                    std::cout << "Connected " << i << " to " << j << std::endl;
+                    oscillators[i]->connect(oscillators[j], self_projection.weights[i][j], self_projection.delays[i][j]);
+                }
+            }
+        }
+    }
+}
 
 void OscillatorNetwork::add_oscillator(Oscillator * oscillator){
     this->oscillators.push_back(oscillator);
 }
 
 void OscillatorNetwork::run(EvolutionContext * evo, double time){
-    for (auto oscillator : oscillators){
-        oscillator->evolve(evo);
+    while (evo->now < time){
+        cout << "Time: "<< evo->now <<endl;
+        for (auto oscillator : oscillators){
+            oscillator->evolve(evo);
+        }
+        evo->do_step();
     }
-    evo->do_step();
 }
-
 
 osc_state Oscillator::none_state = {0.0, 0.0};
 
-dummy_osc::dummy_osc(float k, double x, double v):k(k){
-    cout << "creating oscillator" << endl;
-    state = {x, v};
+harmonic::harmonic(const ParaMap & params){
+    cout << "creating harmonic oscillator" << endl;
+    state = {params.get("x0"), params.get("v0")};
+    k = params.get("k");
+    cout << "harmonic oscill state set" <<endl;
 }
 
-void dummy_osc::evolve_state(const osc_state & state, osc_state & dxdt, double t){
+void harmonic::evolve_state(const osc_state & state, osc_state & dxdt, double t){
     dxdt[0] =   state[1];
     dxdt[1] = - k*state[0];
 
@@ -102,4 +144,6 @@ void dummy_osc::evolve_state(const osc_state & state, osc_state & dxdt, double t
     }  
 }
 
-osc_state dummy_osc::none_state = {0.0, 0.0};
+osc_state harmonic::none_state = {0.0, 0.0};
+
+

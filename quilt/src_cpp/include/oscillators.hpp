@@ -13,6 +13,8 @@ class Population;
 
 typedef std::vector<double> osc_state;
 
+enum class oscillator_type : unsigned int {harmonic, jensen_rit, red_wong_wang};
+
 template <class SOURCE, class DESTINATION>
 class Link{
     public:
@@ -48,16 +50,19 @@ class Oscillator{
 
 class OscillatorNetwork{
     public:
-        vector<Oscillator*> oscillators;
+        OscillatorNetwork(oscillator_type osc_type, std::vector<ParaMap*> params, const Projection & self_projection);
+        
+        std::vector<Oscillator*> oscillators;
+        
         void run(EvolutionContext * evo, double time);
         void add_oscillator(Oscillator * oscillator);
 };
 
 
-class dummy_osc : public Oscillator{
+class harmonic : public Oscillator{
     public:
         float k;
         static osc_state none_state;
-        dummy_osc(float k, double x, double v);
+        harmonic(const ParaMap & params);
         void evolve_state(const osc_state & state, osc_state & dxdt, double t) override;
 };
