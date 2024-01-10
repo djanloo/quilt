@@ -7,6 +7,8 @@
 #pragma once
 #include <vector>
 #include <stdexcept>
+#include "base_objects.hpp"
+#include "network.hpp"
 
 class EvolutionContext;
 class Population;

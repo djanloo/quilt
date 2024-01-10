@@ -1,12 +1,14 @@
 #pragma once
 
+#include "base_objects.hpp"
+#include "neurons_base.hpp"
+
 // The menu:
 class EvolutionContext;
 class HierarchicalID;
 class ParaMap;
 class Spike;
 class Synapse;
-class Neuron;
 class Population;
 class Projection;
 

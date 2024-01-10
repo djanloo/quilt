@@ -3,7 +3,7 @@
 #include <variant>
 #include <vector>
 
-typedef  std::vector<double> neuron_state;
+typedef std::vector<double> neuron_state;
 class Population;
 class EvolutionContext;
 
