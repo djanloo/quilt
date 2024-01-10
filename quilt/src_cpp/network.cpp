@@ -1,6 +1,6 @@
+#include "include/network.hpp"
 #include "include/base_objects.hpp"
 #include "include/neurons_base.hpp"
-#include "include/network.hpp"
 #include "include/devices.hpp"
 #include "include/neuron_models.hpp"
 

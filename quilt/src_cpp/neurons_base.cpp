@@ -1,3 +1,8 @@
+#include "include/neurons_base.hpp"
+#include "include/base_objects.hpp"
+#include "include/devices.hpp"
+#include "include/network.hpp"
+
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -6,11 +11,6 @@
 #include <cmath>
 #include <stdexcept>
 #include <string>
-
-#include "include/base_objects.hpp"
-#include "include/devices.hpp"
-#include "include/neurons_base.hpp"
-#include "include/network.hpp"
 
 #include <boost/numeric/odeint.hpp>
 
@@ -179,4 +179,9 @@ void Neuron::on_spike(EvolutionContext * /*evo*/){
     this->state[0] = this->E_rest;
 }
 
+
+NeuroParam::NeuroParam(const ParaMap & paramap){
+    C_m = paramap.get("C_m");
+    E_rest = paramap.get("E_rest");
+}
 

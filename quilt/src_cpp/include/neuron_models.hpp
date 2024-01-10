@@ -1,6 +1,9 @@
+#pragma once
+
 // The menu:
 class EvolutionContext;
 class HierarchicalID;
+class ParaMap;
 class Spike;
 class Synapse;
 class Neuron;
@@ -33,8 +36,17 @@ class aqif_neuron : public Neuron {
         aqif_neuron(Population * population);
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
-    private:
-        float k;
+};
+
+class aqif_param : public NeuroParam {
+    public:
+        float k, ada_a, ada_b, ada_tau_w;
+        aqif_param(ParaMap paramap):NeuroParam(paramap){
+            k = paramap.get("k");
+            ada_a = paramap.get("ada_a");
+            ada_b = paramap.get("ada_b");
+            ada_tau_w = paramap.get("ada_tau_w");
+        }
 };
 
 /**
@@ -46,8 +58,17 @@ class izhikevich_neuron : public Neuron {
         izhikevich_neuron(Population * population);
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
-    private:
+};
+
+class izhikevich_param : public NeuroParam {
+    public:
         float a,b,c,d;
+        izhikevich_param(const ParaMap & paramap):NeuroParam(paramap){
+            a = paramap.get("a");
+            b = paramap.get("b");
+            c = paramap.get("c");
+            d = paramap.get("d");
+        };
 };
 
 
@@ -61,6 +82,18 @@ class aeif_neuron : public Neuron {
         aeif_neuron(Population * population);
         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
-    private:
-        float  Delta, R, E_reset, C_m, g_L, exp_threshold;
+};
+
+class aeif_param : public NeuroParam{
+    public:
+        float Delta, R, g_L, exp_threshold, ada_a, ada_b, ada_tau_w;
+        aeif_param (const ParaMap & paramap) : NeuroParam(paramap){
+            Delta = paramap.get("Delta");
+            R = paramap.get("R");
+            g_L = paramap.get("g_L");
+            exp_threshold = paramap.get("exp_threshold");
+            ada_a = paramap.get("ada_a");
+            ada_b = paramap.get("ada_b");
+            ada_tau_w = paramap.get("ada_tau_w");
+        }
 };

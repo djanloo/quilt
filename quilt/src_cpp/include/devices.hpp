@@ -5,6 +5,7 @@
 
 typedef  std::vector<double> neuron_state;
 class Population;
+class EvolutionContext;
 
 class PopulationSpikeMonitor{
     public:

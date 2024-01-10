@@ -12,6 +12,8 @@ class HierarchicalID;
 class EvolutionContext;
 
 class Neuron;
+class NeuroParam;
+enum class neuron_type : unsigned int;
 
 class Projection;
 class Population;
@@ -60,7 +62,8 @@ class Population{
 
         // Biophysical attributes
         int n_spikes_last_step;
-
+        NeuroParam * neuroparam;
+        
         Population(int n_neurons, neuron_type neur_type, SpikingNetwork * spiking_network);
         void project(Projection * projection, Population * child_pop);
         void evolve(EvolutionContext * evo);
