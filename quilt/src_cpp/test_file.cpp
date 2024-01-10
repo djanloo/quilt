@@ -42,61 +42,68 @@ void free_proj_mat(double** matrix, int N) {
     delete[] matrix;
 }
 
-int main(){
-    // int Na = 2000;
-    // int Nb = 2000;
+void test_spiking()
+{
 
-    // SpikingNetwork sn = SpikingNetwork();
-    // Population a = Population(Na, neuron_type::aeif, &sn);
-    // Population b = Population(Nb, neuron_type::aeif, &sn);
+    int Na = 2000;
+    int Nb = 2000;
 
-    // std::cout << "size of neuron is " << sizeof(*(a.neurons[0])) << " bytes" << std::endl ;
-    // std::cout << "size of population is " << sizeof(a) << " bytes" << std::endl;
+    SpikingNetwork sn = SpikingNetwork();
 
-    // double ** weights, **delays;
+    Population a = Population(Na, neuron_type::aeif, &sn);
+    Population b = Population(Nb, neuron_type::aeif, &sn);
 
-    // weights = get_rand_proj_mat(Na,Nb, -0.02,0.1);
-    // delays = get_rand_proj_mat(Na,Nb, 0.5, 1.0);
+    cout << "size of neuron is " << sizeof(*(a.neurons[0])) << " bytes" << endl ;
+    cout << "size of population is " << sizeof(a) << " bytes" << endl;
 
-    // for (int i = 0; i < Na; i ++){
-    //     for (int j=0; j < Nb; j++){
-    //         if (rand_01() > 0.1){
-    //             weights[i][j] = 0.0;
-    //             delays[i][j] = 0.0;
-    //         }
-    //         if (std::abs(weights[i][j]) < WEIGHT_EPS){
-    //             weights[i][j] = 0.0;
-    //             delays[i][j] = 0.0;
-    //         }
-    //     }
-    // }
+    double ** weights, **delays;
 
-    // Projection * projection = new Projection(weights, delays, Na, Nb);
+    weights = get_rand_proj_mat(Na,Nb, -0.02,0.1);
+    delays = get_rand_proj_mat(Na,Nb, 0.5, 1.0);
 
-    // a.project(projection, &b);
-    // b.project(projection, &a);
+    for (int i = 0; i < Na; i ++){
+        for (int j=0; j < Nb; j++){
+            if (rand_01() > 0.1){
+                weights[i][j] = 0.0;
+                delays[i][j] = 0.0;
+            }
+            if (abs(weights[i][j]) < WEIGHT_EPS){
+                weights[i][j] = 0.0;
+                delays[i][j] = 0.0;
+            }
+        }
+    }
 
-    // delete projection;
-    // free_proj_mat(weights, Na);
-    // free_proj_mat(delays, Nb);
+    Projection * projection = new Projection(weights, delays, Na, Nb);
 
+    a.project(projection, &b);
+    b.project(projection, &a);
 
-    // PopCurrentInjector stimulus_a = PopCurrentInjector(&a, 500.0, 0.0, 15.0);
-    // PopCurrentInjector stimulus_b = PopCurrentInjector(&b, 500.0, 0.0, 15.0);
-
-    // sn.add_injector(&stimulus_a);
-    // sn.add_injector(&stimulus_b);
+    delete projection;
+    free_proj_mat(weights, Na);
+    free_proj_mat(delays, Nb);
 
 
-    // sn.add_spike_monitor(&a);
+    PopCurrentInjector stimulus_a = PopCurrentInjector(&a, 500.0, 0.0, 15.0);
+    PopCurrentInjector stimulus_b = PopCurrentInjector(&b, 500.0, 0.0, 15.0);
 
-    // EvolutionContext evo = EvolutionContext(0.1);
+    sn.add_injector(&stimulus_a);
+    sn.add_injector(&stimulus_b);
+
+
+    sn.add_spike_monitor(&a);
+
+    EvolutionContext evo = EvolutionContext(0.1);
     
-    // sn.run(&evo, 10);
+    sn.run(&evo, 10);
 
-    // for (auto val : sn.population_spike_monitors[0]->get_history()){
-    //     std::cout << val << " "; 
-    // }
+    for (auto val : sn.population_spike_monitors[0]->get_history()){
+        cout << val << " "; 
+    }
+}
+
+void test_oscill(){
+
     int N = 4;
     double ** weights, **delays;
 
@@ -105,7 +112,7 @@ int main(){
     Projection proj = Projection(weights, delays, N, N);
 
     cout << "Preparing params" << endl;
-    std::vector<ParaMap*> params(4);
+    vector<ParaMap*> params(4);
 
     params[0] = new ParaMap();
     params[0]->add("x0", 0.0);
@@ -132,7 +139,7 @@ int main(){
 
     EvolutionContext evo = EvolutionContext(0.1);
 
-    std::ofstream file("output.txt");
+    ofstream file("output.txt");
     osc_net.run(&evo, 900.0);
 
     for (int i=0; i < osc_net.oscillators[0]->history.size(); i++){
@@ -143,5 +150,9 @@ int main(){
         }
         file << endl;
     }
+}
+
+int main(){
+    test_spiking();
 }
 

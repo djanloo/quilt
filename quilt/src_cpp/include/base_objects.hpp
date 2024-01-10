@@ -17,13 +17,9 @@
 class HierarchicalID{
     public:
         HierarchicalID * parent;
-
         HierarchicalID():parent(NULL),local_id(-1),n_subclasses(0){}
-        HierarchicalID(HierarchicalID * parent): parent(parent),n_subclasses(0){
-            this->local_id = this->parent->n_subclasses;
-            this->parent->n_subclasses ++;
-        }
-        unsigned int get_id(){return this->local_id;}
+        HierarchicalID(HierarchicalID * parent);
+        unsigned int get_id();
     private:
         unsigned int local_id;
         unsigned int n_subclasses;
@@ -38,15 +34,10 @@ class HierarchicalID{
 */
 class EvolutionContext{
     public:
-        double now; // time in millis
-        double dt;  // timestep in millis
+        double dt, now; // time in millis
 
-        EvolutionContext(double dt):dt(dt){
-            this -> now = 0.0;
-        }
-        void do_step(){
-            this -> now += this -> dt;
-        }
+        EvolutionContext(double dt);
+        void do_step();
 };
 
 /**
@@ -62,8 +53,8 @@ class ParaMap{
         std::map<std::string, float> value_map;
 
         ParaMap(){}
-        ParaMap(const std::map<std::string, float> & value_map):value_map(value_map){}
+        ParaMap(const std::map<std::string, float> & value_map);
 
-        void add(const std::string& key, float value){value_map[key] = value;}
-        float get(const std::string& key) const { return value_map.at(key);}
+        void add(const std::string& key, float value);
+        float get(const std::string& key) const ;
 };
