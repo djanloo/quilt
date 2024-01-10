@@ -1,0 +1,1534 @@
+desc: (none)
+cmd: ./hello.exe
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=2356800514
+mem_heap_B=202844864
+mem_heap_extra_B=280192
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=2
+#-----------
+time=8555833810
+mem_heap_B=402844888
+mem_heap_extra_B=320208
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=3
+#-----------
+time=12961375976
+mem_heap_B=610633400
+mem_heap_extra_B=39585384
+mem_stacks_B=0
+heap_tree=detailed
+n4: 610633400 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n2: 400000000 0x122BE1: get_rand_proj_mat(int, int, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n0: 200000000 0x122E2C: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n0: 200000000 0x122E60: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 156746720 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 156746720 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 76843648 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 51041792 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 51041792 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 51041792 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 51041792 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 51041792 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 51041792 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 51041792 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 51041792 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 25028096 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2844888 in 11 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=4
+#-----------
+time=17974524456
+mem_heap_B=214598796
+mem_heap_extra_B=40271852
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=5
+#-----------
+time=22256591013
+mem_heap_B=217906008
+mem_heap_extra_B=40312192
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=6
+#-----------
+time=25674031541
+mem_heap_B=276038776
+mem_heap_extra_B=40351784
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=7
+#-----------
+time=28011623896
+mem_heap_B=337454296
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=8
+#-----------
+time=31641968144
+mem_heap_B=337491032
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=9
+#-----------
+time=36526236840
+mem_heap_B=337552472
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=10
+#-----------
+time=41517488578
+mem_heap_B=337552472
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=11
+#-----------
+time=45006517061
+mem_heap_B=337552472
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=12
+#-----------
+time=50597890342
+mem_heap_B=337552600
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=13
+#-----------
+time=53995121000
+mem_heap_B=337921240
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=14
+#-----------
+time=57411800579
+mem_heap_B=370324568
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=15
+#-----------
+time=61081065690
+mem_heap_B=370324568
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=16
+#-----------
+time=63561962955
+mem_heap_B=370324568
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=detailed
+n4: 370324568 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 155725824 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 155725824 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 155725824 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 155725824 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 155725824 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 155725824 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 155725824 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 155725824 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 155725824 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 155725824 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 155725824 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 155725824 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765208 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=17
+#-----------
+time=67058476232
+mem_heap_B=370324568
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=detailed
+n4: 370324568 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 155725824 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 155725824 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 155725824 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 155725824 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 155725824 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 155725824 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 155725824 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 155725824 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 155725824 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 155725824 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 155725824 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 155725824 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765208 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=18
+#-----------
+time=70554879965
+mem_heap_B=370324696
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 370324696 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 155725824 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 155725824 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 155725824 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 155725824 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 155725824 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 155725824 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 155725824 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 155725824 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 155725824 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 155725824 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 155725824 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 155725824 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765336 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=19
+#-----------
+time=74053980527
+mem_heap_B=370324696
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 370324696 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 155725824 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 155725824 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 155725824 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 155725824 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 155725824 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 155725824 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 155725824 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 155725824 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 155725824 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 155725824 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 155725824 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 155725824 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765336 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=20
+#-----------
+time=77553854600
+mem_heap_B=374379736
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 374379736 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159780864 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 159780864 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 159780864 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 159780864 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 159780864 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 159780864 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 159780864 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 159780864 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 159780864 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 159780864 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 159780864 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 159780864 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765336 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=21
+#-----------
+time=81042768161
+mem_heap_B=380068952
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=detailed
+n4: 380068952 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 165470208 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 165470208 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 165470208 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 165470208 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 165470208 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 165470208 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 165470208 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 165470208 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 165470208 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 165470208 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 165470208 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 165470208 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765208 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=22
+#-----------
+time=84536190750
+mem_heap_B=380093784
+mem_heap_extra_B=40351792
+mem_stacks_B=0
+heap_tree=detailed
+n4: 380093784 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 165494784 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 165494784 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 165494784 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 165494784 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 165494784 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 165494784 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 165494784 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 165494784 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 165494784 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 165494784 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 165494784 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 165494784 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765464 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=23
+#-----------
+time=88170279297
+mem_heap_B=412484952
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=24
+#-----------
+time=91940191399
+mem_heap_B=422733272
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=25
+#-----------
+time=97595161265
+mem_heap_B=460248536
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=26
+#-----------
+time=102307233661
+mem_heap_B=460334424
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=27
+#-----------
+time=106076853209
+mem_heap_B=460334552
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=28
+#-----------
+time=109846777852
+mem_heap_B=460334424
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=29
+#-----------
+time=115502055267
+mem_heap_B=460359000
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=30
+#-----------
+time=119272060959
+mem_heap_B=460359000
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=31
+#-----------
+time=123984847424
+mem_heap_B=460359000
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=detailed
+n4: 460359000 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 245760000 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 245760000 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 245760000 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 245760000 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 245760000 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 245760000 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 245760000 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 245760000 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 245760000 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 245760000 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 245760000 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 245760000 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765464 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=32
+#-----------
+time=128697486515
+mem_heap_B=460359000
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=33
+#-----------
+time=133410660448
+mem_heap_B=460359128
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=detailed
+n4: 460359128 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 245760000 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 245760000 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 245760000 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 245760000 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 245760000 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 245760000 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 245760000 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 245760000 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 245760000 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 245760000 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 245760000 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 245760000 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765592 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=34
+#-----------
+time=137458426024
+mem_heap_B=460383576
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=35
+#-----------
+time=140156917158
+mem_heap_B=460383576
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=36
+#-----------
+time=144204827271
+mem_heap_B=460383576
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=37
+#-----------
+time=146903597634
+mem_heap_B=460383576
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=detailed
+n4: 460383576 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 245784576 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 245784576 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 245784576 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 245784576 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 245784576 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 245784576 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 245784576 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 245784576 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 245784576 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 245784576 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 245784576 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 245784576 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765464 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=38
+#-----------
+time=152300781226
+mem_heap_B=460506456
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=39
+#-----------
+time=157697592420
+mem_heap_B=471074136
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=40
+#-----------
+time=163095069449
+mem_heap_B=471074136
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=41
+#-----------
+time=168491872508
+mem_heap_B=471074136
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=42
+#-----------
+time=171190585522
+mem_heap_B=471074264
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=43
+#-----------
+time=176587361624
+mem_heap_B=495797592
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=44
+#-----------
+time=180635931248
+mem_heap_B=550847832
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=45
+#-----------
+time=183334876103
+mem_heap_B=551019864
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=46
+#-----------
+time=188731881999
+mem_heap_B=551216600
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=47
+#-----------
+time=191430687714
+mem_heap_B=551216472
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=48
+#-----------
+time=195478850895
+mem_heap_B=551216600
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=49
+#-----------
+time=200876270396
+mem_heap_B=551363928
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=detailed
+n4: 551363928 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 336764928 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 336764928 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 336764928 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 336764928 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 336764928 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 336764928 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 336764928 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 336764928 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 336764928 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 336764928 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 336764928 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 336764928 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765464 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=50
+#-----------
+time=203214260768
+mem_heap_B=551364056
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=51
+#-----------
+time=205552168225
+mem_heap_B=568911320
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=52
+#-----------
+time=207890069347
+mem_heap_B=570017112
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=53
+#-----------
+time=210227738683
+mem_heap_B=570680664
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=54
+#-----------
+time=212565344516
+mem_heap_B=571368792
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=55
+#-----------
+time=214903084893
+mem_heap_B=571565400
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=56
+#-----------
+time=217241094409
+mem_heap_B=577291608
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=57
+#-----------
+time=219578812512
+mem_heap_B=584148312
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=58
+#-----------
+time=221100031332
+mem_heap_B=616392184
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 616392184 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 401793024 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 401793024 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 401793024 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 401793024 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 401793024 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 401793024 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 401793024 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 401793024 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 401793024 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 401793024 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 401793024 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 401793024 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=59
+#-----------
+time=221253882412
+mem_heap_B=622978552
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 622978552 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 408379392 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 408379392 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 408379392 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 408379392 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 408379392 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 408379392 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 408379392 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 408379392 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 408379392 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 408379392 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 408379392 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 408379392 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=60
+#-----------
+time=221414326334
+mem_heap_B=629614072
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 629614072 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 415014912 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 415014912 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 415014912 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 415014912 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 415014912 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 415014912 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 415014912 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 415014912 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 415014912 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 415014912 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 415014912 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 415014912 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=61
+#-----------
+time=221557844563
+mem_heap_B=636323320
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 636323320 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 421724160 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 421724160 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 421724160 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 421724160 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 421724160 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 421724160 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 421724160 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 421724160 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 421724160 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 421724160 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 421724160 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 421724160 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=62
+#-----------
+time=223895459480
+mem_heap_B=637601112
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=63
+#-----------
+time=226233340438
+mem_heap_B=638535000
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=64
+#-----------
+time=226960541841
+mem_heap_B=643106296
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 643106296 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 428507136 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 428507136 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 428507136 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 428507136 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 428507136 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 428507136 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 428507136 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 428507136 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 428507136 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 428507136 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 428507136 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 428507136 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=65
+#-----------
+time=227202231301
+mem_heap_B=649963000
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 649963000 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 435363840 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 435363840 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 435363840 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 435363840 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 435363840 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 435363840 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 435363840 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 435363840 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 435363840 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 435363840 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 435363840 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 435363840 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=66
+#-----------
+time=227407083555
+mem_heap_B=656868856
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 656868856 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 442269696 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 442269696 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 442269696 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 442269696 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 442269696 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 442269696 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 442269696 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 442269696 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 442269696 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 442269696 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 442269696 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 442269696 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=67
+#-----------
+time=227588851511
+mem_heap_B=663848440
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 663848440 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 449249280 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 449249280 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 449249280 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 449249280 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 449249280 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 449249280 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 449249280 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 449249280 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 449249280 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 449249280 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 449249280 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 449249280 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=68
+#-----------
+time=227781197393
+mem_heap_B=670901752
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 670901752 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 456302592 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 456302592 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 456302592 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 456302592 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 456302592 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 456302592 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 456302592 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 456302592 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 456302592 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 456302592 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 456302592 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 456302592 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=69
+#-----------
+time=227981187100
+mem_heap_B=678028792
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 678028792 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 463429632 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 463429632 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 463429632 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 463429632 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 463429632 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 463429632 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 463429632 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 463429632 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 463429632 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 463429632 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 463429632 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 463429632 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=70
+#-----------
+time=228215982980
+mem_heap_B=685229560
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 685229560 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 470630400 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 470630400 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 470630400 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 470630400 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 470630400 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 470630400 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 470630400 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 470630400 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 470630400 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 470630400 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 470630400 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 470630400 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=71
+#-----------
+time=230554033246
+mem_heap_B=686802264
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=72
+#-----------
+time=232891942633
+mem_heap_B=686802392
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=73
+#-----------
+time=235229958581
+mem_heap_B=687514968
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=74
+#-----------
+time=237568053321
+mem_heap_B=687514968
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=75
+#-----------
+time=239905851735
+mem_heap_B=687539544
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=76
+#-----------
+time=241786694781
+mem_heap_B=692504056
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=detailed
+n4: 692504056 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 477904896 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 477904896 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 477904896 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 477904896 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 477904896 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 477904896 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 477904896 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 477904896 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 477904896 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 477904896 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 477904896 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 477904896 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=77
+#-----------
+time=242293468201
+mem_heap_B=699852280
+mem_heap_extra_B=40351824
+mem_stacks_B=0
+heap_tree=peak
+n4: 699852280 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 485253120 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 485253120 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 485253120 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 485253120 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 485253120 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 485253120 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 485253120 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 485253120 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 485253120 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 485253120 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 485253120 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 485253120 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765624 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=78
+#-----------
+time=244631099635
+mem_heap_B=703513944
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=79
+#-----------
+time=246968797603
+mem_heap_B=703513944
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=80
+#-----------
+time=249306668238
+mem_heap_B=705455448
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=81
+#-----------
+time=251644298285
+mem_heap_B=705873240
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=82
+#-----------
+time=253981890665
+mem_heap_B=705873420
+mem_heap_extra_B=40351836
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=83
+#-----------
+time=256319731436
+mem_heap_B=705873368
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=84
+#-----------
+time=258657458708
+mem_heap_B=705897816
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=85
+#-----------
+time=260995051245
+mem_heap_B=705897816
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=86
+#-----------
+time=263332948159
+mem_heap_B=705897816
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=87
+#-----------
+time=265671075874
+mem_heap_B=705971544
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=detailed
+n4: 705971544 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 491372544 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 491372544 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 491372544 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 491372544 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 491372544 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 491372544 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 491372544 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 491372544 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 491372544 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 491372544 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 491372544 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 491372544 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765464 in 18 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=88
+#-----------
+time=268008811263
+mem_heap_B=705996248
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=89
+#-----------
+time=270346922581
+mem_heap_B=705996120
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=90
+#-----------
+time=272684864036
+mem_heap_B=705996120
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=91
+#-----------
+time=275022681967
+mem_heap_B=706020696
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=92
+#-----------
+time=277360543765
+mem_heap_B=706020696
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=93
+#-----------
+time=279698664013
+mem_heap_B=706020696
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=94
+#-----------
+time=282036515775
+mem_heap_B=706020696
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=95
+#-----------
+time=284374758276
+mem_heap_B=706020696
+mem_heap_extra_B=40351776
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=96
+#-----------
+time=286712453586
+mem_heap_B=706020824
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=97
+#-----------
+time=289050287994
+mem_heap_B=706020824
+mem_heap_extra_B=40351808
+mem_stacks_B=0
+heap_tree=detailed
+n4: 706020824 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 491421696 0x11F0CC: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 491421696 0x11E507: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 491421696 0x11D0E5: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 491421696 0x11BAD6: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<double&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 491421696 0x11ACFB: Spike& std::vector<Spike, std::allocator<Spike> >::emplace_back<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 491421696 0x11A39B: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<double&, double>(double&, double&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 491421696 0x117EA2: Synapse::fire(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n1: 491421696 0x118C34: Neuron::emit_spike(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n1: 491421696 0x118997: Neuron::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+          n1: 491421696 0x10F9C9: Population::evolve(EvolutionContext*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+           n1: 491421696 0x110353: SpikingNetwork::run(EvolutionContext*, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+            n0: 491421696 0x123191: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 159806144 0x1181ED: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n2: 159806144 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n0: 79903072 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n1: 52027392 0x11F38B: __gnu_cxx::new_allocator<Synapse*>::allocate(unsigned long, void const*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+  n1: 52027392 0x11E698: std::allocator_traits<std::allocator<Synapse*> >::allocate(std::allocator<Synapse*>&, unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+   n1: 52027392 0x11D5ED: std::_Vector_base<Synapse*, std::allocator<Synapse*> >::_M_allocate(unsigned long) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+    n1: 52027392 0x11C2FC: void std::vector<Synapse*, std::allocator<Synapse*> >::_M_realloc_insert<Synapse*>(__gnu_cxx::__normal_iterator<Synapse**, std::vector<Synapse*, std::allocator<Synapse*> > >, Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+     n1: 52027392 0x11B075: Synapse*& std::vector<Synapse*, std::allocator<Synapse*> >::emplace_back<Synapse*>(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+      n1: 52027392 0x11A505: std::vector<Synapse*, std::allocator<Synapse*> >::push_back(Synapse*&&) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+       n1: 52027392 0x118228: Neuron::connect(Neuron*, double, double) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+        n2: 52027392 0x10F7D7: Population::project(Projection*, Population*) (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12304D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+         n0: 26013696 0x12306D: main (in /home/dianloo/Desktop/tesi/quilt/hello.exe)
+ n0: 2765592 in 18 places, all below massif's threshold (1.00%)
