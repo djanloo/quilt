@@ -16,6 +16,7 @@ typedef std::vector<double> neuron_state;
 // The menu:
 class EvolutionContext;
 class HierarchicalID;
+class ParaMap;
 class Spike;
 class Synapse;
 class Neuron;
@@ -129,3 +130,16 @@ class Neuron{
         virtual void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){std::cout << "WARNING: using virtual evolve_state of <Neuron>";};
 };
 
+class NeuroParam{
+
+    protected:
+        ParaMap * paramap;
+        neuron_type neur_type;
+    
+    public:
+        float E_rest, E_reset, E_thr, E_exc, E_inh;
+        float C_m, tau_m, tau_e, tau_i, tau_refrac;
+        float I_ext, I_osc, omega_I;
+
+        NeuroParam(const ParaMap & paramap);
+};

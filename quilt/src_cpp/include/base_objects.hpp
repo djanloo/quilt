@@ -41,8 +41,7 @@ class EvolutionContext{
         double now; // time in millis
         double dt;  // timestep in millis
 
-        EvolutionContext(double _dt){
-            this -> dt = _dt;
+        EvolutionContext(double dt):dt(dt){
             this -> now = 0.0;
         }
         void do_step(){
@@ -61,6 +60,10 @@ class EvolutionContext{
 class ParaMap{
     public:
         std::map<std::string, float> value_map;
+
+        ParaMap(){}
+        ParaMap(const std::map<std::string, float> & value_map):value_map(value_map){}
+
         void add(const std::string& key, float value){value_map[key] = value;}
         float get(const std::string& key) const { return value_map.at(key);}
 };
