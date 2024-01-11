@@ -4,20 +4,23 @@
 
 A multiscale neural simulator.
 
-Requires boost. On linux
+Requires boost:
 ```
 sudo apt-get install libboost-all-dev
-```
-on MacOs
-```
 brew install boost
 ```
 
-Build running 
+To build just the C++ code run:
+```
+make quilt.exe
+```
+to build the Python interface too run:
 ```
 make
 ```
-in the main folder. By default the code is built inplace, so be sure to have this folder in your PYTHONPATH
+
+
+By default the code is built inplace, so be sure to have this folder in your PYTHONPATH
 ```
 export PYTHONPATH=$(pwd):$PYTHONPATH
 ```
