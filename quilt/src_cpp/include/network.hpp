@@ -4,6 +4,7 @@
 #include <map>
 #include <chrono>
 #include <variant>
+#include "base_objects.hpp"
 
 #define WEIGHT_EPS 0.00001
 
@@ -36,9 +37,9 @@ class PopCurrentInjector;
 class Projection{
     public:
         int start_dimension, end_dimension;
-        double ** weights, **delays;
+        float ** weights, **delays;
 
-        Projection(double ** weights, double ** delays, int start_dimension, int end_dimension);
+        Projection(float ** weights, float ** delays, int start_dimension, int end_dimension);
 };
 
 
@@ -58,13 +59,13 @@ class Population{
     public:
         int n_neurons;
         std::vector<Neuron*> neurons;
-        HierarchicalID * id;
+        HierarchicalID id;
 
         // Biophysical attributes
         int n_spikes_last_step;
         NeuroParam * neuroparam;
         
-        Population(int n_neurons, neuron_type neur_type, SpikingNetwork * spiking_network);
+        Population(int n_neurons, NeuroParam * neuroparam, SpikingNetwork * spiking_network);
         void project(Projection * projection, Population * child_pop);
         void evolve(EvolutionContext * evo);
 };

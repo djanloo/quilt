@@ -1,8 +1,10 @@
 #pragma once
+#include "base_objects.hpp"
 #include <iostream>
 #include <vector>
 #include <queue>
 #include <limits>
+#include<string>
 
 #define MAX_GSYN_EXC 15.0
 #define MAX_GSYN_INH 15.0
@@ -33,10 +35,10 @@ class Projection;
 */
 class Spike{
     public:
-        double weight, arrival_time;
+        float weight, arrival_time;
         bool processed;
 
-        Spike(double weight, double arrival_time):
+        Spike(float weight, double arrival_time):
         weight(weight), arrival_time(arrival_time), processed(false){}
 
         // Set the importance: the smaller the arrival time the greater the importance
@@ -52,7 +54,7 @@ class Spike{
 */
 class Synapse{
     public:
-        Synapse(Neuron * presynaptic, Neuron * postsynaptic, double weight, double delay):
+        Synapse(Neuron * presynaptic, Neuron * postsynaptic, float weight, float delay):
             presynaptic(presynaptic),postsynaptic(postsynaptic),
             weight(weight), delay(delay){
                 if (this->delay < min_delay){
@@ -61,12 +63,12 @@ class Synapse{
             }
             
         void fire(EvolutionContext * evo);
-        static double min_delay;
+        static float min_delay;
     
     private:
         Neuron * presynaptic;
         Neuron * postsynaptic;
-        double weight, delay;
+        float weight, delay;
 
 };
 
@@ -97,25 +99,12 @@ class Neuron{
     public:
         // Base properties
         neuron_type nt = neuron_type::dummy;
-        HierarchicalID * id;
+        HierarchicalID id;
         Population * population;
         neuron_state get_state(){return state;}
 
-
-        // Physiological properties
-        float C_m;
-        float tau_refrac, tau_e, tau_i, tau_m;
-        float E_exc, E_inh, E_rest, E_thr, E_reset;
-
-        // Adaptive variables
-        float ada_a, ada_b, ada_tau_w;
-
-        // External currents
-        float I_ext, I_osc, omega_I;
-
-
         // Spike stuff
-        std::vector<Synapse*> efferent_synapses;
+        std::vector<Synapse> efferent_synapses;
         std::priority_queue<Spike> incoming_spikes;
         double last_spike_time;
 
@@ -130,16 +119,19 @@ class Neuron{
         virtual void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){std::cout << "WARNING: using virtual evolve_state of <Neuron>";};
 };
 
-class NeuroParam{
+class NeuroParam{ 
 
     protected:
-        ParaMap * paramap;
         neuron_type neur_type;
-    
+
     public:
+        ParaMap paramap;
         float E_rest, E_reset, E_thr, E_exc, E_inh;
         float C_m, tau_m, tau_e, tau_i, tau_refrac;
         float I_ext, I_osc, omega_I;
+        NeuroParam(neuron_type neur_type);
+        NeuroParam(const ParaMap & paramap, neuron_type neur_type);
 
-        NeuroParam(const ParaMap & paramap);
+        neuron_type get_neuron_type(){return neur_type;}
+        void add(const std::string & key, float value);
 };

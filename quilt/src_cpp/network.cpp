@@ -12,13 +12,13 @@
 #include <string>
 #include <boost/timer/progress_display.hpp>
 
-Population::Population(int n_neurons, neuron_type neur_type, SpikingNetwork * spiking_network){
-    this -> n_neurons = n_neurons;
-    this -> n_spikes_last_step = 0;
-    this -> id = new HierarchicalID(spiking_network->id);
-    
-    auto start = std::chrono::high_resolution_clock::now();
+Population::Population( int n_neurons, NeuroParam * neuroparam, SpikingNetwork * spiking_network):
+    n_neurons(n_neurons),n_spikes_last_step(0), neuroparam(neuroparam){
 
+    id = HierarchicalID(spiking_network->id);
+
+    auto start = std::chrono::high_resolution_clock::now();
+    neuron_type neur_type = neuroparam->get_neuron_type();
     for ( int i = 0; i < n_neurons; i++){
         // This can be avoided, probably using <variant>
         switch(neur_type){
@@ -30,28 +30,25 @@ Population::Population(int n_neurons, neuron_type neur_type, SpikingNetwork * sp
     }
 
     auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "Building population "<< this->id->get_id() << " took " << (std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count() << " ms    (";
+    std::cout << "Building population "<< this->id.get_id() << " took " << (std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count() << " ms    (";
     std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start)).count())/n_neurons << " us/neur)" << std::endl;
     
     // Adds itself to the spiking network populations
     (spiking_network->populations).push_back(this);
     }
 
-Projection::Projection(double ** _weights, double ** _delays, int _start_dimension, int _end_dimension){
-    this -> weights = _weights;
-    this -> delays = _delays;
-    this -> start_dimension = _start_dimension;
-    this -> end_dimension = _end_dimension;
+Projection::Projection(float ** weights, float ** delays, int start_dimension, int end_dimension):
+    weights(weights), delays(delays), start_dimension(start_dimension), end_dimension(end_dimension){
 
     int n_links = 0;
-    for (int i = 0; i < _start_dimension; i++){
-        for (int j =0 ; j< _end_dimension; j++){
+    for (int i = 0; i < start_dimension; i++){
+        for (int j =0 ; j< end_dimension; j++){
             if (weights[i][j] != 0.0){ //Mhh, dangerous
                 n_links ++;
             }
         }
     }
-    std::cout << "Projection has density " << ((float)n_links)/_start_dimension/_end_dimension * 100 << "%" << std::endl;
+    std::cout << "Projection has density " << ((float)n_links)/start_dimension/end_dimension * 100 << "%" << std::endl;
 }
 
 void Population::project(Projection * projection, Population * efferent_population){
