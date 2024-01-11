@@ -14,16 +14,17 @@ cleanall:
 	@echo "Cleaned."
 
 CXX := g++
-CXXFLAGS := -std=c++11 -Wall -Wextra
+PYTHON := python3
+CXXFLAGS := -std=c++11 -Wall -Wextra -g
 SOURCES :=  quilt/src_cpp/test_file.cpp quilt/src_cpp/oscillators.cpp quilt/src_cpp/network.cpp quilt/src_cpp/neuron_models.cpp quilt/src_cpp/neurons_base.cpp quilt/src_cpp/devices.cpp quilt/src_cpp/base_objects.cpp
 
 OBJECTS := $(SOURCES:.cpp=.o)
-EXECUTABLE := hello.exe
+EXECUTABLE := quilt.exe
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-%.o: %.cpp
+%.o: %.cpp %.hpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 clean:

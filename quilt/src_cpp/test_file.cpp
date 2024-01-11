@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 #include "include/base_objects.hpp"
 #include "include/devices.hpp"
@@ -17,14 +18,14 @@ using namespace std;
 // ulimit -c unlimited
 // sudo sysctl -w kernel.core_pattern=/tmp/core-%e.%p.%h.%t
 
-double rand_01(){
-    return ((double)rand())/RAND_MAX;
+float rand_01(){
+    return ((float)rand())/RAND_MAX;
 }
 
-double ** get_rand_proj_mat(int N, int M, double min, double max){
-    double** matrix = new double*[N];
+float ** get_rand_proj_mat(int N, int M, double min, double max){
+    float** matrix = new float*[N];
     for (int i = 0; i < N; ++i) {
-        matrix[i] = new double[M];
+        matrix[i] = new float[M];
     }
 
     for (int i=0;i<N;i++){
@@ -35,7 +36,7 @@ double ** get_rand_proj_mat(int N, int M, double min, double max){
     return matrix;
 }
 
-void free_proj_mat(double** matrix, int N) {
+void free_proj_mat(float** matrix, int N) {
     for (int i = 0; i < N; ++i) {
         delete[] matrix[i];
     }
@@ -45,18 +46,40 @@ void free_proj_mat(double** matrix, int N) {
 void test_spiking()
 {
 
-    int Na = 2000;
-    int Nb = 2000;
+    int Na = 1000;
+    int Nb = 1000;
 
     SpikingNetwork sn = SpikingNetwork();
 
-    Population a = Population(Na, neuron_type::aeif, &sn);
-    Population b = Population(Nb, neuron_type::aeif, &sn);
+
+    map<string, float> map_of_params = {
+                                        {"C_m", 40.1},
+                                        {"tau_m",200.0},
+                                        {"E_rest", -70.0},
+                                        {"E_reset", -55.0},
+                                        {"E_thr",0.1},
+                                        {"tau_refrac",0.0},
+                                        {"Delta",1.7},
+                                        {"exp_threshold", -40.0},
+                                        {"ada_a", 0.0},
+                                        {"ada_b",5.0},
+                                        {"ada_tau_w",100.0},
+                                        {"tau_e",10.},
+                                        {"tau_i",5.5},
+                                        {"E_Exc",0.0},
+                                        {"E_inh",-65}
+                                        };
+
+    ParaMap paramap = ParaMap(map_of_params);
+    aeif_param pop_params = aeif_param(paramap);
+    
+    Population a = Population(Na, &pop_params, &sn);
+    Population b = Population(Nb, &pop_params, &sn);
 
     cout << "size of neuron is " << sizeof(*(a.neurons[0])) << " bytes" << endl ;
     cout << "size of population is " << sizeof(a) << " bytes" << endl;
 
-    double ** weights, **delays;
+    float ** weights, **delays;
 
     weights = get_rand_proj_mat(Na,Nb, -0.02,0.1);
     delays = get_rand_proj_mat(Na,Nb, 0.5, 1.0);
@@ -84,8 +107,8 @@ void test_spiking()
     free_proj_mat(delays, Nb);
 
 
-    PopCurrentInjector stimulus_a = PopCurrentInjector(&a, 500.0, 0.0, 15.0);
-    PopCurrentInjector stimulus_b = PopCurrentInjector(&b, 500.0, 0.0, 15.0);
+    PopCurrentInjector stimulus_a = PopCurrentInjector(&a, 500.0, 0.0, 10.0);
+    PopCurrentInjector stimulus_b = PopCurrentInjector(&b, 500.0, 0.0, 10.0);
 
     sn.add_injector(&stimulus_a);
     sn.add_injector(&stimulus_b);
@@ -95,7 +118,7 @@ void test_spiking()
 
     EvolutionContext evo = EvolutionContext(0.1);
     
-    sn.run(&evo, 10);
+    sn.run(&evo, 100);
 
     for (auto val : sn.population_spike_monitors[0]->get_history()){
         cout << val << " "; 
@@ -105,7 +128,7 @@ void test_spiking()
 void test_oscill(){
 
     int N = 4;
-    double ** weights, **delays;
+    float ** weights, **delays;
 
     weights = get_rand_proj_mat(N, N, 0.01, 0.05);
     delays = get_rand_proj_mat(N, N, 10.0, 20.0);
@@ -153,6 +176,7 @@ void test_oscill(){
 }
 
 int main(){
+
     test_spiking();
 }
 

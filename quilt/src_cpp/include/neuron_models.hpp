@@ -3,6 +3,8 @@
 #include "base_objects.hpp"
 #include "neurons_base.hpp"
 
+#include <stdexcept>
+
 // The menu:
 class EvolutionContext;
 class HierarchicalID;
@@ -43,7 +45,8 @@ class aqif_neuron : public Neuron {
 class aqif_param : public NeuroParam {
     public:
         float k, ada_a, ada_b, ada_tau_w;
-        aqif_param(ParaMap paramap):NeuroParam(paramap){
+        aqif_param ():NeuroParam(neuron_type::aqif){}
+        aqif_param(ParaMap paramap):NeuroParam(paramap, neuron_type::aqif){
             k = paramap.get("k");
             ada_a = paramap.get("ada_a");
             ada_b = paramap.get("ada_b");
@@ -65,7 +68,8 @@ class izhikevich_neuron : public Neuron {
 class izhikevich_param : public NeuroParam {
     public:
         float a,b,c,d;
-        izhikevich_param(const ParaMap & paramap):NeuroParam(paramap){
+        izhikevich_param ():NeuroParam(neuron_type::izhikevich){}
+        izhikevich_param(const ParaMap & paramap):NeuroParam(paramap, neuron_type::izhikevich){
             a = paramap.get("a");
             b = paramap.get("b");
             c = paramap.get("c");
@@ -88,14 +92,18 @@ class aeif_neuron : public Neuron {
 
 class aeif_param : public NeuroParam{
     public:
-        float Delta, R, g_L, exp_threshold, ada_a, ada_b, ada_tau_w;
-        aeif_param (const ParaMap & paramap) : NeuroParam(paramap){
-            Delta = paramap.get("Delta");
-            R = paramap.get("R");
-            g_L = paramap.get("g_L");
-            exp_threshold = paramap.get("exp_threshold");
-            ada_a = paramap.get("ada_a");
-            ada_b = paramap.get("ada_b");
-            ada_tau_w = paramap.get("ada_tau_w");
+        float Delta, g_L, exp_threshold, ada_a, ada_b, ada_tau_w;
+
+        aeif_param (const ParaMap & paramap) :
+        NeuroParam(paramap, neuron_type::aeif){
+            try{
+                Delta = paramap.get("Delta");
+                exp_threshold = paramap.get("exp_threshold");
+                ada_a = paramap.get("ada_a");
+                ada_b = paramap.get("ada_b");
+                ada_tau_w = paramap.get("ada_tau_w");
+            } catch (const std::out_of_range & e){
+                std::cout << "Missing parameter for aeif neuron"<< std::endl;
+            }
         }
 };

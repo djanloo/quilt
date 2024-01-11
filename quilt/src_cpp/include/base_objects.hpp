@@ -51,10 +51,10 @@ class EvolutionContext{
 class ParaMap{
     public:
         std::map<std::string, float> value_map;
-
-        ParaMap(){}
+        ParaMap();
         ParaMap(const std::map<std::string, float> & value_map);
 
-        void add(const std::string& key, float value);
-        float get(const std::string& key) const ;
+        void update(const ParaMap & new_values);
+        void add(const std::string & key, float value);
+        float get(const std::string & key) const ;
 };
