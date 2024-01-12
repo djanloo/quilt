@@ -26,6 +26,7 @@ namespace utilities{
         }
     }
 
+    // This one costs a lot of time
     void nan_check_vect(const std::vector<double>& vect, const std::string& str){
         std::vector<bool> are_nan;
         bool somebody_is_nan = false;
@@ -42,6 +43,9 @@ namespace utilities{
         }
     }
 }
+
+// Synapse::min_delay is used to check if the timestep is small enough
+// Sets the minimim delay to infinity, take smaller values when building the network
 float Synapse::min_delay = std::numeric_limits<float>::infinity();
 
 void Synapse::fire(EvolutionContext * evo){
@@ -169,10 +173,6 @@ NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
     this->neur_type = static_cast<neuron_type>(this->paramap.get("neuron_type"));
 
     std::string last = "";
-
-    // float E_rest, E_reset, E_thr, E_exc, E_inh;
-    //     float C_m, tau_m, tau_e, tau_i, tau_refrac;
-    //     float I_ext, I_osc, omega_I;
     try{
         last = "E_rest";
         this->E_rest = this->paramap.get(last);
@@ -181,19 +181,20 @@ NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
         last = "E_thr";
         this->E_thr = this->paramap.get(last);
 
-        last = "E_exc";
-        this->E_exc = this->paramap.get(last);
-        last = "E_inh";
-        this->E_inh = this->paramap.get(last);
-
         last = "C_m";
         this->C_m = this->paramap.get(last);
         last = "tau_m";
         this->tau_m = this->paramap.get(last);
+
         last = "tau_e";
         this->tau_e = this->paramap.get(last);
         last = "tau_i";
         this->tau_i = this->paramap.get(last);
+        last = "E_exc";
+        this->E_exc = this->paramap.get(last);
+        last = "E_inh";
+        this->E_inh = this->paramap.get(last);
+        
         last = "tau_refrac";
         this->tau_refrac = this->paramap.get(last);
         last = "I_ext";
@@ -205,8 +206,6 @@ NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
     } catch (const std::out_of_range & e){
         throw std::out_of_range("Missing parameter for NeuroParam: " + last);
     }
-    std::cout << "done" << std::endl;
-
 }
 
 void NeuroParam::add(const std::string & key, float value){paramap.add(key, value);}

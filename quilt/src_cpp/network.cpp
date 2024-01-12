@@ -18,9 +18,11 @@ using std::endl;
 Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network):
     n_neurons(n_neurons),n_spikes_last_step(0){
     id = HierarchicalID(spiking_network->id);
+    
+    auto start = std::chrono::high_resolution_clock::now();
 
     try{ 
-        float dummy = params->get("neuron_type");
+        params->get("neuron_type");
     }catch (const std::out_of_range & e) {
         throw( std::out_of_range("Neuron params must havce field neuron_type"));
     }
@@ -28,6 +30,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     switch(static_cast<neuron_type> (static_cast<int>(params->get("neuron_type")))){
         case neuron_type::aqif: 
             this->neuroparam = new aqif_param(*params);
+
             break;   
         case neuron_type::izhikevich:
             this->neuroparam = new izhikevich_param(*params);
@@ -40,17 +43,17 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
             break;
     };
 
-    auto start = std::chrono::high_resolution_clock::now();
     neuron_type neur_type = neuroparam->get_neuron_type();
+
     for ( int i = 0; i < n_neurons; i++){
         // This can be avoided, probably using <variant>
         switch(neur_type){
-        case neuron_type::base_neuron:  new Neuron(this); break;       // remember not to push_back here
-        case neuron_type::aqif:         new aqif_neuron(this); break;   // calling the constructor is enough
-        case neuron_type::izhikevich:   new izhikevich_neuron(this); break;
-        case neuron_type::aeif:         new aeif_neuron(this); break;
+        case neuron_type::base_neuron:  new Neuron(this);           break;        // remember not to push_back here
+        case neuron_type::aqif:         new aqif_neuron(this);      break;   // calling the constructor is enough
+        case neuron_type::izhikevich:   new izhikevich_neuron(this);break;
+        case neuron_type::aeif:         new aeif_neuron(this);      break;
         default:
-            throw std::runtime_error("Invlid neuron type");
+            throw std::runtime_error("Invalid neuron type");
         };
     }
 
@@ -63,12 +66,12 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     (spiking_network->populations).push_back(this);
     }
 
-Projection::Projection(float ** weights, float ** delays, int start_dimension, int end_dimension):
+Projection::Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension):
     weights(weights), delays(delays), start_dimension(start_dimension), end_dimension(end_dimension){
 
     int n_links = 0;
-    for (int i = 0; i < start_dimension; i++){
-        for (int j =0 ; j< end_dimension; j++){
+    for (unsigned int i = 0; i < start_dimension; i++){
+        for (unsigned int j =0 ; j< end_dimension; j++){
             if (weights[i][j] != 0.0){ //Mhh, dangerous
                 n_links ++;
             }
@@ -80,8 +83,8 @@ Projection::Projection(float ** weights, float ** delays, int start_dimension, i
 void Population::project(Projection * projection, Population * efferent_population){
     int connections = 0;
     auto start = std::chrono::high_resolution_clock::now();
-    for (int i = 0; i < projection -> start_dimension; i++){
-        for (int j = 0; j < projection -> end_dimension; j++){
+    for (unsigned int i = 0; i < projection -> start_dimension; i++){
+        for (unsigned int j = 0; j < projection -> end_dimension; j++){
             if (std::abs((projection -> weights)[i][j]) > WEIGHT_EPS){
                 connections ++;
                 (this -> neurons)[i] -> connect(efferent_population -> neurons[j], (projection -> weights)[i][j], (projection -> delays)[i][j]);

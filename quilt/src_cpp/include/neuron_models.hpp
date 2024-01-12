@@ -137,6 +137,5 @@ class aeif_param : public NeuroParam{
             } catch (const std::out_of_range & e){
                 throw std::out_of_range("Missing parameter for aeif neuron:" + last);
             }
-            std::cout << "done" << std::endl;
         }
 };

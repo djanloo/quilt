@@ -4,6 +4,7 @@ TEST_NET="tests/test_spiking.yaml"
 TEST_NEURONS = "tests/test_neurons.yaml"
 TEST_PARAMS = "tests/test_params.yaml"
 
+"""Parameters and models"""
 def test_paramaps():
     import quilt.bin.neur as neur
     paramap = neur.ParaMap(dict(neuron_type='aeif', E_rest=-70, 
