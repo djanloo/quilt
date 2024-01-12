@@ -1,21 +1,23 @@
 dummy_aqif:
   neuron_type: aqif
-  E_thr: -5
-  E_reset: -65
-  E_rest: -70
-  tau_refrac: 0
-  C_m: 15
+  C_m:                    15.2
+  k:        1.
+  E_rest:                    -80.
+  E_exc:                   0.
+  E_inh:                   -74.
+  E_reset:                  -60.
+  E_thr:                   -29.7
+  tau_refrac:         0.
+  I_e:                    0.0         # -36
+  I_osc:                0.0
+  omega_I:              0.0
+  tau_e:             12.
+  tau_i:             10.
+  ada_a:             -20
+  ada_b:             91.
+  ada_tau_w:         100.
   tau_m: 10
-
-  k: 0.2
-  ada_a: 0.0
-  ada_b: 5
-  ada_tau_w: 10
-  
-  tau_e: 10
-  tau_i: 20
-  E_exc: 0.
-  E_inh: -65.
+  # E_thr:                 40.
 
 
 dummy_aeif:
