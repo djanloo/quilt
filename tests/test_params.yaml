@@ -25,11 +25,11 @@ dummy_aeif:
 
   E_rest: -70.0
   E_reset: -55.0
-  E_thr: -5
+  E_thr: 0.0
   tau_refrac: 0.0
 
   # Exp pars
-  Delta:  1.7
+  Delta:  2
   exp_threshold: -40
 
   # Adapting pars
