@@ -97,6 +97,10 @@ class Synapse{
 class Neuron{
     protected:
         neuron_state state;
+
+        // Spike flag is introduced to record the threshold value
+        // so that on_spike() is called the timestep after the spike
+        bool spike_flag; 
     public:
         // Base properties
         neuron_type nt = neuron_type::base_neuron;

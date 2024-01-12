@@ -120,7 +120,10 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 
 
 void Neuron::evolve(EvolutionContext * evo){
-
+    if (spike_flag){
+        on_spike(evo);
+        spike_flag = false;
+    }
     // Process incoming spikes
     handle_incoming_spikes(evo);
 
@@ -136,6 +139,7 @@ void Neuron::evolve(EvolutionContext * evo){
     try{
         stepper.do_step(lambda, this->state, evo->now, evo->dt);
         utilities::nan_check_vect(this->state, "NaN in neuron state");
+
     }catch (const std::runtime_error &e){
         std::cerr << "State before step: ";
         for (auto val : before_step){ std::cerr << val << " ";}
@@ -152,8 +156,11 @@ void Neuron::emit_spike(EvolutionContext * evo){
 
     this -> last_spike_time = evo -> now;
     ((this->population)->n_spikes_last_step) ++;
+    state[0] = population->neuroparam->E_thr;
 
-    this-> on_spike(evo);
+    spike_flag = true;
+    // This is done at the beginning of the next evolution
+    // this-> on_spike(evo);
 }
 
 void Neuron::on_spike(EvolutionContext * /*evo*/){
