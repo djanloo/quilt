@@ -68,6 +68,7 @@ class Population{
         Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network);
         void project(Projection * projection, Population * child_pop);
         void evolve(EvolutionContext * evo);
+        void print_info();
 };
 
 /**

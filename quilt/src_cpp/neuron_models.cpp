@@ -55,7 +55,6 @@ izhikevich_neuron::izhikevich_neuron(Population * population): Neuron(population
                             0.0, // g_syn_inh
                             0.0 // u
                             };
-    
 }
 
 void izhikevich_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double /*t*/ ){
@@ -79,9 +78,6 @@ void izhikevich_neuron::on_spike(EvolutionContext * /*evo*/){
 }
 
 aeif_neuron::aeif_neuron(Population * population): Neuron(population){
-    // for(auto couple : population->neuroparam->paramap.value_map){
-    //     std::cout << couple.first << " "<<couple.second <<std::endl;
-    // }
     state = {population->neuroparam->E_rest + 10*(((double)rand())/RAND_MAX - 0.5 ), 0.0, 0.0, 0.0};
 }
 

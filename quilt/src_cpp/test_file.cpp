@@ -66,7 +66,7 @@ void test_spiking()
                                         {"ada_tau_w",100.0},
                                         {"tau_e", 10.},
                                         {"tau_i", 5.5},
-                                        {"E_Exc", 0.0},
+                                        {"E_exc", 0.0},
                                         {"E_inh",-65}
                                         };
 

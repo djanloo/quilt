@@ -12,6 +12,9 @@
 #include <string>
 #include <boost/timer/progress_display.hpp>
 
+using std::cout;
+using std::endl;
+
 Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network):
     n_neurons(n_neurons),n_spikes_last_step(0){
     id = HierarchicalID(spiking_network->id);
@@ -54,8 +57,9 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "Building population "<< this->id.get_id() << " took " << (std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count() << " ms    (";
     std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start)).count())/n_neurons << " us/neur)" << std::endl;
-    
+
     // Adds itself to the spiking network populations
+    this->print_info();
     (spiking_network->populations).push_back(this);
     }
 
@@ -98,6 +102,15 @@ void Population::evolve(EvolutionContext * evo){
         neuron -> evolve(evo);
     }
 }
+
+void Population::print_info(){
+    cout << "Population "<< this->id.get_id() << " infos:"<< endl;
+    cout << "\tN:" << this->n_neurons << endl;
+    cout << "\tparams:" << endl;
+    for (auto couple : this->neuroparam->paramap.value_map){
+        cout << "\t\t" << couple.first << "\t" << couple.second << endl;
+    }
+ }
 
 SpikingNetwork::SpikingNetwork(){
     this->id = new HierarchicalID();

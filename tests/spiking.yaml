@@ -1,10 +1,10 @@
 populations:
   - name: Albert
     size: 1000
-    neuron_type: aeif
+    neuron_model: dummy_aeif
   - name: MonaLisa
     size: 1000
-    neuron_type: aeif
+    neuron_model: dummy_aeif
 
 projections:
   - name: AtoM 
