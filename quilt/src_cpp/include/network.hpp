@@ -65,7 +65,7 @@ class Population{
         int n_spikes_last_step;
         NeuroParam * neuroparam;
         
-        Population(int n_neurons, NeuroParam * neuroparam, SpikingNetwork * spiking_network);
+        Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network);
         void project(Projection * projection, Population * child_pop);
         void evolve(EvolutionContext * evo);
 };

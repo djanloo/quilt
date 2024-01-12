@@ -26,7 +26,6 @@ class Projection;
 aqif_neuron::aqif_neuron(Population * population): Neuron(population){
     nt = neuron_type::aqif;
     aqif_param * p = static_cast<aqif_param*>(population->neuroparam);
-
     state = neuron_state {p->E_rest ,0.,0.,0.};
 }
 
@@ -59,7 +58,7 @@ izhikevich_neuron::izhikevich_neuron(Population * population): Neuron(population
     
 }
 
-void izhikevich_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
+void izhikevich_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double /*t*/ ){
     izhikevich_param * p = static_cast<izhikevich_param*>(population->neuroparam);
 
     dxdt[0] =  0.04*x[0]*x[0] + 5*x[0] + 140 \
@@ -80,14 +79,25 @@ void izhikevich_neuron::on_spike(EvolutionContext * /*evo*/){
 }
 
 aeif_neuron::aeif_neuron(Population * population): Neuron(population){
+    // for(auto couple : population->neuroparam->paramap.value_map){
+    //     std::cout << couple.first << " "<<couple.second <<std::endl;
+    // }
     state = {population->neuroparam->E_rest + 10*(((double)rand())/RAND_MAX - 0.5 ), 0.0, 0.0, 0.0};
 }
 
 void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
+    // auto start = std::chrono::high_resolution_clock::now();
     aeif_param * p = static_cast<aeif_param*>(population->neuroparam);
-    // std::cout << p->I_ext << " " << population->neuroparam->I_ext << ";";
+    // auto end = std::chrono::high_resolution_clock::now();
+
+    // std::cout << (double) std::chrono::duration_cast<std::chrono::nanoseconds>(end-start).count() << std::endl;
+
+    if(p->Delta > 0){dxdt[0] = 0;}
+    if(p->exp_threshold > 0){dxdt[0] = 0;}
+    
     if (t > last_spike_time + p->tau_refrac){
-        dxdt[0] = 1.0/p->tau_m * ( - (x[0]-p->E_rest) + p->Delta*std::exp((x[0] - p->exp_threshold)/p->Delta)) \
+        dxdt[0] = 1.0/p->tau_m * ( - (x[0]-p->E_rest) +\
+                                     p->Delta*exp((x[0] - p->exp_threshold)/p->Delta)) \
                 + 1.0/p->C_m * ( - x[1]*(x[0]-p->E_exc) - x[2]*(x[0]-p->E_inh) - x[3])\
                 + 1.0/p->C_m * ( p->I_ext  + p->I_osc*std::sin(p->omega_I*t)); 
     }else{
@@ -108,7 +118,7 @@ void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , cons
     // utilities::nan_check_vect(dxdt, "NaN in dxdt");                                     
 }
 
-void aeif_neuron::on_spike(EvolutionContext * evo){
+void aeif_neuron::on_spike(EvolutionContext * /*evo*/){
     aeif_param * p = static_cast<aeif_param*>(population->neuroparam);
     state[0]  = p->E_reset;
     state[3] += p->ada_b;

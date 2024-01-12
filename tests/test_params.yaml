@@ -1,0 +1,48 @@
+dummy_aqif:
+  neuron_type: aqif
+  E_thr: 0.0
+  E_reset: -65
+  E_rest: -70
+  tau_refrac: 0
+  C_m: 15
+  tau_m: 10
+  tau_e: 10
+  tau_i: 20
+  k: 0.2
+  ada_a: 0.0
+  ada_b: 5
+  ada_tau_w: 10
+
+dummy_aeif:
+  neuron_type: aeif
+  E_thr: 0.0
+  E_reset: -70
+  E_rest: -70
+  tau_refrac: 0.1
+  C_m: 40
+  tau_m: 20
+  tau_e: 10
+  tau_i: 20
+  Delta: 3
+  exp_threshold: -30
+
+  ada_a: 1
+  ada_b: 10
+  ada_tau_w: 30
+
+    
+dummy_izhikevich:
+  neuron_type: izhikevich
+  E_thr: 0.0
+  E_reset: -70
+  E_rest: -70
+  tau_refrac: 0.1
+  C_m: 40
+  tau_m: 20
+  tau_e: 10
+  tau_i: 20
+
+  a: 1
+  b: 10
+  c: 3
+  d: 2
