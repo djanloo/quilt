@@ -36,10 +36,10 @@ class PopCurrentInjector;
 */
 class Projection{
     public:
-        int start_dimension, end_dimension;
         float ** weights, **delays;
+        unsigned int start_dimension, end_dimension;
 
-        Projection(float ** weights, float ** delays, int start_dimension, int end_dimension);
+        Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension);
 };
 
 
