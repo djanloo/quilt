@@ -67,9 +67,9 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
 
 void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 
-    if (incoming_spikes.size() > MAX_SPIKE_QUEUE_LENGTH){
-        throw std::runtime_error("Max number of spikes reached. Something must have gone wrong.");
-    }
+    // if (incoming_spikes.size() > MAX_SPIKE_QUEUE_LENGTH){
+    //     std::cerr << ("WARNING - spike queue: reached length of " + std::to_string(MAX_SPIKE_QUEUE_LENGTH)) << std::endl;
+    // }
     while (!(incoming_spikes.empty())){
 
         auto spike = incoming_spikes.top();
