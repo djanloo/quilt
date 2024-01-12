@@ -3,10 +3,10 @@
 populations:
   - name: izh_pop
     size: 5
-    neuron_type: izhikevich
+    neuron_model: dummy_izhikevich
   - name: aeif_pop
     size: 5
-    neuron_type: aeif
+    neuron_model: dummy_aeif
   - name: aqif_pop
     size: 5
-    neuron_type: aqif
+    neuron_model: dummy_aqif

@@ -45,12 +45,23 @@ class aqif_neuron : public Neuron {
 class aqif_param : public NeuroParam {
     public:
         float k, ada_a, ada_b, ada_tau_w;
-        aqif_param ():NeuroParam(neuron_type::aqif){}
-        aqif_param(ParaMap paramap):NeuroParam(paramap, neuron_type::aqif){
-            k = paramap.get("k");
-            ada_a = paramap.get("ada_a");
-            ada_b = paramap.get("ada_b");
-            ada_tau_w = paramap.get("ada_tau_w");
+        aqif_param(ParaMap paramap):NeuroParam(paramap){
+            if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif){
+                    throw std::runtime_error("Incompatible type of neuron in ParaMap");
+            }
+            std::string last = "";
+            try {
+                last = "k";
+                k = paramap.get(last);
+                last = "ada_a";
+                ada_a = paramap.get(last);
+                last = "ada_b";
+                ada_b = paramap.get(last);
+                last = "ada_tau_w";
+                ada_tau_w = paramap.get(last);
+            }catch(const std::out_of_range & e){
+                throw std::out_of_range("Missing parameter for aqif neuron:" + last);
+            }
         }
 };
 
@@ -68,12 +79,23 @@ class izhikevich_neuron : public Neuron {
 class izhikevich_param : public NeuroParam {
     public:
         float a,b,c,d;
-        izhikevich_param ():NeuroParam(neuron_type::izhikevich){}
-        izhikevich_param(const ParaMap & paramap):NeuroParam(paramap, neuron_type::izhikevich){
-            a = paramap.get("a");
-            b = paramap.get("b");
-            c = paramap.get("c");
-            d = paramap.get("d");
+        izhikevich_param(const ParaMap & paramap): NeuroParam(paramap){
+            if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::izhikevich){
+                    throw std::runtime_error("Incompatible type of neuron in ParaMap");
+            }
+            std::string last = "";
+            try{
+                last = "a";
+                a = paramap.get(last);
+                last = "b";
+                b = paramap.get(last);
+                last = "c";
+                c = paramap.get(last);
+                last = "d";
+                d = paramap.get(last);
+            } catch (const std::out_of_range & e){
+                throw (std::out_of_range("Missing parameter for Izhikevich neuron: "+ last));
+            }
         };
 };
 
@@ -92,18 +114,29 @@ class aeif_neuron : public Neuron {
 
 class aeif_param : public NeuroParam{
     public:
-        float Delta, g_L, exp_threshold, ada_a, ada_b, ada_tau_w;
+        float Delta, exp_threshold, ada_a, ada_b, ada_tau_w;
 
-        aeif_param (const ParaMap & paramap) :
-        NeuroParam(paramap, neuron_type::aeif){
-            try{
-                Delta = paramap.get("Delta");
-                exp_threshold = paramap.get("exp_threshold");
-                ada_a = paramap.get("ada_a");
-                ada_b = paramap.get("ada_b");
-                ada_tau_w = paramap.get("ada_tau_w");
-            } catch (const std::out_of_range & e){
-                std::cout << "Missing parameter for aeif neuron"<< std::endl;
+        aeif_param (const ParaMap & paramap):
+        NeuroParam(paramap){
+            std::cout << "Initializing an aeif_param..";
+            if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aeif){
+                    throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
+            std::string last = "";
+            try{
+                last = "Delta";
+                Delta = paramap.get(last);
+                last = "exp_threshold";
+                exp_threshold = paramap.get(last);
+                last = "ada_a";
+                ada_a = paramap.get(last);
+                last="ada_b";
+                ada_b = paramap.get(last);
+                last = "ada_tau_w";
+                ada_tau_w = paramap.get(last);
+            } catch (const std::out_of_range & e){
+                throw std::out_of_range("Missing parameter for aeif neuron:" + last);
+            }
+            std::cout << "done" << std::endl;
         }
 };

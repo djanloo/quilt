@@ -8,12 +8,16 @@ class SpikingNetwork:
     def __init__(self):
         pass
 
+    def run(self, dt=0.1, t=1):
+        self.interface.run(dt, t)
+
     @classmethod
-    def from_yaml(cls, yaml_file):
+    def from_yaml(cls, yaml_file, neuron_catalogue):
         net = cls()
         net.interface = neur.SpikingNetwork("dummy")
 
         net.yaml_file = yaml_file
+        net.catalogue = neuron_catalogue
         
         if not os.path.exists(net.yaml_file):
             raise FileNotFoundError("YAML file not found")
@@ -24,7 +28,8 @@ class SpikingNetwork:
         net.populations = dict()
         
         for pop in net.features_dict['populations']:
-            net.populations[pop['name']] = neur.Population(pop['size'], pop['neuron_type'], net.interface )
+            paramap = neuron_catalogue[pop['neuron_model']]
+            net.populations[pop['name']] = neur.Population(pop['size'], paramap, net.interface )
         
         if "projections" in net.features_dict and net.features_dict['projections'] is not None:
             for proj in net.features_dict['projections']:
@@ -34,3 +39,37 @@ class SpikingNetwork:
                 efferent.project(projector.get_projection(efferent, afferent), afferent)
             
         return net
+    
+
+class NeuronCatalogue:
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def from_yaml(cls, yaml_file):
+        catalogue = cls()
+        catalogue.yaml_file = yaml_file
+        catalogue.paramaps = dict()
+        catalogue.neuron_names = []
+        
+        if not os.path.exists(catalogue.yaml_file):
+            raise FileNotFoundError("YAML file not found")
+        
+        with open(catalogue.yaml_file, "r") as f:
+            catalogue.neurons_dict = yaml.safe_load(f)
+
+        for neuron_name in catalogue.neurons_dict.keys():
+            print(f"Loaded model for neuron '{neuron_name}'")
+            catalogue.paramaps[neuron_name] = neur.ParaMap(catalogue.neurons_dict[neuron_name])
+            catalogue.neuron_names += [neuron_name]
+        
+        return catalogue
+    
+    def __getitem__(self, neuron):
+        try:
+            paramap = self.paramaps[neuron]
+        except KeyError:
+            raise KeyError(f"Neural model '{neuron}' does not exist in this catalogue")
+
+        return paramap

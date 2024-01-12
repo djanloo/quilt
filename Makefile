@@ -1,9 +1,9 @@
-.PHONY: generate clean
+.PHONY: generate cleanall clean
 
 generate:
 	@python3 setup.py
 
-cleanall:
+cleanall: clean
 	@echo "Cleaning all.."
 	@rm -f quilt/*.so
 	@rm -f quilt/*.html

@@ -24,7 +24,7 @@ namespace utilities{
         }
     }
 
-    void nan_check_vect(std::vector<double> vect, const std::string& str){
+    void nan_check_vect(const std::vector<double>& vect, const std::string& str){
         std::vector<bool> are_nan;
         bool somebody_is_nan = false;
 
@@ -53,7 +53,6 @@ Neuron::Neuron(Population * population):population(population){
     id = HierarchicalID( population -> id);
     state = neuron_state { population->neuroparam->E_rest + ((double)rand())/RAND_MAX, 0.0, 0.0};
     last_spike_time = - std::numeric_limits<float>::infinity();
-
     population -> neurons.push_back(this);        
 };
 
@@ -63,10 +62,7 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
 
 
 void Neuron::handle_incoming_spikes(EvolutionContext * evo){
-    // if (incoming_spikes.empty()) {
-    //     std::cout << population->id->get_id() << " - " << id->get_id() << ") -- " ;
-    //     std::cout << "\tnow: "<<evo->now<<std::endl;
-    // }
+
     while (!(incoming_spikes.empty())){
 
         auto spike = incoming_spikes.top();
@@ -81,7 +77,6 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
         } 
 
         if (!(spike.processed)){
-            // utilities::nan_check(spike.weight, "NaN in spike weight"); // This might be removed in future
 
             if ((spike.arrival_time >= evo->now ) && (spike.arrival_time < evo->now + evo->dt)){
 
@@ -113,6 +108,7 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
         }
     }
 }
+
 
 void Neuron::evolve(EvolutionContext * evo){
 
@@ -155,16 +151,20 @@ void Neuron::on_spike(EvolutionContext * /*evo*/){
     this->state[0] = this->population->neuroparam->E_reset;
 }
 
-NeuroParam::NeuroParam(neuron_type neur_type):neur_type(neur_type){
+NeuroParam::NeuroParam(){
                 std::cout << "initializing neuroParam base .. ";
+                this->neur_type = neuron_type::base_neuron;
                 std::map<std::string, float> defaults = {{"I_ext", 0.0}, {"I_osc", 0.0}, {"omega_I", 0.0}};
                 this->paramap = ParaMap( defaults);
                 std::cout << "done"<<std::endl;
                 }
 
-NeuroParam::NeuroParam(const ParaMap & paramap, neuron_type neur_type):NeuroParam(neur_type){
-    std::cout << "initializing neuroparam advenced..";
+NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
+    std::cout << "initializing neuroparam advanced..";
+
     this->paramap.update(paramap);
+    this->neur_type = static_cast<neuron_type>(this->paramap.get("neuron_type"));
+
     std::string last = "";
     try{
         last = "E_rest";
@@ -188,7 +188,7 @@ NeuroParam::NeuroParam(const ParaMap & paramap, neuron_type neur_type):NeuroPara
         last = "omega_I";
         this->omega_I = this->paramap.get(last);
     } catch (const std::out_of_range & e){
-        throw std::out_of_range("Missing parameterfor base NeuroParam: " + last);
+        throw std::out_of_range("Missing parameter for NeuroParam: " + last);
     }
     std::cout << "done" << std::endl;
 

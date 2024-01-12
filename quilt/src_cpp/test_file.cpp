@@ -52,7 +52,7 @@ void test_spiking()
     SpikingNetwork sn = SpikingNetwork();
 
 
-    map<string, float> map_of_params = {
+    map<string, float> map_of_params = {{"neuron_type", (float)neuron_type::aeif},
                                         {"C_m", 40.1},
                                         {"tau_m",200.0},
                                         {"E_rest", -70.0},
@@ -64,17 +64,16 @@ void test_spiking()
                                         {"ada_a", 0.0},
                                         {"ada_b",5.0},
                                         {"ada_tau_w",100.0},
-                                        {"tau_e",10.},
-                                        {"tau_i",5.5},
-                                        {"E_Exc",0.0},
+                                        {"tau_e", 10.},
+                                        {"tau_i", 5.5},
+                                        {"E_Exc", 0.0},
                                         {"E_inh",-65}
                                         };
 
     ParaMap paramap = ParaMap(map_of_params);
-    aeif_param pop_params = aeif_param(paramap);
     
-    Population a = Population(Na, &pop_params, &sn);
-    Population b = Population(Nb, &pop_params, &sn);
+    Population a = Population(Na, &paramap, &sn);
+    Population b = Population(Nb, &paramap, &sn);
 
     cout << "size of neuron is " << sizeof(*(a.neurons[0])) << " bytes" << endl ;
     cout << "size of population is " << sizeof(a) << " bytes" << endl;
@@ -118,7 +117,7 @@ void test_spiking()
 
     EvolutionContext evo = EvolutionContext(0.1);
     
-    sn.run(&evo, 100);
+    sn.run(&evo, 5);
 
     for (auto val : sn.population_spike_monitors[0]->get_history()){
         cout << val << " "; 

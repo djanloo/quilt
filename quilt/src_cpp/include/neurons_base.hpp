@@ -12,7 +12,8 @@
 #define MAX_POTENTIAL_INCREMENT 10 // mV
 #define MAX_POTENTIAL_SLOPE 50/0.1 // mV/ms
 
-enum class neuron_type : unsigned int {dummy, aqif, izhikevich, aeif};
+enum class neuron_type : unsigned int {base_neuron, aqif, izhikevich, aeif};
+
 typedef std::vector<double> neuron_state;
 
 // The menu:
@@ -98,7 +99,7 @@ class Neuron{
         neuron_state state;
     public:
         // Base properties
-        neuron_type nt = neuron_type::dummy;
+        neuron_type nt = neuron_type::base_neuron;
         HierarchicalID id;
         Population * population;
         neuron_state get_state(){return state;}
@@ -116,7 +117,9 @@ class Neuron{
 
         // These must be implemented for each specific neuron
         virtual void on_spike(EvolutionContext * evo);
-        virtual void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){std::cout << "WARNING: using virtual evolve_state of <Neuron>";};
+        virtual void evolve_state(const neuron_state & /*x*/ , neuron_state & /*dxdt*/ , const double /*t*/ ){
+                std::cout << "WARNING: using virtual evolve_state of <Neuron>";
+        };
 };
 
 class NeuroParam{ 
@@ -129,8 +132,9 @@ class NeuroParam{
         float E_rest, E_reset, E_thr, E_exc, E_inh;
         float C_m, tau_m, tau_e, tau_i, tau_refrac;
         float I_ext, I_osc, omega_I;
-        NeuroParam(neuron_type neur_type);
-        NeuroParam(const ParaMap & paramap, neuron_type neur_type);
+        
+        NeuroParam();
+        NeuroParam(const ParaMap & paramap);
 
         neuron_type get_neuron_type(){return neur_type;}
         void add(const std::string & key, float value);

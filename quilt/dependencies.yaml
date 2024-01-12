@@ -13,12 +13,13 @@ neur:
     - src_cpp/neuron_models.cpp
     - src_cpp/network.cpp
     - src_cpp/devices.cpp
+    - src_cpp/base_objects.cpp
   include_dirs:
     - src_cpp/include
   
-oscill:
-  sources:
-    - src_cython/oscill.pyx
-    - src_cpp/oscillators.cpp
-  include_dirs:
-    - src_cpp/include
+# oscill:
+#   sources:
+#     - src_cython/oscill.pyx
+#     - src_cpp/oscillators.cpp
+#   include_dirs:
+#     - src_cpp/include

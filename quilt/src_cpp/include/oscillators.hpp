@@ -45,8 +45,9 @@ class Oscillator{
 
         void evolve(EvolutionContext * evo);
         
-        virtual void evolve_state(const osc_state & state, osc_state & dxdt, double t){
+        virtual void evolve_state(const osc_state & /*state*/, osc_state & /*dxdt*/, double /*t*/){
             throw std::runtime_error("Using virtual evolve_state of oscillator");
+            
             };
 };
 

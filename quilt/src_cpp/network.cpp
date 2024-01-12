@@ -12,20 +12,42 @@
 #include <string>
 #include <boost/timer/progress_display.hpp>
 
-Population::Population( int n_neurons, NeuroParam * neuroparam, SpikingNetwork * spiking_network):
-    n_neurons(n_neurons),n_spikes_last_step(0), neuroparam(neuroparam){
-
+Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network):
+    n_neurons(n_neurons),n_spikes_last_step(0){
     id = HierarchicalID(spiking_network->id);
+
+    try{ 
+        float dummy = params->get("neuron_type");
+    }catch (const std::out_of_range & e) {
+        throw( std::out_of_range("Neuron params must havce field neuron_type"));
+    }
+    
+    switch(static_cast<neuron_type> (static_cast<int>(params->get("neuron_type")))){
+        case neuron_type::aqif: 
+            this->neuroparam = new aqif_param(*params);
+            break;   
+        case neuron_type::izhikevich:
+            this->neuroparam = new izhikevich_param(*params);
+            break;
+        case neuron_type::aeif: 
+            this->neuroparam = new aeif_param(*params);
+            break;
+        default:
+            throw std::runtime_error("Invalid neuron type when building population:" + std::to_string(static_cast<int>(params->get("neuron_type"))));
+            break;
+    };
 
     auto start = std::chrono::high_resolution_clock::now();
     neuron_type neur_type = neuroparam->get_neuron_type();
     for ( int i = 0; i < n_neurons; i++){
         // This can be avoided, probably using <variant>
         switch(neur_type){
-        case neuron_type::dummy: new Neuron(this); break;       // remember not to push_back here
-        case neuron_type::aqif: new aqif_neuron(this); break;   // calling the constructor is enough
-        case neuron_type::izhikevich: new izhikevich_neuron(this); break;
-        case neuron_type::aeif: new aeif_neuron(this); break;
+        case neuron_type::base_neuron:  new Neuron(this); break;       // remember not to push_back here
+        case neuron_type::aqif:         new aqif_neuron(this); break;   // calling the constructor is enough
+        case neuron_type::izhikevich:   new izhikevich_neuron(this); break;
+        case neuron_type::aeif:         new aeif_neuron(this); break;
+        default:
+            throw std::runtime_error("Invlid neuron type");
         };
     }
 
@@ -153,7 +175,7 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
 
     auto end = std::chrono::high_resolution_clock::now();
     std::cout << "Simulation took " << (std::chrono::duration_cast<std::chrono::seconds>(end -start)).count() << " s";
-    std::cout << "\t(" << ((double)(std::chrono::duration_cast<std::chrono::seconds>(end -start)).count())/n_steps_done << " s/step)" << std::endl;
+    std::cout << "\t(" << ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count())/n_steps_done << " ms/step)" << std::endl;
 
     std::cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << std::endl;
     std::cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << std::endl;

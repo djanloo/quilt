@@ -1,4 +1,5 @@
 from libcpp.vector cimport vector
+from libcpp.string cimport string
 
 cdef extern from "../src_cpp/include/base_objects.hpp":
     cdef cppclass EvolutionContext:
@@ -8,6 +9,12 @@ cdef extern from "../src_cpp/include/base_objects.hpp":
 
     cdef cppclass HierarchicalID:
         pass
+
+    cdef cppclass ParaMap:
+        ParaMap()
+        void update(ParaMap * new_values) except +
+        void add(string key, float value) except +
+        float get(string key) const
 
 cdef extern from "../src_cpp/include/devices.hpp":
     cdef cppclass PopulationSpikeMonitor:
@@ -28,8 +35,17 @@ cdef extern from "../src_cpp/include/neurons_base.hpp":
     cdef cppclass neuron_type:
         pass
 
+    cdef cppclass NeuroParam:
+        NeuroParam(const ParaMap &, neuron_type)
+
+cdef extern from "../src_cpp/include/neuron_models.hpp":
+
+    cdef cppclass aeif_param(NeuroParam):
+        aeif_param (const ParaMap &)
+
+
 cdef extern from "../src_cpp/include/neurons_base.hpp" namespace "neuron_type":
-    cdef neuron_type dummy
+    cdef neuron_type base_neuron
     cdef neuron_type aqif
     cdef neuron_type izhikevich
     cdef neuron_type aeif
@@ -37,7 +53,7 @@ cdef extern from "../src_cpp/include/neurons_base.hpp" namespace "neuron_type":
 cdef extern from "../src_cpp/include/network.hpp":
     cdef cppclass Projection:
         int start_dimension, end_dimension
-        Projection(double ** weights, double ** delays, int start_dimension, int end_dimension)
+        Projection(float ** weights, float ** delays, int start_dimension, int end_dimension)
 
     cdef cppclass Population:
         int n_neurons
@@ -45,9 +61,9 @@ cdef extern from "../src_cpp/include/network.hpp":
 
         int n_spikes_last_step
 
-        Population(int n_neurons, neuron_type nt, SpikingNetwork * spiking_network)
-        void project(Projection * projection, Population * child_pop)
-        void evolve(EvolutionContext * evo)
+        Population(int, ParaMap * , SpikingNetwork * ) except +
+        void project(Projection * , Population * )
+        void evolve(EvolutionContext * )
 
     cdef cppclass SpikingNetwork:
         HierarchicalID * id

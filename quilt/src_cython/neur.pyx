@@ -16,31 +16,45 @@ import ctypes
 import numpy as np
 cimport numpy as np
 
-NEURON_TYPES = {"dummy":0, "aqif":1, "izhikevich":2, "aeif":3}
+NEURON_TYPES = {"base_neuron":0, "aqif":1, "izhikevich":2, "aeif":3}
 
 ctypedef vector[double] neuron_state
+
+
+cdef class ParaMap:
+    cdef cinter.ParaMap * _paramap
+    def __cinit__(self, dict params):
+        self._paramap = new cinter.ParaMap()
+        try:
+            params['neuron_type'] = NEURON_TYPES[params['neuron_type']]
+        except KeyError:
+            raise KeyError(f"Parameters of ParaMap must have field 'neuron_type' with possible values: {list(NEURON_TYPES.keys())}")
+
+        for key in params.keys():
+            key_bytes = key.encode('utf-8') if isinstance(key, str) else key
+            self._paramap.add(key_bytes, params[key])
 
 cdef class Projection:
 
     cdef int start_dimension, end_dimension
-    cdef double ** _weights
-    cdef double ** _delays 
+    cdef float ** _weights
+    cdef float ** _delays 
     cdef cinter.Projection * _projection
 
-    cdef double [:,:] weights, delays
+    cdef float [:,:] weights, delays
 
-    def __cinit__(self,  np.ndarray[np.double_t,ndim=2,mode='c'] weights, np.ndarray[np.double_t,ndim=2,mode='c'] delays):
+    def __cinit__(self,  np.ndarray[np.float32_t, ndim=2,mode='c'] weights, np.ndarray[np.float32_t,ndim=2,mode='c'] delays):
         self.weights = weights
         self.delays = delays
 
         self.start_dimension = weights.shape[0]
         self.end_dimension   = weights.shape[1]
 
-        cdef np.ndarray[double, ndim=2, mode="c"] contiguous_weights = np.ascontiguousarray(weights, dtype = ctypes.c_double)
-        cdef np.ndarray[double, ndim=2, mode="c"] contiguous_delays  = np.ascontiguousarray(delays,  dtype = ctypes.c_double)
+        cdef np.ndarray[np.float32_t, ndim=2, mode="c"] contiguous_weights = np.ascontiguousarray(weights, dtype = ctypes.c_float)
+        cdef np.ndarray[np.float32_t, ndim=2, mode="c"] contiguous_delays  = np.ascontiguousarray(delays,  dtype = ctypes.c_float)
 
-        self._weights = <double **> malloc(self.start_dimension * sizeof(double*))
-        self._delays  = <double **> malloc(self.start_dimension * sizeof(double*))
+        self._weights = <float **> malloc(self.start_dimension * sizeof(float*))
+        self._delays  = <float **> malloc(self.start_dimension * sizeof(float*))
 
         if not self._weights or not self._delays:
             raise MemoryError
@@ -50,8 +64,8 @@ cdef class Projection:
             self._weights[i] = &contiguous_weights[i, 0]
             self._delays[i] = &contiguous_delays[i,0]
 
-        self._projection = new cinter.Projection(  <double**> &self._weights[0], 
-                                            <double**> &self._delays[0], 
+        self._projection = new cinter.Projection(  <float**> &self._weights[0], 
+                                            <float**> &self._delays[0], 
                                             self.start_dimension, 
                                             self.end_dimension)
     @property
@@ -66,16 +80,15 @@ cdef class Projection:
 cdef class Population:
 
     cdef cinter.Population * _population
-    cdef cinter.neuron_type _nt
     cdef cinter.PopulationSpikeMonitor * _spike_monitor 
     cdef cinter.PopulationStateMonitor * _state_monitor
 
     cdef SpikingNetwork spikenet
 
-    def __cinit__(self, int n_neurons, str poptype, SpikingNetwork spikenet):
-        self._nt = <cinter.neuron_type><int>NEURON_TYPES[poptype]
+    def __cinit__(self, int n_neurons, ParaMap params, SpikingNetwork spikenet):
+
         self.spikenet = spikenet
-        self._population = new cinter.Population(<int>n_neurons, self._nt, spikenet._spiking_network)
+        self._population = new cinter.Population(<int>n_neurons, params._paramap, spikenet._spiking_network)
         self._spike_monitor = NULL
         self._state_monitor = NULL
 
@@ -132,7 +145,6 @@ cdef class SpikingNetwork:
         self._spiking_network.run(self._evo, time)
 
     def __dealloc__(self):
-        # print("Deallocating a spiking network")
         del self._spiking_network
         del self._evo
 
@@ -143,7 +155,7 @@ class RandomProjector:
                         max_inh = 0.1, max_exc=0.1, 
                         min_delay=0.3, max_delay=0.5):
 
-        assert max_inh > 0, "AAAAA"
+        assert max_inh > 0, "Inhibition weight is a positive number"
         self.max_inh = max_inh
         self.max_exc = max_exc
         self.exc_fraction = exc_fraction
@@ -160,7 +172,6 @@ class RandomProjector:
 
         weights = np.zeros((N,M))
         delays = np.zeros((N,M))
-
 
         start = time()
 
@@ -181,5 +192,5 @@ class RandomProjector:
         self.last_weights = weights
         self.last_delays = delays
 
-        self.last_projection = Projection(weights, delays)
+        self.last_projection = Projection(weights.astype(np.float32), delays.astype(np.float32))
         return self.last_projection

@@ -1,0 +1,728 @@
+desc: (none)
+cmd: ./quilt.exe
+time_unit: i
+#-----------
+snapshot=0
+#-----------
+time=0
+mem_heap_B=0
+mem_heap_extra_B=0
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=1
+#-----------
+time=101643488
+mem_heap_B=4429632
+mem_heap_extra_B=40848
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=2
+#-----------
+time=346626536
+mem_heap_B=8429656
+mem_heap_extra_B=48864
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=3
+#-----------
+time=389653767
+mem_heap_B=9185392
+mem_heap_extra_B=50848
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=4
+#-----------
+time=451642159
+mem_heap_B=11323504
+mem_heap_extra_B=56400
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=5
+#-----------
+time=543826069
+mem_heap_B=14504536
+mem_heap_extra_B=64656
+mem_stacks_B=0
+heap_tree=peak
+n4: 14504536 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n2: 8000000 0x10BB97: get_rand_proj_mat(int, int, double, double) (test_file.cpp:28)
+  n1: 4000000 0x10C1EE: test_spiking() (test_file.cpp:84)
+   n0: 4000000 0x10D5DC: main (test_file.cpp:180)
+  n1: 4000000 0x10C222: test_spiking() (test_file.cpp:85)
+   n0: 4000000 0x10D5DC: main (test_file.cpp:180)
+ n1: 6074880 0x12D41E: __gnu_cxx::new_allocator<Synapse>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 6074880 0x12CC77: std::allocator_traits<std::allocator<Synapse> >::allocate(std::allocator<Synapse>&, unsigned long) (alloc_traits.h:464)
+   n1: 6074880 0x12C187: std::_Vector_base<Synapse, std::allocator<Synapse> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 6074880 0x12B086: void std::vector<Synapse, std::allocator<Synapse> >::_M_realloc_insert<Synapse>(__gnu_cxx::__normal_iterator<Synapse*, std::vector<Synapse, std::allocator<Synapse> > >, Synapse&&) (vector.tcc:440)
+     n1: 6074880 0x129E0F: void std::vector<Synapse, std::allocator<Synapse> >::emplace_back<Synapse>(Synapse&&) (vector.tcc:121)
+      n1: 6074880 0x129297: std::vector<Synapse, std::allocator<Synapse> >::push_back(Synapse&&) (stl_vector.h:1204)
+       n1: 6074880 0x1269D0: Neuron::connect(Neuron*, double, double) (neurons_base.cpp:60)
+        n2: 6074880 0x11FABF: Population::project(Projection*, Population*) (network.cpp:73)
+         n1: 3078144 0x10C40F: test_spiking() (test_file.cpp:102)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+         n1: 2996736 0x10C42F: test_spiking() (test_file.cpp:103)
+          n0: 2996736 0x10D5DC: main (test_file.cpp:180)
+ n1: 256000 0x11F5EB: Population::Population(int, NeuroParam*, SpikingNetwork*) (network.cpp:28)
+  n0: 256000 in 2 places, all below massif's threshold (1.00%)
+ n0: 173656 in 9 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=6
+#-----------
+time=613863191
+mem_heap_B=6570196
+mem_heap_extra_B=48948
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=7
+#-----------
+time=690363227
+mem_heap_B=6570184
+mem_heap_extra_B=48936
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=8
+#-----------
+time=747781005
+mem_heap_B=6570184
+mem_heap_extra_B=48936
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=9
+#-----------
+time=805199761
+mem_heap_B=6570200
+mem_heap_extra_B=48936
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=10
+#-----------
+time=858107912
+mem_heap_B=6570220
+mem_heap_extra_B=48956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=11
+#-----------
+time=906886874
+mem_heap_B=6570040
+mem_heap_extra_B=48880
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=12
+#-----------
+time=976574071
+mem_heap_B=6570040
+mem_heap_extra_B=48880
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=13
+#-----------
+time=1025354088
+mem_heap_B=6570232
+mem_heap_extra_B=48920
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=14
+#-----------
+time=1102014535
+mem_heap_B=6570252
+mem_heap_extra_B=48940
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=15
+#-----------
+time=1164728901
+mem_heap_B=6570200
+mem_heap_extra_B=48912
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=16
+#-----------
+time=1208286911
+mem_heap_B=6570252
+mem_heap_extra_B=48940
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=17
+#-----------
+time=1277964125
+mem_heap_B=6570200
+mem_heap_extra_B=48912
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=18
+#-----------
+time=1356366602
+mem_heap_B=6570252
+mem_heap_extra_B=48940
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=19
+#-----------
+time=1417330962
+mem_heap_B=6570072
+mem_heap_extra_B=48880
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=20
+#-----------
+time=1504435552
+mem_heap_B=6570264
+mem_heap_extra_B=48944
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=21
+#-----------
+time=1565411632
+mem_heap_B=6570136
+mem_heap_extra_B=48896
+mem_stacks_B=0
+heap_tree=detailed
+n4: 6570136 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 6156288 0x12D41E: __gnu_cxx::new_allocator<Synapse>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 6156288 0x12CC77: std::allocator_traits<std::allocator<Synapse> >::allocate(std::allocator<Synapse>&, unsigned long) (alloc_traits.h:464)
+   n1: 6156288 0x12C187: std::_Vector_base<Synapse, std::allocator<Synapse> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 6156288 0x12B086: void std::vector<Synapse, std::allocator<Synapse> >::_M_realloc_insert<Synapse>(__gnu_cxx::__normal_iterator<Synapse*, std::vector<Synapse, std::allocator<Synapse> > >, Synapse&&) (vector.tcc:440)
+     n1: 6156288 0x129E0F: void std::vector<Synapse, std::allocator<Synapse> >::emplace_back<Synapse>(Synapse&&) (vector.tcc:121)
+      n1: 6156288 0x129297: std::vector<Synapse, std::allocator<Synapse> >::push_back(Synapse&&) (stl_vector.h:1204)
+       n1: 6156288 0x1269D0: Neuron::connect(Neuron*, double, double) (neurons_base.cpp:60)
+        n2: 6156288 0x11FABF: Population::project(Projection*, Population*) (network.cpp:73)
+         n1: 3078144 0x10C40F: test_spiking() (test_file.cpp:102)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+         n1: 3078144 0x10C42F: test_spiking() (test_file.cpp:103)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+ n2: 256000 0x11F5EB: Population::Population(int, NeuroParam*, SpikingNetwork*) (network.cpp:28)
+  n1: 128000 0x10C104: test_spiking() (test_file.cpp:76)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+  n1: 128000 0x10C127: test_spiking() (test_file.cpp:77)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+ n0: 85144 in 15 places, all below massif's threshold (1.00%)
+ n1: 72704 0x4916939: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
+  n1: 72704 0x400647D: call_init.part.0 (dl-init.c:70)
+   n1: 72704 0x4006567: call_init (dl-init.c:33)
+    n1: 72704 0x4006567: _dl_init (dl-init.c:117)
+     n0: 72704 0x40202C9: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+#-----------
+snapshot=22
+#-----------
+time=1652510662
+mem_heap_B=6570200
+mem_heap_extra_B=48928
+mem_stacks_B=0
+heap_tree=detailed
+n4: 6570200 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 6156288 0x12D41E: __gnu_cxx::new_allocator<Synapse>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 6156288 0x12CC77: std::allocator_traits<std::allocator<Synapse> >::allocate(std::allocator<Synapse>&, unsigned long) (alloc_traits.h:464)
+   n1: 6156288 0x12C187: std::_Vector_base<Synapse, std::allocator<Synapse> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 6156288 0x12B086: void std::vector<Synapse, std::allocator<Synapse> >::_M_realloc_insert<Synapse>(__gnu_cxx::__normal_iterator<Synapse*, std::vector<Synapse, std::allocator<Synapse> > >, Synapse&&) (vector.tcc:440)
+     n1: 6156288 0x129E0F: void std::vector<Synapse, std::allocator<Synapse> >::emplace_back<Synapse>(Synapse&&) (vector.tcc:121)
+      n1: 6156288 0x129297: std::vector<Synapse, std::allocator<Synapse> >::push_back(Synapse&&) (stl_vector.h:1204)
+       n1: 6156288 0x1269D0: Neuron::connect(Neuron*, double, double) (neurons_base.cpp:60)
+        n2: 6156288 0x11FABF: Population::project(Projection*, Population*) (network.cpp:73)
+         n1: 3078144 0x10C40F: test_spiking() (test_file.cpp:102)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+         n1: 3078144 0x10C42F: test_spiking() (test_file.cpp:103)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+ n2: 256000 0x11F5EB: Population::Population(int, NeuroParam*, SpikingNetwork*) (network.cpp:28)
+  n1: 128000 0x10C104: test_spiking() (test_file.cpp:76)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+  n1: 128000 0x10C127: test_spiking() (test_file.cpp:77)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+ n0: 85208 in 15 places, all below massif's threshold (1.00%)
+ n1: 72704 0x4916939: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
+  n1: 72704 0x400647D: call_init.part.0 (dl-init.c:70)
+   n1: 72704 0x4006567: call_init (dl-init.c:33)
+    n1: 72704 0x4006567: _dl_init (dl-init.c:117)
+     n0: 72704 0x40202C9: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+#-----------
+snapshot=23
+#-----------
+time=1713489379
+mem_heap_B=6570136
+mem_heap_extra_B=48896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=24
+#-----------
+time=1800590353
+mem_heap_B=6570200
+mem_heap_extra_B=48928
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=25
+#-----------
+time=1870272837
+mem_heap_B=6570136
+mem_heap_extra_B=48896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=26
+#-----------
+time=1913825577
+mem_heap_B=6570200
+mem_heap_extra_B=48928
+mem_stacks_B=0
+heap_tree=detailed
+n4: 6570200 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 6156288 0x12D41E: __gnu_cxx::new_allocator<Synapse>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 6156288 0x12CC77: std::allocator_traits<std::allocator<Synapse> >::allocate(std::allocator<Synapse>&, unsigned long) (alloc_traits.h:464)
+   n1: 6156288 0x12C187: std::_Vector_base<Synapse, std::allocator<Synapse> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 6156288 0x12B086: void std::vector<Synapse, std::allocator<Synapse> >::_M_realloc_insert<Synapse>(__gnu_cxx::__normal_iterator<Synapse*, std::vector<Synapse, std::allocator<Synapse> > >, Synapse&&) (vector.tcc:440)
+     n1: 6156288 0x129E0F: void std::vector<Synapse, std::allocator<Synapse> >::emplace_back<Synapse>(Synapse&&) (vector.tcc:121)
+      n1: 6156288 0x129297: std::vector<Synapse, std::allocator<Synapse> >::push_back(Synapse&&) (stl_vector.h:1204)
+       n1: 6156288 0x1269D0: Neuron::connect(Neuron*, double, double) (neurons_base.cpp:60)
+        n2: 6156288 0x11FABF: Population::project(Projection*, Population*) (network.cpp:73)
+         n1: 3078144 0x10C40F: test_spiking() (test_file.cpp:102)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+         n1: 3078144 0x10C42F: test_spiking() (test_file.cpp:103)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+ n2: 256000 0x11F5EB: Population::Population(int, NeuroParam*, SpikingNetwork*) (network.cpp:28)
+  n1: 128000 0x10C104: test_spiking() (test_file.cpp:76)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+  n1: 128000 0x10C127: test_spiking() (test_file.cpp:77)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+ n0: 85208 in 15 places, all below massif's threshold (1.00%)
+ n1: 72704 0x4916939: ??? (in /usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.30)
+  n1: 72704 0x400647D: call_init.part.0 (dl-init.c:70)
+   n1: 72704 0x4006567: call_init (dl-init.c:33)
+    n1: 72704 0x4006567: _dl_init (dl-init.c:117)
+     n0: 72704 0x40202C9: ??? (in /usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2)
+#-----------
+snapshot=27
+#-----------
+time=1983508061
+mem_heap_B=6570136
+mem_heap_extra_B=48896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=28
+#-----------
+time=2027060801
+mem_heap_B=6570200
+mem_heap_extra_B=48928
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=29
+#-----------
+time=2096743285
+mem_heap_B=6570136
+mem_heap_extra_B=48896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=30
+#-----------
+time=2140296025
+mem_heap_B=6570200
+mem_heap_extra_B=48928
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=31
+#-----------
+time=2218701346
+mem_heap_B=6570316
+mem_heap_extra_B=48972
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=32
+#-----------
+time=2288380965
+mem_heap_B=6572452
+mem_heap_extra_B=51156
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=33
+#-----------
+time=2331941948
+mem_heap_B=6629572
+mem_heap_extra_B=69220
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=34
+#-----------
+time=2401618472
+mem_heap_B=6906292
+mem_heap_extra_B=67908
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=35
+#-----------
+time=2453886350
+mem_heap_B=7164392
+mem_heap_extra_B=65736
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=36
+#-----------
+time=2506204222
+mem_heap_B=7395832
+mem_heap_extra_B=65200
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=37
+#-----------
+time=2593353115
+mem_heap_B=7871544
+mem_heap_extra_B=64952
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=38
+#-----------
+time=2663030818
+mem_heap_B=8102220
+mem_heap_extra_B=65004
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=39
+#-----------
+time=2758878430
+mem_heap_B=8580300
+mem_heap_extra_B=65020
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=40
+#-----------
+time=2802425160
+mem_heap_B=9013336
+mem_heap_extra_B=64944
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=41
+#-----------
+time=2863404574
+mem_heap_B=9329100
+mem_heap_extra_B=64972
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=42
+#-----------
+time=2941873878
+mem_heap_B=9548728
+mem_heap_extra_B=64960
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=43
+#-----------
+time=2985442949
+mem_heap_B=9586200
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=44
+#-----------
+time=3063837711
+mem_heap_B=9627800
+mem_heap_extra_B=64928
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=45
+#-----------
+time=3133584672
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=detailed
+n4: 9636888 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 6156288 0x12D41E: __gnu_cxx::new_allocator<Synapse>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 6156288 0x12CC77: std::allocator_traits<std::allocator<Synapse> >::allocate(std::allocator<Synapse>&, unsigned long) (alloc_traits.h:464)
+   n1: 6156288 0x12C187: std::_Vector_base<Synapse, std::allocator<Synapse> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 6156288 0x12B086: void std::vector<Synapse, std::allocator<Synapse> >::_M_realloc_insert<Synapse>(__gnu_cxx::__normal_iterator<Synapse*, std::vector<Synapse, std::allocator<Synapse> > >, Synapse&&) (vector.tcc:440)
+     n1: 6156288 0x129E0F: void std::vector<Synapse, std::allocator<Synapse> >::emplace_back<Synapse>(Synapse&&) (vector.tcc:121)
+      n1: 6156288 0x129297: std::vector<Synapse, std::allocator<Synapse> >::push_back(Synapse&&) (stl_vector.h:1204)
+       n1: 6156288 0x1269D0: Neuron::connect(Neuron*, double, double) (neurons_base.cpp:60)
+        n2: 6156288 0x11FABF: Population::project(Projection*, Population*) (network.cpp:73)
+         n1: 3078144 0x10C40F: test_spiking() (test_file.cpp:102)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+         n1: 3078144 0x10C42F: test_spiking() (test_file.cpp:103)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+ n1: 3066624 0x12D0C2: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 3066624 0x12C9BF: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (alloc_traits.h:464)
+   n1: 3066624 0x12BBE9: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 3066624 0x12A61A: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<float&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, float&, double&&) (vector.tcc:440)
+     n1: 3066624 0x129ABB: void std::vector<Spike, std::allocator<Spike> >::emplace_back<float&, double>(float&, double&&) (vector.tcc:121)
+      n1: 3066624 0x129151: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<float&, double>(float&, double&&) (stl_queue.h:658)
+       n1: 3066624 0x1266F7: Synapse::fire(EvolutionContext*) (neurons_base.cpp:48)
+        n1: 3066624 0x1273B3: Neuron::emit_spike(EvolutionContext*) (neurons_base.cpp:142)
+         n1: 3066624 0x12711D: Neuron::evolve(EvolutionContext*) (neurons_base.cpp:138)
+          n1: 3066624 0x11FCB1: Population::evolve(EvolutionContext*) (network.cpp:88)
+           n1: 3066624 0x12063C: SpikingNetwork::run(EvolutionContext*, double) (network.cpp:158)
+            n1: 3066624 0x10C55A: test_spiking() (test_file.cpp:121)
+             n0: 3066624 0x10D5DC: main (test_file.cpp:180)
+ n2: 256000 0x11F5EB: Population::Population(int, NeuroParam*, SpikingNetwork*) (network.cpp:28)
+  n1: 128000 0x10C104: test_spiking() (test_file.cpp:76)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+  n1: 128000 0x10C127: test_spiking() (test_file.cpp:77)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+ n0: 157976 in 16 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=46
+#-----------
+time=3177183482
+mem_heap_B=9637068
+mem_heap_extra_B=64956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=47
+#-----------
+time=3238193751
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=48
+#-----------
+time=3299252683
+mem_heap_B=9637068
+mem_heap_extra_B=64956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=49
+#-----------
+time=3377755891
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=50
+#-----------
+time=3420786186
+mem_heap_B=9637068
+mem_heap_extra_B=64956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=51
+#-----------
+time=3463817628
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=detailed
+n4: 9636888 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 6156288 0x12D41E: __gnu_cxx::new_allocator<Synapse>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 6156288 0x12CC77: std::allocator_traits<std::allocator<Synapse> >::allocate(std::allocator<Synapse>&, unsigned long) (alloc_traits.h:464)
+   n1: 6156288 0x12C187: std::_Vector_base<Synapse, std::allocator<Synapse> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 6156288 0x12B086: void std::vector<Synapse, std::allocator<Synapse> >::_M_realloc_insert<Synapse>(__gnu_cxx::__normal_iterator<Synapse*, std::vector<Synapse, std::allocator<Synapse> > >, Synapse&&) (vector.tcc:440)
+     n1: 6156288 0x129E0F: void std::vector<Synapse, std::allocator<Synapse> >::emplace_back<Synapse>(Synapse&&) (vector.tcc:121)
+      n1: 6156288 0x129297: std::vector<Synapse, std::allocator<Synapse> >::push_back(Synapse&&) (stl_vector.h:1204)
+       n1: 6156288 0x1269D0: Neuron::connect(Neuron*, double, double) (neurons_base.cpp:60)
+        n2: 6156288 0x11FABF: Population::project(Projection*, Population*) (network.cpp:73)
+         n1: 3078144 0x10C40F: test_spiking() (test_file.cpp:102)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+         n1: 3078144 0x10C42F: test_spiking() (test_file.cpp:103)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+ n1: 3066624 0x12D0C2: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 3066624 0x12C9BF: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (alloc_traits.h:464)
+   n1: 3066624 0x12BBE9: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 3066624 0x12A61A: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<float&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, float&, double&&) (vector.tcc:440)
+     n1: 3066624 0x129ABB: void std::vector<Spike, std::allocator<Spike> >::emplace_back<float&, double>(float&, double&&) (vector.tcc:121)
+      n1: 3066624 0x129151: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<float&, double>(float&, double&&) (stl_queue.h:658)
+       n1: 3066624 0x1266F7: Synapse::fire(EvolutionContext*) (neurons_base.cpp:48)
+        n1: 3066624 0x1273B3: Neuron::emit_spike(EvolutionContext*) (neurons_base.cpp:142)
+         n1: 3066624 0x12711D: Neuron::evolve(EvolutionContext*) (neurons_base.cpp:138)
+          n1: 3066624 0x11FCB1: Population::evolve(EvolutionContext*) (network.cpp:88)
+           n1: 3066624 0x12063C: SpikingNetwork::run(EvolutionContext*, double) (network.cpp:158)
+            n1: 3066624 0x10C55A: test_spiking() (test_file.cpp:121)
+             n0: 3066624 0x10D5DC: main (test_file.cpp:180)
+ n2: 256000 0x11F5EB: Population::Population(int, NeuroParam*, SpikingNetwork*) (network.cpp:28)
+  n1: 128000 0x10C104: test_spiking() (test_file.cpp:76)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+  n1: 128000 0x10C127: test_spiking() (test_file.cpp:77)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+ n0: 157976 in 16 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=52
+#-----------
+time=3506845158
+mem_heap_B=9637068
+mem_heap_extra_B=64956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=53
+#-----------
+time=3549876460
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=54
+#-----------
+time=3592909153
+mem_heap_B=9637068
+mem_heap_extra_B=64956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=55
+#-----------
+time=3635937593
+mem_heap_B=9637068
+mem_heap_extra_B=64956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=56
+#-----------
+time=3678975363
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=57
+#-----------
+time=3722011020
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=58
+#-----------
+time=3765039923
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=59
+#-----------
+time=3808070747
+mem_heap_B=9637068
+mem_heap_extra_B=64956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=60
+#-----------
+time=3851105948
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=61
+#-----------
+time=3894133806
+mem_heap_B=9636952
+mem_heap_extra_B=64912
+mem_stacks_B=0
+heap_tree=detailed
+n4: 9636952 (heap allocation functions) malloc/new/new[], --alloc-fns, etc.
+ n1: 6156288 0x12D41E: __gnu_cxx::new_allocator<Synapse>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 6156288 0x12CC77: std::allocator_traits<std::allocator<Synapse> >::allocate(std::allocator<Synapse>&, unsigned long) (alloc_traits.h:464)
+   n1: 6156288 0x12C187: std::_Vector_base<Synapse, std::allocator<Synapse> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 6156288 0x12B086: void std::vector<Synapse, std::allocator<Synapse> >::_M_realloc_insert<Synapse>(__gnu_cxx::__normal_iterator<Synapse*, std::vector<Synapse, std::allocator<Synapse> > >, Synapse&&) (vector.tcc:440)
+     n1: 6156288 0x129E0F: void std::vector<Synapse, std::allocator<Synapse> >::emplace_back<Synapse>(Synapse&&) (vector.tcc:121)
+      n1: 6156288 0x129297: std::vector<Synapse, std::allocator<Synapse> >::push_back(Synapse&&) (stl_vector.h:1204)
+       n1: 6156288 0x1269D0: Neuron::connect(Neuron*, double, double) (neurons_base.cpp:60)
+        n2: 6156288 0x11FABF: Population::project(Projection*, Population*) (network.cpp:73)
+         n1: 3078144 0x10C40F: test_spiking() (test_file.cpp:102)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+         n1: 3078144 0x10C42F: test_spiking() (test_file.cpp:103)
+          n0: 3078144 0x10D5DC: main (test_file.cpp:180)
+ n1: 3066624 0x12D0C2: __gnu_cxx::new_allocator<Spike>::allocate(unsigned long, void const*) (new_allocator.h:127)
+  n1: 3066624 0x12C9BF: std::allocator_traits<std::allocator<Spike> >::allocate(std::allocator<Spike>&, unsigned long) (alloc_traits.h:464)
+   n1: 3066624 0x12BBE9: std::_Vector_base<Spike, std::allocator<Spike> >::_M_allocate(unsigned long) (stl_vector.h:346)
+    n1: 3066624 0x12A61A: void std::vector<Spike, std::allocator<Spike> >::_M_realloc_insert<float&, double>(__gnu_cxx::__normal_iterator<Spike*, std::vector<Spike, std::allocator<Spike> > >, float&, double&&) (vector.tcc:440)
+     n1: 3066624 0x129ABB: void std::vector<Spike, std::allocator<Spike> >::emplace_back<float&, double>(float&, double&&) (vector.tcc:121)
+      n1: 3066624 0x129151: void std::priority_queue<Spike, std::vector<Spike, std::allocator<Spike> >, std::less<Spike> >::emplace<float&, double>(float&, double&&) (stl_queue.h:658)
+       n1: 3066624 0x1266F7: Synapse::fire(EvolutionContext*) (neurons_base.cpp:48)
+        n1: 3066624 0x1273B3: Neuron::emit_spike(EvolutionContext*) (neurons_base.cpp:142)
+         n1: 3066624 0x12711D: Neuron::evolve(EvolutionContext*) (neurons_base.cpp:138)
+          n1: 3066624 0x11FCB1: Population::evolve(EvolutionContext*) (network.cpp:88)
+           n1: 3066624 0x12063C: SpikingNetwork::run(EvolutionContext*, double) (network.cpp:158)
+            n1: 3066624 0x10C55A: test_spiking() (test_file.cpp:121)
+             n0: 3066624 0x10D5DC: main (test_file.cpp:180)
+ n2: 256000 0x11F5EB: Population::Population(int, NeuroParam*, SpikingNetwork*) (network.cpp:28)
+  n1: 128000 0x10C104: test_spiking() (test_file.cpp:76)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+  n1: 128000 0x10C127: test_spiking() (test_file.cpp:77)
+   n0: 128000 0x10D5DC: main (test_file.cpp:180)
+ n0: 158040 in 16 places, all below massif's threshold (1.00%)
+#-----------
+snapshot=62
+#-----------
+time=3937162705
+mem_heap_B=9637068
+mem_heap_extra_B=64956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=63
+#-----------
+time=3980190097
+mem_heap_B=9637016
+mem_heap_extra_B=64928
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=64
+#-----------
+time=4023218401
+mem_heap_B=9636888
+mem_heap_extra_B=64896
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=65
+#-----------
+time=4066253075
+mem_heap_B=9637068
+mem_heap_extra_B=64956
+mem_stacks_B=0
+heap_tree=empty
+#-----------
+snapshot=66
+#-----------
+time=4109280545
+mem_heap_B=9636984
+mem_heap_extra_B=64920
+mem_stacks_B=0
+heap_tree=empty
