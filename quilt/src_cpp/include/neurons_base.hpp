@@ -12,6 +12,8 @@
 #define MAX_POTENTIAL_INCREMENT 10 // mV
 #define MAX_POTENTIAL_SLOPE 50/0.1 // mV/ms
 
+#define MAX_SPIKE_QUEUE_LENGTH 10000
+
 enum class neuron_type : unsigned int {base_neuron, aqif, izhikevich, aeif};
 
 typedef std::vector<double> neuron_state;

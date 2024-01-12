@@ -118,7 +118,6 @@ class aeif_param : public NeuroParam{
 
         aeif_param (const ParaMap & paramap):
         NeuroParam(paramap){
-            std::cout << "Initializing an aeif_param..";
             if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aeif){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }

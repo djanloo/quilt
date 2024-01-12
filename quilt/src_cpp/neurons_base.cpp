@@ -16,8 +16,6 @@
 
 #include <boost/numeric/odeint.hpp>
 
-#define MAX_SPIKE_QUEUE_LENGTH 1000
-
 namespace utilities{
 
     void nan_check(double value, const std::string& str){
@@ -171,7 +169,6 @@ NeuroParam::NeuroParam(){
                 this->neur_type = neuron_type::base_neuron;
                 std::map<std::string, float> defaults = {{"I_ext", 0.0}, {"I_osc", 0.0}, {"omega_I", 0.0}};
                 this->paramap = ParaMap( defaults);
-                std::cout << "done"<<std::endl;
                 }
 
 NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
