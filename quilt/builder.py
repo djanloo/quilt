@@ -8,8 +8,8 @@ class SpikingNetwork:
     def __init__(self):
         pass
 
-    def run(self, dt=0.1, t=1):
-        self.interface.run(dt, t)
+    def run(self, dt=0.1, time=1):
+        self.interface.run(dt, time)
 
     @classmethod
     def from_yaml(cls, yaml_file, neuron_catalogue):

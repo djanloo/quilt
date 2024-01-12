@@ -24,18 +24,18 @@ def test_yaml_builder():
 def test_run():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
-    spikenet.interface.run(dt=0.1, time=10)
+    spikenet.run(dt=0.1, time=10)
 
 def test_neurons():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NEURONS, test_catalogue)
-    spikenet.interface.run(dt=0.1, time=10)
+    spikenet.run(dt=0.1, time=10)
 
 def test_delay_control():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
     try:
-        spikenet.interface.run(dt=2.0, time=10)
+        spikenet.run(dt=2.0, time=10)
     except RuntimeError:
         print("This thest successfully failed.")
     else:
