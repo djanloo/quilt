@@ -16,6 +16,8 @@
 
 #include <boost/numeric/odeint.hpp>
 
+#define MAX_SPIKE_QUEUE_LENGTH 1000
+
 namespace utilities{
 
     void nan_check(double value, const std::string& str){
@@ -63,22 +65,25 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
 
 void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 
+    if (incoming_spikes.size() > MAX_SPIKE_QUEUE_LENGTH){
+        throw std::runtime_error("Max number of spikes reached. Something must have gone wrong.");
+    }
     while (!(incoming_spikes.empty())){
 
         auto spike = incoming_spikes.top();
 
         // Check for missed spikes
-        if ((spike.arrival_time < evo->now)&(!spike.processed)){
+        if ((spike.arrival_time < static_cast<float>(evo->now))&(!spike.processed)){
             std::string message = "Spike Missed\n";
             message += "Spike arrival time: " + std::to_string(spike.arrival_time) + "\n";
-            message += "t: " + std::to_string(evo->now) + "\n";
+            message += "now t is: " + std::to_string(evo->now) + "\n";
             message += "Please reduce the timestep or increase the delays.\n";
             throw std::runtime_error(message);
         } 
 
         if (!(spike.processed)){
 
-            if ((spike.arrival_time >= evo->now ) && (spike.arrival_time < evo->now + evo->dt)){
+            if ((spike.arrival_time >= static_cast<float>(evo->now) ) && (spike.arrival_time < static_cast<float>(evo->now + evo->dt) )){
 
                 // Excitatory
                 if (spike.weight > 0.0){ state[1] += spike.weight;} 
@@ -135,7 +140,7 @@ void Neuron::evolve(EvolutionContext * evo){
     }
 
     // Spike generation
-    if ((state[0]) > this->population->neuroparam->E_thr){ emit_spike(evo);}
+    if ((state[0]) >= this->population->neuroparam->E_thr){ emit_spike(evo);}
 }
 
 void Neuron::emit_spike(EvolutionContext * evo){
@@ -152,7 +157,6 @@ void Neuron::on_spike(EvolutionContext * /*evo*/){
 }
 
 NeuroParam::NeuroParam(){
-                std::cout << "initializing neuroParam base .. ";
                 this->neur_type = neuron_type::base_neuron;
                 std::map<std::string, float> defaults = {{"I_ext", 0.0}, {"I_osc", 0.0}, {"omega_I", 0.0}};
                 this->paramap = ParaMap( defaults);
@@ -160,17 +164,28 @@ NeuroParam::NeuroParam(){
                 }
 
 NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
-    std::cout << "initializing neuroparam advanced..";
 
     this->paramap.update(paramap);
     this->neur_type = static_cast<neuron_type>(this->paramap.get("neuron_type"));
 
     std::string last = "";
+
+    // float E_rest, E_reset, E_thr, E_exc, E_inh;
+    //     float C_m, tau_m, tau_e, tau_i, tau_refrac;
+    //     float I_ext, I_osc, omega_I;
     try{
         last = "E_rest";
         this->E_rest = this->paramap.get(last);
         last = "E_reset";
         this->E_reset = this->paramap.get(last);
+        last = "E_thr";
+        this->E_thr = this->paramap.get(last);
+
+        last = "E_exc";
+        this->E_exc = this->paramap.get(last);
+        last = "E_inh";
+        this->E_inh = this->paramap.get(last);
+
         last = "C_m";
         this->C_m = this->paramap.get(last);
         last = "tau_m";
