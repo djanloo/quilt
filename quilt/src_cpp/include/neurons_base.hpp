@@ -141,7 +141,12 @@ class NeuroParam{
 
     public:
         ParaMap paramap;
-        float E_rest, E_reset, E_thr, E_exc, E_inh;
+
+	// Rest potential
+        float E_rest;
+	// Reset potential
+	float E_reset;
+	float E_thr, E_exc, E_inh;
         float C_m, tau_m, tau_e, tau_i, tau_refrac;
         float I_ext, I_osc, omega_I;
         
