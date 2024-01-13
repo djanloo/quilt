@@ -4,6 +4,10 @@
 # venv
 venv/
 
+# Docs
+docs/doxyoutput
+docs/_build
+
 # VScode files 
 .vscode/
 
