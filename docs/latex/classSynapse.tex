@@ -1,0 +1,37 @@
+\hypertarget{classSynapse}{}\doxysection{Synapse Class Reference}
+\label{classSynapse}\index{Synapse@{Synapse}}
+
+
+A weight-\/delay connection object between two neurons.  
+
+
+
+
+{\ttfamily \#include $<$neurons\+\_\+base.\+hpp$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSynapse_a508159c0602f7ab24b771ae76647fffa}\label{classSynapse_a508159c0602f7ab24b771ae76647fffa}} 
+{\bfseries Synapse} (\mbox{\hyperlink{classNeuron}{Neuron}} $\ast$presynaptic, \mbox{\hyperlink{classNeuron}{Neuron}} $\ast$postsynaptic, float weight, float delay)
+\item 
+\mbox{\Hypertarget{classSynapse_a6193d0671bd320637927b733c9cf524c}\label{classSynapse_a6193d0671bd320637927b733c9cf524c}} 
+void {\bfseries fire} (\mbox{\hyperlink{classEvolutionContext}{Evolution\+Context}} $\ast$evo)
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSynapse_a31bb1e23121ed76b53fcc66fba6c0168}\label{classSynapse_a31bb1e23121ed76b53fcc66fba6c0168}} 
+static float {\bfseries min\+\_\+delay} = std\+::numeric\+\_\+limits$<$float$>$\+::infinity()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A weight-\/delay connection object between two neurons. 
+
+The method fire() of the synapse creates a spike and adds it to the spike queue of the postsynaptic neuron. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/moremoon/quilt/quilt/src\+\_\+cpp/include/neurons\+\_\+base.\+hpp\item 
+/home/moremoon/quilt/quilt/src\+\_\+cpp/neurons\+\_\+base.\+cpp\end{DoxyCompactItemize}

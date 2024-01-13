@@ -1,0 +1,67 @@
+\hypertarget{classSpikingNetwork}{}\doxysection{Spiking\+Network Class Reference}
+\label{classSpikingNetwork}\index{SpikingNetwork@{SpikingNetwork}}
+
+
+A collection of populations.  
+
+
+
+
+{\ttfamily \#include $<$network.\+hpp$>$}
+
+
+
+Collaboration diagram for Spiking\+Network\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=223pt]{classSpikingNetwork__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSpikingNetwork_ac99d337d94213fc129f10272494a3a24}\label{classSpikingNetwork_ac99d337d94213fc129f10272494a3a24}} 
+void {\bfseries add\+\_\+injector} (\mbox{\hyperlink{classPopCurrentInjector}{Pop\+Current\+Injector}} $\ast$injector)
+\item 
+\mbox{\Hypertarget{classSpikingNetwork_a445f0c1b69845a6bce73a612667fed18}\label{classSpikingNetwork_a445f0c1b69845a6bce73a612667fed18}} 
+\mbox{\hyperlink{classPopulationSpikeMonitor}{Population\+Spike\+Monitor}} $\ast$ {\bfseries add\+\_\+spike\+\_\+monitor} (\mbox{\hyperlink{classPopulation}{Population}} $\ast$population)
+\item 
+\mbox{\Hypertarget{classSpikingNetwork_a5b8876099d15a1f9c67910ad1fdbc244}\label{classSpikingNetwork_a5b8876099d15a1f9c67910ad1fdbc244}} 
+\mbox{\hyperlink{classPopulationStateMonitor}{Population\+State\+Monitor}} $\ast$ {\bfseries add\+\_\+state\+\_\+monitor} (\mbox{\hyperlink{classPopulation}{Population}} $\ast$population)
+\item 
+\mbox{\Hypertarget{classSpikingNetwork_aa247d1287e898412a43427d583fc0eb0}\label{classSpikingNetwork_aa247d1287e898412a43427d583fc0eb0}} 
+void {\bfseries run} (\mbox{\hyperlink{classEvolutionContext}{Evolution\+Context}} $\ast$evo, double time)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classSpikingNetwork_a357db7d40dacbdbfe3528c06819a46ab}\label{classSpikingNetwork_a357db7d40dacbdbfe3528c06819a46ab}} 
+std\+::vector$<$ \mbox{\hyperlink{classPopulation}{Population}} $\ast$ $>$ {\bfseries populations}
+\item 
+\mbox{\Hypertarget{classSpikingNetwork_a8066c4e75fb9869fb2386638078802b5}\label{classSpikingNetwork_a8066c4e75fb9869fb2386638078802b5}} 
+\mbox{\hyperlink{classHierarchicalID}{Hierarchical\+ID}} $\ast$ {\bfseries id}
+\item 
+\mbox{\Hypertarget{classSpikingNetwork_aa898350628754b1752f14d6cd8150da6}\label{classSpikingNetwork_aa898350628754b1752f14d6cd8150da6}} 
+std\+::vector$<$ \mbox{\hyperlink{classPopCurrentInjector}{Pop\+Current\+Injector}} $\ast$ $>$ {\bfseries injectors}
+\item 
+\mbox{\Hypertarget{classSpikingNetwork_a7313cf49e1b2b54cffa46c6ac6cf6f4d}\label{classSpikingNetwork_a7313cf49e1b2b54cffa46c6ac6cf6f4d}} 
+std\+::vector$<$ \mbox{\hyperlink{classPopulationSpikeMonitor}{Population\+Spike\+Monitor}} $\ast$ $>$ {\bfseries population\+\_\+spike\+\_\+monitors}
+\item 
+\mbox{\Hypertarget{classSpikingNetwork_aaf46473103b688bad8e5df10a399ae5c}\label{classSpikingNetwork_aaf46473103b688bad8e5df10a399ae5c}} 
+std\+::vector$<$ \mbox{\hyperlink{classPopulationStateMonitor}{Population\+State\+Monitor}} $\ast$ $>$ {\bfseries population\+\_\+state\+\_\+monitors}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+A collection of populations. 
+
+This class is intended to manage input/output to/from populations using the objects contained in devices.\+cpp
+
+Also, coordinates the evolution of the populations. 
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/moremoon/quilt/quilt/src\+\_\+cpp/include/network.\+hpp\item 
+/home/moremoon/quilt/quilt/src\+\_\+cpp/network.\+cpp\end{DoxyCompactItemize}

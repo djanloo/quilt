@@ -1,0 +1,97 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="classOscillatorNetwork" kind="class" language="C++" prot="public">
+    <compoundname>OscillatorNetwork</compoundname>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classOscillatorNetwork_1a98d7e9d88e6fb86893eb2261d6a06778" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classOscillator" kindref="compound">Oscillator</ref> * &gt;</type>
+        <definition>std::vector&lt;Oscillator*&gt; OscillatorNetwork::oscillators</definition>
+        <argsstring></argsstring>
+        <name>oscillators</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="58" column="21" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classOscillatorNetwork_1a77d57ee0cffb3db20e612b368205647d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>OscillatorNetwork::OscillatorNetwork</definition>
+        <argsstring>(oscillator_type osc_type, std::vector&lt; ParaMap * &gt; params, const Projection &amp;self_projection)</argsstring>
+        <name>OscillatorNetwork</name>
+        <param>
+          <type>oscillator_type</type>
+          <declname>osc_type</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="classParaMap" kindref="compound">ParaMap</ref> * &gt;</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classProjection" kindref="compound">Projection</ref> &amp;</type>
+          <declname>self_projection</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="56" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/oscillators.cpp" bodystart="76" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classOscillatorNetwork_1aa7a71d9569222f609276f187992c45a4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void OscillatorNetwork::run</definition>
+        <argsstring>(EvolutionContext *evo, double time)</argsstring>
+        <name>run</name>
+        <param>
+          <type><ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref> *</type>
+          <declname>evo</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>time</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="60" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/oscillators.cpp" bodystart="119" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classOscillatorNetwork_1a408c13b8b89798b04c67602d2ee9f11c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void OscillatorNetwork::add_oscillator</definition>
+        <argsstring>(Oscillator *oscillator)</argsstring>
+        <name>add_oscillator</name>
+        <param>
+          <type><ref refid="classOscillator" kindref="compound">Oscillator</ref> *</type>
+          <declname>oscillator</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="61" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/oscillators.cpp" bodystart="115" bodyend="117"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="54" column="1" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" bodystart="54" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classOscillatorNetwork_1a408c13b8b89798b04c67602d2ee9f11c" prot="public" virt="non-virtual"><scope>OscillatorNetwork</scope><name>add_oscillator</name></member>
+      <member refid="classOscillatorNetwork_1a77d57ee0cffb3db20e612b368205647d" prot="public" virt="non-virtual"><scope>OscillatorNetwork</scope><name>OscillatorNetwork</name></member>
+      <member refid="classOscillatorNetwork_1a98d7e9d88e6fb86893eb2261d6a06778" prot="public" virt="non-virtual"><scope>OscillatorNetwork</scope><name>oscillators</name></member>
+      <member refid="classOscillatorNetwork_1aa7a71d9569222f609276f187992c45a4" prot="public" virt="non-virtual"><scope>OscillatorNetwork</scope><name>run</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

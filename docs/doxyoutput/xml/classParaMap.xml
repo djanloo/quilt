@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="classParaMap" kind="class" language="C++" prot="public">
+    <compoundname>ParaMap</compoundname>
+    <includes refid="base__objects_8hpp" local="no">base_objects.hpp</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classParaMap_1ae1f6d5e57baac2ba62011d2e2cc96d78" prot="public" static="no" mutable="no">
+        <type>std::map&lt; std::string, float &gt;</type>
+        <definition>std::map&lt;std::string, float&gt; ParaMap::value_map</definition>
+        <argsstring></argsstring>
+        <name>value_map</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/base_objects.hpp" line="53" column="18" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/base_objects.hpp" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classParaMap_1a5ef280de6f25d10e261eb9e3a8df36c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ParaMap::ParaMap</definition>
+        <argsstring>()</argsstring>
+        <name>ParaMap</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/base_objects.hpp" line="54" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/base_objects.cpp" bodystart="23" bodyend="24"/>
+      </memberdef>
+      <memberdef kind="function" id="classParaMap_1afbd63525644e809d891b999c6edb3299" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>ParaMap::ParaMap</definition>
+        <argsstring>(const std::map&lt; std::string, float &gt; &amp;value_map)</argsstring>
+        <name>ParaMap</name>
+        <param>
+          <type>const std::map&lt; std::string, float &gt; &amp;</type>
+          <declname>value_map</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/base_objects.hpp" line="55" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/base_objects.cpp" bodystart="26" bodyend="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classParaMap_1a021961c75d59c87098c859dd19235dbf" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ParaMap::update</definition>
+        <argsstring>(const ParaMap &amp;new_values)</argsstring>
+        <name>update</name>
+        <param>
+          <type>const <ref refid="classParaMap" kindref="compound">ParaMap</ref> &amp;</type>
+          <declname>new_values</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/base_objects.hpp" line="57" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/base_objects.cpp" bodystart="32" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classParaMap_1af20319544be80584327a09edaaf80786" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void ParaMap::add</definition>
+        <argsstring>(const std::string &amp;key, float value)</argsstring>
+        <name>add</name>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/base_objects.hpp" line="58" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/base_objects.cpp" bodystart="27" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classParaMap_1a78ddf6922cae819d9e4a5428353fb551" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>float</type>
+        <definition>float ParaMap::get</definition>
+        <argsstring>(const std::string &amp;key) const</argsstring>
+        <name>get</name>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/base_objects.hpp" line="59" column="15" bodyfile="/home/moremoon/quilt/quilt/src_cpp/base_objects.cpp" bodystart="30" bodyend="30"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>a dictionary class </para>
+    </briefdescription>
+    <detaileddescription>
+<para>It&apos;s just a bridge between python and C++ </para>
+    </detaileddescription>
+    <location file="/home/moremoon/quilt/quilt/src_cpp/include/base_objects.hpp" line="51" column="1" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/base_objects.hpp" bodystart="51" bodyend="60"/>
+    <listofallmembers>
+      <member refid="classParaMap_1af20319544be80584327a09edaaf80786" prot="public" virt="non-virtual"><scope>ParaMap</scope><name>add</name></member>
+      <member refid="classParaMap_1a78ddf6922cae819d9e4a5428353fb551" prot="public" virt="non-virtual"><scope>ParaMap</scope><name>get</name></member>
+      <member refid="classParaMap_1a5ef280de6f25d10e261eb9e3a8df36c1" prot="public" virt="non-virtual"><scope>ParaMap</scope><name>ParaMap</name></member>
+      <member refid="classParaMap_1afbd63525644e809d891b999c6edb3299" prot="public" virt="non-virtual"><scope>ParaMap</scope><name>ParaMap</name></member>
+      <member refid="classParaMap_1a021961c75d59c87098c859dd19235dbf" prot="public" virt="non-virtual"><scope>ParaMap</scope><name>update</name></member>
+      <member refid="classParaMap_1ae1f6d5e57baac2ba62011d2e2cc96d78" prot="public" virt="non-virtual"><scope>ParaMap</scope><name>value_map</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,48 @@
+\hypertarget{classOscillator}{}\doxysection{Oscillator Class Reference}
+\label{classOscillator}\index{Oscillator@{Oscillator}}
+
+
+Inheritance diagram for Oscillator\+:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=143pt]{classOscillator__inherit__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classOscillator_a301846da42880f9ba1dd921638460785}\label{classOscillator_a301846da42880f9ba1dd921638460785}} 
+void {\bfseries connect} (\mbox{\hyperlink{classOscillator}{Oscillator}} $\ast$osc, float weight, float delay)
+\item 
+\mbox{\Hypertarget{classOscillator_adbed849cc46199664131acb84b71bd8c}\label{classOscillator_adbed849cc46199664131acb84b71bd8c}} 
+void {\bfseries evolve} (\mbox{\hyperlink{classEvolutionContext}{Evolution\+Context}} $\ast$evo)
+\item 
+\mbox{\Hypertarget{classOscillator_aa6f0c4db20218ea7ca0c89b0001e5404}\label{classOscillator_aa6f0c4db20218ea7ca0c89b0001e5404}} 
+virtual void {\bfseries evolve\+\_\+state} (const osc\+\_\+state \&, osc\+\_\+state \&, double)
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classOscillator_ab9fadaca947cad5bfc7ba093659328b3}\label{classOscillator_ab9fadaca947cad5bfc7ba093659328b3}} 
+osc\+\_\+state {\bfseries state}
+\item 
+\mbox{\Hypertarget{classOscillator_a05a22ccda9b7701c3d21a1b94be608c4}\label{classOscillator_a05a22ccda9b7701c3d21a1b94be608c4}} 
+std\+::vector$<$ osc\+\_\+state $>$ {\bfseries history}
+\item 
+\mbox{\Hypertarget{classOscillator_ac45edd5c686103441e7bd4a45b99a943}\label{classOscillator_ac45edd5c686103441e7bd4a45b99a943}} 
+std\+::vector$<$ \mbox{\hyperlink{classLink}{Link}}$<$ \mbox{\hyperlink{classOscillator}{Oscillator}}, \mbox{\hyperlink{classOscillator}{Oscillator}} $>$ $>$ {\bfseries incoming\+\_\+osc}
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classOscillator_aef09cd56eab9455024ca1d6fe99288e0}\label{classOscillator_aef09cd56eab9455024ca1d6fe99288e0}} 
+static osc\+\_\+state {\bfseries none\+\_\+state} = \{0.\+0, 0.\+0\}
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/moremoon/quilt/quilt/src\+\_\+cpp/include/oscillators.\+hpp\item 
+/home/moremoon/quilt/quilt/src\+\_\+cpp/oscillators.\+cpp\end{DoxyCompactItemize}

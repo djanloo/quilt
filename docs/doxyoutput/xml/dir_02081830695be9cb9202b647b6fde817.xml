@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="dir_02081830695be9cb9202b647b6fde817" kind="dir">
+    <compoundname>/home/moremoon/quilt/quilt/src_cpp</compoundname>
+    <innerdir refid="dir_246118f4a69986c92c4d5ff080f784d4">/home/moremoon/quilt/quilt/src_cpp/include</innerdir>
+    <innerfile refid="base__objects_8cpp">base_objects.cpp</innerfile>
+    <innerfile refid="devices_8cpp">devices.cpp</innerfile>
+    <innerfile refid="network_8cpp">network.cpp</innerfile>
+    <innerfile refid="neuron__models_8cpp">neuron_models.cpp</innerfile>
+    <innerfile refid="neurons__base_8cpp">neurons_base.cpp</innerfile>
+    <innerfile refid="oscillators_8cpp">oscillators.cpp</innerfile>
+    <innerfile refid="test__file_8cpp">test_file.cpp</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="/home/moremoon/quilt/quilt/src_cpp/"/>
+  </compounddef>
+</doxygen>

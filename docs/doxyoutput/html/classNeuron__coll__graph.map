@@ -1,0 +1,7 @@
+<map id="Neuron" name="Neuron">
+<area shape="rect" id="node1" title="The base dynamical object." alt="" coords="49,273,119,300"/>
+<area shape="rect" id="node2" href="$classHierarchicalID.html" title="The ID object to identify nested structures." alt="" coords="5,95,120,121"/>
+<area shape="rect" id="node3" href="$classPopulation.html" title="A collection of neurons sharing neuron model." alt="" coords="104,184,195,211"/>
+<area shape="rect" id="node4" href="$classNeuroParam.html" title=" " alt="" coords="215,95,318,121"/>
+<area shape="rect" id="node5" href="$classParaMap.html" title="a dictionary class" alt="" coords="227,5,306,32"/>
+</map>
