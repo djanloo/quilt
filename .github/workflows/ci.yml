@@ -34,6 +34,8 @@ jobs:
 
     - name: Run tests
       run: | 
+        pip install -r requirements.txt
+        pip install pytest
         export PYTHONPATH=$(pwd):$PYTHONPATH
         pytest tests
 
@@ -43,10 +45,12 @@ jobs:
     steps:
     - name: Install docs requirements
       run: |
+        pip install -r requirements.txt
         pip install sphinx breathe
         sudo apt install doxygen graphviz
     - name: Build the docs
       run: |
+        ls
         cd docs
         doxygen
         make html
