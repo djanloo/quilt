@@ -1,4 +1,0 @@
-<map id="aqif_neuron" name="aqif_neuron">
-<area shape="rect" id="node1" title="The adaptive quadratic integrate and fire model." alt="" coords="5,80,104,107"/>
-<area shape="rect" id="node2" href="$classNeuron.html" title="The base dynamical object." alt="" coords="20,5,89,32"/>
-</map>
