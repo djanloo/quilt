@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="classharmonic" kind="class" language="C++" prot="public">
+    <compoundname>harmonic</compoundname>
+    <basecompoundref refid="classOscillator" prot="public" virt="non-virtual">Oscillator</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classharmonic_1ab9b3c33d4fdf49835ae39aa1a7f040d4" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float harmonic::k</definition>
+        <argsstring></argsstring>
+        <name>k</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="67" column="15" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classharmonic_1aaec8366cf860ea2d755f564f78c39a2d" prot="public" static="yes" mutable="no">
+        <type>osc_state</type>
+        <definition>osc_state harmonic::none_state</definition>
+        <argsstring></argsstring>
+        <name>none_state</name>
+        <initializer>= {0.0, 0.0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="68" column="26" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classharmonic_1a2bb236fd0ae34ac1ab59b04596ded3a0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>harmonic::harmonic</definition>
+        <argsstring>(const ParaMap &amp;params)</argsstring>
+        <name>harmonic</name>
+        <param>
+          <type>const <ref refid="classParaMap" kindref="compound">ParaMap</ref> &amp;</type>
+          <declname>params</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="69" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/oscillators.cpp" bodystart="131" bodyend="136"/>
+      </memberdef>
+      <memberdef kind="function" id="classharmonic_1aec77806e654727be4a4a8ec8fe3e0858" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void harmonic::evolve_state</definition>
+        <argsstring>(const osc_state &amp;state, osc_state &amp;dxdt, double t) override</argsstring>
+        <name>evolve_state</name>
+        <reimplements refid="classOscillator_1aa6f0c4db20218ea7ca0c89b0001e5404">evolve_state</reimplements>
+        <param>
+          <type>const osc_state &amp;</type>
+          <declname>state</declname>
+        </param>
+        <param>
+          <type>osc_state &amp;</type>
+          <declname>dxdt</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>t</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="70" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/oscillators.cpp" bodystart="138" bodyend="145"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>harmonic</label>
+        <link refid="classharmonic"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Oscillator</label>
+        <link refid="classOscillator"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>harmonic</label>
+        <link refid="classharmonic"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>Oscillator</label>
+        <link refid="classOscillator"/>
+      </node>
+    </collaborationgraph>
+    <location file="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" line="65" column="1" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/oscillators.hpp" bodystart="65" bodyend="71"/>
+    <listofallmembers>
+      <member refid="classOscillator_1a301846da42880f9ba1dd921638460785" prot="public" virt="non-virtual"><scope>harmonic</scope><name>connect</name></member>
+      <member refid="classOscillator_1adbed849cc46199664131acb84b71bd8c" prot="public" virt="non-virtual"><scope>harmonic</scope><name>evolve</name></member>
+      <member refid="classharmonic_1aec77806e654727be4a4a8ec8fe3e0858" prot="public" virt="virtual"><scope>harmonic</scope><name>evolve_state</name></member>
+      <member refid="classharmonic_1a2bb236fd0ae34ac1ab59b04596ded3a0" prot="public" virt="non-virtual"><scope>harmonic</scope><name>harmonic</name></member>
+      <member refid="classOscillator_1a05a22ccda9b7701c3d21a1b94be608c4" prot="public" virt="non-virtual"><scope>harmonic</scope><name>history</name></member>
+      <member refid="classOscillator_1ac45edd5c686103441e7bd4a45b99a943" prot="public" virt="non-virtual"><scope>harmonic</scope><name>incoming_osc</name></member>
+      <member refid="classharmonic_1ab9b3c33d4fdf49835ae39aa1a7f040d4" prot="public" virt="non-virtual"><scope>harmonic</scope><name>k</name></member>
+      <member refid="classharmonic_1aaec8366cf860ea2d755f564f78c39a2d" prot="public" virt="non-virtual"><scope>harmonic</scope><name>none_state</name></member>
+      <member refid="classOscillator_1a99fd3a4a9ef26a4f8025ac7a519d900b" prot="public" virt="non-virtual"><scope>harmonic</scope><name>Oscillator</name></member>
+      <member refid="classOscillator_1ab9fadaca947cad5bfc7ba093659328b3" prot="public" virt="non-virtual"><scope>harmonic</scope><name>state</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,326 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="neurons__base_8hpp" kind="file" language="C++">
+    <compoundname>neurons_base.hpp</compoundname>
+    <includes refid="base__objects_8hpp" local="yes">base_objects.hpp</includes>
+    <includes local="no">iostream</includes>
+    <includes local="no">vector</includes>
+    <includes local="no">queue</includes>
+    <includes local="no">limits</includes>
+    <includes local="no">string</includes>
+    <includedby refid="devices_8cpp" local="yes">/home/moremoon/quilt/quilt/src_cpp/devices.cpp</includedby>
+    <includedby refid="neuron__models_8hpp" local="yes">/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp</includedby>
+    <includedby refid="network_8cpp" local="yes">/home/moremoon/quilt/quilt/src_cpp/network.cpp</includedby>
+    <includedby refid="neuron__models_8cpp" local="yes">/home/moremoon/quilt/quilt/src_cpp/neuron_models.cpp</includedby>
+    <includedby refid="neurons__base_8cpp" local="yes">/home/moremoon/quilt/quilt/src_cpp/neurons_base.cpp</includedby>
+    <includedby refid="oscillators_8cpp" local="yes">/home/moremoon/quilt/quilt/src_cpp/oscillators.cpp</includedby>
+    <includedby refid="test__file_8cpp" local="yes">/home/moremoon/quilt/quilt/src_cpp/test_file.cpp</includedby>
+    <incdepgraph>
+      <node id="9">
+        <label>queue</label>
+      </node>
+      <node id="10">
+        <label>limits</label>
+      </node>
+      <node id="1">
+        <label>/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp</label>
+        <link refid="neurons__base_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>cmath</label>
+      </node>
+      <node id="5">
+        <label>stdexcept</label>
+      </node>
+      <node id="11">
+        <label>string</label>
+      </node>
+      <node id="7">
+        <label>map</label>
+      </node>
+      <node id="2">
+        <label>base_objects.hpp</label>
+        <link refid="base__objects_8hpp_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>vector</label>
+      </node>
+      <node id="8">
+        <label>iostream</label>
+      </node>
+      <node id="3">
+        <label>cstddef</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp</label>
+        <link refid="neurons__base_8hpp"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp</label>
+        <link refid="neuron__models_8hpp_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classSpike" prot="public">Spike</innerclass>
+    <innerclass refid="classSynapse" prot="public">Synapse</innerclass>
+    <innerclass refid="classNeuron" prot="public">Neuron</innerclass>
+    <innerclass refid="classNeuroParam" prot="public">NeuroParam</innerclass>
+      <sectiondef kind="define">
+      <memberdef kind="define" id="neurons__base_8hpp_1a6152dfae269ab518e20ead16c5c876ed" prot="public" static="no">
+        <name>MAX_GSYN_EXC</name>
+        <initializer>15.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="15" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="15" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="neurons__base_8hpp_1a53f1858e7db3afe4e8a5fd6ab56f0a04" prot="public" static="no">
+        <name>MAX_GSYN_INH</name>
+        <initializer>15.0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="16" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="16" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="neurons__base_8hpp_1ad545474cdbc8de55e7a5785fea9906c9" prot="public" static="no">
+        <name>MAX_POTENTIAL_INCREMENT</name>
+        <initializer>10</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="18" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="18" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="neurons__base_8hpp_1a5644ac87f2540058ce4aed401d5ffc40" prot="public" static="no">
+        <name>MAX_POTENTIAL_SLOPE</name>
+        <initializer>50/0.1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="19" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="19" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="neurons__base_8hpp_1a77124980a35b570664f838c0a5b9097d" prot="public" static="no">
+        <name>MAX_SPIKE_QUEUE_LENGTH</name>
+        <initializer>10000</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="21" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="21" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="enum">
+      <memberdef kind="enum" id="neurons__base_8hpp_1aadfc0bbd05466039156c8d607ba5893e" prot="public" static="no" strong="yes">
+        <type>unsigned int</type>
+        <name>neuron_type</name>
+        <enumvalue id="neurons__base_8hpp_1aadfc0bbd05466039156c8d607ba5893eab97b983a59ba0eb3cbc353b4d1f3fadd" prot="public">
+          <name>base_neuron</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="neurons__base_8hpp_1aadfc0bbd05466039156c8d607ba5893ea2d466aa43c43928e1615a3ed04383162" prot="public">
+          <name>aqif</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="neurons__base_8hpp_1aadfc0bbd05466039156c8d607ba5893ea140f34014d1f972b8ab9a2aeccc1ac20" prot="public">
+          <name>izhikevich</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="neurons__base_8hpp_1aadfc0bbd05466039156c8d607ba5893ea136f2f70171b1a48b94e7850b92bf903" prot="public">
+          <name>aeif</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="23" column="1" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="23" bodyend="23"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="neurons__base_8hpp_1a66266918eab53005813e7e74fb084290" prot="public" static="no">
+        <type>std::vector&lt; double &gt;</type>
+        <definition>typedef std::vector&lt;double&gt; neuron_state</definition>
+        <argsstring></argsstring>
+        <name>neuron_state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="25" column="21" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="25" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="2"><highlight class="normal"></highlight></codeline>
+<codeline lineno="8"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;base_objects.hpp&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="9"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;iostream&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="10"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="11"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;queue&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="12"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;limits&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="13"><highlight class="normal"></highlight><highlight class="preprocessor">#include&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="14"><highlight class="normal"></highlight></codeline>
+<codeline lineno="15"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MAX_GSYN_EXC<sp/>15.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="16"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MAX_GSYN_INH<sp/>15.0</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="17"><highlight class="normal"></highlight></codeline>
+<codeline lineno="18"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MAX_POTENTIAL_INCREMENT<sp/>10<sp/></highlight><highlight class="comment">//<sp/>mV</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MAX_POTENTIAL_SLOPE<sp/>50/0.1<sp/></highlight><highlight class="comment">//<sp/>mV/ms</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>MAX_SPIKE_QUEUE_LENGTH<sp/>10000</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>neuron_type<sp/>:<sp/>unsigned<sp/>int<sp/>{base_neuron,<sp/>aqif,<sp/>izhikevich,<sp/>aeif};</highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="keyword">typedef</highlight><highlight class="normal"><sp/>std::vector&lt;double&gt;<sp/>neuron_state;</highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="comment">//<sp/>The<sp/>menu:</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref>;</highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classHierarchicalID" kindref="compound">HierarchicalID</ref>;</highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classParaMap" kindref="compound">ParaMap</ref>;</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classSpike" kindref="compound">Spike</ref>;</highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classSynapse" kindref="compound">Synapse</ref>;</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeuron" kindref="compound">Neuron</ref>;</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classPopulation" kindref="compound">Population</ref>;</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classProjection" kindref="compound">Projection</ref>;</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="classSpike" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classSpike" kindref="compound">Spike</ref>{</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>weight,<sp/>arrival_time;</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>processed;</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classSpike" kindref="compound">Spike</ref>(</highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>weight,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>arrival_time):</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>weight(weight),<sp/>arrival_time(arrival_time),<sp/>processed(</highlight><highlight class="keyword">false</highlight><highlight class="normal">){}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Set<sp/>the<sp/>importance:<sp/>the<sp/>smaller<sp/>the<sp/>arrival<sp/>time<sp/>the<sp/>greater<sp/>the<sp/>importance</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator&lt;(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classSpike" kindref="compound">Spike</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>this-&gt;arrival_time<sp/>&gt;<sp/>other.arrival_time;<sp/>}</highlight></codeline>
+<codeline lineno="55"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="64" refid="classSynapse" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classSynapse" kindref="compound">Synapse</ref>{</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classSynapse" kindref="compound">Synapse</ref>(<ref refid="classNeuron" kindref="compound">Neuron</ref><sp/>*<sp/>presynaptic,<sp/><ref refid="classNeuron" kindref="compound">Neuron</ref><sp/>*<sp/>postsynaptic,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>weight,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>delay):</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>presynaptic(presynaptic),postsynaptic(postsynaptic),</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>weight(weight),<sp/>delay(delay){</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(this-&gt;delay<sp/>&lt;<sp/>min_delay){</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>min_delay<sp/>=<sp/>this-&gt;delay;</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>fire(<ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref><sp/>*<sp/>evo);</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>min_delay;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeuron" kindref="compound">Neuron</ref><sp/>*<sp/>presynaptic;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeuron" kindref="compound">Neuron</ref><sp/>*<sp/>postsynaptic;</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>weight,<sp/>delay;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105" refid="classNeuron" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeuron" kindref="compound">Neuron</ref>{</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>neuron_state<sp/>state;</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Spike<sp/>flag<sp/>is<sp/>introduced<sp/>to<sp/>record<sp/>the<sp/>threshold<sp/>value</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>so<sp/>that<sp/>on_spike()<sp/>is<sp/>called<sp/>the<sp/>timestep<sp/>after<sp/>the<sp/>spike</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>spike_flag;<sp/></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Base<sp/>properties</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>neuron_type<sp/>nt<sp/>=<sp/>neuron_type::base_neuron;</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classHierarchicalID" kindref="compound">HierarchicalID</ref><sp/>id;</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classPopulation" kindref="compound">Population</ref><sp/>*<sp/>population;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>neuron_state<sp/>get_state(){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>state;}</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"></highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Spike<sp/>stuff</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;Synapse&gt;<sp/>efferent_synapses;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::priority_queue&lt;Spike&gt;<sp/>incoming_spikes;</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>last_spike_time;</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"></highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeuron" kindref="compound">Neuron</ref>(<ref refid="classPopulation" kindref="compound">Population</ref><sp/>*<sp/>population);<sp/></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>connect(<ref refid="classNeuron" kindref="compound">Neuron</ref><sp/>*<sp/>neuron,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>weight,<sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/>delay);</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>handle_incoming_spikes(<ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref><sp/>*<sp/>evo);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>evolve(<ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref><sp/>*<sp/>evo);</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>emit_spike(<ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref><sp/>*<sp/>evo);</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>These<sp/>must<sp/>be<sp/>implemented<sp/>for<sp/>each<sp/>specific<sp/>neuron</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>on_spike(<ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref><sp/>*<sp/>evo);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>evolve_state(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>neuron_state<sp/>&amp;<sp/></highlight><highlight class="comment">/*x*/</highlight><highlight class="normal"><sp/>,<sp/>neuron_state<sp/>&amp;<sp/></highlight><highlight class="comment">/*dxdt*/</highlight><highlight class="normal"><sp/>,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">double</highlight><highlight class="normal"><sp/></highlight><highlight class="comment">/*t*/</highlight><highlight class="normal"><sp/>){</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::cout<sp/>&lt;&lt;<sp/></highlight><highlight class="stringliteral">&quot;WARNING:<sp/>using<sp/>virtual<sp/>evolve_state<sp/>of<sp/>&lt;Neuron&gt;&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>};</highlight></codeline>
+<codeline lineno="135"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"></highlight></codeline>
+<codeline lineno="137" refid="classNeuroParam" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classNeuroParam" kindref="compound">NeuroParam</ref>{<sp/></highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>neuron_type<sp/>neur_type;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classParaMap" kindref="compound">ParaMap</ref><sp/>paramap;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>E_rest,<sp/>E_reset,<sp/>E_thr,<sp/>E_exc,<sp/>E_inh;</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>C_m,<sp/>tau_m,<sp/>tau_e,<sp/>tau_i,<sp/>tau_refrac;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>I_ext,<sp/>I_osc,<sp/>omega_I;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeuroParam" kindref="compound">NeuroParam</ref>();</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classNeuroParam" kindref="compound">NeuroParam</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classParaMap" kindref="compound">ParaMap</ref><sp/>&amp;<sp/>paramap);</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"></highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>neuron_type<sp/>get_neuron_type(){</highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>neur_type;}</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>add(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>&amp;<sp/>key,<sp/></highlight><highlight class="keywordtype">float</highlight><highlight class="normal"><sp/>value);</highlight></codeline>
+<codeline lineno="153"><highlight class="normal">};</highlight></codeline>
+    </programlisting>
+    <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp"/>
+  </compounddef>
+</doxygen>

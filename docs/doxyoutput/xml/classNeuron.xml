@@ -1,0 +1,373 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="classNeuron" kind="class" language="C++" prot="public">
+    <compoundname>Neuron</compoundname>
+    <derivedcompoundref refid="classaeif__neuron" prot="public" virt="non-virtual">aeif_neuron</derivedcompoundref>
+    <derivedcompoundref refid="classaqif__neuron" prot="public" virt="non-virtual">aqif_neuron</derivedcompoundref>
+    <derivedcompoundref refid="classizhikevich__neuron" prot="public" virt="non-virtual">izhikevich_neuron</derivedcompoundref>
+    <includes refid="neurons__base_8hpp" local="no">neurons_base.hpp</includes>
+      <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classNeuron_1a1d4b89151b4a54953ca0f8d1c7a96beb" prot="protected" static="no" mutable="no">
+        <type>neuron_state</type>
+        <definition>neuron_state Neuron::state</definition>
+        <argsstring></argsstring>
+        <name>state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="107" column="22" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeuron_1aa84e74af7beb2c4a04715c6c5bc21f4f" prot="protected" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool Neuron::spike_flag</definition>
+        <argsstring></argsstring>
+        <name>spike_flag</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="111" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classNeuron_1ad3c618a695f5ac2388cc267a53d28ca3" prot="public" static="no" mutable="no">
+        <type>neuron_type</type>
+        <definition>neuron_type Neuron::nt</definition>
+        <argsstring></argsstring>
+        <name>nt</name>
+        <initializer>= neuron_type::base_neuron</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="114" column="21" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeuron_1a1a3fb972d0b9e21e122c7e7003b5ec0b" prot="public" static="no" mutable="no">
+        <type><ref refid="classHierarchicalID" kindref="compound">HierarchicalID</ref></type>
+        <definition>HierarchicalID Neuron::id</definition>
+        <argsstring></argsstring>
+        <name>id</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="115" column="24" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeuron_1ade2a3f79c8dcb589521ca12bdcbea273" prot="public" static="no" mutable="no">
+        <type><ref refid="classPopulation" kindref="compound">Population</ref> *</type>
+        <definition>Population* Neuron::population</definition>
+        <argsstring></argsstring>
+        <name>population</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="116" column="21" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="116" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeuron_1a6c5d4d2ec96a59f83a3c723558f83e21" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classSynapse" kindref="compound">Synapse</ref> &gt;</type>
+        <definition>std::vector&lt;Synapse&gt; Neuron::efferent_synapses</definition>
+        <argsstring></argsstring>
+        <name>efferent_synapses</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="120" column="21" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeuron_1ae5f5f206cbbcb75763a72c327dab175b" prot="public" static="no" mutable="no">
+        <type>std::priority_queue&lt; <ref refid="classSpike" kindref="compound">Spike</ref> &gt;</type>
+        <definition>std::priority_queue&lt;Spike&gt; Neuron::incoming_spikes</definition>
+        <argsstring></argsstring>
+        <name>incoming_spikes</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="121" column="29" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classNeuron_1a0dba8e51eadcdb2bb9d9a936f2ebc4fc" prot="public" static="no" mutable="no">
+        <type>double</type>
+        <definition>double Neuron::last_spike_time</definition>
+        <argsstring></argsstring>
+        <name>last_spike_time</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="122" column="16" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="122" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classNeuron_1a17da1890e3fe3ab43d10afc72861d7e9" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>neuron_state</type>
+        <definition>neuron_state Neuron::get_state</definition>
+        <argsstring>()</argsstring>
+        <name>get_state</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="117" column="22" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="117" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeuron_1a5d5e3413ae66ee0dbb2013079b21c1db" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Neuron::Neuron</definition>
+        <argsstring>(Population *population)</argsstring>
+        <name>Neuron</name>
+        <param>
+          <type><ref refid="classPopulation" kindref="compound">Population</ref> *</type>
+          <declname>population</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="124" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/neurons_base.cpp" bodystart="55" bodyend="61"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeuron_1af3effb6dae2742c1434c5b37cf91ceec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Neuron::connect</definition>
+        <argsstring>(Neuron *neuron, double weight, double delay)</argsstring>
+        <name>connect</name>
+        <param>
+          <type><ref refid="classNeuron" kindref="compound">Neuron</ref> *</type>
+          <declname>neuron</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>weight</declname>
+        </param>
+        <param>
+          <type>double</type>
+          <declname>delay</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="125" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/neurons_base.cpp" bodystart="63" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeuron_1ab92ab46bb3320bc50d90de2221e8ac1f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Neuron::handle_incoming_spikes</definition>
+        <argsstring>(EvolutionContext *evo)</argsstring>
+        <name>handle_incoming_spikes</name>
+        <param>
+          <type><ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref> *</type>
+          <declname>evo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="126" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/neurons_base.cpp" bodystart="68" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeuron_1a3aa3bafb5fce1af75eca0d2acb79d647" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Neuron::evolve</definition>
+        <argsstring>(EvolutionContext *evo)</argsstring>
+        <name>evolve</name>
+        <param>
+          <type><ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref> *</type>
+          <declname>evo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="127" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/neurons_base.cpp" bodystart="120" bodyend="150"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeuron_1a484089e376be9abd945811c0d0889dc0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Neuron::emit_spike</definition>
+        <argsstring>(EvolutionContext *evo)</argsstring>
+        <name>emit_spike</name>
+        <param>
+          <type><ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref> *</type>
+          <declname>evo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="128" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/neurons_base.cpp" bodystart="152" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeuron_1ad8f72fa7af344c30de42cd740e22df41" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void Neuron::on_spike</definition>
+        <argsstring>(EvolutionContext *evo)</argsstring>
+        <name>on_spike</name>
+        <reimplementedby refid="classaqif__neuron_1a63c3b8d5ea7992d3001c4c81b7c67800">on_spike</reimplementedby>
+        <reimplementedby refid="classizhikevich__neuron_1ac2589cb08e5d081bbc4ee9ec68947eb0">on_spike</reimplementedby>
+        <reimplementedby refid="classaeif__neuron_1ad42cd8ce5daa6f88e387938b6d2f5e25">on_spike</reimplementedby>
+        <param>
+          <type><ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref> *</type>
+          <declname>evo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="131" column="22" bodyfile="/home/moremoon/quilt/quilt/src_cpp/neurons_base.cpp" bodystart="164" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classNeuron_1a31a56b108e0b8c14bb43cafe4846563f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>void</type>
+        <definition>virtual void Neuron::evolve_state</definition>
+        <argsstring>(const neuron_state &amp;, neuron_state &amp;, const double)</argsstring>
+        <name>evolve_state</name>
+        <reimplementedby refid="classaqif__neuron_1a785162d023d5b37b2a99df36efd8dbc5">evolve_state</reimplementedby>
+        <reimplementedby refid="classizhikevich__neuron_1a8b9e8076255c7606028d52761284b9b0">evolve_state</reimplementedby>
+        <reimplementedby refid="classaeif__neuron_1a8b61d4e874f5de323ec1faf48aecbe55">evolve_state</reimplementedby>
+        <param>
+          <type>const neuron_state &amp;</type>
+        </param>
+        <param>
+          <type>neuron_state &amp;</type>
+        </param>
+        <param>
+          <type>const double</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="132" column="22" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="132" bodyend="134"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>The base dynamical object. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The 9 to 5 job of a neuron is:<itemizedlist>
+<listitem><para>process incoming spikes</para>
+</listitem><listitem><para>evolve the state</para>
+</listitem><listitem><para>fire if it&apos;s the case</para>
+</listitem></itemizedlist>
+</para>
+<para>The first and the last stage are (roughly) equal for every model, while the evolution equation is model dependent.</para>
+<para>To declare a new neuron:<itemizedlist>
+<listitem><para>override the <computeroutput>evolve_state</computeroutput> method</para>
+</listitem><listitem><para>add the neuron to neuron_type enum class</para>
+</listitem></itemizedlist>
+</para>
+<para>After profiling, it became evident that spike processing has a significantly greater impact on computational cost than I had initially anticipated. Therefore, each improvement attempt should start with an analysis of handle_incoming_spikes() </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>Neuron</label>
+        <link refid="classNeuron"/>
+      </node>
+      <node id="4">
+        <label>izhikevich_neuron</label>
+        <link refid="classizhikevich__neuron"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>aqif_neuron</label>
+        <link refid="classaqif__neuron"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>aeif_neuron</label>
+        <link refid="classaeif__neuron"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>ParaMap</label>
+        <link refid="classParaMap"/>
+      </node>
+      <node id="1">
+        <label>Neuron</label>
+        <link refid="classNeuron"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>id</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>population</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>HierarchicalID</label>
+        <link refid="classHierarchicalID"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>parent</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>NeuroParam</label>
+        <link refid="classNeuroParam"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>paramap</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>Population</label>
+        <link refid="classPopulation"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>neuroparam</edgelabel>
+        </childnode>
+        <childnode refid="2" relation="usage">
+          <edgelabel>id</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="105" column="1" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="105" bodyend="135"/>
+    <listofallmembers>
+      <member refid="classNeuron_1af3effb6dae2742c1434c5b37cf91ceec" prot="public" virt="non-virtual"><scope>Neuron</scope><name>connect</name></member>
+      <member refid="classNeuron_1a6c5d4d2ec96a59f83a3c723558f83e21" prot="public" virt="non-virtual"><scope>Neuron</scope><name>efferent_synapses</name></member>
+      <member refid="classNeuron_1a484089e376be9abd945811c0d0889dc0" prot="public" virt="non-virtual"><scope>Neuron</scope><name>emit_spike</name></member>
+      <member refid="classNeuron_1a3aa3bafb5fce1af75eca0d2acb79d647" prot="public" virt="non-virtual"><scope>Neuron</scope><name>evolve</name></member>
+      <member refid="classNeuron_1a31a56b108e0b8c14bb43cafe4846563f" prot="public" virt="virtual"><scope>Neuron</scope><name>evolve_state</name></member>
+      <member refid="classNeuron_1a17da1890e3fe3ab43d10afc72861d7e9" prot="public" virt="non-virtual"><scope>Neuron</scope><name>get_state</name></member>
+      <member refid="classNeuron_1ab92ab46bb3320bc50d90de2221e8ac1f" prot="public" virt="non-virtual"><scope>Neuron</scope><name>handle_incoming_spikes</name></member>
+      <member refid="classNeuron_1a1a3fb972d0b9e21e122c7e7003b5ec0b" prot="public" virt="non-virtual"><scope>Neuron</scope><name>id</name></member>
+      <member refid="classNeuron_1ae5f5f206cbbcb75763a72c327dab175b" prot="public" virt="non-virtual"><scope>Neuron</scope><name>incoming_spikes</name></member>
+      <member refid="classNeuron_1a0dba8e51eadcdb2bb9d9a936f2ebc4fc" prot="public" virt="non-virtual"><scope>Neuron</scope><name>last_spike_time</name></member>
+      <member refid="classNeuron_1a5d5e3413ae66ee0dbb2013079b21c1db" prot="public" virt="non-virtual"><scope>Neuron</scope><name>Neuron</name></member>
+      <member refid="classNeuron_1ad3c618a695f5ac2388cc267a53d28ca3" prot="public" virt="non-virtual"><scope>Neuron</scope><name>nt</name></member>
+      <member refid="classNeuron_1ad8f72fa7af344c30de42cd740e22df41" prot="public" virt="virtual"><scope>Neuron</scope><name>on_spike</name></member>
+      <member refid="classNeuron_1ade2a3f79c8dcb589521ca12bdcbea273" prot="public" virt="non-virtual"><scope>Neuron</scope><name>population</name></member>
+      <member refid="classNeuron_1aa84e74af7beb2c4a04715c6c5bc21f4f" prot="protected" virt="non-virtual"><scope>Neuron</scope><name>spike_flag</name></member>
+      <member refid="classNeuron_1a1d4b89151b4a54953ca0f8d1c7a96beb" prot="protected" virt="non-virtual"><scope>Neuron</scope><name>state</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

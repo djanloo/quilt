@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="classaeif__param" kind="class" language="C++" prot="public">
+    <compoundname>aeif_param</compoundname>
+    <basecompoundref refid="classNeuroParam" prot="public" virt="non-virtual">NeuroParam</basecompoundref>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classaeif__param_1aab7dd6bc990572d6eed210bf70207f55" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float aeif_param::Delta</definition>
+        <argsstring></argsstring>
+        <name>Delta</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" line="117" column="15" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classaeif__param_1ab9f9db0255f6eb3986ed16387780a731" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float aeif_param::exp_threshold</definition>
+        <argsstring></argsstring>
+        <name>exp_threshold</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" line="117" column="21" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classaeif__param_1a503ff03e9e33492391465ff5e543c3ec" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float aeif_param::ada_a</definition>
+        <argsstring></argsstring>
+        <name>ada_a</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" line="117" column="35" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classaeif__param_1ac3f2f7a5caf3866177b46b3ac1695954" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float aeif_param::ada_b</definition>
+        <argsstring></argsstring>
+        <name>ada_b</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" line="117" column="41" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classaeif__param_1a66108d974e1cc090039547a8ab01a0d3" prot="public" static="no" mutable="no">
+        <type>float</type>
+        <definition>float aeif_param::ada_tau_w</definition>
+        <argsstring></argsstring>
+        <name>ada_tau_w</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" line="117" column="47" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" bodystart="117" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classaeif__param_1a7988b5e83a88deb270fd1cd10d137f36" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>aeif_param::aeif_param</definition>
+        <argsstring>(const ParaMap &amp;paramap)</argsstring>
+        <name>aeif_param</name>
+        <param>
+          <type>const <ref refid="classParaMap" kindref="compound">ParaMap</ref> &amp;</type>
+          <declname>paramap</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" line="119" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" bodystart="119" bodyend="139"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>NeuroParam</label>
+        <link refid="classNeuroParam"/>
+      </node>
+      <node id="1">
+        <label>aeif_param</label>
+        <link refid="classaeif__param"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>ParaMap</label>
+        <link refid="classParaMap"/>
+      </node>
+      <node id="2">
+        <label>NeuroParam</label>
+        <link refid="classNeuroParam"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>paramap</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>aeif_param</label>
+        <link refid="classaeif__param"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" line="115" column="1" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neuron_models.hpp" bodystart="115" bodyend="140"/>
+    <listofallmembers>
+      <member refid="classaeif__param_1a503ff03e9e33492391465ff5e543c3ec" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>ada_a</name></member>
+      <member refid="classaeif__param_1ac3f2f7a5caf3866177b46b3ac1695954" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>ada_b</name></member>
+      <member refid="classaeif__param_1a66108d974e1cc090039547a8ab01a0d3" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>ada_tau_w</name></member>
+      <member refid="classNeuroParam_1a6c84c791ea706642211037c101c6272a" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>add</name></member>
+      <member refid="classaeif__param_1a7988b5e83a88deb270fd1cd10d137f36" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>aeif_param</name></member>
+      <member refid="classNeuroParam_1ad358a89f9f786b54e95c2fa8ff305580" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>C_m</name></member>
+      <member refid="classaeif__param_1aab7dd6bc990572d6eed210bf70207f55" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>Delta</name></member>
+      <member refid="classNeuroParam_1a69343c6dd23a25e0026030795672e8d4" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>E_exc</name></member>
+      <member refid="classNeuroParam_1a51b08271761fe3daeea17e1bf59a7541" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>E_inh</name></member>
+      <member refid="classNeuroParam_1afcbd26137816df89a8ad465606e43317" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>E_reset</name></member>
+      <member refid="classNeuroParam_1a8ecac4fc8b9ebe87388143fbc83c3157" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>E_rest</name></member>
+      <member refid="classNeuroParam_1adf19130c426760f8eb7ea2f4f156fb83" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>E_thr</name></member>
+      <member refid="classaeif__param_1ab9f9db0255f6eb3986ed16387780a731" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>exp_threshold</name></member>
+      <member refid="classNeuroParam_1afba2c696dc455c37f82fe6f3ab2103ce" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>get_neuron_type</name></member>
+      <member refid="classNeuroParam_1a26e273725508126d3361daf99fa34431" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>I_ext</name></member>
+      <member refid="classNeuroParam_1a5d9c59887d85ca4df23b2debbd172dd2" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>I_osc</name></member>
+      <member refid="classNeuroParam_1a6107914ae46df2a6ff85de3ac8f67774" prot="protected" virt="non-virtual"><scope>aeif_param</scope><name>neur_type</name></member>
+      <member refid="classNeuroParam_1aedb4936101392a3dd9f4cbe59a7b5d7f" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>NeuroParam</name></member>
+      <member refid="classNeuroParam_1a5e4c335f7cd2a8b9642094557e55a925" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>NeuroParam</name></member>
+      <member refid="classNeuroParam_1a5a17697860e04db65ba233131157c8ac" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>omega_I</name></member>
+      <member refid="classNeuroParam_1a6cfc0962ad096f28cb520f38194e1df7" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>paramap</name></member>
+      <member refid="classNeuroParam_1a87c6c94bf48a67bad79798700c8a5442" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>tau_e</name></member>
+      <member refid="classNeuroParam_1a65c7223c2f916ee1fdbe6cb99fde362d" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>tau_i</name></member>
+      <member refid="classNeuroParam_1a26c0119f2ee7cca68df500594fb0fb18" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>tau_m</name></member>
+      <member refid="classNeuroParam_1aa598e7ed0912c2c3eca9c7f799166e7c" prot="public" virt="non-virtual"><scope>aeif_param</scope><name>tau_refrac</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

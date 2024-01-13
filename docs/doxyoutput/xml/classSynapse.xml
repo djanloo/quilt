@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="classSynapse" kind="class" language="C++" prot="public">
+    <compoundname>Synapse</compoundname>
+    <includes refid="neurons__base_8hpp" local="no">neurons_base.hpp</includes>
+      <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classSynapse_1a31bb1e23121ed76b53fcc66fba6c0168" prot="public" static="yes" mutable="no">
+        <type>float</type>
+        <definition>float Synapse::min_delay</definition>
+        <argsstring></argsstring>
+        <name>min_delay</name>
+        <initializer>= std::numeric_limits&lt;float&gt;::infinity()</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="75" column="22" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="75" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classSynapse_1a62e3385eb1bf321f98e61a9a85cbd9ec" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeuron" kindref="compound">Neuron</ref> *</type>
+        <definition>Neuron* Synapse::presynaptic</definition>
+        <argsstring></argsstring>
+        <name>presynaptic</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="78" column="17" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="78" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classSynapse_1ab8ef628981aad85fc64dbf0f84bf83d4" prot="private" static="no" mutable="no">
+        <type><ref refid="classNeuron" kindref="compound">Neuron</ref> *</type>
+        <definition>Neuron* Synapse::postsynaptic</definition>
+        <argsstring></argsstring>
+        <name>postsynaptic</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="79" column="17" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classSynapse_1a83e726dea4f555821e5d9fd1a38cbf65" prot="private" static="no" mutable="no">
+        <type>float</type>
+        <definition>float Synapse::weight</definition>
+        <argsstring></argsstring>
+        <name>weight</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="80" column="15" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classSynapse_1a7f5c3aa7b9ef62fdd7364a0376ad53a6" prot="private" static="no" mutable="no">
+        <type>float</type>
+        <definition>float Synapse::delay</definition>
+        <argsstring></argsstring>
+        <name>delay</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="80" column="22" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classSynapse_1a508159c0602f7ab24b771ae76647fffa" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>Synapse::Synapse</definition>
+        <argsstring>(Neuron *presynaptic, Neuron *postsynaptic, float weight, float delay)</argsstring>
+        <name>Synapse</name>
+        <param>
+          <type><ref refid="classNeuron" kindref="compound">Neuron</ref> *</type>
+          <declname>presynaptic</declname>
+        </param>
+        <param>
+          <type><ref refid="classNeuron" kindref="compound">Neuron</ref> *</type>
+          <declname>postsynaptic</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>weight</declname>
+        </param>
+        <param>
+          <type>float</type>
+          <declname>delay</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="66" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="66" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classSynapse_1a6193d0671bd320637927b733c9cf524c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void Synapse::fire</definition>
+        <argsstring>(EvolutionContext *evo)</argsstring>
+        <name>fire</name>
+        <param>
+          <type><ref refid="classEvolutionContext" kindref="compound">EvolutionContext</ref> *</type>
+          <declname>evo</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="74" column="14" bodyfile="/home/moremoon/quilt/quilt/src_cpp/neurons_base.cpp" bodystart="49" bodyend="53"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>A weight-delay connection object between two neurons. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>The method fire() of the synapse creates a spike and adds it to the spike queue of the postsynaptic neuron. </para>
+    </detaileddescription>
+    <location file="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" line="64" column="1" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/neurons_base.hpp" bodystart="64" bodyend="82"/>
+    <listofallmembers>
+      <member refid="classSynapse_1a7f5c3aa7b9ef62fdd7364a0376ad53a6" prot="private" virt="non-virtual"><scope>Synapse</scope><name>delay</name></member>
+      <member refid="classSynapse_1a6193d0671bd320637927b733c9cf524c" prot="public" virt="non-virtual"><scope>Synapse</scope><name>fire</name></member>
+      <member refid="classSynapse_1a31bb1e23121ed76b53fcc66fba6c0168" prot="public" virt="non-virtual"><scope>Synapse</scope><name>min_delay</name></member>
+      <member refid="classSynapse_1ab8ef628981aad85fc64dbf0f84bf83d4" prot="private" virt="non-virtual"><scope>Synapse</scope><name>postsynaptic</name></member>
+      <member refid="classSynapse_1a62e3385eb1bf321f98e61a9a85cbd9ec" prot="private" virt="non-virtual"><scope>Synapse</scope><name>presynaptic</name></member>
+      <member refid="classSynapse_1a508159c0602f7ab24b771ae76647fffa" prot="public" virt="non-virtual"><scope>Synapse</scope><name>Synapse</name></member>
+      <member refid="classSynapse_1a83e726dea4f555821e5d9fd1a38cbf65" prot="private" virt="non-virtual"><scope>Synapse</scope><name>weight</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

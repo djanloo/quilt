@@ -1,0 +1,8 @@
+<map id="aeif_neuron" name="aeif_neuron">
+<area shape="rect" id="node1" title="The adaptive exponential integrate&#45;and&#45;fire model." alt="" coords="35,349,133,376"/>
+<area shape="rect" id="node2" href="$classNeuron.html" title="The base dynamical object." alt="" coords="49,273,119,300"/>
+<area shape="rect" id="node3" href="$classHierarchicalID.html" title="The ID object to identify nested structures." alt="" coords="5,95,120,121"/>
+<area shape="rect" id="node4" href="$classPopulation.html" title="A collection of neurons sharing neuron model." alt="" coords="104,184,195,211"/>
+<area shape="rect" id="node5" href="$classNeuroParam.html" title=" " alt="" coords="215,95,318,121"/>
+<area shape="rect" id="node6" href="$classParaMap.html" title="a dictionary class" alt="" coords="227,5,306,32"/>
+</map>

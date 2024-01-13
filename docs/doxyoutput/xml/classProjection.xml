@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.1" xml:lang="en-US">
+  <compounddef id="classProjection" kind="class" language="C++" prot="public">
+    <compoundname>Projection</compoundname>
+    <includes refid="network_8hpp" local="no">network.hpp</includes>
+      <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classProjection_1a653f8761d82566a92cb467db4e05301d" prot="public" static="no" mutable="no">
+        <type>float **</type>
+        <definition>float** Projection::weights</definition>
+        <argsstring></argsstring>
+        <name>weights</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" line="39" column="16" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classProjection_1afe034de458e20e4f4170053f8f93ddbc" prot="public" static="no" mutable="no">
+        <type>float **</type>
+        <definition>float ** Projection::delays</definition>
+        <argsstring></argsstring>
+        <name>delays</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" line="39" column="24" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classProjection_1a395c5c652194dae73473d98e0c4e1cb9" prot="public" static="no" mutable="no">
+        <type>unsigned int</type>
+        <definition>unsigned int Projection::start_dimension</definition>
+        <argsstring></argsstring>
+        <name>start_dimension</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" line="40" column="22" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classProjection_1aac5b1a3fa170a10ed731f95c9fde7df6" prot="public" static="no" mutable="no">
+        <type>unsigned int</type>
+        <definition>unsigned int Projection::end_dimension</definition>
+        <argsstring></argsstring>
+        <name>end_dimension</name>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" line="40" column="38" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      </sectiondef>
+      <sectiondef kind="public-func">
+      <memberdef kind="function" id="classProjection_1a79a4670ef66d2a24922cde7ba4d72b45" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>Projection::Projection</definition>
+        <argsstring>(float **weights, float **delays, unsigned int start_dimension, unsigned int end_dimension)</argsstring>
+        <name>Projection</name>
+        <param>
+          <type>float **</type>
+          <declname>weights</declname>
+        </param>
+        <param>
+          <type>float **</type>
+          <declname>delays</declname>
+        </param>
+        <param>
+          <type>unsigned int</type>
+          <declname>start_dimension</declname>
+        </param>
+        <param>
+          <type>unsigned int</type>
+          <declname>end_dimension</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" line="42" column="9" bodyfile="/home/moremoon/quilt/quilt/src_cpp/network.cpp" bodystart="69" bodyend="81"/>
+      </memberdef>
+      </sectiondef>
+    <briefdescription>
+<para>Implements a projection between to populations. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername direction="in">weights</parametername>
+<parametername direction="in">delays</parametername>
+</parameternamelist>
+<parameterdescription>
+<para></para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername direction="in">start_dimension</parametername>
+<parametername direction="in">end_dimension</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>This class is not really useful anymore and will be deprecated. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <location file="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" line="37" column="1" bodyfile="/home/moremoon/quilt/quilt/src_cpp/include/network.hpp" bodystart="37" bodyend="43"/>
+    <listofallmembers>
+      <member refid="classProjection_1afe034de458e20e4f4170053f8f93ddbc" prot="public" virt="non-virtual"><scope>Projection</scope><name>delays</name></member>
+      <member refid="classProjection_1aac5b1a3fa170a10ed731f95c9fde7df6" prot="public" virt="non-virtual"><scope>Projection</scope><name>end_dimension</name></member>
+      <member refid="classProjection_1a79a4670ef66d2a24922cde7ba4d72b45" prot="public" virt="non-virtual"><scope>Projection</scope><name>Projection</name></member>
+      <member refid="classProjection_1a395c5c652194dae73473d98e0c4e1cb9" prot="public" virt="non-virtual"><scope>Projection</scope><name>start_dimension</name></member>
+      <member refid="classProjection_1a653f8761d82566a92cb467db4e05301d" prot="public" virt="non-virtual"><scope>Projection</scope><name>weights</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

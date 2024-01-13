@@ -1,0 +1,6 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$classNeuron.html" title="The base dynamical object." alt="" coords="5,56,75,83"/>
+<area shape="rect" id="node2" href="$classaeif__neuron.html" title="The adaptive exponential integrate&#45;and&#45;fire model." alt="" coords="143,5,241,32"/>
+<area shape="rect" id="node3" href="$classaqif__neuron.html" title="The adaptive quadratic integrate and fire model." alt="" coords="143,56,241,83"/>
+<area shape="rect" id="node4" href="$classizhikevich__neuron.html" title="The adaptive quadratic neuron model of Izhikevich." alt="" coords="123,107,261,133"/>
+</map>
