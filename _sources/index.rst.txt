@@ -10,6 +10,7 @@ Welcome to quilt's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   cpp_docs/index
 
 .. automodule:: quilt.bin.neur
    :members:
