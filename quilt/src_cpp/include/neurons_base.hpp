@@ -1,4 +1,10 @@
 #pragma once
+
+/**
+ * @file neurons_base.h
+ * @brief Dichiarazione degli oggetti di base..
+ */
+
 #include "base_objects.hpp"
 #include <iostream>
 #include <vector>
