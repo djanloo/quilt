@@ -29,3 +29,20 @@ jobs:
       run: | 
         export PYTHONPATH=$(pwd):$PYTHONPATH
         pytest tests
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install docs requirements
+      run: |
+        pip install sphinx breathe
+        sudo apt install doxygen graphviz
+    - name: Build the docs
+      run: |
+        cd docs
+        doxygen
+        make html
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./_build/html
