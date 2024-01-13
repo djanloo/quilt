@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Welcome to quilt’s documentation! &#8212; quilt 0.0.1 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=12dfc556" />
+    <script src="_static/documentation_options.js?v=d45e8c67"></script>
+    <script src="_static/doctools.js?v=888ff710"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+
+  
+  
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="welcome-to-quilt-s-documentation">
+<h1>Welcome to quilt’s documentation!<a class="headerlink" href="#welcome-to-quilt-s-documentation" title="Link to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<p id="module-quilt.bin.neur">Interface module between C++ and python.</p>
+<dl class="simple">
+<dt>Convention:</dt><dd><ul class="simple">
+<li><p>Python-visible objects get nice names</p></li>
+<li><p>C++ objects get a ‘_’ prefix</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv46Neuron">
+<span id="_CPPv36Neuron"></span><span id="_CPPv26Neuron"></span><span id="Neuron"></span><span class="target" id="classNeuron"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Neuron</span></span></span><a class="headerlink" href="#_CPPv46Neuron" title="Link to this definition">¶</a><br /></dt>
+<dd><p>The base dynamical object. </p>
+<p>The 9 to 5 job of a neuron is:<ul class="simple">
+<li><p>process incoming spikes</p></li>
+<li><p>evolve the state</p></li>
+<li><p>fire if it’s the case</p></li>
+</ul>
+</p>
+<p>The first and the last stage are (roughly) equal for every model, while the evolution equation is model dependent.</p>
+<p>To declare a new neuron:<ul class="simple">
+<li><p>override the <code class="docutils literal notranslate"><span class="pre">evolve_state</span></code> method</p></li>
+<li><p>add the neuron to neuron_type enum class</p></li>
+</ul>
+</p>
+<p>After profiling, it became evident that spike processing has a significantly greater impact on computational cost than I had initially anticipated. Therefore, each improvement attempt should start with an analysis of handle_incoming_spikes() </p>
+<p>Subclassed by aeif_neuron, aqif_neuron, izhikevich_neuron</p>
+</dd></dl>
+
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">quilt</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &#169;2024, djanloo.
+      
+      |
+      Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.2.6</a>
+      &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
