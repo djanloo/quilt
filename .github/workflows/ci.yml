@@ -39,8 +39,8 @@ jobs:
         sudo apt install doxygen graphviz
     - name: Build the docs
       run: |
-        ls
         cd docs
+        mkdir doxyoutput
         doxygen
         make html
     - name: Deploy to GitHub Pages
