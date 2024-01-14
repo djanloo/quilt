@@ -48,7 +48,11 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#with-python-jupyter">with Python/Jupyter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#with-python-jupyter">with Python/Jupyter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#neuron-catalogues">Neuron catalogues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spiking-networks">Spiking networks</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#in-pure-c">in pure C++</a></li>
 </ul>
 </li>
@@ -84,11 +88,85 @@
 <h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
 <section id="with-python-jupyter">
 <h2>with Python/Jupyter<a class="headerlink" href="#with-python-jupyter" title="Link to this heading"></a></h2>
-<p>The interface is bla bla</p>
+<p>Configuration files are written in yaml.</p>
+<section id="neuron-catalogues">
+<h3>Neuron catalogues<a class="headerlink" href="#neuron-catalogues" title="Link to this heading"></a></h3>
+<p>A catalogue is a list of neuron models:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># neuron_catalogue.yml</span>
+
+<span class="nt">D1_spiny</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">neuron_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aeif</span>
+<span class="w">    </span><span class="nt">C_m </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40.</span>
+<span class="w">    </span><span class="nt">tau_m </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200.0</span>
+
+<span class="w">    </span><span class="nt">E_rest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-70.0</span>
+<span class="w">    </span><span class="nt">E_reset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-55.0</span>
+<span class="w">    </span><span class="nt">E_thr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">tau_refrac</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+
+<span class="w">    </span><span class="c1"># Exp pars</span>
+<span class="w">    </span><span class="nt">Delta</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">exp_threshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-40</span>
+
+<span class="w">    </span><span class="c1"># Adapting pars</span>
+<span class="w">    </span><span class="nt">ada_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">ada_b</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
+<span class="w">    </span><span class="nt">ada_tau_w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100.0</span>
+
+<span class="w">    </span><span class="c1"># Syn pars</span>
+<span class="w">    </span><span class="nt">tau_e</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.</span>
+<span class="w">    </span><span class="nt">tau_i</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.5</span>
+<span class="w">    </span><span class="nt">E_exc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.</span>
+<span class="w">    </span><span class="nt">E_inh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-65.</span>
+</pre></div>
+</div>
+<p>To load a neuron catalogue:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">quilt.builder</span> <span class="kn">import</span> <span class="n">NeuronCatalogue</span>
+<span class="n">catalogue</span> <span class="o">=</span> <span class="n">NeuronCatalogue</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s2">&quot;neuron_catalogue.yml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="spiking-networks">
+<h3>Spiking networks<a class="headerlink" href="#spiking-networks" title="Link to this heading"></a></h3>
+<p>Spiking networks are defined by a list of populations and projections.
+Each population uses a model defined in a catalogue.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># network_model.yml</span>
+<span class="c1"># This is a nonsense example network</span>
+
+<span class="nt">populations</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1</span>
+<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
+<span class="w">    </span><span class="nt">neuron_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">D1_spiny</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GPi</span>
+<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3000</span>
+<span class="w">    </span><span class="nt">neuron_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gpi_version3</span>
+
+<span class="nt">projections</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GPi-&gt;STR1</span>
+<span class="w">    </span><span class="nt">efferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GPi</span>
+<span class="w">    </span><span class="nt">afferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1</span>
+<span class="w">    </span><span class="nt">features</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">exc_fraction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">        </span><span class="nt">max_exc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="w">        </span><span class="nt">min_delay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1-&gt;GPi</span>
+<span class="w">    </span><span class="nt">efferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1</span>
+<span class="w">    </span><span class="nt">afferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GPi</span>
+<span class="w">    </span><span class="nt">features</span><span class="p">:</span>
+<span class="w">        </span><span class="nt">inh_fraction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">        </span><span class="nt">max_inh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.03</span>
+</pre></div>
+</div>
+<p>To build a spiking network:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">quilt.builder</span> <span class="kn">import</span> <span class="n">SpikingNetwork</span>
+<span class="n">spikenet</span> <span class="o">=</span> <span class="n">SpikingNetwork</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s2">&quot;network_model.yml&quot;</span><span class="p">,</span> <span class="n">catalogue</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="in-pure-c">
 <h2>in pure C++<a class="headerlink" href="#in-pure-c" title="Link to this heading"></a></h2>
-<p>bla bla</p>
+<p>TODO</p>
 </section>
 </section>
 
