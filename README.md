@@ -1,4 +1,5 @@
 [![CI](https://github.com/djanloo/quilt/actions/workflows/ci.yml/badge.svg)](https://github.com/djanloo/quilt/actions/workflows/ci.yml)
+[![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/djanloo/quilt/ci.yml?label=docs)](https://djanloo.github.io/quilt/)
 
 # quilt
 
