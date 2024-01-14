@@ -1,10 +1,8 @@
-#pragma once
-
 /**
  * @file neurons_base.h
  * @brief Dichiarazione degli oggetti di base..
  */
-
+#pragma once
 #include "base_objects.hpp"
 #include <iostream>
 #include <vector>
@@ -12,14 +10,17 @@
 #include <limits>
 #include<string>
 
-#define MAX_GSYN_EXC 15.0
-#define MAX_GSYN_INH 15.0
+#define MAX_GSYN_EXC 15.0 //!< Not in use: max value of excitatory synaptic conductance
+#define MAX_GSYN_INH 15.0 //!< Not in use: max value of inhibitory synaptic conductance
 
-#define MAX_POTENTIAL_INCREMENT 10 // mV
-#define MAX_POTENTIAL_SLOPE 50/0.1 // mV/ms
+#define MAX_POTENTIAL_SLOPE 50/0.1 //!< Cutoff value of potential slope mV/ms
 
-#define MAX_SPIKE_QUEUE_LENGTH 10000
+#define MAX_SPIKE_QUEUE_LENGTH 10000 //!< Not in use: spike queue lenght before warning
 
+/**
+ * @enum neuron_type
+ * @brief the currently available neuron models
+*/
 enum class neuron_type : unsigned int {base_neuron, aqif, izhikevich, aeif};
 
 typedef std::vector<double> neuron_state;
@@ -142,13 +143,21 @@ class NeuroParam{
     public:
         ParaMap paramap;
 
-	// Rest potential
-        float E_rest;
-	// Reset potential
-	float E_reset;
-	float E_thr, E_exc, E_inh;
-        float C_m, tau_m, tau_e, tau_i, tau_refrac;
-        float I_ext, I_osc, omega_I;
+        float E_rest;   //!< Rest potential [mV]
+        float E_reset;  //!< Reset potential [mV]
+        float E_thr;    //!< Spike-emission threshold [mV]
+        float E_exc;    //!< Excitatory synaptic potential
+        float E_inh;    //!< Inhibitory synaptic potential
+
+        float C_m;      //!< Membrane potential [pF]
+        float tau_m;    //!< Membrane decay time RC [ms]
+        float tau_e;    //!< Excitatory synapse decay time [ms]
+        float tau_i;    //!< Inhibitory synapse decay time [ms]
+        float tau_refrac;   //!< Refractory time
+        
+        float I_ext;    //!< External current (constant) amplitude [nA]
+        float I_osc;    //!< External current (oscillatory) amplitude [nA]
+        float omega_I;  //!< External current (oscillatory) angular frequency [rad/s]
         
         NeuroParam();
         NeuroParam(const ParaMap & paramap);
