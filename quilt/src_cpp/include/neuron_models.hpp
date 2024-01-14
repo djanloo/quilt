@@ -42,6 +42,9 @@ class aqif_neuron : public Neuron {
         void on_spike(EvolutionContext * evo) override;
 };
 
+/**
+ * 
+*/
 class aqif_param : public NeuroParam {
     public:
         float k, ada_a, ada_b, ada_tau_w;
@@ -112,9 +115,19 @@ class aeif_neuron : public Neuron {
         void on_spike(EvolutionContext * evo) override;
 };
 
+/**
+ * @class aeif_param
+ * @brief The container of a aeif_neuron 's parameters
+ * 
+*/
 class aeif_param : public NeuroParam{
     public:
-        float Delta, exp_threshold, ada_a, ada_b, ada_tau_w;
+        float Delta;            //!< scale factor of the exponential [mV] 
+        float exp_threshold;    //!< threshold value of the exponential factor [mV] 
+
+        float ada_a;            //!< drift coefficient of the recovery variable 
+        float ada_b;            //!< jump coefficient of the recovery variable
+        float ada_tau_w;        //!< timescale parameter of the recovery variable [ms]
 
         aeif_param (const ParaMap & paramap):
         NeuroParam(paramap){

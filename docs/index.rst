@@ -3,22 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to quilt's documentation!
-=================================
+Quilt: the seamless multiscale simulator
+========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   cpp_docs/index
-
-.. automodule:: quilt.bin.neur
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. doxygenclass:: Neuron
-   :project: quilt
+   installation
+   usage
+   autodoc_py
+   autodoc_cpp
 
 Indices and tables
 ==================
