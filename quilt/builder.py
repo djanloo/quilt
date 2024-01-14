@@ -1,3 +1,6 @@
+"""A module for building objects from configuration files.
+"""
+
 import os
 import yaml
 
