@@ -9,10 +9,10 @@ import numpy as np
 from rich import print
 import yaml
 
-BIN_FOLDER = 'bin'
+BIN_FOLDER = './bin'
 CYTHON_GEN_FOLDER = './cython_generated'
 DEPENDENCIES = "dependencies.yaml"
-DEFAULT_INCLUDES = [".", "./quilt", np.get_include()]
+DEFAULT_INCLUDES = ["/.", "./quilt", np.get_include()]
 
 old_dir = os.getcwd()
 packageDir = "./quilt"
@@ -34,8 +34,10 @@ extension_kwargs = dict(
         include_dirs = DEFAULT_INCLUDES,
         language="c++",
         libraries=["m"],                      
-        extra_compile_args=["-fopenmp", "-O3", "-std=c++11"],
-        extra_link_args=["-fopenmp"],
+        extra_compile_args=[#"-fopenmp", 
+                            "-O3", 
+                            "-std=c++11"],
+        # extra_link_args=["-fopenmp"],
         define_macros= [('NPY_NO_DEPRECATED_API','NPY_1_7_API_VERSION')] #Silences npy deprecated warn
         )
 
@@ -52,7 +54,7 @@ for extension_name in dependencies.keys():
     extensions.append(Extension(extension_name, dependencies[extension_name]['sources'], **extension_kwargs))
 
 ext_modules = cythonize(extensions, 
-                        nthreads=8,
+                        nthreads=1,
                         compiler_directives=cython_compiler_directives,
                         include_path=["."],
                         build_dir = CYTHON_GEN_FOLDER,
@@ -61,11 +63,12 @@ ext_modules = cythonize(extensions,
 )
 
 setup(  name='quilt',
+        packages=['quilt'],
         cmdclass={"build_ext": build_ext},
         include_dirs=DEFAULT_INCLUDES,
         ext_modules=ext_modules,
         script_args=["build_ext", f"--build-lib=./{BIN_FOLDER}"],
-        options={"build_ext": {"inplace": False, "force": True, "parallel":True}},
+        options={"build_ext": {"inplace": False, "force": True, "parallel":False}},
 )
 
 os.chdir(old_dir)

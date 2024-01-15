@@ -5,7 +5,6 @@ Convention:
     - Python-visible objects get nice names
     - C++ objects get a '_' prefix
 """
-cimport quilt.src_cython.cinterface as cinter
 
 from time import time
 from libc.stdlib cimport malloc
@@ -16,23 +15,11 @@ import ctypes
 import numpy as np
 cimport numpy as np
 
-NEURON_TYPES = {"base_neuron":0, "aqif":1, "izhikevich":2, "aeif":3}
+cimport quilt.src_cython.cinterface as cinter
+cimport quilt.src_cython.base_objects as base_objects
+
 
 ctypedef vector[double] neuron_state
-
-
-cdef class ParaMap:
-    cdef cinter.ParaMap * _paramap
-    def __cinit__(self, dict params):
-        self._paramap = new cinter.ParaMap()
-        try:
-            params['neuron_type'] = NEURON_TYPES[params['neuron_type']]
-        except KeyError:
-            raise KeyError(f"Parameters of ParaMap must have field 'neuron_type' with possible values: {list(NEURON_TYPES.keys())}")
-
-        for key in params.keys():
-            key_bytes = key.encode('utf-8') if isinstance(key, str) else key
-            self._paramap.add(key_bytes, params[key])
 
 cdef class Projection:
 
@@ -85,7 +72,7 @@ cdef class Population:
 
     cdef SpikingNetwork spikenet
 
-    def __cinit__(self, int n_neurons, ParaMap params, SpikingNetwork spikenet):
+    def __cinit__(self, int n_neurons, base_objects.ParaMap params, SpikingNetwork spikenet):
 
         self.spikenet = spikenet
         self._population = new cinter.Population(<int>n_neurons, params._paramap, spikenet._spiking_network)

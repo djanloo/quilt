@@ -176,6 +176,6 @@ void test_oscill(){
 
 int main(){
 
-    test_spiking();
+    test_oscill();
 }
 
