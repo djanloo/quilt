@@ -15,8 +15,15 @@ class Population;
 
 typedef std::vector<double> osc_state;
 
+/**Available type of oscillators*/
 enum class oscillator_type : unsigned int {harmonic, jensen_rit, red_wong_wang};
 
+/**
+ * @class Link
+ * @brief Delay-weight link for oscillators
+ * 
+ * The main method is `get()`, that retruns the `osc_state` of `source` at \f$t = t_{now}-\tau_{i,j} \f$. 
+*/
 template <class SOURCE, class DESTINATION>
 class Link{
     public:

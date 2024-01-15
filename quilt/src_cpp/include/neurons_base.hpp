@@ -10,12 +10,11 @@
 #include <limits>
 #include<string>
 
-#define MAX_GSYN_EXC 15.0 //!< Not in use: max value of excitatory synaptic conductance
-#define MAX_GSYN_INH 15.0 //!< Not in use: max value of inhibitory synaptic conductance
+// #define MAX_GSYN_EXC 15.0 //!< Not in use: max value of excitatory synaptic conductance
+// #define MAX_GSYN_INH 15.0 //!< Not in use: max value of inhibitory synaptic conductance
 
-#define MAX_POTENTIAL_SLOPE 50/0.1 //!< Cutoff value of potential slope mV/ms
-
-#define MAX_SPIKE_QUEUE_LENGTH 10000 //!< Not in use: spike queue lenght before warning
+#define MAX_POTENTIAL_SLOPE 50/0.1 //!< Cutoff value of potential slope [mV/ms]
+// #define MAX_SPIKE_QUEUE_LENGTH 10000 //!< Not in use: spike queue lenght before warning
 
 /**
  * @enum neuron_type
@@ -45,13 +44,21 @@ class Projection;
 */
 class Spike{
     public:
-        float weight, arrival_time;
-        bool processed;
+        float weight;           //!< Increase in postsynaptic conductance
+        float arrival_time;     //!< The (absolute) time of arrival 
+        bool processed;         //!< Flag to check missed spikes
 
         Spike(float weight, double arrival_time):
         weight(weight), arrival_time(arrival_time), processed(false){}
 
-        // Set the importance: the smaller the arrival time the greater the importance
+        /**
+         * 
+         * @brief Priority function of the spike queue
+         * 
+         * The greater the time of arrival, the less the importance. 
+         * This operator is called when inserting spikes in spike queues.
+         * 
+        */
         bool operator<(const Spike& other) const { return this->arrival_time > other.arrival_time; }
 };
 
@@ -73,27 +80,26 @@ class Synapse{
             }
             
         void fire(EvolutionContext * evo);
-        static float min_delay;
+        static float min_delay; //!< Smallest synaptic delay of the model. Used to check timestep.
     
     private:
-        Neuron * presynaptic;
-        Neuron * postsynaptic;
-        float weight, delay;
+        Neuron * presynaptic;   //!< Pointer to the postsynaptic neuron
+        Neuron * postsynaptic;  //!< Pointer to the presynaptic neuron
+        float weight;           //!< Synapse weight. Each spike produced from this synapse will have this weight
+        float delay;            //!< Synapse delay. Each spike produced from this synapse will have this delay
 
 };
 
 /**
  * @class Neuron
- * @brief The base dynamical object
+ * @brief The base spiking dynamical object
  * 
+ * This class is a virtual base class. The explicit dynamic model must override the `evolve_state()` method.
  * 
- * The 9 to 5 job of a neuron is:
- *  - process incoming spikes
- *  - evolve the state
- *  - fire if it's the case
- * 
- * The first and the last stage are (roughly) equal for every model,
- * while the evolution equation is model dependent.
+ * The main method of `Neuron` is `evolve()`, in which are called in sequence:
+ *  - `on_spike()` (if `spike_flag` is true)
+ *  - `handle_incoming_spikes()`
+ *  - `evolve_state()`
  * 
  * To declare a new neuron:
  *  - override the `evolve_state` method
@@ -101,7 +107,7 @@ class Synapse{
  * 
  * After profiling, it became evident that spike processing has a significantly greater impact on computational 
  * cost than I had initially anticipated. Therefore, each improvement attempt should start with an analysis 
- * of handle_incoming_spikes()
+ * of `handle_incoming_spikes()`.
 */
 class Neuron{
     protected:
@@ -123,18 +129,30 @@ class Neuron{
         double last_spike_time;
 
         Neuron(Population * population); 
-        void connect(Neuron * neuron, double weight, double delay);
-        void handle_incoming_spikes(EvolutionContext * evo);
+
+        /**The evolution function*/
         void evolve(EvolutionContext * evo);
+
+        /** Connection function. Adds an efferent synapse to the synapse list.*/        
+        void connect(Neuron * neuron, double weight, double delay);
+
+        /** Manages the incoming spikes. */
+        void handle_incoming_spikes(EvolutionContext * evo);
+
+        /** Makes the neuron's efferent synapses fire */
         void emit_spike(EvolutionContext * evo);
 
         // These must be implemented for each specific neuron
+
+        /** The actions to take when the model has a spike*/
         virtual void on_spike(EvolutionContext * evo);
+        /** The differential equations of the neuron*/
         virtual void evolve_state(const neuron_state & /*x*/ , neuron_state & /*dxdt*/ , const double /*t*/ ){
                 std::cout << "WARNING: using virtual evolve_state of <Neuron>";
         };
 };
 
+/** The container of neuron parameters. Each specific model has its own.*/
 class NeuroParam{ 
 
     protected:
@@ -159,7 +177,9 @@ class NeuroParam{
         float I_osc;    //!< External current (oscillatory) amplitude [nA]
         float omega_I;  //!< External current (oscillatory) angular frequency [rad/s]
         
+        /**Builds the default neuroparam. External currents are set to zero.*/
         NeuroParam();
+        /**Constructor of `NeuroParam` given a `ParaMap`*/
         NeuroParam(const ParaMap & paramap);
 
         neuron_type get_neuron_type(){return neur_type;}
