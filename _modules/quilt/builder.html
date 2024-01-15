@@ -76,11 +76,11 @@
   <h1>Source code for quilt.builder</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;A module for building objects from configuration files.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
 
-<span class="kn">import</span> <span class="nn">quilt.bin.spiking</span> <span class="k">as</span> <span class="nn">neur</span>
+<span class="kn">import</span> <span class="nn">quilt.interface.spiking</span> <span class="k">as</span> <span class="nn">spiking</span>
+<span class="kn">import</span> <span class="nn">quilt.interface.base_objects</span> <span class="k">as</span> <span class="nn">base_objects</span>
 
 <div class="viewcode-block" id="SpikingNetwork">
 <a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork">[docs]</a>
@@ -100,7 +100,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">yaml_file</span><span class="p">,</span> <span class="n">neuron_catalogue</span><span class="p">):</span>
         <span class="n">net</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
-        <span class="n">net</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">neur</span><span class="o">.</span><span class="n">SpikingNetwork</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">interface</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">SpikingNetwork</span><span class="p">(</span><span class="s2">&quot;dummy&quot;</span><span class="p">)</span>
 
         <span class="n">net</span><span class="o">.</span><span class="n">yaml_file</span> <span class="o">=</span> <span class="n">yaml_file</span>
         <span class="n">net</span><span class="o">.</span><span class="n">catalogue</span> <span class="o">=</span> <span class="n">neuron_catalogue</span>
@@ -115,11 +115,11 @@
         
         <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">]:</span>
             <span class="n">paramap</span> <span class="o">=</span> <span class="n">neuron_catalogue</span><span class="p">[</span><span class="n">pop</span><span class="p">[</span><span class="s1">&#39;neuron_model&#39;</span><span class="p">]]</span>
-            <span class="n">net</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">pop</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">neur</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">pop</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">],</span> <span class="n">paramap</span><span class="p">,</span> <span class="n">net</span><span class="o">.</span><span class="n">interface</span> <span class="p">)</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">pop</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span><span class="n">pop</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">],</span> <span class="n">paramap</span><span class="p">,</span> <span class="n">net</span><span class="o">.</span><span class="n">interface</span> <span class="p">)</span>
         
         <span class="k">if</span> <span class="s2">&quot;projections&quot;</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span> <span class="ow">and</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;projections&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;projections&#39;</span><span class="p">]:</span>
-                <span class="n">projector</span> <span class="o">=</span> <span class="n">neur</span><span class="o">.</span><span class="n">RandomProjector</span><span class="p">(</span><span class="o">**</span><span class="p">(</span><span class="n">proj</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]))</span>
+                <span class="n">projector</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">RandomProjector</span><span class="p">(</span><span class="o">**</span><span class="p">(</span><span class="n">proj</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]))</span>
                 <span class="n">efferent</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">proj</span><span class="p">[</span><span class="s1">&#39;efferent&#39;</span><span class="p">]]</span>
                 <span class="n">afferent</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">proj</span><span class="p">[</span><span class="s1">&#39;afferent&#39;</span><span class="p">]]</span>
                 <span class="n">efferent</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">projector</span><span class="o">.</span><span class="n">get_projection</span><span class="p">(</span><span class="n">efferent</span><span class="p">,</span> <span class="n">afferent</span><span class="p">),</span> <span class="n">afferent</span><span class="p">)</span>
@@ -153,7 +153,7 @@
 
         <span class="k">for</span> <span class="n">neuron_name</span> <span class="ow">in</span> <span class="n">catalogue</span><span class="o">.</span><span class="n">neurons_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loaded model for neuron &#39;</span><span class="si">{</span><span class="n">neuron_name</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
-            <span class="n">catalogue</span><span class="o">.</span><span class="n">paramaps</span><span class="p">[</span><span class="n">neuron_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">neur</span><span class="o">.</span><span class="n">ParaMap</span><span class="p">(</span><span class="n">catalogue</span><span class="o">.</span><span class="n">neurons_dict</span><span class="p">[</span><span class="n">neuron_name</span><span class="p">])</span>
+            <span class="n">catalogue</span><span class="o">.</span><span class="n">paramaps</span><span class="p">[</span><span class="n">neuron_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_objects</span><span class="o">.</span><span class="n">ParaMap</span><span class="p">(</span><span class="n">catalogue</span><span class="o">.</span><span class="n">neurons_dict</span><span class="p">[</span><span class="n">neuron_name</span><span class="p">])</span>
             <span class="n">catalogue</span><span class="o">.</span><span class="n">neuron_names</span> <span class="o">+=</span> <span class="p">[</span><span class="n">neuron_name</span><span class="p">]</span>
         
         <span class="k">return</span> <span class="n">catalogue</span></div>
