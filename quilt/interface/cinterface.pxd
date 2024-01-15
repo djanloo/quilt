@@ -1,9 +1,7 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 
-cdef dict NEURON_TYPES = {"base_neuron":0, "aqif":1, "izhikevich":2, "aeif":3}
-
-cdef extern from "../src_cpp/include/base_objects.hpp":
+cdef extern from "../core/include/base_objects.hpp":
     cdef cppclass EvolutionContext:
         double dt
         double now
@@ -18,7 +16,7 @@ cdef extern from "../src_cpp/include/base_objects.hpp":
         void add(string key, float value) except +
         float get(string key) const
 
-cdef extern from "../src_cpp/include/devices.hpp":
+cdef extern from "../core/include/devices.hpp":
     cdef cppclass PopulationSpikeMonitor:
         PopulationMonitor(Population * pop)
         void gather()
@@ -33,20 +31,20 @@ cdef extern from "../src_cpp/include/devices.hpp":
         PopCurrentInjector(Population * pop, double I, double t_min, double t_max)
         void inject(EvolutionContext * evo)
 
-cdef extern from "../src_cpp/include/neurons_base.hpp":
+cdef extern from "../core/include/neurons_base.hpp":
     cdef cppclass neuron_type:
         pass
 
     cdef cppclass NeuroParam:
         NeuroParam(const ParaMap &, neuron_type)
 
-cdef extern from "../src_cpp/include/neurons_base.hpp" namespace "neuron_type":
+cdef extern from "../core/include/neurons_base.hpp" namespace "neuron_type":
     cdef neuron_type base_neuron
     cdef neuron_type aqif
     cdef neuron_type izhikevich
     cdef neuron_type aeif
 
-cdef extern from "../src_cpp/include/network.hpp":
+cdef extern from "../core/include/network.hpp":
     cdef cppclass Projection:
         int start_dimension, end_dimension
         Projection(float ** weights, float ** delays, int start_dimension, int end_dimension)
@@ -75,16 +73,16 @@ cdef extern from "../src_cpp/include/network.hpp":
 
 #---------------------- OSCILLATORS ------------------ #
 
-cdef extern from "../src_cpp/include/oscillators.hpp":
+cdef extern from "../core/include/oscillators.hpp":
     cdef cppclass oscillator_type:
         pass
 
 
-cdef extern from "../src_cpp/include/oscillators.hpp" namespace "osc_type":
+cdef extern from "../core/include/oscillators.hpp" namespace "osc_type":
     cdef oscillator_type harmonic
 
 
-cdef extern from "../src_cpp/include/oscillators.hpp":
+cdef extern from "../core/include/oscillators.hpp":
     cdef cppclass Oscillator:
         vector[double] state
         vector[vector[double]] history

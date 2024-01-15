@@ -15,9 +15,8 @@ import ctypes
 import numpy as np
 cimport numpy as np
 
-cimport quilt.src_cython.cinterface as cinter
-cimport quilt.src_cython.base_objects as base_objects
-
+cimport quilt.interface.cinterface as cinter
+cimport quilt.interface.base_objects as base_objects
 
 ctypedef vector[double] neuron_state
 

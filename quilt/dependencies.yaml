@@ -6,28 +6,28 @@
 # .hpp files must not be written here
 # as long as they are used in 'extern' blocks
 
-# base_objects:
-#   sources:
-#     - src_cython/base_objects.pyx
-#     - src_cpp/base_objects.cpp
-#   include_dirs:
-#     - src_cpp/include
+base_objects:
+  sources:
+    - interface/base_objects.pyx
+    - core/base_objects.cpp
+  include_dirs:
+    - core/include
 
 spiking:
   sources:
-    - src_cython/spiking.pyx
+    - interface/spiking.pyx
 
-    - src_cpp/neurons_base.cpp
-    - src_cpp/neuron_models.cpp
-    - src_cpp/network.cpp
-    - src_cpp/devices.cpp
-    - src_cpp/base_objects.cpp
+    - core/neurons_base.cpp
+    - core/neuron_models.cpp
+    - core/network.cpp
+    - core/devices.cpp
+    - core/base_objects.cpp
   include_dirs:
-    - src_cpp/include
+    - core/include
   
 # oscill:
 #   sources:
-#     - src_cython/oscill.pyx
-#     - src_cpp/oscillators.cpp
+#     - interface/oscill.pyx
+#     - core/oscillators.cpp
 #   include_dirs:
-#     - src_cpp/include
+#     - core/include
