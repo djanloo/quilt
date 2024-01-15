@@ -1,10 +1,9 @@
 """A module for building objects from configuration files.
 """
-
 import os
 import yaml
 
-import quilt.bin.spiking as neur
+import quilt.bin.spiking as spiking
 
 class SpikingNetwork:
 
@@ -17,7 +16,7 @@ class SpikingNetwork:
     @classmethod
     def from_yaml(cls, yaml_file, neuron_catalogue):
         net = cls()
-        net.interface = neur.SpikingNetwork("dummy")
+        net.interface = spiking.SpikingNetwork("dummy")
 
         net.yaml_file = yaml_file
         net.catalogue = neuron_catalogue
@@ -32,11 +31,11 @@ class SpikingNetwork:
         
         for pop in net.features_dict['populations']:
             paramap = neuron_catalogue[pop['neuron_model']]
-            net.populations[pop['name']] = neur.Population(pop['size'], paramap, net.interface )
+            net.populations[pop['name']] = spiking.Population(pop['size'], paramap, net.interface )
         
         if "projections" in net.features_dict and net.features_dict['projections'] is not None:
             for proj in net.features_dict['projections']:
-                projector = neur.RandomProjector(**(proj['features']))
+                projector = spiking.RandomProjector(**(proj['features']))
                 efferent = net.populations[proj['efferent']]
                 afferent = net.populations[proj['afferent']]
                 efferent.project(projector.get_projection(efferent, afferent), afferent)
@@ -64,7 +63,7 @@ class NeuronCatalogue:
 
         for neuron_name in catalogue.neurons_dict.keys():
             print(f"Loaded model for neuron '{neuron_name}'")
-            catalogue.paramaps[neuron_name] = neur.ParaMap(catalogue.neurons_dict[neuron_name])
+            catalogue.paramaps[neuron_name] = spiking.ParaMap(catalogue.neurons_dict[neuron_name])
             catalogue.neuron_names += [neuron_name]
         
         return catalogue

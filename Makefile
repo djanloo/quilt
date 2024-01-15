@@ -1,7 +1,15 @@
 .PHONY: generate cleanall clean
 
+CXX := g++
+PYTHON := python3
+CXXFLAGS := -std=c++11 -Wall -Wextra -g
+SOURCES :=  quilt/src_cpp/test_file.cpp quilt/src_cpp/oscillators.cpp quilt/src_cpp/network.cpp quilt/src_cpp/neuron_models.cpp quilt/src_cpp/neurons_base.cpp quilt/src_cpp/devices.cpp quilt/src_cpp/base_objects.cpp
+
+OBJECTS := $(SOURCES:.cpp=.o)
+EXECUTABLE := quilt.exe
+
 generate:
-	@python3 setup.py
+	@ $(PYTHON) setup.py
 
 cleanall: clean
 	@echo "Cleaning all.."
@@ -11,15 +19,10 @@ cleanall: clean
 	@rm -R -f quilt/bin/
 	@rm -R -f quilt/cython_generated/
 	@rm -R -f quilt/__pycache__
+	@rm -R -f quilt/src_cython/__pycache__
+	@rm -R -f quilt/src_cython/*.so
 	@echo "Cleaned."
 
-CXX := g++
-PYTHON := python3
-CXXFLAGS := -std=c++11 -Wall -Wextra -g
-SOURCES :=  quilt/src_cpp/test_file.cpp quilt/src_cpp/oscillators.cpp quilt/src_cpp/network.cpp quilt/src_cpp/neuron_models.cpp quilt/src_cpp/neurons_base.cpp quilt/src_cpp/devices.cpp quilt/src_cpp/base_objects.cpp
-
-OBJECTS := $(SOURCES:.cpp=.o)
-EXECUTABLE := quilt.exe
 
 $(EXECUTABLE): $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@

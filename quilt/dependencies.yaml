@@ -6,9 +6,17 @@
 # .hpp files must not be written here
 # as long as they are used in 'extern' blocks
 
+# base_objects:
+#   sources:
+#     - src_cython/base_objects.pyx
+#     - src_cpp/base_objects.cpp
+#   include_dirs:
+#     - src_cpp/include
+
 spiking:
   sources:
     - src_cython/spiking.pyx
+
     - src_cpp/neurons_base.cpp
     - src_cpp/neuron_models.cpp
     - src_cpp/network.cpp

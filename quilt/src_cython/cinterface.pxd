@@ -1,6 +1,8 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 
+cdef dict NEURON_TYPES = {"base_neuron":0, "aqif":1, "izhikevich":2, "aeif":3}
+
 cdef extern from "../src_cpp/include/base_objects.hpp":
     cdef cppclass EvolutionContext:
         double dt
@@ -38,12 +40,6 @@ cdef extern from "../src_cpp/include/neurons_base.hpp":
     cdef cppclass NeuroParam:
         NeuroParam(const ParaMap &, neuron_type)
 
-cdef extern from "../src_cpp/include/neuron_models.hpp":
-
-    cdef cppclass aeif_param(NeuroParam):
-        aeif_param (const ParaMap &)
-
-
 cdef extern from "../src_cpp/include/neurons_base.hpp" namespace "neuron_type":
     cdef neuron_type base_neuron
     cdef neuron_type aqif
@@ -76,25 +72,24 @@ cdef extern from "../src_cpp/include/network.hpp":
 
         void run(EvolutionContext * evo, double time) except +
 
+
+#---------------------- OSCILLATORS ------------------ #
+
+cdef extern from "../src_cpp/include/oscillators.hpp":
+    cdef cppclass oscillator_type:
+        pass
+
+
+cdef extern from "../src_cpp/include/oscillators.hpp" namespace "osc_type":
+    cdef oscillator_type harmonic
+
+
 cdef extern from "../src_cpp/include/oscillators.hpp":
     cdef cppclass Oscillator:
         vector[double] state
         vector[vector[double]] history
 
-        void connect(Oscillator * osc, float weight, float delay)
-        void evolve(EvolutionContext * evo)
-
     cdef cppclass OscillatorNetwork:
         vector[Oscillator] oscillators
-        OscillatorNetwork()
-        void add_oscillator(Oscillator * oscillator)
+        OscillatorNetwork(oscillator_type osc_type, vector[ParaMap] params, const Projection & self_projection)
         void run(EvolutionContext * evo, double t)
-
-    cdef cppclass dummy_osc:
-        vector[double] state
-        vector[vector[double]] history
-
-        dummy_osc(float k, double x, double v)
-        void connect(Oscillator * osc, float weight, float delay)
-        void evolve(EvolutionContext * evo)
-        
