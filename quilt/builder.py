@@ -4,7 +4,7 @@
 import os
 import yaml
 
-import quilt.bin.neur as neur
+import quilt.bin.spiking as neur
 
 class SpikingNetwork:
 
