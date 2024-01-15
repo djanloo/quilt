@@ -6,9 +6,9 @@
 # .hpp files must not be written here
 # as long as they are used in 'extern' blocks
 
-neur:
+spiking:
   sources:
-    - src_cython/neur.pyx
+    - src_cython/spiking.pyx
     - src_cpp/neurons_base.cpp
     - src_cpp/neuron_models.cpp
     - src_cpp/network.cpp

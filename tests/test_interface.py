@@ -6,14 +6,14 @@ TEST_PARAMS = "tests/test_params.yaml"
 
 """Parameters and models"""
 def test_paramaps():
-    import quilt.bin.neur as neur
-    paramap = neur.ParaMap(dict(neuron_type='aeif', E_rest=-70, 
+    import quilt.bin.spiking as spiking
+    paramap = spiking.ParaMap(dict(neuron_type='aeif', E_rest=-70, 
                                 E_thr=0, tau_m=10, E_reset=-65,E_exc=0, E_inh=-70,
                                 C_m=40, tau_e=10, tau_i=12, tau_refrac=0,
                                 Delta=3, exp_threshold=-30, 
                                 ada_a=1, ada_b=3, ada_tau_w=4))
-    sn = neur.SpikingNetwork("a")
-    pop = neur.Population(10, paramap, sn)
+    sn = spiking.SpikingNetwork("a")
+    pop = spiking.Population(10, paramap, sn)
 
 def test_catalogue():
     catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
