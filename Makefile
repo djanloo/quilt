@@ -3,7 +3,7 @@
 CXX := g++
 PYTHON := python3
 CXXFLAGS := -std=c++11 -Wall -Wextra -g
-SOURCES :=  quilt/src_cpp/test_file.cpp quilt/src_cpp/oscillators.cpp quilt/src_cpp/network.cpp quilt/src_cpp/neuron_models.cpp quilt/src_cpp/neurons_base.cpp quilt/src_cpp/devices.cpp quilt/src_cpp/base_objects.cpp
+SOURCES :=  quilt/core/test_file.cpp quilt/core/oscillators.cpp quilt/core/network.cpp quilt/core/neuron_models.cpp quilt/core/neurons_base.cpp quilt/core/devices.cpp quilt/core/base_objects.cpp
 
 OBJECTS := $(SOURCES:.cpp=.o)
 EXECUTABLE := quilt.exe
@@ -19,8 +19,8 @@ cleanall: clean
 	@rm -R -f quilt/bin/
 	@rm -R -f quilt/cython_generated/
 	@rm -R -f quilt/__pycache__
-	@rm -R -f quilt/src_cython/__pycache__
-	@rm -R -f quilt/src_cython/*.so
+	@rm -R -f quilt/interface/__pycache__
+	@rm -R -f quilt/interface/*.so
 	@echo "Cleaned."
 
 

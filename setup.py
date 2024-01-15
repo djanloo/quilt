@@ -9,7 +9,7 @@ import numpy as np
 from rich import print
 import yaml
 
-BIN_FOLDER = './bin'
+BIN_FOLDER = './interface'
 CYTHON_GEN_FOLDER = './cython_generated'
 DEPENDENCIES = "dependencies.yaml"
 DEFAULT_INCLUDES = ["/.", "./quilt", np.get_include()]
@@ -54,7 +54,7 @@ for extension_name in dependencies.keys():
     extensions.append(Extension(extension_name, dependencies[extension_name]['sources'], **extension_kwargs))
 
 ext_modules = cythonize(extensions, 
-                        nthreads=1,
+                        nthreads=4,
                         compiler_directives=cython_compiler_directives,
                         include_path=["."],
                         build_dir = CYTHON_GEN_FOLDER,
@@ -68,7 +68,7 @@ setup(  name='quilt',
         include_dirs=DEFAULT_INCLUDES,
         ext_modules=ext_modules,
         script_args=["build_ext", f"--build-lib=./{BIN_FOLDER}"],
-        options={"build_ext": {"inplace": False, "force": True, "parallel":False}},
+        options={"build_ext": {"inplace": False, "force": True, "parallel":True}},
 )
 
 os.chdir(old_dir)

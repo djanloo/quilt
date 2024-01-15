@@ -1,4 +1,4 @@
-cimport quilt.src_cython.cinterface as cinter
+cimport quilt.interface.cinterface as cinter
 from libcpp cimport string
 
 OSCILLATOR_TYPES = {"harmonic":0}

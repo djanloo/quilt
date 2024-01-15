@@ -2,8 +2,10 @@
 import numpy as np
 cimport numpy as np
 
-from quilt.src_cython.cinterface cimport ParaMap as cParaMap
-from quilt.src_cython.cinterface cimport NEURON_TYPES
+from quilt.interface.cinterface cimport ParaMap as cParaMap
+
+NEURON_TYPES = {"base_neuron":0, "aqif":1, "izhikevich":2, "aeif":3}
+
 
 cdef class ParaMap:
 

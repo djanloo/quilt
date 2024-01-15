@@ -3,7 +3,8 @@
 import os
 import yaml
 
-import quilt.bin.spiking as spiking
+import quilt.interface.spiking as spiking
+import quilt.interface.base_objects as base_objects
 
 class SpikingNetwork:
 
@@ -63,7 +64,7 @@ class NeuronCatalogue:
 
         for neuron_name in catalogue.neurons_dict.keys():
             print(f"Loaded model for neuron '{neuron_name}'")
-            catalogue.paramaps[neuron_name] = spiking.ParaMap(catalogue.neurons_dict[neuron_name])
+            catalogue.paramaps[neuron_name] = base_objects.ParaMap(catalogue.neurons_dict[neuron_name])
             catalogue.neuron_names += [neuron_name]
         
         return catalogue
