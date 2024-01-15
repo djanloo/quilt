@@ -3,7 +3,7 @@ Usage
 
 with Python/Jupyter
 -------------------
-Configuration files are written in yaml.
+Configuration files are written in yaml. See also `the example notebook <https://github.com/djanloo/quilt/blob/main/example.ipynb>`_.
 
 Neuron catalogues
 ^^^^^^^^^^^^^^^^^
@@ -79,6 +79,18 @@ Each population uses a model defined in a catalogue.
             inh_fraction: 0.1
             max_inh: 0.03
 
+The parameters of a projection between an efferent population of size ``N`` and an afferent population of size ``M`` are (see `here <https://github.com/djanloo/quilt/issues/2>`_):
+
+  - ``exc_fraction``: fraction of excitatory links over total (``N`` * ``M``)
+  - ``inh_fraction``: fraction of inhibitory links over total (``N`` * ``M``)
+  - ``min_delay``: minimum value of delay (uniformly distributed)
+  - ``max_delay``: maximum value of delay (uniformly distributed)
+  - ``min_inh``: minimum value of inhibitory weight (uniformly distributed)
+  - ``max_inh``: maximum value of inhibitory weight (uniformly distributed)
+  - ``min_exc``: minimum value of excitatory weight (uniformly distributed)
+  - ``max_exc``: maximum value of excitatory weight (uniformly distributed)
+
+
 To build a spiking network:
 
 .. code-block:: python
@@ -86,9 +98,36 @@ To build a spiking network:
     from quilt.builder import SpikingNetwork
     spikenet = SpikingNetwork.from_yaml("network_model.yml", catalogue)
 
+Oscillator networks
++++++++++++++++++++
+
+.. warning::
+
+  This is under construction
+
+I/O and running
++++++++++++++++
+
+.. code-block:: python
+
+    # Adds a 25 pA current from t=10ms to t=20ms
+    spikenet.add_injector(25.0, 10, 20)
+
+    # Saves spikes
+    spikenet.populations["STR1"].monitorize_spikes()
+
+    # Saves neurons' states
+    spikenet.populations["STR1"].monitorize_states()
+
+    # Runs for 10 ms
+    spikenet.run(dt=0.1, time=10)
+
+
+
 
 in pure C++
 -----------
 
-TODO
+.. warning::
 
+  This is under construction

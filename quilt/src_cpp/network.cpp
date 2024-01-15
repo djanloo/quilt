@@ -17,9 +17,12 @@ using std::endl;
 
 Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network):
     n_neurons(n_neurons),n_spikes_last_step(0){
-    id = HierarchicalID(spiking_network->id);
     
-    auto start = std::chrono::high_resolution_clock::now();
+    // Add itself to the hierarchical structure
+    id = HierarchicalID(spiking_network->id);
+
+    // Adds itself to the spiking network populations
+    (spiking_network->populations).push_back(this);
 
     try{ 
         params->get("neuron_type");
@@ -48,7 +51,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     for ( int i = 0; i < n_neurons; i++){
         // This can be avoided, probably using <variant>
         switch(neur_type){
-        case neuron_type::base_neuron:  new Neuron(this);           break;        // remember not to push_back here
+        case neuron_type::base_neuron:  new Neuron(this);           break;   // remember not to push_back here
         case neuron_type::aqif:         new aqif_neuron(this);      break;   // calling the constructor is enough
         case neuron_type::izhikevich:   new izhikevich_neuron(this);break;
         case neuron_type::aeif:         new aeif_neuron(this);      break;
@@ -57,22 +60,17 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         };
     }
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "Building population "<< this->id.get_id() << " took " << (std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count() << " ms    (";
-    std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start)).count())/n_neurons << " us/neur)" << std::endl;
-
-    // Adds itself to the spiking network populations
     this->print_info();
-    (spiking_network->populations).push_back(this);
     }
 
 Projection::Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension):
     weights(weights), delays(delays), start_dimension(start_dimension), end_dimension(end_dimension){
 
     int n_links = 0;
+
     for (unsigned int i = 0; i < start_dimension; i++){
         for (unsigned int j =0 ; j< end_dimension; j++){
-            if (weights[i][j] != 0.0){ //Mhh, dangerous
+            if (std::abs(weights[i][j]) >= WEIGHT_EPS){ 
                 n_links ++;
             }
         }

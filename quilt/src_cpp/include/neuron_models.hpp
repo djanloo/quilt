@@ -14,27 +14,30 @@ class Synapse;
 class Population;
 class Projection;
 
-
 /**
+ * @brief The adaptive quadratic integrate-and-fire neuron
+ *
+ * Parameters are hold in an `aqif_param` object
  * 
- * Real models
- * -----------
+ * @f[
+ *   C_m \frac{dV}{dt} = k(V-V_{rest})(V - V_{thr}) - w
+ * @f]
  * 
- * Each model must override these functions:
- * - the constructor
- * - evolve_state
+ * @f[
+ *      \tau_w \frac{dw}{dt} = -w + a(V-V_{rest})
+ * @f]
  * 
- * Each model can override these functions:
- * - on_spike
+ * On spike:
  * 
-*/
-
-
-/**
- * @class aqif_neuron
- * @brief The adaptive quadratic integrate and fire model
+ * @f[
+ *      V\rightarrow V_{reset}
+ * @f]
+ * @f[
+ *      w \rightarrow w + b
+ * @f]
  * 
-*/
+ * 
+ */
 class aqif_neuron : public Neuron {
     public:
         aqif_neuron(Population * population);
@@ -43,11 +46,17 @@ class aqif_neuron : public Neuron {
 };
 
 /**
- * 
+ * @class aqif_param
+ * @brief Container for parameters of `aqif_neuron`
 */
 class aqif_param : public NeuroParam {
     public:
-        float k, ada_a, ada_b, ada_tau_w;
+        float k;        //!< Quadratic term constant
+
+        float ada_a;    //!< Adaptive variable drift term
+        float ada_b;    //!< Adaptive variable jump term
+        float ada_tau_w;//!< Adaptive variable decay time
+
         aqif_param(ParaMap paramap):NeuroParam(paramap){
             if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
@@ -71,6 +80,15 @@ class aqif_param : public NeuroParam {
 /**
  * @class izhikevich_neuron
  * @brief The adaptive quadratic neuron model of Izhikevich
+ * 
+ * Parameters are hold in `izhikevich_param` object
+ * 
+ * @f[
+ *      C_m\frac{dV}{dt} = 0.04 V^2 + 5V + 140 - w
+ * @f]
+ * @f[
+ *      \frac{dw}{dt} = a(b(V-V_{rest})-w)
+ * @f]
 */
 class izhikevich_neuron : public Neuron {
     public:
@@ -79,9 +97,14 @@ class izhikevich_neuron : public Neuron {
         void on_spike(EvolutionContext * evo) override;
 };
 
+
+/**
+ * @class izhikevich_param
+ * @brief Container for parameters of `izhikevich_neuron`
+*/
 class izhikevich_param : public NeuroParam {
     public:
-        float a,b,c,d;
+        float a,b,d;
         izhikevich_param(const ParaMap & paramap): NeuroParam(paramap){
             if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::izhikevich){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
@@ -92,8 +115,6 @@ class izhikevich_param : public NeuroParam {
                 a = paramap.get(last);
                 last = "b";
                 b = paramap.get(last);
-                last = "c";
-                c = paramap.get(last);
                 last = "d";
                 d = paramap.get(last);
             } catch (const std::out_of_range & e){
@@ -107,6 +128,15 @@ class izhikevich_param : public NeuroParam {
  * @class aeif_neuron
  * @brief The adaptive exponential integrate-and-fire model
  * 
+ *  Parameters are hold in `aeif_param` object
+ * 
+ * @f[
+ *      \frac{dV}{dt} = - (V - V_{rest}) + \Delta \exp{\left(\frac{V - V_{expthresh}}{\Delta}\right)} - w
+ * @f]
+ * 
+ * @f[
+ *      \tau_w \frac{dw}{dt} = -w + a(V-V_{rest})
+ * @f]
 */
 class aeif_neuron : public Neuron {
     public:
@@ -117,7 +147,7 @@ class aeif_neuron : public Neuron {
 
 /**
  * @class aeif_param
- * @brief The container of a aeif_neuron 's parameters
+ * @brief Container for parameters of `aeif_neuron`
  * 
 */
 class aeif_param : public NeuroParam{

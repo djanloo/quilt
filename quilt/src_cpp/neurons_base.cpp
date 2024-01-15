@@ -166,10 +166,10 @@ void Neuron::on_spike(EvolutionContext * /*evo*/){
 }
 
 NeuroParam::NeuroParam(){
-                this->neur_type = neuron_type::base_neuron;
-                std::map<std::string, float> defaults = {{"I_ext", 0.0}, {"I_osc", 0.0}, {"omega_I", 0.0}};
-                this->paramap = ParaMap( defaults);
-                }
+    this->neur_type = neuron_type::base_neuron;
+    std::map<std::string, float> defaults = {{"I_ext", 0.0}, {"I_osc", 0.0}, {"omega_I", 0.0}};
+    this->paramap = ParaMap(defaults);
+    }
 
 NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
 
