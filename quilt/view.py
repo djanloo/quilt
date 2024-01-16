@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import networkx as nx
 
 def animate_spiking(spiking_network):
 
@@ -23,3 +24,37 @@ def animate_spiking(spiking_network):
 
     anim = FuncAnimation(fig, update, frames=500, interval=10)
     return anim
+
+def plot_graph(network):
+
+    pops = network.features_dict['populations']
+    projections = network.features_dict['projections']
+
+    G = nx.DiGraph()
+
+    for pop in pops:
+        G.add_node(pop['name'])
+
+    for proj in projections:
+        efferent, afferent = proj['name'].split("->")
+        efferent, afferent = efferent.strip(), afferent.strip()
+        if "weight_inh" in proj['features']:
+            color = "b"
+            weight = proj['features']['weight_inh']
+        else:
+            color = "r"
+            weight = proj['features']['weight_exc']
+        G.add_edge(efferent,afferent,color=color,weight=weight)
+
+
+    pos = nx.spring_layout(G)  # Posizionamento dei nodi con l'algoritmo Spring
+    nx.draw(G, pos, 
+            edge_color=nx.get_edge_attributes(G,'color').values(),
+            with_labels=True, 
+            font_weight='bold', 
+            node_size=700, 
+            node_color='skyblue', 
+            font_size=8, 
+            connectionstyle="arc3,rad=0.1",
+            # linewidths=0.5
+            )
