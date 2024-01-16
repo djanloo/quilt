@@ -7,16 +7,12 @@ populations:
     neuron_model: dummy_aqif
 
 projections:
-  - name: AtoM 
-    efferent: Albert
-    afferent: MonaLisa
+  - name: Albert->MonaLisa 
     features:
       exc_fraction: 0.1
-      max_exc: 0.5
-      min_delay: 0.1
-  - name: MtoA
-    efferent: MonaLisa
-    afferent: Albert
+      weight_exc: 0.5
+      delay: 0.1
+  - name: MonaLisa->Albert
     features:
       inh_fraction: 0.1
-      max_inh: 0.03
+      weight_inh: 0.03
