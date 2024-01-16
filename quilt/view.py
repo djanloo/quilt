@@ -40,10 +40,10 @@ def plot_graph(network):
         efferent, afferent = efferent.strip(), afferent.strip()
         if "weight_inh" in proj['features']:
             color = "b"
-            weight = proj['features']['weight_inh']
+            weight = proj['features']['delay']
         else:
             color = "r"
-            weight = proj['features']['weight_exc']
+            weight = proj['features']['delay']
         G.add_edge(efferent,afferent,color=color,weight=weight)
 
 
@@ -56,5 +56,5 @@ def plot_graph(network):
             node_color='skyblue', 
             font_size=8, 
             connectionstyle="arc3,rad=0.1",
-            # linewidths=0.5
+            width=list(0.5*np.array(list(nx.get_edge_attributes(G, 'weight').values()))**2)
             )
