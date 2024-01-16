@@ -35,19 +35,27 @@ def plot_graph(network):
     for pop in pops:
         G.add_node(pop['name'])
 
+
     for proj in projections:
         efferent, afferent = proj['name'].split("->")
         efferent, afferent = efferent.strip(), afferent.strip()
+        edge_dict = dict()
         if "weight_inh" in proj['features']:
-            color = "b"
-            weight = proj['features']['delay']
+            edge_dict = dict(   color="b", 
+                                weight = proj['features']['weight_inh'],
+                                lenght = proj['features']['delay'],
+                                strongness = proj['features']['inh_fraction']*proj['features']['weight_inh']
+                             )
         else:
-            color = "r"
-            weight = proj['features']['delay']
-        G.add_edge(efferent,afferent,color=color,weight=weight)
+            edge_dict = dict(   color="r", 
+                                weight = proj['features']['weight_exc'],
+                                lenght = proj['features']['delay'],
+                                strongness = proj['features']['exc_fraction']*proj['features']['weight_exc']
+                             )
+        G.add_edge(efferent,afferent, **edge_dict)
 
 
-    pos = nx.spring_layout(G)  # Posizionamento dei nodi con l'algoritmo Spring
+    pos = nx.spring_layout(G, weight='delay')
     nx.draw(G, pos, 
             edge_color=nx.get_edge_attributes(G,'color').values(),
             with_labels=True, 
@@ -56,5 +64,5 @@ def plot_graph(network):
             node_color='skyblue', 
             font_size=8, 
             connectionstyle="arc3,rad=0.1",
-            width=list(0.5*np.array(list(nx.get_edge_attributes(G, 'weight').values()))**2)
+            width=60*np.array(list(nx.get_edge_attributes(G, 'strongness').values()))
             )

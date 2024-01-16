@@ -1,8 +1,8 @@
 # Population number multiplier
-population_rescale_factor: 1.0
+population_rescale_factor: 1
 
 # TODO: set a parameter to uniformly enloose connectivity
-#connection_rescale_factor: 
+connection_rescale_factor: 1
 
 # TODO:
 #delay_scale_factor: 
