@@ -5,6 +5,7 @@ import yaml
 
 import quilt.interface.spiking as spiking
 import quilt.interface.base_objects as base_objects
+from rich import print
 
 class SpikingNetwork:
 
@@ -29,16 +30,38 @@ class SpikingNetwork:
             net.features_dict = yaml.safe_load(f)
 
         net.populations = dict()
+
+        if "population_rescale_factor" in net.features_dict:
+            population_resize = net.features_dict["population_rescale_factor"]
+            print(f"Populations are resized by {population_resize}")
+        else:
+            population_resize = 1.0
+
+        # print(net.features_dict)
         
         for pop in net.features_dict['populations']:
             paramap = neuron_catalogue[pop['neuron_model']]
-            net.populations[pop['name']] = spiking.Population(pop['size'], paramap, net.interface )
+            try:
+                net.populations[pop['name']] = spiking.Population( int(population_resize * pop['size']), paramap, net.interface )
+            except IndexError as e:
+                raise IndexError(f"While building population {pop['name']} an error was raised")
         
         if "projections" in net.features_dict and net.features_dict['projections'] is not None:
             for proj in net.features_dict['projections']:
-                projector = spiking.RandomProjector(**(proj['features']))
-                efferent = net.populations[proj['efferent']]
-                afferent = net.populations[proj['afferent']]
+                try:
+                    projector = spiking.RandomProjector(**(proj['features']))
+                except ValueError as e:
+                    raise ValueError(f"Some value was wrong during projection {efferent}->{afferent}")
+                efferent, afferent = proj['name'].split("->")
+                efferent, afferent = efferent.strip(), afferent.strip()
+                
+                if efferent not in net.populations.keys():
+                    raise KeyError(f"In projection {efferent} -> {afferent}: <{efferent}> was not defined")
+                if afferent not in net.populations.keys():
+                    raise KeyError(f"In projection {efferent} -> {afferent}: <{afferent}> was not defined")
+                
+                efferent = net.populations[efferent]
+                afferent = net.populations[afferent]
                 efferent.project(projector.get_projection(efferent, afferent), afferent)
             
         return net

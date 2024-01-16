@@ -1,0 +1,237 @@
+# Population number multiplier
+population_rescale_factor: 1.0
+
+# TODO: set a parameter to uniformly enloose connectivity
+#connection_rescale_factor: 
+
+# TODO:
+#delay_scale_factor: 
+
+populations:
+  - name: D1
+    size: 6000
+    neuron_model: D1_neuron
+  - name: D2
+    size: 6000
+    neuron_model: D2_neuron
+  - name: FSN
+    size: 420
+    neuron_model: FSN_neuron
+  - name: GPTI
+    size: 780
+    neuron_model: GPTI_neuron
+  - name: GPTA
+    size: 260
+    neuron_model: GPTA_neuron
+  - name: STN
+    size: 408
+    neuron_model: STN_neuron
+
+projections:
+  - name: D1->D1
+    features:
+      inh_fraction: 0.06
+      delay: 1.7
+      weight_inh: 0.12
+
+  - name: D1->D2
+    features:
+      inh_fraction:   0.014
+      delay:      1.7
+      weight_inh:        0.36
+
+  # This whole conenction is made up
+  - name: D1->GPTI
+    features:
+      inh_fraction: 0.02
+      delay:        1.7
+      weight_inh:   0.25
+  
+  # This whole connection is made up
+  - name: D2->GPTA
+    features:
+      inh_fraction: 0.02
+      delay:        1.8
+      weight_inh:   0.2
+  
+  # Missing delays and fraction
+  # - name: D1->FSN
+  #   features:
+  #     inh_fraction:
+
+  #     delay:
+  #     delay:
+
+  #     weight_inh: 6.6
+  #     weight_inh: 6.6
+    
+  # Missign delay and fraction
+  # - name: D1->GPTA
+  #   features:
+  #     inh_fraction:
+
+  #     delay:
+  #     delay:
+
+  #     weight_inh: 0.35
+  #     weight_inh: 0.35     
+
+  - name: D2->D1
+    features:
+      inh_fraction:   0.0653
+      delay:      1.7
+      weight_inh:        0.3
+
+  - name: D2->D2
+    features:
+      inh_fraction:   0.084
+      delay:      1.7
+      weight_inh:        0.2
+
+  # Missing weights
+  # - name: D2->GPTI
+  #   features:
+  #     inh_fraction:
+  #     exc_fraction:
+
+  #     delay: 
+  #     delay: 
+
+  #     weight_inh:
+  #     weight_inh: 
+      
+  #     min_exc: 
+  #     max_exc: 
+  
+  # Missing weights
+  # This whole connection is made up
+  - name: FSN->D1
+    features:
+      inh_fraction: 0.01
+      delay:        1.2
+      weight_inh:   0.15
+
+  - name: FSN->FSN
+    features:
+      inh_fraction: 0.022
+      delay:    1.0
+      weight_inh:      0.5
+
+  # Missing weights
+  # This whole connection is made up
+  - name: FSN->D2
+    features:
+      inh_fraction: 0.02
+      delay:        1.5
+      weight_inh:   0.15
+
+  - name: GPTI->GPTI
+    features:
+      inh_fraction: 0.0321
+      delay:    1.0
+      weight_inh:      1.2
+      
+  - name: GPTI->GPTA
+    features:
+      inh_fraction: 0.0321
+      delay:    1.0
+      weight_inh: 1.2
+    
+  # Missing weights
+  # - name: GPTI->FSN
+  #   features:
+  #     inh_fraction:
+  #     exc_fraction:
+
+  #     delay:
+  #     delay:
+
+  #     weight_inh:
+  #     weight_inh:
+      
+  #     min_exc:
+  #     max_exc:
+
+  - name: GPTI->STN
+    features:
+      exc_fraction: 0.038
+      delay:        1.0
+      weight_exc:   0.42
+
+  # Missing weights
+  # - name: GPTA->D1
+  #   features:
+  #     inh_fraction:
+  #     exc_fraction:
+
+  #     delay:
+  #     delay:
+
+  #     weight_inh:
+  #     weight_inh:
+      
+  #     min_exc:
+  #     max_exc:
+
+  # Missing weights
+  # - name: GPTA->D2
+  #   features:
+  #     inh_fraction:
+  #     exc_fraction:
+
+  #     delay:
+  #     delay:
+
+  #     weight_inh:
+  #     weight_inh:
+      
+  #     min_exc:
+  #     max_exc:
+
+  # Missing weights
+  # - name: GPTA->FSN
+  #   features:
+  #     inh_fraction:
+  #     exc_fraction:
+
+  #     delay:
+  #     delay:
+
+  #     weight_inh:
+  #     weight_inh:
+      
+  #     min_exc:
+  #     max_exc:
+
+  - name: GPTA->GPTA
+    features:
+      inh_fraction: 0.03189
+      delay:    1.0
+      weight_inh:      0.35
+
+  - name: GPTA->GPTI
+    features:
+      inh_fraction: 0.0189
+      delay:    1.0
+      weight_inh:      0.35
+
+  - name: STN->GPTI
+    features:
+      inh_fraction: 0.0735
+      delay:    2.0
+      weight_inh:      0.08
+
+  # Missing weights
+  # - name: STN->GPTA
+  #   features:
+  #     inh_fraction:
+  #     exc_fraction:
+
+  #     delay:
+  #     delay:
+
+  #     weight_inh:
+  #     weight_inh:
+      
+  #     min_exc:
+  #     max_exc:
