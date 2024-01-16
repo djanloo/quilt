@@ -177,7 +177,7 @@ class RandomProjector:
         weights = np.zeros((N,M))
         delays = np.zeros((N,M))
 
-        start = time()
+        # start = time()
 
         exc_weights = np.random.uniform(self.weight_exc - self.weight_exc_delta/2, self.weight_exc + self.weight_exc_delta/2, size=(N,M))
         inh_weights = np.random.uniform(0, self.weight_inh - self.weight_inh_delta/2, size=(N,M))
@@ -190,9 +190,9 @@ class RandomProjector:
         delays = np.random.uniform(self.delay - self.delay_delta/2, self.delay + self.delay_delta/2, size=(N,M))
         delays[(~active_inh_syn)&(~active_exc_syn)] = 0.0
 
-        end = time()
-        print(f"Generating weights and delays took {end-start:.3f} seconds")
-        print(f"Min delay {np.min(delays[delays != 0])}")
+        # end = time()
+        # print(f"Generating weights and delays took {end-start:.3f} seconds")
+        # print(f"Min delay {np.min(delays[delays != 0])}")
 
         self.last_weights = weights
         self.last_delays = delays

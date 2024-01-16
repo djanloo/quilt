@@ -1,11 +1,14 @@
 """A module for building objects from configuration files.
 """
 import os
+from time import time
+
 import yaml
+from rich import print
+from rich.progress import track
 
 import quilt.interface.spiking as spiking
 import quilt.interface.base_objects as base_objects
-from rich import print
 
 class SpikingNetwork:
 
@@ -45,9 +48,9 @@ class SpikingNetwork:
                 net.populations[pop['name']] = spiking.Population( int(population_resize * pop['size']), paramap, net.interface )
             except IndexError as e:
                 raise IndexError(f"While building population {pop['name']} an error was raised")
-        
+        start = time()
         if "projections" in net.features_dict and net.features_dict['projections'] is not None:
-            for proj in net.features_dict['projections']:
+            for proj in track(net.features_dict['projections'], description="Building connections.."):
                 try:
                     projector = spiking.RandomProjector(**(proj['features']))
                 except ValueError as e:
@@ -63,7 +66,7 @@ class SpikingNetwork:
                 efferent = net.populations[efferent]
                 afferent = net.populations[afferent]
                 efferent.project(projector.get_projection(efferent, afferent), afferent)
-            
+        end = time()            
         return net
     
 

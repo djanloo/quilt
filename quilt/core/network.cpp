@@ -60,7 +60,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         };
     }
 
-    this->print_info();
+    // this->print_info();
     }
 
 Projection::Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension):
@@ -75,12 +75,12 @@ Projection::Projection(float ** weights, float ** delays, unsigned int start_dim
             }
         }
     }
-    std::cout << "Projection has density " << ((float)n_links)/start_dimension/end_dimension * 100 << "%" << std::endl;
+    // std::cout << "Projection has density " << ((float)n_links)/start_dimension/end_dimension * 100 << "%" << std::endl;
 }
 
 void Population::project(Projection * projection, Population * efferent_population){
     int connections = 0;
-    auto start = std::chrono::high_resolution_clock::now();
+    // auto start = std::chrono::high_resolution_clock::now();
     for (unsigned int i = 0; i < projection -> start_dimension; i++){
         for (unsigned int j = 0; j < projection -> end_dimension; j++){
             if (std::abs((projection -> weights)[i][j]) > WEIGHT_EPS){
@@ -89,10 +89,10 @@ void Population::project(Projection * projection, Population * efferent_populati
             }
         }
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "Performing " << connections << " connections took ";
-    std::cout << (std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count() << " ms   (";
-    std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end -start)).count())/connections << " us/link)" << std::endl;
+    // auto end = std::chrono::high_resolution_clock::now();
+    // std::cout << "Performing " << connections << " connections took ";
+    // std::cout << (std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count() << " ms   (";
+    // std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end -start)).count())/connections << " us/link)" << std::endl;
 }
 
 void Population::evolve(EvolutionContext * evo){
@@ -141,7 +141,7 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
     int n_neurons_total = 0;
     for (auto pop : populations){n_neurons_total += pop->n_neurons;}
         
-    std::cout << "Minimum synaptic delay is " << Synapse::min_delay << std::endl;
+    // std::cout << "Minimum synaptic delay is " << Synapse::min_delay << std::endl;
 
     // A check on minimum delays
     if (Synapse::min_delay < evo->dt){
