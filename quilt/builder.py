@@ -34,24 +34,31 @@ class SpikingNetwork:
 
         net.populations = dict()
 
-        if "population_rescale_factor" in net.features_dict:
-            population_resize = net.features_dict["population_rescale_factor"]
-            print(f"Populations are resized by {population_resize}")
-        else:
-            population_resize = 1.0
+        population_rescale = 1.0 if "population_rescale_factor" not in net.features_dict else net.features_dict["population_rescale_factor"]
+        connection_rescale = 1.0 if "connection_rescale_factor" not in net.features_dict else net.features_dict["connection_rescale_factor"]
 
-        # print(net.features_dict)
+
         
         for pop in net.features_dict['populations']:
             paramap = neuron_catalogue[pop['neuron_model']]
             try:
-                net.populations[pop['name']] = spiking.Population( int(population_resize * pop['size']), paramap, net.interface )
+                net.populations[pop['name']] = spiking.Population( int(population_rescale * pop['size']), paramap, net.interface )
             except IndexError as e:
                 raise IndexError(f"While building population {pop['name']} an error was raised")
         start = time()
         if "projections" in net.features_dict and net.features_dict['projections'] is not None:
             for proj in track(net.features_dict['projections'], description="Building connections.."):
                 try:
+                    # Rescaling connections
+                    try:
+                        proj['features']['inh_fraction'] *= connection_rescale
+                    except KeyError:
+                        pass
+                    try:
+                        proj['features']['exc_fraction'] *= connection_rescale
+                    except KeyError:
+                        pass
+
                     projector = spiking.RandomProjector(**(proj['features']))
                 except ValueError as e:
                     raise ValueError(f"Some value was wrong during projection {efferent}->{afferent}")
