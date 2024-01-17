@@ -1,6 +1,5 @@
 # Population number multiplier
-population_rescale_factor: 1
-
+population_rescale_factor: 0.1
 # A parameter to uniformly enloose connectivity
 connection_rescale_factor: 1
 
@@ -17,221 +16,148 @@ populations:
   - name: FSN
     size: 420
     neuron_model: FSN_neuron
-  - name: GPTI
+  - name: GPeTI
     size: 780
     neuron_model: GPTI_neuron
-  - name: GPTA
+  - name: GPeTA
     size: 260
     neuron_model: GPTA_neuron
   - name: STN
     size: 408
     neuron_model: STN_neuron
+  - name: SNR
+    size: 754
+    neuron_model: SNR_neuron
 
 projections:
   - name: D1->D1
     features:
-      inh_fraction: 0.06
+      inh_fraction: 0.0607
       delay: 1.7
       weight_inh: 0.12
 
   - name: D1->D2
     features:
-      inh_fraction:   0.014
-      delay:      1.7
-      weight_inh:        0.36
+      inh_fraction: 0.0140
+      delay: 1.7
+      weight_inh: 0.30
 
-  # This whole conenction is made up
-  - name: D1->GPTI
+  - name: D1->SNR
     features:
-      inh_fraction: 0.02
-      delay:        1.7
-      weight_inh:   0.25
-  
-  # This whole connection is made up
-  - name: D2->GPTA
-    features:
-      inh_fraction: 0.02
-      delay:        1.8
-      weight_inh:   0.2
-  
-  # Missing delays and fraction
-  # - name: D1->FSN
-  #   features:
-  #     inh_fraction:
-
-  #     delay:
-  #     delay:
-
-  #     weight_inh: 6.6
-  #     weight_inh: 6.6
-    
-  # Missign delay and fraction
-  # - name: D1->GPTA
-  #   features:
-  #     inh_fraction:
-
-  #     delay:
-  #     delay:
-
-  #     weight_inh: 0.35
-  #     weight_inh: 0.35     
+      inh_fraction: 0.0132
+      delay: 7.0
+      weight_inh: 2.0
 
   - name: D2->D1
     features:
-      inh_fraction:   0.0653
-      delay:      1.7
-      weight_inh:        0.3
+      inh_fraction: 0.0653
+      delay: 1.7
+      weight_inh: 0.36
 
   - name: D2->D2
     features:
-      inh_fraction:   0.084
-      delay:      1.7
-      weight_inh:        0.2
+      inh_fraction: 0.0840
+      delay: 1.7
+      weight_inh: 0.20
 
-  # Missing weights
-  # - name: D2->GPTI
-  #   features:
-  #     inh_fraction:
-  #     exc_fraction:
+  - name: D2->GPeTI
+    features:
+      inh_fraction: 0.0833
+      delay: 7.0
+      weight_inh: 1.28
 
-  #     delay: 
-  #     delay: 
-
-  #     weight_inh:
-  #     weight_inh: 
-      
-  #     min_exc: 
-  #     max_exc: 
-  
-  # Missing weights
-  # This whole connection is made up
   - name: FSN->D1
     features:
-      inh_fraction: 0.01
-      delay:        1.2
-      weight_inh:   0.15
+      inh_fraction: 0.0381
+      delay: 1.7
+      weight_inh: 6.6
 
   - name: FSN->FSN
     features:
-      inh_fraction: 0.022
-      delay:    1.0
-      weight_inh:      0.5
+      inh_fraction: 0.0238
+      delay: 1.0
+      weight_inh: 0.5
 
-  # Missing weights
-  # This whole connection is made up
   - name: FSN->D2
     features:
-      inh_fraction: 0.02
-      delay:        1.5
-      weight_inh:   0.15
+      inh_fraction: 0.0262
+      delay: 1.7
+      weight_inh: 4.8
 
-  - name: GPTI->GPTI
+  - name: GPeTI->GPeTI
     features:
       inh_fraction: 0.0321
-      delay:    1.0
-      weight_inh:      1.2
-      
-  - name: GPTI->GPTA
-    features:
-      inh_fraction: 0.0321
-      delay:    1.0
+      delay: 1.0
       weight_inh: 1.2
-    
-  # Missing weights
-  # - name: GPTI->FSN
-  #   features:
-  #     inh_fraction:
-  #     exc_fraction:
 
-  #     delay:
-  #     delay:
-
-  #     weight_inh:
-  #     weight_inh:
-      
-  #     min_exc:
-  #     max_exc:
-
-  - name: GPTI->STN
+  - name: GPeTI->GPeTA
     features:
-      exc_fraction: 0.038
-      delay:        1.0
-      weight_exc:   0.42
+      inh_fraction: 0.0321
+      delay: 1.0
+      weight_inh: 0.35
 
-  # Missing weights
-  # - name: GPTA->D1
-  #   features:
-  #     inh_fraction:
-  #     exc_fraction:
-
-  #     delay:
-  #     delay:
-
-  #     weight_inh:
-  #     weight_inh:
-      
-  #     min_exc:
-  #     max_exc:
-
-  # Missing weights
-  # - name: GPTA->D2
-  #   features:
-  #     inh_fraction:
-  #     exc_fraction:
-
-  #     delay:
-  #     delay:
-
-  #     weight_inh:
-  #     weight_inh:
-      
-  #     min_exc:
-  #     max_exc:
-
-  # Missing weights
-  # - name: GPTA->FSN
-  #   features:
-  #     inh_fraction:
-  #     exc_fraction:
-
-  #     delay:
-  #     delay:
-
-  #     weight_inh:
-  #     weight_inh:
-      
-  #     min_exc:
-  #     max_exc:
-
-  - name: GPTA->GPTA
+  - name: GPeTI->FSN
     features:
-      inh_fraction: 0.03189
-      delay:    1.0
-      weight_inh:      0.35
+      inh_fraction: 0.0128
+      delay: 7.0
+      weight_inh: 1.6
 
-  - name: GPTA->GPTI
+  - name: GPeTI->STN
+    features:
+      inh_fraction: 0.0385
+      delay: 1.0
+      weight_inh: 0.08
+
+  - name: GPeTI->SNR
+    features:
+      inh_fraction: 0.0324
+      delay: 3.0
+      weight_inh: 76.0
+
+  - name: GPeTA->D1
+    features:
+      inh_fraction: 0.0379
+      delay: 7.0
+      weight_inh: 0.35
+
+  - name: GPeTA->D2
+    features:
+      inh_fraction: 0.0379
+      delay: 7.0
+      weight_inh: 0.61
+
+  - name: GPeTA->FSN
+    features:
+      inh_fraction: 0.0379
+      delay: 7.0
+      weight_inh: 1.85
+
+  - name: GPeTA->GPeTA
     features:
       inh_fraction: 0.0189
-      delay:    1.0
-      weight_inh:      0.35
+      delay: 1.0
+      weight_inh: 0.35
 
-  - name: STN->GPTI
+  - name: GPeTA->GPeTI
     features:
-      inh_fraction: 0.0735
-      delay:    2.0
-      weight_inh:      0.08
+      inh_fraction: 0.0189
+      delay: 1.0
+      weight_inh: 1.2
 
-  # Missing weights
-  # - name: STN->GPTA
-  #   features:
-  #     inh_fraction:
-  #     exc_fraction:
+  - name: STN->GPeTA
+    features:
+      exc_fraction: 0.0735
+      delay:        2.0
+      weight_exc:   0.13
 
-  #     delay:
-  #     delay:
+  - name: STN->GPeTI
+    features:
+      exc_fraction: 0.0735
+      delay:        2.0
+      weight_exc:   0.42
 
-  #     weight_inh:
-  #     weight_inh:
-      
-  #     min_exc:
-  #     max_exc:
+  - name: STN->SNR
+    features:
+      exc_fraction: 0.0773
+      delay: 4.5
+      weight_exc: 0.91

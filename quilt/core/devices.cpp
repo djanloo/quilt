@@ -21,13 +21,13 @@ void PopulationStateMonitor::gather(){
 
 void PopCurrentInjector::inject(EvolutionContext * evo){
     if (!activated & (evo->now > t_min)){
-        pop->neuroparam->I_ext = I;
+        pop->neuroparam->I_e = I;
         activated = true;
         // std::cout << "ACTIVATED CURRENT" << std::endl;
     }
 
     if (!deactivated & (evo->now >= t_max)){
-        pop->neuroparam->I_ext = 0.0;
+        pop->neuroparam->I_e = 0.0;
         deactivated = true;
         // std::cout << "DEACTIVATED CURRENT" << std::endl;
     }

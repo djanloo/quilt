@@ -55,7 +55,7 @@ void Synapse::fire(EvolutionContext * evo){
 Neuron::Neuron(Population * population):population(population){
     
     id = HierarchicalID( population -> id);
-    state = neuron_state { population->neuroparam->E_rest + ((double)rand())/RAND_MAX, 0.0, 0.0};
+    state = neuron_state { population->neuroparam->E_l + ((double)rand())/RAND_MAX, 0.0, 0.0};
     last_spike_time = - std::numeric_limits<float>::infinity();
     population -> neurons.push_back(this);        
 };
@@ -146,7 +146,7 @@ void Neuron::evolve(EvolutionContext * evo){
     }
 
     // Spike generation
-    if ((state[0]) >= this->population->neuroparam->E_thr){ emit_spike(evo);}
+    if ((state[0]) >= this->population->neuroparam->V_peak){ emit_spike(evo);}
 }
 
 void Neuron::emit_spike(EvolutionContext * evo){
@@ -154,7 +154,7 @@ void Neuron::emit_spike(EvolutionContext * evo){
 
     this -> last_spike_time = evo -> now;
     ((this->population)->n_spikes_last_step) ++;
-    state[0] = population->neuroparam->E_thr;
+    state[0] = population->neuroparam->V_peak;
 
     spike_flag = true;
     // This is done at the beginning of the next evolution
@@ -162,12 +162,12 @@ void Neuron::emit_spike(EvolutionContext * evo){
 }
 
 void Neuron::on_spike(EvolutionContext * /*evo*/){
-    this->state[0] = this->population->neuroparam->E_reset;
+    this->state[0] = this->population->neuroparam->V_reset;
 }
 
 NeuroParam::NeuroParam(){
     this->neur_type = neuron_type::base_neuron;
-    std::map<std::string, float> defaults = {{"I_ext", 0.0}, {"I_osc", 0.0}, {"omega_I", 0.0}};
+    std::map<std::string, float> defaults = {{"I_e", 0.0}, {"I_osc", 0.0}, {"omega_I", 0.0}};
     this->paramap = ParaMap(defaults);
     }
 
@@ -178,31 +178,31 @@ NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
 
     std::string last = "";
     try{
-        last = "E_rest";
-        this->E_rest = this->paramap.get(last);
-        last = "E_reset";
-        this->E_reset = this->paramap.get(last);
-        last = "E_thr";
-        this->E_thr = this->paramap.get(last);
+        last = "E_l";
+        this->E_l = this->paramap.get(last);
+        last = "V_reset";
+        this->V_reset = this->paramap.get(last);
+        last = "V_peak";
+        this->V_peak = this->paramap.get(last);
 
         last = "C_m";
         this->C_m = this->paramap.get(last);
-        last = "tau_m";
-        this->tau_m = this->paramap.get(last);
+        last = "G_L";
+        this->G_L = this->paramap.get(last);
 
-        last = "tau_e";
-        this->tau_e = this->paramap.get(last);
-        last = "tau_i";
-        this->tau_i = this->paramap.get(last);
-        last = "E_exc";
-        this->E_exc = this->paramap.get(last);
-        last = "E_inh";
+        last = "tau_ex";
+        this->tau_ex = this->paramap.get(last);
+        last = "tau_in";
+        this->tau_in = this->paramap.get(last);
+        last = "E_ex";
+        this->E_ex = this->paramap.get(last);
+        last = "E_in";
         this->E_inh = this->paramap.get(last);
         
         last = "tau_refrac";
         this->tau_refrac = this->paramap.get(last);
-        last = "I_ext";
-        this->I_ext = this->paramap.get(last);
+        last = "I_e";
+        this->I_e = this->paramap.get(last);
         last = "I_osc";
         this->I_osc = this->paramap.get(last);
         last = "omega_I";
