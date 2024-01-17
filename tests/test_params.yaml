@@ -6,7 +6,7 @@ dummy_aqif:
   E_ex:                   0.
   E_in:                   -74.
   V_reset:                  -60.
-  V_peak:                   -29.7
+  V_th:                   -29.7
   tau_refrac:         0.
   I_e:                    0.0         # -36
   I_osc:                0.0
@@ -17,7 +17,7 @@ dummy_aqif:
   ada_b:             91.
   ada_tau_w:         100.
   G_L: 10
-  # V_peak:                 40.
+  V_peak:                 40.
 
 
 dummy_aeif:
