@@ -14,29 +14,29 @@ A catalogue is a list of neuron models:
     # neuron_catalogue.yml
 
     D1_spiny:
-        neuron_type: aeif
-        C_m : 40.
-        tau_m : 200.0
+        neuron_type:  aeif
+        C_m :         40.
+        G_L :         200.0
 
-        E_rest: -70.0
-        E_reset: -55.0
-        E_thr: 0.0
+        E_l:        -70.0
+        V_reset:    -55.0
+        V_peak:     0.0
         tau_refrac: 0.0
 
         # Exp pars
-        Delta:  2
-        exp_threshold: -40
+        delta_T:  2
+        V_th:     -40
 
         # Adapting pars
-        ada_a: 0.0
-        ada_b: 5.0
-        ada_tau_w: 100.0
+        ada_a:      0.0
+        ada_b:      5.0
+        ada_tau_w:  100.0
 
         # Syn pars
-        tau_e: 10.
-        tau_i: 5.5
-        E_exc: 0.
-        E_inh: -65.
+        tau_ex:   10.
+        tau_in:   5.5
+        E_ex:     0.
+        E_in:     -65.
 
 To load a neuron catalogue:
 
@@ -69,15 +69,19 @@ Each population uses a model defined in a catalogue.
         efferent: GPi
         afferent: STR1
         features:
-            exc_fraction: 0.1
-            max_exc: 0.5
-            min_delay: 0.1
+            exc_fraction:     0.1
+            weight_exc:       0.5
+            weight_exc_delta: 0.05
+            delay:            1.1
+            delay_delta:      0.1
+
       - name: STR1->GPi
         efferent: STR1
         afferent: GPi
         features:
             inh_fraction: 0.1
-            max_inh: 0.03
+            weight_inh: 0.03
+            weight_inh_delta: 0.001
 
 The parameters of a projection between an efferent population of size ``N`` and an afferent population of size ``M`` are (see `here <https://github.com/djanloo/quilt/issues/2>`_):
 

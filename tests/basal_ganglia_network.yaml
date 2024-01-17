@@ -1,7 +1,7 @@
 # Population number multiplier
-population_rescale_factor: 1.0
+population_rescale_factor: 0.5
 # A parameter to uniformly enloose connectivity
-connection_rescale_factor: 1
+connection_rescale_factor: 0.3
 
 # TODO:
 #delay_scale_factor: 
@@ -33,116 +33,116 @@ projections:
   - name: D1->D1
     features:
       inh_fraction: 0.0607
-      delay: 1.7
-      weight_inh: 0.12
+      delay:        1.7
+      weight_inh:   0.12
 
   - name: D1->D2
     features:
       inh_fraction: 0.0140
-      delay: 1.7
-      weight_inh: 0.30
+      delay:        1.7
+      weight_inh:   0.30
 
   - name: D1->SNR
     features:
       inh_fraction: 0.0132
-      delay: 7.0
-      weight_inh: 2.0
+      delay:        7.0
+      weight_inh:   2.0
 
   - name: D2->D1
     features:
       inh_fraction: 0.0653
-      delay: 1.7
-      weight_inh: 0.36
+      delay:        1.7
+      weight_inh:   0.36
 
   - name: D2->D2
     features:
       inh_fraction: 0.0840
-      delay: 1.7
-      weight_inh: 0.20
+      delay:        1.7
+      weight_inh:   0.20
 
   - name: D2->GPeTI
     features:
       inh_fraction: 0.0833
-      delay: 7.0
-      weight_inh: 1.28
+      delay:        7.0
+      weight_inh:   1.28
 
   - name: FSN->D1
     features:
       inh_fraction: 0.0381
-      delay: 1.7
-      weight_inh: 6.6
+      delay:        1.7
+      weight_inh:   6.6
 
   - name: FSN->FSN
     features:
       inh_fraction: 0.0238
-      delay: 1.0
-      weight_inh: 0.5
+      delay:        1.0
+      weight_inh:   0.5
 
   - name: FSN->D2
     features:
       inh_fraction: 0.0262
-      delay: 1.7
-      weight_inh: 4.8
+      delay:        1.7
+      weight_inh:   4.8
 
   - name: GPeTI->GPeTI
     features:
       inh_fraction: 0.0321
-      delay: 1.0
-      weight_inh: 1.2
+      delay:        1.0
+      weight_inh:   1.2
 
   - name: GPeTI->GPeTA
     features:
       inh_fraction: 0.0321
-      delay: 1.0
-      weight_inh: 0.35
+      delay:        1.0
+      weight_inh:   0.35
 
   - name: GPeTI->FSN
     features:
       inh_fraction: 0.0128
-      delay: 7.0
-      weight_inh: 1.6
+      delay:        7.0
+      weight_inh:   1.6
 
   - name: GPeTI->STN
     features:
       inh_fraction: 0.0385
-      delay: 1.0
-      weight_inh: 0.08
+      delay:        1.0
+      weight_inh:   0.08
 
   - name: GPeTI->SNR
     features:
       inh_fraction: 0.0324
-      delay: 3.0
-      weight_inh: 76.0
+      delay:        3.0
+      weight_inh:   76.0
 
   - name: GPeTA->D1
     features:
       inh_fraction: 0.0379
-      delay: 7.0
-      weight_inh: 0.35
+      delay:        7.0
+      weight_inh:   0.35
 
   - name: GPeTA->D2
     features:
       inh_fraction: 0.0379
-      delay: 7.0
-      weight_inh: 0.61
+      delay:        7.0
+      weight_inh:   0.61
 
   - name: GPeTA->FSN
     features:
       inh_fraction: 0.0379
-      delay: 7.0
-      weight_inh: 1.85
+      delay:        7.0
+      weight_inh:   1.85
 
   - name: GPeTA->GPeTA
     features:
       inh_fraction: 0.0189
-      delay: 1.0
-      weight_inh: 0.35
+      delay:        1.0
+      weight_inh:   0.35
 
   - name: GPeTA->GPeTI
     features:
       inh_fraction: 0.0189
-      delay: 1.0
-      weight_inh: 1.2
+      delay:        1.0
+      weight_inh:   1.2
 
   - name: STN->GPeTA
     features:
@@ -159,5 +159,5 @@ projections:
   - name: STN->SNR
     features:
       exc_fraction: 0.0773
-      delay: 4.5
-      weight_exc: 0.91
+      delay:        4.5
+      weight_exc:   0.91

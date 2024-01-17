@@ -18,13 +18,19 @@ class SpikingNetwork:
     def run(self, dt=0.1, time=1):
         self.interface.run(dt, time)
 
+    def rescale_populations(self, population_rescale_factor):
+        self.population_rescale = population_rescale_factor
+    
+    def rescale_connectivity(self, connection_rescale_factor):
+        self.connection_rescale = connection_rescale_factor
+
     @classmethod
     def from_yaml(cls, yaml_file, neuron_catalogue):
         net = cls()
         net.interface = spiking.SpikingNetwork("dummy")
 
         net.yaml_file = yaml_file
-        net.catalogue = neuron_catalogue
+        net.neuron_catalogue = neuron_catalogue
         
         if not os.path.exists(net.yaml_file):
             raise FileNotFoundError("YAML file not found")
@@ -34,30 +40,31 @@ class SpikingNetwork:
 
         net.populations = dict()
 
-        population_rescale = 1.0 if "population_rescale_factor" not in net.features_dict else net.features_dict["population_rescale_factor"]
-        connection_rescale = 1.0 if "connection_rescale_factor" not in net.features_dict else net.features_dict["connection_rescale_factor"]
+        net.population_rescale = 1.0 if "population_rescale_factor" not in net.features_dict else net.features_dict["population_rescale_factor"]
+        net.connection_rescale = 1.0 if "connection_rescale_factor" not in net.features_dict else net.features_dict["connection_rescale_factor"]
 
-
-        
-        for pop in net.features_dict['populations']:
-            paramap = neuron_catalogue[pop['neuron_model']]
+        return net
+    
+    def build(self):
+        for pop in self.features_dict['populations']:
+            paramap = self.neuron_catalogue[pop['neuron_model']]
             try:
-                net.populations[pop['name']] = spiking.Population( int(population_rescale * pop['size']), paramap, net.interface )
+                self.populations[pop['name']] = spiking.Population( int(self.population_rescale * pop['size']), paramap, self.interface )
             except IndexError as e:
                 message = f"While building population {pop['name']} an error was raised:\n\t"
                 message += str(e)
                 raise IndexError(message)
         start = time()
-        if "projections" in net.features_dict and net.features_dict['projections'] is not None:
-            for proj in track(net.features_dict['projections'], description="Building connections.."):
+        if "projections" in self.features_dict and self.features_dict['projections'] is not None:
+            for proj in track(self.features_dict['projections'], description="Building connections.."):
                 try:
                     # Rescaling connections
                     try:
-                        proj['features']['inh_fraction'] *= connection_rescale
+                        proj['features']['inh_fraction'] *= self.connection_rescale
                     except KeyError:
                         pass
                     try:
-                        proj['features']['exc_fraction'] *= connection_rescale
+                        proj['features']['exc_fraction'] *= self.connection_rescale
                     except KeyError:
                         pass
 
@@ -67,16 +74,15 @@ class SpikingNetwork:
                 efferent, afferent = proj['name'].split("->")
                 efferent, afferent = efferent.strip(), afferent.strip()
                 
-                if efferent not in net.populations.keys():
+                if efferent not in self.populations.keys():
                     raise KeyError(f"In projection {efferent} -> {afferent}: <{efferent}> was not defined")
-                if afferent not in net.populations.keys():
+                if afferent not in self.populations.keys():
                     raise KeyError(f"In projection {efferent} -> {afferent}: <{afferent}> was not defined")
                 
-                efferent = net.populations[efferent]
-                afferent = net.populations[afferent]
+                efferent = self.populations[efferent]
+                afferent = self.populations[afferent]
                 efferent.project(projector.get_projection(efferent, afferent), afferent)
         end = time()            
-        return net
     
 
 class NeuronCatalogue:
