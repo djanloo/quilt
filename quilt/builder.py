@@ -44,7 +44,9 @@ class SpikingNetwork:
             try:
                 net.populations[pop['name']] = spiking.Population( int(population_rescale * pop['size']), paramap, net.interface )
             except IndexError as e:
-                raise IndexError(f"While building population {pop['name']} an error was raised")
+                message = f"While building population {pop['name']} an error was raised:\n\t"
+                message += str(e)
+                raise IndexError(message)
         start = time()
         if "projections" in net.features_dict and net.features_dict['projections'] is not None:
             for proj in track(net.features_dict['projections'], description="Building connections.."):
