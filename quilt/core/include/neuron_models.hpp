@@ -155,12 +155,13 @@ class aeif_neuron : public Neuron {
 */
 class aeif_param : public NeuroParam{
     public:
-        float delta_T;            //!< scale factor of the exponential [mV] 
-        float V_th;    //!< threshold value of the exponential factor [mV] 
+        float delta_T;          //!< exponential width factor [mV] 
+        float V_th;             //!< threshold value of the exponential factor [mV] 
 
         float ada_a;            //!< drift coefficient of the recovery variable 
         float ada_b;            //!< jump coefficient of the recovery variable
         float ada_tau_w;        //!< timescale parameter of the recovery variable [ms]
+        float G_L;      //!< Membrane leak conductance [nS]
 
         aeif_param (const ParaMap & paramap):
         NeuroParam(paramap){
@@ -169,6 +170,8 @@ class aeif_param : public NeuroParam{
             }
             std::string last = "";
             try{
+                last = "G_L";
+                G_L = paramap.get(last);
                 last = "delta_T";
                 delta_T = paramap.get(last);
                 last = "V_th";
@@ -184,6 +187,7 @@ class aeif_param : public NeuroParam{
             }
         }
 };
+
 
 // /**
 //  * @class poisson_neuron
