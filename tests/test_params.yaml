@@ -2,37 +2,37 @@ dummy_aqif:
   neuron_type: aqif
   C_m:                    15.2
   k:        1.
-  E_rest:                    -80.
-  E_exc:                   0.
-  E_inh:                   -74.
-  E_reset:                  -60.
-  E_thr:                   -29.7
+  E_l:                    -80.
+  E_ex:                   0.
+  E_in:                   -74.
+  V_reset:                  -60.
+  V_peak:                   -29.7
   tau_refrac:         0.
   I_e:                    0.0         # -36
   I_osc:                0.0
   omega_I:              0.0
-  tau_e:             12.
-  tau_i:             10.
+  tau_ex:             12.
+  tau_in:             10.
   ada_a:             -20
   ada_b:             91.
   ada_tau_w:         100.
-  tau_m: 10
-  # E_thr:                 40.
+  G_L: 10
+  # V_peak:                 40.
 
 
 dummy_aeif:
   neuron_type: aeif
   C_m : 40.
-  tau_m : 200.0
+  G_L : 200.0
 
-  E_rest: -70.0
-  E_reset: -55.0
-  E_thr: 0.0
+  E_l: -70.0
+  V_reset: -55.0
+  V_peak: 0.0
   tau_refrac: 0.0
 
   # Exp pars
-  Delta:  2
-  exp_threshold: -40
+  delta_T:  2
+  V_th: -40
 
   # Adapting pars
   ada_a: 0.0
@@ -40,17 +40,17 @@ dummy_aeif:
   ada_tau_w: 100.0
 
   # Syn pars
-  tau_e: 10.
-  tau_i: 5.5
-  E_exc: 0.
-  E_inh: -65.
+  tau_ex: 10.
+  tau_in: 5.5
+  E_ex: 0.
+  E_in: -65.
 
     
 dummy_izhikevich:
   neuron_type: izhikevich
-  E_thr: -5
-  E_reset: -70
-  E_rest: -70
+  V_peak: -5
+  V_reset: -70
+  E_l: -70
 
   a: 1
   b: 10
@@ -59,12 +59,12 @@ dummy_izhikevich:
   
   tau_refrac: 0.1
   C_m: 40
-  tau_m: 20
+  G_L: 20
 
-  tau_e: 10
-  tau_i: 20
-  E_exc: 0
-  E_inh: -70
+  tau_ex: 10
+  tau_in: 20
+  E_ex: 0
+  E_in: -70
 
 
 

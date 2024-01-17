@@ -52,6 +52,7 @@ class aqif_neuron : public Neuron {
 class aqif_param : public NeuroParam {
     public:
         float k;        //!< Quadratic term constant
+        float V_th;     //!< Quadratic term shift
 
         float ada_a;    //!< Adaptive variable drift term
         float ada_b;    //!< Adaptive variable jump term
@@ -65,6 +66,8 @@ class aqif_param : public NeuroParam {
             try {
                 last = "k";
                 k = paramap.get(last);
+                last = "V_th";
+                V_th = paramap.get(last);
                 last = "ada_a";
                 ada_a = paramap.get(last);
                 last = "ada_b";
@@ -152,8 +155,8 @@ class aeif_neuron : public Neuron {
 */
 class aeif_param : public NeuroParam{
     public:
-        float Delta;            //!< scale factor of the exponential [mV] 
-        float exp_threshold;    //!< threshold value of the exponential factor [mV] 
+        float delta_T;            //!< scale factor of the exponential [mV] 
+        float V_th;    //!< threshold value of the exponential factor [mV] 
 
         float ada_a;            //!< drift coefficient of the recovery variable 
         float ada_b;            //!< jump coefficient of the recovery variable
@@ -166,10 +169,10 @@ class aeif_param : public NeuroParam{
             }
             std::string last = "";
             try{
-                last = "Delta";
-                Delta = paramap.get(last);
-                last = "exp_threshold";
-                exp_threshold = paramap.get(last);
+                last = "delta_T";
+                delta_T = paramap.get(last);
+                last = "V_th";
+                V_th = paramap.get(last);
                 last = "ada_a";
                 ada_a = paramap.get(last);
                 last="ada_b";
@@ -181,3 +184,24 @@ class aeif_param : public NeuroParam{
             }
         }
 };
+
+// /**
+//  * @class poisson_neuron
+//  * @brief the neuron for poisson populations
+// */
+// class poisson_neuron : public Neuron{
+//     public:
+//         poisson_neuron(Population * population);
+//         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
+//         void on_spike(EvolutionContext * evo) override;
+// };
+
+// /**
+//  * @class poisson_param
+//  * @brief Container for parameters of `poisson_neuron`
+// */
+// class poisson_param : public NeuroParam{
+//     public:
+//         float rate; //!< The rate of each neuron
+//         poisson_param ()
+// };

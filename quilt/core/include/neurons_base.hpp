@@ -161,19 +161,20 @@ class NeuroParam{
     public:
         ParaMap paramap;
 
-        float E_rest;   //!< Rest potential [mV]
-        float E_reset;  //!< Reset potential [mV]
-        float E_thr;    //!< Spike-emission threshold [mV]
-        float E_exc;    //!< Excitatory synaptic potential
-        float E_inh;    //!< Inhibitory synaptic potential
+        float E_l;      //!< Rest potential [mV]
+        float V_reset;  //!< Reset potential [mV]
+        float V_peak;   //!< Spike-emission threshold [mV]
+        float E_ex;     //!< Excitatory synaptic potential [mV]
+        float E_inh;    //!< Inhibitory synaptic potential [mV]
 
         float C_m;      //!< Membrane potential [pF]
-        float tau_m;    //!< Membrane decay time RC [ms]
-        float tau_e;    //!< Excitatory synapse decay time [ms]
-        float tau_i;    //!< Inhibitory synapse decay time [ms]
+        float G_L;      //!< Membrane leak conductance [nS]
+
+        float tau_ex;   //!< Excitatory synapse decay time [ms]
+        float tau_in;   //!< Inhibitory synapse decay time [ms]
         float tau_refrac;   //!< Refractory time
         
-        float I_ext;    //!< External current (constant) amplitude [nA]
+        float I_e;    //!< External current (constant) amplitude [nA]
         float I_osc;    //!< External current (oscillatory) amplitude [nA]
         float omega_I;  //!< External current (oscillatory) angular frequency [rad/s]
         

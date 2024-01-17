@@ -1,56 +1,52 @@
-# This is taken from the Codex Ortonensis
-# TODO: who the fuck is V_peak?
-# I replaced with exp_threshold because it was the only one missing
 D1_neuron:
   neuron_type:        aqif
   C_m:                15.2
-  E_rest:             -78.2
-  E_exc:              0.
-  E_inh:              -74.
-  E_reset:            -60.
-  E_thr:              -29.7
+  E_l:             -78.2
+  E_ex:              0.
+  E_in:              -74.
+  V_reset:            -60.
+  V_peak:              -29.7
   tau_refrac:         0.
-  tau_m:              10 # This is guessed
+  G_L:              10 # This is guessed
   I_e:                0.
-  tau_e:              12.
-  tau_i:              10.
+  tau_ex:              12.
+  tau_in:              10.
   k:                  1.
   ada_a:              -20
   ada_b:              66.9
   ada_tau_w:          100.
-  exp_threshold:      40
+  V_th:      40
 
 D2_neuron:
   neuron_type:        aqif
   C_m:                15.2
-  tau_m:              10.0 # This is guessed
+  G_L:              10.0 # This is guessed
   k:                  1.
-  E_rest:             -80.
-  E_exc:              0.
-  E_inh:              -74.
-  E_reset:            -60.
-  E_thr:              -29.7
+  E_l:             -80.
+  E_ex:              0.
+  E_in:              -74.
+  V_reset:            -60.
+  V_peak:              -29.7
   tau_refrac:         0.
-  tau_e:              12.
-  tau_i:              10.
+  tau_ex:              12.
+  tau_in:              10.
   ada_a:              -20
   ada_b:              91.
   ada_tau_w:          100.
   V_peak:             40.
-  k:                  1.
 
 FSN_neuron:
   neuron_type:           aqif # Note: this should be aqif2
   C_m:                    80.
-  tau_m:                  5 # This is guessed
-  E_rest:                    -80.
-  E_exc:                   0.
-  E_inh:                   -74.
-  E_reset:                  -60.
-  E_thr:                   -50.
+  G_L:                  5 # This is guessed
+  E_l:                    -80.
+  E_ex:                   0.
+  E_in:                   -74.
+  V_reset:                  -60.
+  V_peak:                   -50.
   tau_refrac:                  0.
-  tau_e:             12.
-  tau_i:             10.
+  tau_ex:             12.
+  tau_in:             10.
   k:        1.
   ada_a:             0.025
   ada_b:             0
@@ -61,76 +57,95 @@ FSN_neuron:
 GPTi_neuron:
   neuron_type:           aeif
   C_m:                    40.
-  E_rest:                    -55.1
-  E_exc:                   0.
-  E_inh:                   -65.
-  E_reset:                  -60.
-  E_thr:                   -54.7
+  E_l:                    -55.1
+  E_ex:                   0.
+  E_in:                   -65.
+  V_reset:                  -60.
+  V_peak:                   -54.7
   g_L:                    1.
   tau_refrac:                  0.0
-  tau_e:             10.
-  tau_i:             5.5
+  tau_ex:             10.
+  tau_in:             5.5
   ada_a:             2.5
   ada_b:             70.
   ada_tau_w:         20.
-  Delta:  1.7
+  delta_T:  1.7
   V_peak:                 15.
 
 GPTA_neuron:
   neuron_type:        aeif
   C_m:                    60.
-  tau_m:              2 # This is guessed
-  E_rest:                    -55.1
-  E_exc:                   0.
-  E_inh:                   -65.
-  E_reset:                  -60.
-  E_thr:                   -54.7
+  G_L:              2 # This is guessed
+  E_l:                    -55.1
+  E_ex:                   0.
+  E_in:                   -65.
+  V_reset:                  -60.
+  V_peak:                   -54.7
   g_L:                    1.
   tau_refrac:                  0.0
-  tau_e:             10.
-  tau_i:             5.5
+  tau_ex:             10.
+  tau_in:             5.5
   ada_a:             2.5
   ada_b:             105.
   ada_tau_w:         20.
-  Delta:  2.55
-  exp_threshold:                 15.
+  delta_T:  2.55
+  V_th:                 15.
 
 GPTI_neuron:
   neuron_type:           aeif
   C_m:                    40.
-  tau_m:                  1 # This is guessed
-  E_rest:                    -55.1
-  E_exc:                   0.
-  E_inh:                   -65.
-  E_reset:                  -60.
-  E_thr:                   -54.7
+  G_L:                  1 # This is guessed
+  E_l:                    -55.1
+  E_ex:                   0.
+  E_in:                   -65.
+  V_reset:                  -60.
+  V_peak:                   -54.7
   g_L:                    1.
   tau_refrac:                  0.0
   I_e:                    12.0 
 
-  tau_e:             10.
-  tau_i:             5.5
+  tau_ex:             10.
+  tau_in:             5.5
   ada_a:             2.5
   ada_b:             70.
   ada_tau_w:         20.
-  Delta:  1.7
-  exp_threshold:                 15.
+  delta_T:  1.7
+  V_th:                 15.
 
 STN_neuron:
   neuron_type:           aeif
   C_m:                    60.
-  tau_m:                  2 # This is guessed
-  E_rest:                    -80.2
-  E_exc:                   0.
-  E_inh:                   -84.
-  E_reset:                  -70.
-  E_thr:                   -64.0
+  G_L:                  2 # This is guessed
+  E_l:                    -80.2
+  E_ex:                   0.
+  E_in:                   -84.
+  V_reset:                  -70.
+  V_peak:                   -64.0
   g_L:                    10.
   tau_refrac:                  0.0
-  tau_e:             4.
-  tau_i:             8.
+  tau_ex:             4.
+  tau_in:             8.
   ada_a:             0.
   ada_b:             0.05
   ada_tau_w:         333.
-  Delta:              16.2
-  exp_threshold:                 15.
+  delta_T:              16.2
+  V_th:                 15.
+
+SNR_neuron:
+  neuron_type:      aeif
+  C_m:              80          
+  G_L:            3.7       # completely made up          
+  E_l:              -55.8             
+  delta_T:            1.8           
+  V_peak:             -55.2            
+  E_ex:             0.0              
+  E_in:             -72.0            
+  I_e:              15.0        
+  tau_ex:           12.0           
+  tau_in:           2.1    
+  tau_refrac:       0        
+  ada_tau_w:            20.0            
+  ada_a:            3             
+  ada_b:            200           
+  V_th:    20.0           
+  V_reset:          -65.0         

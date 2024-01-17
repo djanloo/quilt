@@ -8,10 +8,10 @@ TEST_PARAMS = "tests/test_params.yaml"
 def test_paramaps():
     import quilt.interface.base_objects as base_objs
     import quilt.interface.spiking as spiking
-    paramap = base_objs.ParaMap(dict(neuron_type='aeif', E_rest=-70, 
-                                E_thr=0, tau_m=10, E_reset=-65,E_exc=0, E_inh=-70,
-                                C_m=40, tau_e=10, tau_i=12, tau_refrac=0,
-                                Delta=3, exp_threshold=-30, 
+    paramap = base_objs.ParaMap(dict(neuron_type='aeif', E_l=-70, 
+                                V_peak=0, G_L=10, V_reset=-65,E_ex=0, E_in=-70,
+                                C_m=40, tau_ex=10, tau_in=12, tau_refrac=0,
+                                delta_T=3, V_th=-30, 
                                 ada_a=1, ada_b=3, ada_tau_w=4))
     sn = spiking.SpikingNetwork("a")
     pop = spiking.Population(10, paramap, sn)
@@ -118,5 +118,5 @@ if __name__=="__main__":
     from quilt.view import plot_graph
 
     plot_graph(sn)
-    
+
     plt.show()

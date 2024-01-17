@@ -55,7 +55,10 @@ def plot_graph(network):
         G.add_edge(efferent,afferent, **edge_dict)
 
 
-    pos = nx.spring_layout(G, weight='delay')
+    pos = nx.kamada_kawai_layout(G, weight='delay')
+
+    linewidths = np.log(60*np.array(list(nx.get_edge_attributes(G, 'strongness').values())))
+    linewidths = 0.1 + 3*(linewidths- np.min(linewidths))/(np.max(linewidths) - np.min(linewidths))
     nx.draw(G, pos, 
             edge_color=nx.get_edge_attributes(G,'color').values(),
             with_labels=True, 
@@ -64,5 +67,5 @@ def plot_graph(network):
             node_color='skyblue', 
             font_size=8, 
             connectionstyle="arc3,rad=0.1",
-            width=60*np.array(list(nx.get_edge_attributes(G, 'strongness').values()))
+            width=linewidths
             )
