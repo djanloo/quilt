@@ -1,151 +1,137 @@
 D1_neuron:
   neuron_type:        aqif
-  C_m:                15.2
-  E_l:             -78.2
-  E_ex:              0.
-  E_in:              -74.
-  V_reset:            -60.
-  V_peak:              -29.7
-  tau_refrac:         0.
-  G_L:              10 # This is guessed
-  I_e:                0.
-  tau_ex:              12.
-  tau_in:              10.
-  k:                  1.
-  ada_a:              -20
-  ada_b:              66.9
-  ada_tau_w:          100.
-  V_th:      40
+  C_m: 15.2                
+  E_l: -78.2              
+  V_th: -29.7             
+  E_ex: 0.0               
+  E_in: -74.0             
+  I_e: 0.0          
+  tau_ex: 12.0            
+  tau_in: 10.0            
+  ada_tau_w: 100.0            
+  ada_a: -20.0          
+  ada_b: 67.0           
+  V_peak: 40.0            
+  V_reset: -60.0          
+  k: 1.0     
+
+  tau_refrac: 0       
 
 D2_neuron:
   neuron_type:        aqif
-  C_m:                15.2
-  G_L:              10.0 # This is guessed
-  k:                  1.
-  E_l:             -80.
-  E_ex:              0.
-  E_in:              -74.
-  V_reset:            -60.
-  V_peak:              -29.7
-  tau_refrac:         0.
-  tau_ex:              12.
-  tau_in:              10.
-  ada_a:              -20
-  ada_b:              91.
-  ada_tau_w:          100.
-  V_peak:             40.
+  C_m: 15.2                
+  E_l: -80.0              
+  V_th: -29.7             
+  E_ex: 0.0               
+  E_in: -74.0             
+  I_e: 0.0          
+  tau_ex: 12.0            
+  tau_in: 10.0            
+  ada_tau_w: 100.0            
+  ada_a: -20.0          
+  ada_b: 91.0           
+  V_peak: 40.0            
+  V_reset: -60.0          
+  k: 1.0
+  
+  tau_refrac: 0      
 
 FSN_neuron:
   neuron_type:           aqif # Note: this should be aqif2
-  C_m:                    80.
-  G_L:                  5 # This is guessed
-  E_l:                    -80.
-  E_ex:                   0.
-  E_in:                   -74.
-  V_reset:                  -60.
-  V_peak:                   -50.
-  tau_refrac:                  0.
-  tau_ex:             12.
-  tau_in:             10.
-  k:        1.
-  ada_a:             0.025
-  ada_b:             0
-  ada_tau_w:         5.
-  V_peak:                 25.
-  V_b_aqif2_cond_exp:     -55
+  C_m: 80.0                
+  E_l: -80.0              
+  V_th: -50.0             
+  E_ex: 0.0               
+  E_in: -74.0             
+  I_e: 0.0          
+  tau_ex: 12.0            
+  tau_in: 10.0            
+  ada_tau_w: 5.0              
+  ada_a: 0.025          
+  ada_b: 0.0            
+  V_peak: 25.0            
+  V_reset: -60.0          
+  k: 1.0            
+  # V_b: -55.0   
 
-GPTi_neuron:
-  neuron_type:           aeif
-  C_m:                    40.
-  E_l:                    -55.1
-  E_ex:                   0.
-  E_in:                   -65.
-  V_reset:                  -60.
-  V_peak:                   -54.7
-  g_L:                    1.
-  tau_refrac:                  0.0
-  tau_ex:             10.
-  tau_in:             5.5
-  ada_a:             2.5
-  ada_b:             70.
-  ada_tau_w:         20.
-  delta_T:  1.7
-  V_peak:                 15.
+  tau_refrac: 0             
 
-GPTA_neuron:
+GPeTA_neuron:
   neuron_type:        aeif
-  C_m:                    60.
-  G_L:              2 # This is guessed
-  E_l:                    -55.1
-  E_ex:                   0.
-  E_in:                   -65.
-  V_reset:                  -60.
-  V_peak:                   -54.7
-  g_L:                    1.
-  tau_refrac:                  0.0
-  tau_ex:             10.
-  tau_in:             5.5
-  ada_a:             2.5
-  ada_b:             105.
-  ada_tau_w:         20.
-  delta_T:  2.55
-  V_th:                 15.
+  C_m: 60            
+  G_L: 1.0                  
+  E_l: -55.1              
+  delta_T: 2.55           
+  V_th: -54.7             
+  E_ex: 0.0               
+  E_in: -65.0             
+  I_e: 1.0          
+  tau_ex: 10.0            
+  tau_in: 5.5             
+  ada_tau_w: 20.0             
+  ada_a: 2.5            
+  ada_b: 105.0          
+  V_peak: 15.0            
+  V_reset: -60.0 
 
-GPTI_neuron:
+  tau_refrac: 0       
+
+GPeTI_neuron:
   neuron_type:           aeif
-  C_m:                    40.
-  G_L:                  1 # This is guessed
-  E_l:                    -55.1
-  E_ex:                   0.
-  E_in:                   -65.
-  V_reset:                  -60.
-  V_peak:                   -54.7
-  g_L:                    1.
-  tau_refrac:                  0.0
-  I_e:                    12.0 
+  C_m: 40            
+  G_L: 1.0                  
+  E_l: -55.1              
+  delta_T: 1.7            
+  V_th: -54.7             
+  E_ex: 0.0               
+  E_in: -65.0             
+  I_e: 12.0         
+  tau_ex: 10.0            
+  tau_in: 5.5             
+  ada_tau_w: 20.0             
+  ada_a: 2.5            
+  ada_b: 70.0           
+  V_peak: 15.0            
+  V_reset: -60.0  
 
-  tau_ex:             10.
-  tau_in:             5.5
-  ada_a:             2.5
-  ada_b:             70.
-  ada_tau_w:         20.
-  delta_T:  1.7
-  V_th:                 15.
+  tau_refrac: 0        
 
 STN_neuron:
   neuron_type:           aeif
-  C_m:                    60.
-  G_L:                  2 # This is guessed
-  E_l:                    -80.2
-  E_ex:                   0.
-  E_in:                   -84.
-  V_reset:                  -70.
-  V_peak:                   -64.0
-  g_L:                    10.
-  tau_refrac:                  0.0
-  tau_ex:             4.
-  tau_in:             8.
-  ada_a:             0.
-  ada_b:             0.05
-  ada_tau_w:         333.
-  delta_T:              16.2
-  V_th:                 15.
+  C_m: 60            
+  G_L: 10.0                 
+  E_l: -80.2              
+  delta_T: 16.2           
+  V_th: -64.0             
+  E_ex: 0.0               
+  E_in: -84.0             
+  I_e: 5.0          
+  tau_ex: 4.0             
+  tau_in: 8.0             
+  ada_tau_w: 333.0            
+  ada_a: 0.0            
+  ada_b: 0.05           
+  V_peak: 15.0            
+  V_reset: -70.0      
+
+  tau_refrac: 0    
 
 SNR_neuron:
   neuron_type:      aeif
-  C_m:              80          
-  G_L:            3.7       # completely made up          
-  E_l:              -55.8             
-  delta_T:            1.8           
-  V_peak:             -55.2            
-  E_ex:             0.0              
-  E_in:             -72.0            
-  I_e:              15.0        
-  tau_ex:           12.0           
-  tau_in:           2.1    
-  tau_refrac:       0        
-  ada_tau_w:            20.0            
-  ada_a:            3             
-  ada_b:            200           
-  V_th:    20.0           
-  V_reset:          -65.0         
+  C_m: 80            
+  G_L: 3.0                  
+  E_l: -55.8              
+  delta_T: 1.8            
+  V_th: -55.2             
+  E_ex: 0.0               
+  E_in: -72.0             
+  I_e: 15.0         
+  tau_ex: 12.0            
+  tau_in: 2.1             
+  ada_tau_w: 20.0             
+  ada_a: 3              
+  ada_b: 200            
+  V_peak: 20.0            
+  V_reset: -65.0     
+
+  tau_refrac: 0     

@@ -18,10 +18,10 @@ populations:
     neuron_model: FSN_neuron
   - name: GPeTI
     size: 780
-    neuron_model: GPTI_neuron
+    neuron_model: GPeTI_neuron
   - name: GPeTA
     size: 260
-    neuron_model: GPTA_neuron
+    neuron_model: GPeTA_neuron
   - name: STN
     size: 408
     neuron_model: STN_neuron
