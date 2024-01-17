@@ -168,7 +168,6 @@ class NeuroParam{
         float E_inh;    //!< Inhibitory synaptic potential [mV]
 
         float C_m;      //!< Membrane potential [pF]
-        float G_L;      //!< Membrane leak conductance [nS]
 
         float tau_ex;   //!< Excitatory synapse decay time [ms]
         float tau_in;   //!< Inhibitory synapse decay time [ms]
