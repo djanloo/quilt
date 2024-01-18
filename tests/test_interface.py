@@ -50,19 +50,24 @@ Input/Output devices
 def test_spike_monitor():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    spikenet.build()
     spikenet.populations['Albert'].monitorize_spikes()
 
 def test_state_monitor():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    spikenet.build()
     spikenet.populations['Albert'].monitorize_states()
 
 def test_injector():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    spikenet.build()
     spikenet.populations["Albert"].add_injector(0.5, 0.0, 2)
 
 if __name__=="__main__":
+    test_spike_monitor()
+    exit()
     # import numpy as np
     import matplotlib.pyplot as plt 
 
