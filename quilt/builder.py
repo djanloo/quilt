@@ -2,6 +2,7 @@
 """
 import os
 from time import time
+import warnings
 
 import yaml
 from rich import print
@@ -13,10 +14,13 @@ import quilt.interface.base_objects as base_objects
 class SpikingNetwork:
 
     def __init__(self):
+        self.is_built = False
         pass
 
     def run(self, dt=0.1, time=1):
-        self.interface.run(dt, time)
+        if not self.is_built:
+            self.build()
+        self._interface.run(dt, time)
 
     def rescale_populations(self, population_rescale_factor):
         self.population_rescale = population_rescale_factor
@@ -24,10 +28,18 @@ class SpikingNetwork:
     def rescale_connectivity(self, connection_rescale_factor):
         self.connection_rescale = connection_rescale_factor
 
+    @property
+    def interface(self):
+        raise AttributeError("SpikingNetwork interface is not meant to be accessed from here")
+    
+    @interface.setter
+    def interface(self, interface):
+        self._interface = interface
+
     @classmethod
     def from_yaml(cls, yaml_file, neuron_catalogue):
         net = cls()
-        net.interface = spiking.SpikingNetwork("dummy")
+        net._interface = spiking.SpikingNetwork("dummy")
 
         net.yaml_file = yaml_file
         net.neuron_catalogue = neuron_catalogue
@@ -38,18 +50,19 @@ class SpikingNetwork:
         with open(net.yaml_file, "r") as f:
             net.features_dict = yaml.safe_load(f)
 
-        net.populations = dict()
-
         net.population_rescale = 1.0 if "population_rescale_factor" not in net.features_dict else net.features_dict["population_rescale_factor"]
         net.connection_rescale = 1.0 if "connection_rescale_factor" not in net.features_dict else net.features_dict["connection_rescale_factor"]
 
         return net
     
     def build(self):
+        self.populations = dict()
+        
         for pop in self.features_dict['populations']:
             paramap = self.neuron_catalogue[pop['neuron_model']]
             try:
-                self.populations[pop['name']] = spiking.Population( int(self.population_rescale * pop['size']), paramap, self.interface )
+                print(f"adding population {pop['name']}")
+                self.populations[pop['name']] = spiking.Population( int(self.population_rescale * pop['size']), paramap, self._interface )
             except IndexError as e:
                 message = f"While building population {pop['name']} an error was raised:\n\t"
                 message += str(e)
@@ -83,7 +96,7 @@ class SpikingNetwork:
                 afferent = self.populations[afferent]
                 efferent.project(projector.get_projection(efferent, afferent), afferent)
         end = time()            
-    
+        self.is_built = True
 
 class NeuronCatalogue:
 
