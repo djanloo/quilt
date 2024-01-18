@@ -195,7 +195,7 @@ NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
         last = "E_ex";
         this->E_ex = this->paramap.get(last);
         last = "E_in";
-        this->E_inh = this->paramap.get(last);
+        this->E_in = this->paramap.get(last);
         
         last = "tau_refrac";
         this->tau_refrac = this->paramap.get(last);
