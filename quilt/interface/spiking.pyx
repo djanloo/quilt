@@ -89,8 +89,12 @@ cdef class Population:
     def project(self, Projection proj, Population efferent_pop):
         self._population.project(proj._projection, efferent_pop._population)
 
-    def add_injector(self, I, t_min, t_max):
+    def add_const_curr_injector(self, I, t_min, t_max):
         cdef cinter.PopCurrentInjector * injector = new cinter.PopCurrentInjector(self._population, I, t_min, t_max)
+        self.spikenet._spiking_network.add_injector(injector)
+    
+    def add_poisson_spike_injector(self, rate, weight, t_min=0, t_max=-1):
+        cdef cinter.PoissonSpikeSource * injector = new cinter.PoissonSpikeSource(self._population, rate, weight, t_min, t_max)
         self.spikenet._spiking_network.add_injector(injector)
 
     def monitorize_spikes(self):
@@ -109,6 +113,9 @@ cdef class Population:
             data['states'] = np.array(self._state_monitor.get_history())
         
         return data
+    
+    def print_info(self):
+        self._population.print_info()
 
     def __dealloc__(self):
         # print("Deallocating a population")

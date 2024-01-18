@@ -29,7 +29,13 @@ cdef extern from "../core/include/devices.hpp":
     
     cdef cppclass PopCurrentInjector:
         PopCurrentInjector(Population * pop, double I, double t_min, double t_max)
-        void inject(EvolutionContext * evo)
+        # void inject(EvolutionContext * evo)
+    
+    cdef cppclass PoissonSpikeSource:
+        PoissonSpikeSource( Population * pop,
+                            float rate, float weight, 
+                            float t_min, float t_max
+                            )
 
 cdef extern from "../core/include/neurons_base.hpp":
     cdef cppclass neuron_type:
@@ -59,12 +65,16 @@ cdef extern from "../core/include/network.hpp":
         void project(Projection * , Population * )
         void evolve(EvolutionContext * )
 
+        void print_info()
+
     cdef cppclass SpikingNetwork:
         HierarchicalID * id
         SpikingNetwork()
 
         # I/O
         void add_injector(PopCurrentInjector * injector)
+        void add_injector(PoissonSpikeSource * injector)
+
         PopulationSpikeMonitor * add_spike_monitor(Population * population)
         PopulationStateMonitor * add_state_monitor(Population * population)
 

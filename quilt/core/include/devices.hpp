@@ -36,14 +36,35 @@ class PopulationStateMonitor{
 };
 
 
-class PopCurrentInjector{
+class PopInjector{
     public:
-        PopCurrentInjector(Population * pop, float I, float t_min, float t_max):
-        pop(pop), I(I), t_min(t_min), t_max(t_max), activated(false), deactivated(false){}
-        void inject(EvolutionContext * evo);
+        PopInjector(Population * pop):pop(pop){}
+        virtual void inject(EvolutionContext * /*evo*/){std::cout <<"WARNING: using virtual PopInjector::inject()" << std::endl;}
+        Population * pop;
+};
+
+
+class PopCurrentInjector: public PopInjector{
+    public:
+        PopCurrentInjector(Population * pop, float I, float t_min, float t_max): 
+            PopInjector(pop), I(I), t_min(t_min), t_max(t_max), activated(false), deactivated(false){}
+
+        void inject(EvolutionContext * evo) override;
         
     private:
-        Population * pop;
         double I, t_min, t_max;
         bool activated, deactivated;
 };
+
+class PoissonSpikeSource: public PopInjector{
+    public:
+        PoissonSpikeSource( Population * pop,
+                            float rate, float weight, 
+                            double t_min, double t_max);
+        void inject(EvolutionContext * evo) override;
+    private:
+        float rate;
+        float weight;
+        double t_min, t_max;
+        std::vector<double> next_spike_times;
+};      

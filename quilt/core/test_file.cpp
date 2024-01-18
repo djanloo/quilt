@@ -54,20 +54,20 @@ void test_spiking()
 
     map<string, float> map_of_params = {{"neuron_type", (float)neuron_type::aeif},
                                         {"C_m", 40.1},
-                                        {"tau_m",200.0},
-                                        {"E_rest", -70.0},
-                                        {"E_reset", -55.0},
-                                        {"E_thr",0.1},
+                                        {"G_L",2.0},
+                                        {"E_l", -70.0},
+                                        {"V_reset", -55.0},
+                                        {"V_peak",0.1},
                                         {"tau_refrac",0.0},
-                                        {"Delta",1.7},
-                                        {"exp_threshold", -40.0},
+                                        {"delta_T",1.7},
+                                        {"V_th", -40.0},
                                         {"ada_a", 0.0},
                                         {"ada_b",5.0},
                                         {"ada_tau_w",100.0},
-                                        {"tau_e", 10.},
-                                        {"tau_i", 5.5},
-                                        {"E_exc", 0.0},
-                                        {"E_inh",-65}
+                                        {"tau_ex", 10.},
+                                        {"tau_in", 5.5},
+                                        {"E_ex", 0.0},
+                                        {"E_in",-65}
                                         };
 
     ParaMap paramap = ParaMap(map_of_params);
@@ -106,8 +106,10 @@ void test_spiking()
     free_proj_mat(delays, Nb);
 
 
-    PopCurrentInjector stimulus_a = PopCurrentInjector(&a, 500.0, 0.0, 10.0);
-    PopCurrentInjector stimulus_b = PopCurrentInjector(&b, 500.0, 0.0, 10.0);
+    // PopCurrentInjector stimulus_a = PopCurrentInjector(&a, 500.0, 0.0, 10.0);
+    // PopCurrentInjector stimulus_b = PopCurrentInjector(&b, 500.0, 0.0, 10.0);
+    PoissonSpikeSource stimulus_a = PoissonSpikeSource(&a, 250, 10.0, 0.1, 2);
+    PoissonSpikeSource stimulus_b = PoissonSpikeSource(&b, 250, 10.0, 0.1, 2);
 
     sn.add_injector(&stimulus_a);
     sn.add_injector(&stimulus_b);
@@ -176,6 +178,6 @@ void test_oscill(){
 
 int main(){
 
-    test_oscill();
+    test_spiking();
 }
 

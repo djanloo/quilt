@@ -58,15 +58,24 @@ def test_state_monitor():
     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
     spikenet.build()
     spikenet.populations['Albert'].monitorize_states()
+    spikenet.run(dt=0.1, time=1)
 
-def test_injector():
+def test_const_curr_injector():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
     spikenet.build()
-    spikenet.populations["Albert"].add_injector(0.5, 0.0, 2)
+    spikenet.populations["Albert"].add_const_curr_injector(0.5, 0.0, 2)
+    spikenet.run(dt=0.1, time=1)
+
+def test_poisson_spike_injector():
+    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
+    spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    spikenet.build()
+    spikenet.populations["Albert"].add_poisson_spike_injector(250, 0.3)
+    spikenet.run(dt=0.1, time=1)
 
 if __name__=="__main__":
-    test_spike_monitor()
+    test_poisson_spike_injector()
     exit()
     # import numpy as np
     import matplotlib.pyplot as plt 

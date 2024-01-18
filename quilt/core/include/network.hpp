@@ -22,7 +22,7 @@ class SpikingNetwork;
 
 class PopulationSpikeMonitor;
 class PopulationStateMonitor;
-class PopCurrentInjector;
+class PopInjector;
 
 /**
  * @class Projection
@@ -88,8 +88,8 @@ class SpikingNetwork{
         SpikingNetwork();
 
         // Injectors (inputs)
-        std::vector<PopCurrentInjector*> injectors;
-        void add_injector(PopCurrentInjector * injector){this->injectors.push_back(injector);}
+        std::vector<PopInjector*> injectors;
+        void add_injector(PopInjector * injector){this->injectors.push_back(injector);}
 
         // Monitors (outputs)
         std::vector<PopulationSpikeMonitor*> population_spike_monitors;
