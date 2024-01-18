@@ -59,7 +59,8 @@ class aqif_param : public NeuroParam {
         float ada_tau_w;//!< Adaptive variable decay time
 
         aqif_param(ParaMap paramap):NeuroParam(paramap){
-            if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif){
+            if ((static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif) &&\
+                (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif2) ){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
             std::string last = "";
@@ -188,6 +189,27 @@ class aeif_param : public NeuroParam{
         }
 };
 
+
+class aqif2_neuron : public Neuron{
+    public:
+        aqif2_neuron(Population * population);
+        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
+        void on_spike(EvolutionContext * evo) override;
+};
+
+class aqif2_param : public aqif_param {
+    public:
+        float V_b;
+        aqif2_param(const ParaMap & paramap) : aqif_param(paramap){
+            this->neur_type = neuron_type::aqif2;
+            try{
+                V_b = paramap.get("V_b");
+            }
+            catch (const std::out_of_range & e){
+                throw std::out_of_range("Missing parameter for aqif2 neuron: V_b");
+            }
+        }
+}; 
 
 // /**
 //  * @class poisson_neuron

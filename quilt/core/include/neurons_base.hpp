@@ -20,7 +20,7 @@
  * @enum neuron_type
  * @brief the currently available neuron models
 */
-enum class neuron_type : unsigned int {base_neuron, aqif, izhikevich, aeif};
+enum class neuron_type : unsigned int {base_neuron, aqif, aqif2, izhikevich, aeif};
 
 typedef std::vector<double> neuron_state;
 
@@ -165,7 +165,7 @@ class NeuroParam{
         float V_reset;  //!< Reset potential [mV]
         float V_peak;   //!< Spike-emission threshold [mV]
         float E_ex;     //!< Excitatory synaptic potential [mV]
-        float E_inh;    //!< Inhibitory synaptic potential [mV]
+        float E_in;    //!< Inhibitory synaptic potential [mV]
 
         float C_m;      //!< Membrane potential [pF]
 
