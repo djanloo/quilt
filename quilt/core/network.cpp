@@ -34,7 +34,10 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         case neuron_type::aqif: 
             this->neuroparam = new aqif_param(*params);
 
-            break;   
+            break;
+        case neuron_type::aqif2: 
+            this->neuroparam = new aqif2_param(*params);
+            break;
         case neuron_type::izhikevich:
             this->neuroparam = new izhikevich_param(*params);
             break;
@@ -55,6 +58,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         case neuron_type::aqif:         new aqif_neuron(this);      break;   // calling the constructor is enough
         case neuron_type::izhikevich:   new izhikevich_neuron(this);break;
         case neuron_type::aeif:         new aeif_neuron(this);      break;
+        case neuron_type::aqif2:        new aqif2_neuron(this);     break;
         default:
             throw std::runtime_error("Invalid neuron type");
         };

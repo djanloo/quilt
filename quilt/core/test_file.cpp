@@ -1,6 +1,6 @@
 /**
  * This file is necessary only to profile the C++ part of the code
- * through callgrind. It implements a dummy system and it's not part of the quilt's code.
+ * through callgrind & massif. It implements a dummy system and it's not part of the quilt's code.
 */
 
 #include <iostream>
@@ -178,6 +178,6 @@ void test_oscill(){
 
 int main(){
 
-    test_spiking();
+    test_oscill();
 }
 
