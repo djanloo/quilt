@@ -99,29 +99,29 @@
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># neuron_catalogue.yml</span>
 
 <span class="nt">D1_spiny</span><span class="p">:</span>
-<span class="w">    </span><span class="nt">neuron_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aeif</span>
-<span class="w">    </span><span class="nt">C_m </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40.</span>
-<span class="w">    </span><span class="nt">tau_m </span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200.0</span>
+<span class="w">    </span><span class="nt">neuron_type</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">aeif</span>
+<span class="w">    </span><span class="nt">C_m </span><span class="p">:</span><span class="w">         </span><span class="l l-Scalar l-Scalar-Plain">40.</span>
+<span class="w">    </span><span class="nt">G_L </span><span class="p">:</span><span class="w">         </span><span class="l l-Scalar l-Scalar-Plain">200.0</span>
 
-<span class="w">    </span><span class="nt">E_rest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-70.0</span>
-<span class="w">    </span><span class="nt">E_reset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-55.0</span>
-<span class="w">    </span><span class="nt">E_thr</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">E_l</span><span class="p">:</span><span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">-70.0</span>
+<span class="w">    </span><span class="nt">V_reset</span><span class="p">:</span><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">-55.0</span>
+<span class="w">    </span><span class="nt">V_peak</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
 <span class="w">    </span><span class="nt">tau_refrac</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
 
 <span class="w">    </span><span class="c1"># Exp pars</span>
-<span class="w">    </span><span class="nt">Delta</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">2</span>
-<span class="w">    </span><span class="nt">exp_threshold</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-40</span>
+<span class="w">    </span><span class="nt">delta_T</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">V_th</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">-40</span>
 
 <span class="w">    </span><span class="c1"># Adapting pars</span>
-<span class="w">    </span><span class="nt">ada_a</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
-<span class="w">    </span><span class="nt">ada_b</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
-<span class="w">    </span><span class="nt">ada_tau_w</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100.0</span>
+<span class="w">    </span><span class="nt">ada_a</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">ada_b</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
+<span class="w">    </span><span class="nt">ada_tau_w</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">100.0</span>
 
 <span class="w">    </span><span class="c1"># Syn pars</span>
-<span class="w">    </span><span class="nt">tau_e</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10.</span>
-<span class="w">    </span><span class="nt">tau_i</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5.5</span>
-<span class="w">    </span><span class="nt">E_exc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.</span>
-<span class="w">    </span><span class="nt">E_inh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">-65.</span>
+<span class="w">    </span><span class="nt">tau_ex</span><span class="p">:</span><span class="w">   </span><span class="l l-Scalar l-Scalar-Plain">10.</span>
+<span class="w">    </span><span class="nt">tau_in</span><span class="p">:</span><span class="w">   </span><span class="l l-Scalar l-Scalar-Plain">5.5</span>
+<span class="w">    </span><span class="nt">E_ex</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.</span>
+<span class="w">    </span><span class="nt">E_in</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">-65.</span>
 </pre></div>
 </div>
 <p>To load a neuron catalogue:</p>
@@ -150,15 +150,19 @@ Each population uses a model defined in a catalogue.</p>
 <span class="w">    </span><span class="nt">efferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GPi</span>
 <span class="w">    </span><span class="nt">afferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1</span>
 <span class="w">    </span><span class="nt">features</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">exc_fraction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
-<span class="w">        </span><span class="nt">max_exc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="w">        </span><span class="nt">min_delay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">        </span><span class="nt">exc_fraction</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">        </span><span class="nt">weight_exc</span><span class="p">:</span><span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="w">        </span><span class="nt">weight_exc_delta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<span class="w">        </span><span class="nt">delay</span><span class="p">:</span><span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">1.1</span>
+<span class="w">        </span><span class="nt">delay_delta</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1-&gt;GPi</span>
 <span class="w">    </span><span class="nt">efferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1</span>
 <span class="w">    </span><span class="nt">afferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GPi</span>
 <span class="w">    </span><span class="nt">features</span><span class="p">:</span>
 <span class="w">        </span><span class="nt">inh_fraction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
-<span class="w">        </span><span class="nt">max_inh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.03</span>
+<span class="w">        </span><span class="nt">weight_inh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.03</span>
+<span class="w">        </span><span class="nt">weight_inh_delta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span>
 </pre></div>
 </div>
 <p>The parameters of a projection between an efferent population of size <code class="docutils literal notranslate"><span class="pre">N</span></code> and an afferent population of size <code class="docutils literal notranslate"><span class="pre">M</span></code> are (see <a class="reference external" href="https://github.com/djanloo/quilt/issues/2">here</a>):</p>
