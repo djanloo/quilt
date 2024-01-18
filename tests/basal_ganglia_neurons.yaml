@@ -37,7 +37,7 @@ D2_neuron:
   tau_refrac: 0      
 
 FSN_neuron:
-  neuron_type:           aqif # Note: this should be aqif2
+  neuron_type:           aqif2
   C_m: 80.0                
   E_l: -80.0              
   V_th: -50.0             
@@ -52,7 +52,7 @@ FSN_neuron:
   V_peak: 25.0            
   V_reset: -60.0          
   k: 1.0            
-  # V_b: -55.0   
+  V_b: -55.0   
 
   tau_refrac: 0             
 
