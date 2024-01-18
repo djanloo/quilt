@@ -15,9 +15,14 @@ class SpikingNetwork:
 
     def __init__(self):
         self.is_built = False
-        pass
+
+        self.population_rescale_factor = 1
+        self.connectivity_rescale_factor = 1
+        self.weight_rescale_factor = 1
+        self.delay_rescale_factor = 1
 
     def run(self, dt=0.1, time=1):
+
         if not self.is_built:
             self.build()
         self._interface.run(dt, time)
@@ -25,8 +30,14 @@ class SpikingNetwork:
     def rescale_populations(self, population_rescale_factor):
         self.population_rescale = population_rescale_factor
     
-    def rescale_connectivity(self, connection_rescale_factor):
-        self.connection_rescale = connection_rescale_factor
+    def rescale_connectivity(self, connectivity_rescale_factor):
+        self.connectivity_rescale_factor = connectivity_rescale_factor
+    
+    def rescale_weights(self, weight_rescale_factor):
+        self.weight_rescale_factor = weight_rescale_factor
+
+    def rescale_delays(self, delay_rescale_factor):
+        self.delay_rescale_factor = delay_rescale_factor
 
     @property
     def interface(self):
@@ -61,7 +72,6 @@ class SpikingNetwork:
         for pop in self.features_dict['populations']:
             paramap = self.neuron_catalogue[pop['neuron_model']]
             try:
-                print(f"adding population {pop['name']}")
                 self.populations[pop['name']] = spiking.Population( int(self.population_rescale * pop['size']), paramap, self._interface )
             except IndexError as e:
                 message = f"While building population {pop['name']} an error was raised:\n\t"
@@ -71,16 +81,25 @@ class SpikingNetwork:
         if "projections" in self.features_dict and self.features_dict['projections'] is not None:
             for proj in track(self.features_dict['projections'], description="Building connections.."):
                 try:
-                    # Rescaling connections
+                    # Rescaling connections & weights
                     try:
-                        proj['features']['inh_fraction'] *= self.connection_rescale
+                        proj['features']['inh_fraction'] *= self.connectivity_rescale_factor
+                        proj['features']['weight_inh'] *= self.weight_rescale_factor
                     except KeyError:
                         pass
                     try:
-                        proj['features']['exc_fraction'] *= self.connection_rescale
+                        proj['features']['exc_fraction'] *= self.connectivity_rescale_factor
+                        proj['features']['weight_exc'] *= self.weight_rescale_factor
                     except KeyError:
                         pass
 
+                    # Rescaling delays
+                    try:
+                        proj['features']['delay'] *= self.delay_rescale_factor
+                    except KeyError:
+                        pass
+
+                    # Builds the projector
                     projector = spiking.RandomProjector(**(proj['features']))
                 except ValueError as e:
                     raise ValueError(f"Some value was wrong during projection {efferent}->{afferent}")
