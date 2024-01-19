@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <chrono>
 #include <string>
+#include <thread>
 #include <boost/timer/progress_display.hpp>
 
 using std::cout;
@@ -99,12 +100,49 @@ void Population::project(Projection * projection, Population * efferent_populati
     // std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end -start)).count())/connections << " us/link)" << std::endl;
 }
 
+/**
+ * 
+ * This function evolves a bunch of neurons, from <from> to <to>.
+ * It must be thread safe.
+ * 
+*/
+void Population::evolve_bunch(EvolutionContext * evo, unsigned int from, unsigned int to){
+    for (unsigned int i = from; i< to; i++){
+        this->neurons[i]->evolve(evo);
+    }
+}
+
 void Population::evolve(EvolutionContext * evo){
 
-    this->n_spikes_last_step = 0;
+    // Splits the work in equal parts using 4 threads
+    std::vector<unsigned int> bunch_starts(4), bunch_ends(4);
+    for (int i = 0; i < 4; i++){
+        bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/4;
+        bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/4 - 1;
+        // std::cout << "bunch start[i]: " << bunch_starts[i]<<std::endl;
+        // std::cout << "bunch end[i]:" << bunch_ends[i] << std::endl;
+    }
 
-    for (auto neuron : this -> neurons){
-        neuron -> evolve(evo);
+    // Ensures that all neurons are covered
+    bunch_ends[3] = this->n_neurons-1;
+    
+    // Starts four threads
+    std::vector<std::thread> evolver_threads(4);
+    for (int i = 0; i < 4; i++){
+        evolver_threads[i] = std::thread(&Population::evolve_bunch, this, evo, bunch_starts[i], bunch_ends[i] );
+    }
+    // Waits four threads
+    for (int i = 0; i < 4; i++){
+        evolver_threads[i].join();
+    }
+
+    // TODO: spike emission is moved here in the population evolution because 
+    // it's not thread safe. Accessing members of other instances requires
+    // a memory access control.
+    this->n_spikes_last_step = 0;
+    
+    for (auto neuron : this->neurons){
+        if ((neuron->getV()) >= neuroparam->V_peak){neuron->emit_spike(evo);}
     }
 }
 
