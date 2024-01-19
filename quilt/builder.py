@@ -66,7 +66,7 @@ class SpikingNetwork:
 
         return net
     
-    def build(self):
+    def build(self, progress_bar=True):
         self.populations = dict()
         
         for pop in self.features_dict['populations']:
@@ -79,7 +79,11 @@ class SpikingNetwork:
                 raise IndexError(message)
         start = time()
         if "projections" in self.features_dict and self.features_dict['projections'] is not None:
-            for proj in track(self.features_dict['projections'], description="Building connections.."):
+            if progress_bar:
+                iter = track(self.features_dict['projections'], description="Building connections..")
+            else:
+                iter = self.features_dict['projections']
+            for proj in iter:
                 try:
                     # Rescaling connections & weights
                     try:
@@ -136,7 +140,7 @@ class NeuronCatalogue:
             catalogue.neurons_dict = yaml.safe_load(f)
 
         for neuron_name in catalogue.neurons_dict.keys():
-            print(f"Loaded model for neuron '{neuron_name}'")
+            # print(f"Loaded model for neuron '{neuron_name}'")
             catalogue.paramaps[neuron_name] = base_objects.ParaMap(catalogue.neurons_dict[neuron_name])
             catalogue.neuron_names += [neuron_name]
         

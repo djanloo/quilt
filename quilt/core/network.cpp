@@ -259,8 +259,8 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
     for (auto pop : populations){
         std::cout << "\t" << pop->id.get_id() << ":"<<std::endl;
         std::cout << "\t\tevolution:\t" << pop->timestats_evo/n_steps_done << " us/step";
-        std::cout << "\t" << static_cast<int>(pop->timestats_evo/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
+        std::cout << "\t---\t" << static_cast<int>(pop->timestats_evo/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
         std::cout << "\t\tspike emission:\t" << pop->timestats_spike_emission/n_steps_done << " us/step";
-        std::cout << "\t" << static_cast<int>(pop->timestats_spike_emission/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
+        std::cout << "\t---\t" << static_cast<int>(pop->timestats_spike_emission/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
     }
 }
