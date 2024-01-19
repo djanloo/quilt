@@ -60,7 +60,7 @@ void PoissonSpikeSource::inject(EvolutionContext * evo){
         if (evo->now > next_spike_times[i]){ // If the last emitted spike was received, emit a new one
 
             // std::cout << "t: "<<evo->now<<  " <--> Adding poisson spike at neuron " << i << " of pop " << pop->id.get_id();
-            delta = -std::log(1.0 - static_cast<float>(rand())/RAND_MAX)/this->rate * 1000;
+            delta = -std::log(static_cast<float>(rand())/RAND_MAX)/this->rate * 1000;
             if (delta < evo->dt){
                 // std::cout << "PoissonSpikeSource generated a time smaller than timestep" << std::endl;
                 delta = evo->dt;
