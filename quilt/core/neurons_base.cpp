@@ -76,7 +76,7 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 
         // Check for missed spikes
         if ((spike.arrival_time < static_cast<float>(evo->now))&(!spike.processed)){
-            std::string message = "Spike Missed\n";
+            std::string message = "Spike Missed  in neuron (" + std::to_string(this->population->id.get_id()) + "," + std::to_string(this->id.get_id()) + ") ";
             message += "Spike arrival time: " + std::to_string(spike.arrival_time) + "\n";
             message += "now t is: " + std::to_string(evo->now) + "\n";
             message += "Please reduce the timestep or increase the delays.\n";
@@ -131,22 +131,22 @@ void Neuron::evolve(EvolutionContext * evo){
                                     this->evolve_state(state, dxdt, t);
                                 };
 
-    auto before_step = state;
+    stepper.do_step(lambda, this->state, evo->now, evo->dt);
+
+    // THIS CHECKS NANS
+    // auto before_step = state;
 
     // Checks for NaNs after the step
-    try{
-        stepper.do_step(lambda, this->state, evo->now, evo->dt);
-        utilities::nan_check_vect(this->state, "NaN in neuron state");
+    // try{
+    //     stepper.do_step(lambda, this->state, evo->now, evo->dt);
+    //     utilities::nan_check_vect(this->state, "NaN in neuron state");
 
-    }catch (const std::runtime_error &e){
-        std::cerr << "State before step: ";
-        for (auto val : before_step){ std::cerr << val << " ";}
-        std::cerr << std::endl;
-        throw e;
-    }
-
-    // Spike generation
-    if ((state[0]) >= this->population->neuroparam->V_peak){ emit_spike(evo);}
+    // }catch (const std::runtime_error &e){
+    //     std::cerr << "State before step: ";
+    //     for (auto val : before_step){ std::cerr << val << " ";}
+    //     std::cerr << std::endl;
+    //     throw e;
+    // }
 }
 
 void Neuron::emit_spike(EvolutionContext * evo){

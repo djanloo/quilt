@@ -108,8 +108,8 @@ void test_spiking()
 
     // PopCurrentInjector stimulus_a = PopCurrentInjector(&a, 500.0, 0.0, 10.0);
     // PopCurrentInjector stimulus_b = PopCurrentInjector(&b, 500.0, 0.0, 10.0);
-    PoissonSpikeSource stimulus_a = PoissonSpikeSource(&a, 250, 10.0, 0.1, 2);
-    PoissonSpikeSource stimulus_b = PoissonSpikeSource(&b, 250, 10.0, 0.1, 2);
+    PoissonSpikeSource stimulus_a = PoissonSpikeSource(&a, 900, 10.0, 0.1, 2);
+    PoissonSpikeSource stimulus_b = PoissonSpikeSource(&b, 900, 10.0, 0.1, 2);
 
     sn.add_injector(&stimulus_a);
     sn.add_injector(&stimulus_b);
@@ -178,6 +178,6 @@ void test_oscill(){
 
 int main(){
 
-    test_oscill();
+    test_spiking();
 }
 

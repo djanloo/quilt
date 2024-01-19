@@ -60,6 +60,8 @@ class Population{
         int n_neurons;
         std::vector<Neuron*> neurons;
         HierarchicalID id;
+        double timestats_evo;
+        double timestats_spike_emission;
 
         // Biophysical attributes
         int n_spikes_last_step;
@@ -67,6 +69,7 @@ class Population{
         
         Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network);
         void project(Projection * projection, Population * child_pop);
+        void evolve_bunch(EvolutionContext * evo, unsigned int from, unsigned int to);
         void evolve(EvolutionContext * evo);
         void print_info();
 };

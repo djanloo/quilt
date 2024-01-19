@@ -142,6 +142,8 @@ class Neuron{
         /** Makes the neuron's efferent synapses fire */
         void emit_spike(EvolutionContext * evo);
 
+        double getV(){return state[0];}
+
         // These must be implemented for each specific neuron
 
         /** The actions to take when the model has a spike*/
