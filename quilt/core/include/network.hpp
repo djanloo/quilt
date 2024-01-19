@@ -60,6 +60,8 @@ class Population{
         int n_neurons;
         std::vector<Neuron*> neurons;
         HierarchicalID id;
+        double timestats_evo;
+        double timestats_spike_emission;
 
         // Biophysical attributes
         int n_spikes_last_step;
