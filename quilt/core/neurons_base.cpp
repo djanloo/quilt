@@ -144,9 +144,6 @@ void Neuron::evolve(EvolutionContext * evo){
         std::cerr << std::endl;
         throw e;
     }
-
-    // Spike generation
-    if ((state[0]) >= this->population->neuroparam->V_peak){ emit_spike(evo);}
 }
 
 void Neuron::emit_spike(EvolutionContext * evo){
