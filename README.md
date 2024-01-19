@@ -20,7 +20,7 @@ By default the code is built inplace, so be sure to have this folder in your PYT
 export PYTHONPATH=$(path/to/quilt):$PYTHONPATH
 ```
 
-## Tests and debug
+## Tests and optimization
 The `tests` folder contains mainly tests for the Cython/Python interface.
 
-Memory and performance profiling were carried out using respectivley `massif` and `callgrind` from the `valgrind` suite.
+Memory and performance profiling were carried out using respectivley `massif` and `callgrind` from the `valgrind` suite, analysed with the linux `kcachegrind` and `massif-visualizer` tools.
