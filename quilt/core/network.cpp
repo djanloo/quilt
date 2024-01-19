@@ -17,7 +17,8 @@ using std::cout;
 using std::endl;
 
 Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network):
-    n_neurons(n_neurons),n_spikes_last_step(0){
+    n_neurons(n_neurons),n_spikes_last_step(0), 
+    timestats_evo(0), timestats_spike_emission(0){
     
     // Add itself to the hierarchical structure
     id = HierarchicalID(spiking_network->id);
@@ -113,37 +114,55 @@ void Population::evolve_bunch(EvolutionContext * evo, unsigned int from, unsigne
 }
 
 void Population::evolve(EvolutionContext * evo){
+    auto start = std::chrono::high_resolution_clock::now();
 
-    // Splits the work in equal parts using 4 threads
-    std::vector<unsigned int> bunch_starts(4), bunch_ends(4);
-    for (int i = 0; i < 4; i++){
-        bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/4;
-        bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/4 - 1;
-        // std::cout << "bunch start[i]: " << bunch_starts[i]<<std::endl;
-        // std::cout << "bunch end[i]:" << bunch_ends[i] << std::endl;
+    // Splits the work in equal parts using Nthreads threads
+    unsigned int n_threads = 4;
+
+    std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
+
+    // std::cout << "Bunches for pop "<<this->id.get_id()<< ":";
+    for (int i = 0; i < n_threads; i++){
+        bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
+        bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
+        // std::cout << "[" << bunch_starts[i] <<",";
+        // std::cout << bunch_ends[i]  << "]";
     }
 
     // Ensures that all neurons are covered
     bunch_ends[3] = this->n_neurons-1;
-    
+    // std::cout << "--corrected "<<bunch_ends[3]<<std::endl;
+
     // Starts four threads
-    std::vector<std::thread> evolver_threads(4);
-    for (int i = 0; i < 4; i++){
+    // NOTE: spawning threads costs roughly 10 us/thread
+    // it is a non-negligible overhead
+    // auto start_spawn = std::chrono::high_resolution_clock::now();
+    std::vector<std::thread> evolver_threads(n_threads);
+    for (int i = 0; i < n_threads; i++){
         evolver_threads[i] = std::thread(&Population::evolve_bunch, this, evo, bunch_starts[i], bunch_ends[i] );
     }
+    // auto end_spawn = std::chrono::high_resolution_clock::now();
+    // std::cout << "Spawn took "<< ((double)std::chrono::duration_cast<std::chrono::microseconds>(end_spawn-start_spawn).count()) <<"us" <<std::endl;
     // Waits four threads
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < n_threads; i++){
         evolver_threads[i].join();
     }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
+    start = std::chrono::high_resolution_clock::now();
     this->n_spikes_last_step = 0;
     
     for (auto neuron : this->neurons){
         if ((neuron->getV()) >= neuroparam->V_peak){neuron->emit_spike(evo);}
     }
+
+    end = std::chrono::high_resolution_clock::now();
+    timestats_spike_emission += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 }
 
 void Population::print_info(){
@@ -236,4 +255,12 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
     std::cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << std::endl;
     std::cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << std::endl;
 
+    std::cout << "Population evolution stats:" << std::endl;
+    for (auto pop : populations){
+        std::cout << "\t" << pop->id.get_id() << ":"<<std::endl;
+        std::cout << "\t\tevolution:\t" << pop->timestats_evo/n_steps_done << " us/step";
+        std::cout << "\t" << static_cast<int>(pop->timestats_evo/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
+        std::cout << "\t\tspike emission:\t" << pop->timestats_spike_emission/n_steps_done << " us/step";
+        std::cout << "\t" << static_cast<int>(pop->timestats_spike_emission/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
+    }
 }
