@@ -1,0 +1,3 @@
+[submodule "quilt/core/pcg"]
+	path = quilt/core/pcg
+	url = https://github.com/imneme/pcg-cpp.git
