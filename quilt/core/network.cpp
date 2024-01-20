@@ -41,8 +41,8 @@ SparseLognormProjection::SparseLognormProjection( float connectivity, int type,
     start_dimension(start_dimension), end_dimension(end_dimension){
     auto start = std::chrono::high_resolution_clock::now();
 
-    weights = boost::numeric::ublas::compressed_matrix<float>(start_dimension, end_dimension);
-    delays = boost::numeric::ublas::compressed_matrix<float>(start_dimension, end_dimension);
+    weights = boost::numeric::ublas::coordinate_matrix<float>(start_dimension, end_dimension);
+    delays = boost::numeric::ublas::coordinate_matrix<float>(start_dimension, end_dimension);
 
 
     uint32_t i, j;
@@ -70,15 +70,15 @@ SparseLognormProjection::SparseLognormProjection( float connectivity, int type,
         lognorm = std::exp(weight + weight_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
         
         if (type == 0){ // Excitatory
-            weights(i, j) = lognorm;
+            weights.insert_element(i, j, lognorm);
         }
         else{ // Inhibitory
-            weights(i,j) = - lognorm;
+            weights.insert_element(i,j, -lognorm);
         }
 
         // Delays
         u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
-        delays(i,j) = std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
+        delays.insert_element(i,j, std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u))));
         ++bar;
     }
 
