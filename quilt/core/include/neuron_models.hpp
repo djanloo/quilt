@@ -211,6 +211,7 @@ class aqif2_param : public aqif_param {
         }
 }; 
 
+// TODO: this must be implemented in future
 // /**
 //  * @class poisson_neuron
 //  * @brief the neuron for poisson populations

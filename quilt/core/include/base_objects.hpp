@@ -59,6 +59,12 @@ class ParaMap{
         float get(const std::string & key) const ;
 };
 
+/**
+ * @class progress
+ * @brief A really basic progress bar
+ * 
+ * Because boost::timer::progress_display can't set a verbosity level.
+*/
 class progress{
     public:
         int max, _max, count, _count;
@@ -73,11 +79,6 @@ class progress{
         }
         unsigned long  operator++(){ 
             if ( static_cast<int>(static_cast<float>(count)/max*_max) > _count) print(); 
-            // std::cout << "count" << count << std::endl;
-            // std::cout << "max" << max << std::endl;
-            // std::cout << "_max" << _max << std::endl;
-            // std::cout << "_count" << _count << std::endl;
-            // std::cout << "fraction" << static_cast<float>(count)/max*_max << std::endl;
             count++;
             return count; 
         }
