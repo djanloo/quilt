@@ -1,5 +1,5 @@
 # Population number multiplier
-population_rescale_factor: 1.0
+population_rescale_factor: 0.1
 # A parameter to uniformly enloose connectivity
 connection_rescale_factor: 1.0
 
