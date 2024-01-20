@@ -38,12 +38,8 @@ SparseLognormProjection::SparseLognormProjection( float connectivity, int type,
                                     float delay, float delay_delta,
                                     unsigned int start_dimension, unsigned int end_dimension):
     connectivity(connectivity),type(type), weight(weight), weight_delta(weight_delta), delay(delay), delay_delta(delay_delta),
-    start_dimension(start_dimension), end_dimension(end_dimension){
+    start_dimension(start_dimension), end_dimension(end_dimension), weights(), delays(){
     auto start = std::chrono::high_resolution_clock::now();
-
-    weights = boost::numeric::ublas::coordinate_matrix<float>(start_dimension, end_dimension);
-    delays = boost::numeric::ublas::coordinate_matrix<float>(start_dimension, end_dimension);
-
 
     uint32_t i, j;
     int N = static_cast<int>(connectivity*start_dimension*end_dimension);
@@ -61,7 +57,7 @@ SparseLognormProjection::SparseLognormProjection( float connectivity, int type,
             checks++;
             i = static_cast<int>(random_utils::rng()) % start_dimension;
             j = static_cast<int>(random_utils::rng()) % end_dimension;
-            is_empty = (weights(i,j) == 0)&&(delays(i,j) == 0);
+            is_empty = (weights[std::make_pair(i,j)] == 0)&&(delays[std::make_pair(i,j)] == 0);
         } while (!is_empty);
 
         // TODO: ABSOLUTELY TRANSFORM MEAN AND VARIANCE
@@ -70,15 +66,15 @@ SparseLognormProjection::SparseLognormProjection( float connectivity, int type,
         lognorm = std::exp(weight + weight_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
         
         if (type == 0){ // Excitatory
-            weights.insert_element(i, j, lognorm);
+            weights[std::make_pair(i,j)]  = lognorm;
         }
         else{ // Inhibitory
-            weights.insert_element(i,j, -lognorm);
+            weights[std::make_pair(i,j)] =  -lognorm;
         }
 
         // Delays
         u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
-        delays.insert_element(i,j, std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u))));
+        delays[std::make_pair(i,j)] = std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
         ++bar;
     }
 
@@ -147,7 +143,7 @@ void Population::project(const Projection & projection, Population * efferent_po
         for (unsigned int j = 0; j < projection.end_dimension; j++){
             if (std::abs((projection.weights)[i][j]) > WEIGHT_EPS){
                 connections ++;
-                (this -> neurons)[i] -> connect(efferent_population -> neurons[j], (projection.weights)[i][j], (projection.delays)[i][j]);
+                neurons[i]->connect(efferent_population->neurons[j], projection.weights[i][j], projection.delays[i][j]);
             }
         }
     }
@@ -155,18 +151,18 @@ void Population::project(const Projection & projection, Population * efferent_po
 
 void Population::project(const SparseLognormProjection & projection, Population * efferent_population ){
 
-    boost::numeric::ublas::compressed_matrix<double> weights = projection.weights;
-    boost::numeric::ublas::compressed_matrix<double> delays = projection.delays;
+    // boost::numeric::ublas::compressed_matrix<double> weights = projection.weights;
+    // boost::numeric::ublas::compressed_matrix<double> delays = projection.delays;
 
-    int i,j;
-    for (auto iter = weights.begin1(); iter != weights.end1(); ++iter) {
-        for (auto nz_iter = iter.begin(); nz_iter != iter.end(); ++nz_iter) {
-            std::cout << "element (" << nz_iter.index1() << ", " << nz_iter.index2() << ") = " << *nz_iter << std::endl;
-            i = nz_iter.index1();
-            j = nz_iter.index2();
-            this->neurons[i]->connect(efferent_population->neurons[j], weights(i,j) , delays(i,j));
-        }
-    }
+    // int i,j;
+    // for (auto iter = weights.begin1(); iter != weights.end1(); ++iter) {
+    //     for (auto nz_iter = iter.begin(); nz_iter != iter.end(); ++nz_iter) {
+    //         std::cout << "element (" << nz_iter.index1() << ", " << nz_iter.index2() << ") = " << *nz_iter << std::endl;
+    //         i = nz_iter.index1();
+    //         j = nz_iter.index2();
+    //         this->neurons[i]->connect(efferent_population->neurons[j], weights(i,j) , delays(i,j));
+    //     }
+    // }
 }
 
 /**
