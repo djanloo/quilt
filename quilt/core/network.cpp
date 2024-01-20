@@ -5,7 +5,6 @@
 #include "include/neuron_models.hpp"
 
 #include <boost/numeric/ublas/matrix_sparse.hpp>
-#include "pcg/include/pcg_random.hpp"
 
 #include <iostream>
 #include <vector>
@@ -18,6 +17,7 @@
 using std::cout;
 using std::endl;
 
+pcg32 random_utils::rng;
 
 Projection::Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension):
     weights(weights), delays(delays), start_dimension(start_dimension), end_dimension(end_dimension){
@@ -39,30 +39,34 @@ SparseLognormProjection::SparseLognormProjection( float connectivity, int type,
                                     unsigned int start_dimension, unsigned int end_dimension):
     connectivity(connectivity),type(type), weight(weight), weight_delta(weight_delta), delay(delay), delay_delta(delay_delta),
     start_dimension(start_dimension), end_dimension(end_dimension){
+    auto start = std::chrono::high_resolution_clock::now();
 
-    weights = boost::numeric::ublas::compressed_matrix<double>(start_dimension, end_dimension);
-    delays = boost::numeric::ublas::compressed_matrix<double>(start_dimension, end_dimension);
+    weights = boost::numeric::ublas::compressed_matrix<float>(start_dimension, end_dimension);
+    delays = boost::numeric::ublas::compressed_matrix<float>(start_dimension, end_dimension);
 
-    pcg32 rng;
 
-    int i, j;
+    uint32_t i, j;
+    int N = static_cast<int>(connectivity*start_dimension*end_dimension);
     bool is_empty;
     float u, lognorm;
+    
+    progress bar(N, 1);
+    int checks = 0;
 
-    for (int t = 0; t < static_cast<int>(connectivity*start_dimension*end_dimension); t++){
+    for (int t = 0; t < N; t++){
         
         // Finds an empty slot in the sparse matrices
         is_empty = false;
         do{
-            i = rng();
-            j = rng();
-            is_empty = (weights(i,j) != 0)&&(delays(i,j) != 0);
-            cout << "mat " << weights(i,j) << endl; 
+            checks++;
+            i = static_cast<int>(random_utils::rng()) % start_dimension;
+            j = static_cast<int>(random_utils::rng()) % end_dimension;
+            is_empty = (weights(i,j) == 0)&&(delays(i,j) == 0);
         } while (!is_empty);
 
         // TODO: ABSOLUTELY TRANSFORM MEAN AND VARIANCE
         // Weights
-        u = static_cast<double>(rng()) / UINT32_MAX;
+        u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
         lognorm = std::exp(weight + weight_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
         
         if (type == 0){ // Excitatory
@@ -73,10 +77,16 @@ SparseLognormProjection::SparseLognormProjection( float connectivity, int type,
         }
 
         // Delays
-        u = static_cast<double>(rng()) / UINT32_MAX;
+        u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
         delays(i,j) = std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
-
+        ++bar;
     }
+
+    cout << N << endl;
+    cout << "checks: " << checks << endl; 
+    auto end = std::chrono::high_resolution_clock::now();
+    double a = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/N;
+    cout << "Cost: "<<a << " us/synapse"<<endl;
 
 }
 
@@ -131,28 +141,30 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     }
     }
 
-void Population::project(Projection * projection, Population * efferent_population){
+void Population::project(const Projection & projection, Population * efferent_population){
     int connections = 0;
-    for (unsigned int i = 0; i < projection -> start_dimension; i++){
-        for (unsigned int j = 0; j < projection -> end_dimension; j++){
-            if (std::abs((projection -> weights)[i][j]) > WEIGHT_EPS){
+    for (unsigned int i = 0; i < projection.start_dimension; i++){
+        for (unsigned int j = 0; j < projection.end_dimension; j++){
+            if (std::abs((projection.weights)[i][j]) > WEIGHT_EPS){
                 connections ++;
-                (this -> neurons)[i] -> connect(efferent_population -> neurons[j], (projection -> weights)[i][j], (projection -> delays)[i][j]);
+                (this -> neurons)[i] -> connect(efferent_population -> neurons[j], (projection.weights)[i][j], (projection.delays)[i][j]);
             }
         }
     }
 }
 
-void Population::sparse_project(){
+void Population::project(const SparseLognormProjection & projection, Population * efferent_population ){
 
-    boost::numeric::ublas::compressed_matrix<double> matrice(3, 3);
+    boost::numeric::ublas::compressed_matrix<double> weights = projection.weights;
+    boost::numeric::ublas::compressed_matrix<double> delays = projection.delays;
 
-    matrice(0, 1) = 1.0;
-    matrice(1, 2) = 2.0;
-
-    for (auto iter = matrice.begin1(); iter != matrice.end1(); ++iter) {
+    int i,j;
+    for (auto iter = weights.begin1(); iter != weights.end1(); ++iter) {
         for (auto nz_iter = iter.begin(); nz_iter != iter.end(); ++nz_iter) {
             std::cout << "element (" << nz_iter.index1() << ", " << nz_iter.index2() << ") = " << *nz_iter << std::endl;
+            i = nz_iter.index1();
+            j = nz_iter.index2();
+            this->neurons[i]->connect(efferent_population->neurons[j], weights(i,j) , delays(i,j));
         }
     }
 }

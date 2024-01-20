@@ -6,6 +6,7 @@
 #include <variant>
 #include "base_objects.hpp"
 #include <boost/numeric/ublas/matrix_sparse.hpp>
+#include "../pcg/include/pcg_random.hpp"
 
 #define WEIGHT_EPS 0.00001
 
@@ -25,6 +26,10 @@ class PopulationSpikeMonitor;
 class PopulationStateMonitor;
 class PopInjector;
 
+
+namespace random_utils{
+    extern pcg32 rng;
+};
 
 /**
  * @class Projection
@@ -55,7 +60,7 @@ class SparseLognormProjection{
 
         unsigned int start_dimension;
         unsigned int end_dimension;
-        
+
         boost::numeric::ublas::compressed_matrix<double> weights;
         boost::numeric::ublas::compressed_matrix<double> delays;
 
@@ -90,7 +95,9 @@ class Population{
         NeuroParam * neuroparam;
         
         Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network);
-        void project(Projection * projection, Population * child_pop);
+        void project(const Projection & projection, Population * efferent_population);
+        void project(const SparseLognormProjection & projection, Population * efferent_population);
+
         void evolve_bunch(EvolutionContext * evo, unsigned int from, unsigned int to);
         void evolve(EvolutionContext * evo);
         void print_info();
