@@ -5,6 +5,7 @@
 #include <chrono>
 #include <variant>
 #include "base_objects.hpp"
+#include <boost/numeric/ublas/matrix_sparse.hpp>
 
 #define WEIGHT_EPS 0.00001
 
@@ -24,6 +25,7 @@ class PopulationSpikeMonitor;
 class PopulationStateMonitor;
 class PopInjector;
 
+
 /**
  * @class Projection
  * @brief Implements a projection between to populations
@@ -42,6 +44,26 @@ class Projection{
         Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension);
 };
 
+class SparseLognormProjection{
+    public:
+        float connectivity;
+        int type;
+        float weight;
+        float weight_delta;
+        float delay;
+        float delay_delta;
+
+        unsigned int start_dimension;
+        unsigned int end_dimension;
+        
+        boost::numeric::ublas::compressed_matrix<double> weights;
+        boost::numeric::ublas::compressed_matrix<double> delays;
+
+        SparseLognormProjection(   float connectivity, int type,
+                            float weight, float weight_delta,
+                            float delay, float delay_delta,
+                            unsigned int start_dimension, unsigned int end_dimension);
+};
 
 /**
  * @class Population

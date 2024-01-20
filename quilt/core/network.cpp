@@ -4,6 +4,9 @@
 #include "include/devices.hpp"
 #include "include/neuron_models.hpp"
 
+#include <boost/numeric/ublas/matrix_sparse.hpp>
+#include "pcg/include/pcg_random.hpp"
+
 #include <iostream>
 #include <vector>
 #include <map>
@@ -14,6 +17,69 @@
 
 using std::cout;
 using std::endl;
+
+
+Projection::Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension):
+    weights(weights), delays(delays), start_dimension(start_dimension), end_dimension(end_dimension){
+
+    int n_links = 0;
+
+    for (unsigned int i = 0; i < start_dimension; i++){
+        for (unsigned int j =0 ; j< end_dimension; j++){
+            if (std::abs(weights[i][j]) >= WEIGHT_EPS){ 
+                n_links ++;
+            }
+        }
+    }
+}
+
+SparseLognormProjection::SparseLognormProjection( float connectivity, int type,
+                                    float weight, float weight_delta,
+                                    float delay, float delay_delta,
+                                    unsigned int start_dimension, unsigned int end_dimension):
+    connectivity(connectivity),type(type), weight(weight), weight_delta(weight_delta), delay(delay), delay_delta(delay_delta),
+    start_dimension(start_dimension), end_dimension(end_dimension){
+
+    weights = boost::numeric::ublas::compressed_matrix<double>(start_dimension, end_dimension);
+    delays = boost::numeric::ublas::compressed_matrix<double>(start_dimension, end_dimension);
+
+    pcg32 rng;
+
+    int i, j;
+    bool is_empty;
+    float u, lognorm;
+
+    for (int t = 0; t < static_cast<int>(connectivity*start_dimension*end_dimension); t++){
+        
+        // Finds an empty slot in the sparse matrices
+        is_empty = false;
+        do{
+            i = rng();
+            j = rng();
+            is_empty = (weights(i,j) != 0)&&(delays(i,j) != 0);
+            cout << "mat " << weights(i,j) << endl; 
+        } while (!is_empty);
+
+        // TODO: ABSOLUTELY TRANSFORM MEAN AND VARIANCE
+        // Weights
+        u = static_cast<double>(rng()) / UINT32_MAX;
+        lognorm = std::exp(weight + weight_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
+        
+        if (type == 0){ // Excitatory
+            weights(i, j) = lognorm;
+        }
+        else{ // Inhibitory
+            weights(i,j) = - lognorm;
+        }
+
+        // Delays
+        u = static_cast<double>(rng()) / UINT32_MAX;
+        delays(i,j) = std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
+
+    }
+
+}
+
 
 Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network):
     n_neurons(n_neurons),n_spikes_last_step(0), 
@@ -34,7 +100,6 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     switch(static_cast<neuron_type> (static_cast<int>(params->get("neuron_type")))){
         case neuron_type::aqif: 
             this->neuroparam = new aqif_param(*params);
-
             break;
         case neuron_type::aqif2: 
             this->neuroparam = new aqif2_param(*params);
@@ -64,28 +129,10 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
             throw std::runtime_error("Invalid neuron type");
         };
     }
-
-    // this->print_info();
     }
-
-Projection::Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension):
-    weights(weights), delays(delays), start_dimension(start_dimension), end_dimension(end_dimension){
-
-    int n_links = 0;
-
-    for (unsigned int i = 0; i < start_dimension; i++){
-        for (unsigned int j =0 ; j< end_dimension; j++){
-            if (std::abs(weights[i][j]) >= WEIGHT_EPS){ 
-                n_links ++;
-            }
-        }
-    }
-    // std::cout << "Projection has density " << ((float)n_links)/start_dimension/end_dimension * 100 << "%" << std::endl;
-}
 
 void Population::project(Projection * projection, Population * efferent_population){
     int connections = 0;
-    // auto start = std::chrono::high_resolution_clock::now();
     for (unsigned int i = 0; i < projection -> start_dimension; i++){
         for (unsigned int j = 0; j < projection -> end_dimension; j++){
             if (std::abs((projection -> weights)[i][j]) > WEIGHT_EPS){
@@ -94,10 +141,20 @@ void Population::project(Projection * projection, Population * efferent_populati
             }
         }
     }
-    // auto end = std::chrono::high_resolution_clock::now();
-    // std::cout << "Performing " << connections << " connections took ";
-    // std::cout << (std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count() << " ms   (";
-    // std::cout << ((double)(std::chrono::duration_cast<std::chrono::microseconds>(end -start)).count())/connections << " us/link)" << std::endl;
+}
+
+void Population::sparse_project(){
+
+    boost::numeric::ublas::compressed_matrix<double> matrice(3, 3);
+
+    matrice(0, 1) = 1.0;
+    matrice(1, 2) = 2.0;
+
+    for (auto iter = matrice.begin1(); iter != matrice.end1(); ++iter) {
+        for (auto nz_iter = iter.begin(); nz_iter != iter.end(); ++nz_iter) {
+            std::cout << "element (" << nz_iter.index1() << ", " << nz_iter.index2() << ") = " << *nz_iter << std::endl;
+        }
+    }
 }
 
 /**
@@ -201,8 +258,6 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
     int n_neurons_total = 0;
     for (auto pop : populations){n_neurons_total += pop->n_neurons;}
         
-    // std::cout << "Minimum synaptic delay is " << Synapse::min_delay << std::endl;
-
     // A check on minimum delays
     if (Synapse::min_delay < evo->dt){
         std::string message = "Globally minimum synaptic delay is " + std::to_string(Synapse::min_delay);
