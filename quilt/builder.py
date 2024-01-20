@@ -66,7 +66,13 @@ class SpikingNetwork:
 
         return net
     
-    def build(self, progress_bar=True):
+    def build(self, progress_bar=None):
+        if progress_bar is None:
+            if spiking.VERBOSITY == 1:
+                progress_bar = True
+            else:
+                progress_bar = False
+
         self.populations = dict()
         
         for pop in self.features_dict['populations']:
