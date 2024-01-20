@@ -61,8 +61,8 @@ class SparseLognormProjection{
         unsigned int start_dimension;
         unsigned int end_dimension;
 
-        boost::numeric::ublas::compressed_matrix<double> weights;
-        boost::numeric::ublas::compressed_matrix<double> delays;
+        std::map<std::pair<int, int>, float>weights;
+        std::map<std::pair<int, int>, float> delays;
 
         SparseLognormProjection(   float connectivity, int type,
                             float weight, float weight_delta,
