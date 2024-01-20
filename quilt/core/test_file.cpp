@@ -96,12 +96,12 @@ void test_spiking()
         }
     }
 
-    Projection * projection = new Projection(weights, delays, Na, Nb);
+    Projection projection = Projection(weights, delays, Na, Nb);
 
     a.project(projection, &b);
     b.project(projection, &a);
 
-    delete projection;
+
     free_proj_mat(weights, Na);
     free_proj_mat(delays, Nb);
 
@@ -176,8 +176,18 @@ void test_oscill(){
     }
 }
 
-int main(){
 
-    test_spiking();
+void test_sparse(){
+    auto start = std::chrono::high_resolution_clock::now();
+    SparseLognormProjection sparseproj = SparseLognormProjection(0.02, 0, 0.5, 0.0, 1.2, 0.0, 600, 600 );
+    auto end = std::chrono::high_resolution_clock::now();
+
+    cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << endl;
+}
+
+int main(){
+    random_utils::rng.seed(1234);
+
+    test_sparse();
 }
 
