@@ -33,7 +33,7 @@ namespace random_utils{
 
 /**
  * @class Projection
- * @brief Implements a projection between to populations
+ * @brief Implements a projection between two populations
  * 
  * @param[in] weights, delays
  * @param[in] start_dimension, end_dimension
@@ -49,20 +49,29 @@ class Projection{
         Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension);
 };
 
+/**
+ * @class SparseLognormProjection
+ * @brief Implements a sparse random projection between two populations
+ * 
+ * Weights and delays are lognorm-distributed. TODO: mean and sigma of the distribution are not 
+ * what one espects them to be.
+ * 
+*/
+
 class SparseLognormProjection{
     public:
-        float connectivity;
-        int type;
-        float weight;
-        float weight_delta;
-        float delay;
-        float delay_delta;
+        float connectivity;     //!< Density of connection (0 < connectivity < 1) 
+        int type;               //!< Excitatory: 0, Inhibitory: 1
+        float weight;           //!< Average weight
+        float weight_delta;     //!< Weight standard deviation
+        float delay;            //!< Average delay
+        float delay_delta;      //!< Delay standard deviation
 
-        unsigned int start_dimension;
-        unsigned int end_dimension;
+        unsigned int start_dimension;   //!< Dimension of the efferent population
+        unsigned int end_dimension;     //< Dimension of the afferent population
 
-        std::map<std::pair<int, int>, float>weights;
-        std::map<std::pair<int, int>, float> delays;
+        std::map<std::pair<int, int>, float>weights;    //!< Generated weights as map<<int,int> float>
+        std::map<std::pair<int, int>, float> delays;    //!< Generated delays as map<<int,int> float>
 
         SparseLognormProjection(   float connectivity, int type,
                             float weight, float weight_delta,

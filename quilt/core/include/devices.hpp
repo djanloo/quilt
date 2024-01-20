@@ -6,7 +6,10 @@
 typedef std::vector<double> neuron_state;
 class Population;
 class EvolutionContext;
-
+/**
+ * @class PopulationSpikeMonitor
+ * @brief Monitor for the variable `Population::n_spikes_last_step`
+*/
 class PopulationSpikeMonitor{
     public:
 
@@ -20,7 +23,10 @@ class PopulationSpikeMonitor{
         Population * monitored_pop;
         std::vector<int> history;
 };
-
+/**
+ * @class PopulationSpikeMonitor
+ * @brief Monitor for the variables `Population::neurons::state`
+*/
 class PopulationStateMonitor{
     public:
 
@@ -35,7 +41,9 @@ class PopulationStateMonitor{
         std::vector<std::vector<neuron_state>> history;
 };
 
-
+/**
+ * @brief Virtual base class for population injectors
+*/
 class PopInjector{
     public:
         PopInjector(Population * pop):pop(pop){}
@@ -43,7 +51,10 @@ class PopInjector{
         Population * pop;
 };
 
-
+/**
+ * @class PopCurrentInjector
+ * @brief Constant current population injector
+*/
 class PopCurrentInjector: public PopInjector{
     public:
         PopCurrentInjector(Population * pop, float I, float t_min, float t_max): 
@@ -56,6 +67,10 @@ class PopCurrentInjector: public PopInjector{
         bool activated, deactivated;
 };
 
+/**
+ * @class PoissonSpikeSource
+ * @brief Source of poisson-distributed spikes
+*/
 class PoissonSpikeSource: public PopInjector{
     public:
         PoissonSpikeSource( Population * pop,
