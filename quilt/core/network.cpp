@@ -11,7 +11,6 @@
 #include <chrono>
 #include <string>
 #include <thread>
-#include <boost/timer/progress_display.hpp>
 
 using std::cout;
 using std::endl;
@@ -174,7 +173,7 @@ void Population::print_info(){
     }
  }
 
-SpikingNetwork::SpikingNetwork(){
+SpikingNetwork::SpikingNetwork():verbosity(1){
     this->id = new HierarchicalID();
 }
 
@@ -211,10 +210,11 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
         throw std::runtime_error(message);
     }
 
-    std::cout << "Running network consisting of " << n_neurons_total << " neurons for " << n_steps_total <<" timesteps"<<std::endl;
-
+    if (verbosity > 0){
+        std::cout << "Running network consisting of " << n_neurons_total << " neurons for " << n_steps_total <<" timesteps"<<std::endl;
+    }    
     // Evolve
-    boost::timer::progress_display progress(n_steps_total);
+    progress bar(n_steps_total, verbosity);
 
     while (evo -> now < time){
 
@@ -245,22 +245,24 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
         evo -> do_step();
 
         n_steps_done++;
-        ++progress;
+        ++bar;
     }
-
     auto end = std::chrono::high_resolution_clock::now();
-    std::cout << "Simulation took " << (std::chrono::duration_cast<std::chrono::seconds>(end -start)).count() << " s";
-    std::cout << "\t(" << ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count())/n_steps_done << " ms/step)" << std::endl;
 
-    std::cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << std::endl;
-    std::cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << std::endl;
+    if (verbosity > 0){
+        std::cout << "Simulation took " << (std::chrono::duration_cast<std::chrono::seconds>(end -start)).count() << " s";
+        std::cout << "\t(" << ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count())/n_steps_done << " ms/step)" << std::endl;
 
-    std::cout << "Population evolution stats:" << std::endl;
-    for (auto pop : populations){
-        std::cout << "\t" << pop->id.get_id() << ":"<<std::endl;
-        std::cout << "\t\tevolution:\t" << pop->timestats_evo/n_steps_done << " us/step";
-        std::cout << "\t---\t" << static_cast<int>(pop->timestats_evo/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
-        std::cout << "\t\tspike emission:\t" << pop->timestats_spike_emission/n_steps_done << " us/step";
-        std::cout << "\t---\t" << static_cast<int>(pop->timestats_spike_emission/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
+        std::cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << std::endl;
+        std::cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << std::endl;
+
+        std::cout << "Population evolution stats:" << std::endl;
+        for (auto pop : populations){
+            std::cout << "\t" << pop->id.get_id() << ":"<<std::endl;
+            std::cout << "\t\tevolution:\t" << pop->timestats_evo/n_steps_done << " us/step";
+            std::cout << "\t---\t" << static_cast<int>(pop->timestats_evo/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
+            std::cout << "\t\tspike emission:\t" << pop->timestats_spike_emission/n_steps_done << " us/step";
+            std::cout << "\t---\t" << static_cast<int>(pop->timestats_spike_emission/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
+        }
     }
 }

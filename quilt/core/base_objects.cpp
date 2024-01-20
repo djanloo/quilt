@@ -6,10 +6,12 @@
 #include <iostream>
 #include<string>
 
+#include <boost/timer/progress_display.hpp>
 #include "include/base_objects.hpp"
 
 using std::cout;
 using std::endl;
+
 
 HierarchicalID::HierarchicalID(HierarchicalID * parent): parent(parent),n_subclasses(0){
     local_id = parent->n_subclasses;
@@ -34,3 +36,6 @@ void ParaMap::update(const ParaMap & new_values){
         this->value_map[couple.first] = couple.second;
     }
 }
+
+
+

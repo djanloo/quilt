@@ -69,6 +69,7 @@ cdef extern from "../core/include/network.hpp":
 
     cdef cppclass SpikingNetwork:
         HierarchicalID * id
+        unsigned int verbosity
         SpikingNetwork()
 
         # I/O

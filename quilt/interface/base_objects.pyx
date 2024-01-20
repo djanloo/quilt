@@ -2,6 +2,7 @@
 import numpy as np
 cimport numpy as np
 
+# TODO: solve relative import from quilt.interface import cinterface
 from quilt.interface.cinterface cimport ParaMap as cParaMap
 
 NEURON_TYPES = {"base_neuron":0, "aqif":1,"aqif2":2 ,"izhikevich":3, "aeif":4}

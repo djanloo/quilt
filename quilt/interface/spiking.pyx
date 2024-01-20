@@ -18,7 +18,10 @@ cimport numpy as np
 cimport quilt.interface.cinterface as cinter
 cimport quilt.interface.base_objects as base_objects
 
+VERBOSITY = 1
+
 ctypedef vector[double] neuron_state
+
 
 cdef class Projection:
 
@@ -131,9 +134,11 @@ cdef class SpikingNetwork:
     def __cinit__(self, str name):
         self._spiking_network = new cinter.SpikingNetwork()
         self.name = name
+        self._spiking_network.verbosity = VERBOSITY # Takes the gloabl value at creation
 
 
     def run(self, dt=0.1, time=1):
+        self._spiking_network.verbosity = VERBOSITY # For last minute decisions
         self._evo = new cinter.EvolutionContext(dt)
         self._spiking_network.run(self._evo, time)
 
@@ -141,6 +146,9 @@ cdef class SpikingNetwork:
         del self._spiking_network
         del self._evo
 
+def set_verbosity(v):
+    global VERBOSITY
+    VERBOSITY = v
 
 class RandomProjector:
     """Not an interface nor a C++ object, but stick to the convention"""

@@ -58,3 +58,37 @@ class ParaMap{
         void add(const std::string & key, float value);
         float get(const std::string & key) const ;
 };
+
+class progress{
+    public:
+        int max, _max, count, _count;
+        unsigned int verbosity;
+        progress(int max, unsigned int verbosity):max(max-1), _max(50), count(0), _count(0), verbosity(verbosity){
+            if (verbosity > 0){
+                for (int i = 0; i < _max; i++){
+                    std::cout << "-" ;
+                }
+                std::cout << std::endl;
+            }
+        }
+        unsigned long  operator++(){ 
+            if ( static_cast<int>(static_cast<float>(count)/max*_max) > _count) print(); 
+            // std::cout << "count" << count << std::endl;
+            // std::cout << "max" << max << std::endl;
+            // std::cout << "_max" << _max << std::endl;
+            // std::cout << "_count" << _count << std::endl;
+            // std::cout << "fraction" << static_cast<float>(count)/max*_max << std::endl;
+            count++;
+            return count; 
+        }
+        
+        void print(){
+            if (verbosity > 0){
+                std::cout << "*"<< std::flush; ;
+                if (_count == _max-1) std::cout << std::endl;
+            }
+            _count ++;
+        }
+        
+};
+        
