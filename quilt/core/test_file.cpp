@@ -98,8 +98,8 @@ void test_spiking()
 
     Projection projection = Projection(weights, delays, Na, Nb);
 
-    a.project(projection, &b);
-    b.project(projection, &a);
+    a.project(&projection, &b);
+    b.project(&projection, &a);
 
 
     free_proj_mat(weights, Na);
