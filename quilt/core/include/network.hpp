@@ -104,8 +104,8 @@ class Population{
         NeuroParam * neuroparam;
         
         Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network);
-        void project(const Projection & projection, Population * efferent_population);
-        void project(const SparseLognormProjection & projection, Population * efferent_population);
+        void project(const Projection * projection, Population * efferent_population);
+        void project(const SparseLognormProjection * projection, Population * efferent_population);
 
         void evolve_bunch(EvolutionContext * evo, unsigned int from, unsigned int to);
         void evolve(EvolutionContext * evo);

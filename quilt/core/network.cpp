@@ -137,19 +137,19 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     }
     }
 
-void Population::project(const Projection & projection, Population * efferent_population){
+void Population::project(const Projection * projection, Population * efferent_population){
     int connections = 0;
-    for (unsigned int i = 0; i < projection.start_dimension; i++){
-        for (unsigned int j = 0; j < projection.end_dimension; j++){
-            if (std::abs((projection.weights)[i][j]) > WEIGHT_EPS){
+    for (unsigned int i = 0; i < projection->start_dimension; i++){
+        for (unsigned int j = 0; j < projection->end_dimension; j++){
+            if (std::abs((projection->weights)[i][j]) > WEIGHT_EPS){
                 connections ++;
-                neurons[i]->connect(efferent_population->neurons[j], projection.weights[i][j], projection.delays[i][j]);
+                neurons[i]->connect(efferent_population->neurons[j], projection->weights[i][j], projection->delays[i][j]);
             }
         }
     }
 }
 
-void Population::project(const SparseLognormProjection & projection, Population * efferent_population ){
+void Population::project(const SparseLognormProjection * projection, Population * efferent_population ){
 
     // boost::numeric::ublas::compressed_matrix<double> weights = projection.weights;
     // boost::numeric::ublas::compressed_matrix<double> delays = projection.delays;
