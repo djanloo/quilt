@@ -211,12 +211,12 @@ void test_sparse(){
     cout << "size of population is " << sizeof(a) << " bytes" << endl;
 
     SparseLognormProjection atob = SparseLognormProjection(0.02, 0, 
-                                                                100, 100, 
+                                                                Na, Nb, 
                                                                 1.2, 0.1, 
                                                                 1.5, 0.5 );
 
     SparseLognormProjection btoa = SparseLognormProjection(0.02, 0, 
-                                                                100, 100, 
+                                                                Nb, Na, 
                                                                 1.2, 0.1, 
                                                                 1.5, 0.5 );
 
