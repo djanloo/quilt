@@ -62,6 +62,8 @@ struct SparseEqual {
     }
 };
 
+typedef std::unordered_map<std::pair<int, int>, std::pair<float, float>, SparseIntHash, SparseEqual> sparse_t;
+
 
 /**
  * @class SparseLognormProjection
@@ -79,64 +81,19 @@ class SparseProjection{
         int type;                       //!< Excitatory: 0, Inhibitory: 1
         unsigned int start_dimension;   //!< The number of objects in efferent population
         unsigned int end_dimension;     //!< The number of objects in afferent population
+        unsigned int n_connections;
 
-        std::unordered_map<std::pair<int, int>, std::pair<float, float>, SparseIntHash, SparseEqual> weights_delays;
+        std::vector<sparse_t> weights_delays;
 
         SparseProjection(double connectivity,  int type, unsigned int start_dimension, unsigned int end_dimension):
                     connectivity(connectivity), type(type), start_dimension(start_dimension), end_dimension(end_dimension){
-                        weights_delays.reserve(static_cast<int>(connectivity*start_dimension*end_dimension));
+                        n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
                         std::cout << "building SP with params "<< connectivity << " " << type << " "<< start_dimension << " "<< end_dimension << std::endl;
                     }      
-        void build(unsigned int N);
+        void build_sector(sparse_t *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
         void build_multithreaded();
 
-          // Costruttore di copia
-        SparseProjection(const SparseProjection& other) :
-            connectivity(other.connectivity),
-            type(other.type),
-            start_dimension(other.start_dimension),
-            end_dimension(other.end_dimension),
-            weights_delays(other.weights_delays) {
-            std::cout << "copy constructor called" << std::endl;
-        }
-
-        // Costruttore di movimento
-        SparseProjection(SparseProjection&& other) noexcept :
-            connectivity(other.connectivity),
-            type(other.type),
-            start_dimension(other.start_dimension),
-            end_dimension(other.end_dimension),
-            weights_delays(std::move(other.weights_delays)) {
-            std::cout << "move constructor called" << std::endl;
-        }
-
-        // Operatore di assegnazione di copia
-        SparseProjection& operator=(const SparseProjection& other) {
-            if (this != &other) {
-                connectivity = other.connectivity;
-                type = other.type;
-                start_dimension = other.start_dimension;
-                end_dimension = other.end_dimension;
-                weights_delays = other.weights_delays;
-                std::cout << "copy assignment operator called" << std::endl;
-            }
-            return *this;
-        }
-
-        // Operatore di assegnazione di movimento
-        SparseProjection& operator=(SparseProjection&& other) noexcept {
-            if (this != &other) {
-                connectivity = other.connectivity;
-                type = other.type;
-                start_dimension = other.start_dimension;
-                end_dimension = other.end_dimension;
-                weights_delays = std::move(other.weights_delays);
-                std::cout << "move assignment operator called" << std::endl;
-            }
-            return *this;
-        }
-
-        virtual std::pair<float, float> get_weight_delay(unsigned int /*i*/, unsigned int /*j*/){
+        virtual const std::pair<float, float> get_weight_delay(unsigned int /*i*/, unsigned int /*j*/){
             throw std::runtime_error("Using virtual get_weight_delay of sparse projection");
         }
 };
@@ -151,22 +108,9 @@ class SparseLognormProjection : public SparseProjection{
         SparseLognormProjection(double connectivity, int type,
                                 unsigned int start_dimension, unsigned int end_dimension,
                                 float weight, float weight_delta,
-                                float delay, float delay_delta):
-                                SparseProjection(connectivity, type, start_dimension, end_dimension), 
-                                weight(weight), weight_delta(weight_delta), 
-                                delay(delay), delay_delta(delay_delta){ 
-                                    std::cout << "Starting sparselognorm constructor" << std::endl;
-                                    auto start = std::chrono::high_resolution_clock::now();
-                                    // build_multithreaded();
-                                    build(static_cast<int>(connectivity*start_dimension*end_dimension));
-                                    auto end = std::chrono::high_resolution_clock::now();
+                                float delay, float delay_delta);
 
-                                    std::cout << "Ended sparselognorm constructor" << std::endl;
-                                    std::cout<< "LogNorm: Check connections: " << weights_delays.size() << std::endl;
-                                    std::cout << "LogNorm: Check time: "<< std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() <<" ms"<<std::endl;
-                                }
-
-        std::pair<float, float> get_weight_delay(unsigned int i, unsigned int j) override;
+        const std::pair<float, float> get_weight_delay(unsigned int i, unsigned int j) override;
 };
 
 /**
