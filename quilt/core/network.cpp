@@ -32,73 +32,112 @@ Projection::Projection(float ** weights, float ** delays, unsigned int start_dim
         }
     }
 }
-void SparseProjection::build(unsigned int N){
-    cout << "Sparse proj build called with PID "<< std::this_thread::get_id() << endl;
-    auto start = std::chrono::high_resolution_clock::now();
+void SparseProjection::build_sector(sparse_t * sector, unsigned int sector_nconn, 
+                                    unsigned int start_index_1, unsigned int end_index_1, 
+                                    unsigned int start_index_2, unsigned int end_index_2){
+    
+    cout << "SparseProjection::build_sector PID "<< std::this_thread::get_id();
+    cout << "\t 1_indexes: "<< start_index_1 << " " << end_index_1;
+    cout << "\t 2_indexes: "<< start_index_2 << " " << end_index_2;
+    cout << endl;
 
-    cout <<"Number of connections:" <<  N << endl;
+    if (start_index_1 > end_index_1) throw std::runtime_error("SparseProjection::build : End index is before start index (efferent)");
+    if (start_index_2 > end_index_2) throw std::runtime_error("SparseProjection::build : End index is before start index (afferent)");
+
+    auto start = std::chrono::high_resolution_clock::now();
 
     uint32_t i, j;  
     int checks = 0;
-
+ 
     std::pair<int,int> coordinates;
     bool is_empty;
-    // progress bar(N, 1);
 
-    for (int t = 0; t < N; t++){
-        // std::lock_guard<std::mutex> lock(mutex);
-
+    while ((*sector).size() < sector_nconn){
         // Finds an empty slot in the sparse matrix
         is_empty = false;
         do{
             checks++;
-            i = static_cast<int>(random_utils::rng()) % start_dimension;
-            j = static_cast<int>(random_utils::rng()) % end_dimension;
+            i = start_index_1 + static_cast<int>(random_utils::rng()) % (end_index_1 - start_index_1);
+            j = start_index_2 + static_cast<int>(random_utils::rng()) % (end_index_2 - start_index_2);
             coordinates = std::make_pair(i,j);
-            is_empty = (weights_delays[coordinates].first == 0)&&(weights_delays[coordinates].second == 0);
+            is_empty = ((*sector)[coordinates].first == 0)&&((*sector)[coordinates].second == 0);
         } while (!is_empty);
 
         // Insert weight and delay
-        weights_delays[coordinates] = this->get_weight_delay(i, j);
-        // ++bar;
+        (*sector)[coordinates] = this->get_weight_delay(i, j);
     }
     auto end = std::chrono::high_resolution_clock::now();
-    cout << "Sparse proj: " << ((float)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/N << " us/syn" << endl; 
-    cout << "Extra checks: " << checks - N << endl;
+    cout << "SparseProjection::build_sector: took " << ((float)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/n_connections << " us/syn" << endl; 
+    cout << "SparseProjection::build_sector:  extra checks: " << checks - n_connections << endl;
 }
 
-// void SparseProjection::build_multithreaded(){
-//     const int n_threads = 1; 
-//     const int data_size = static_cast<int>(connectivity*start_dimension*end_dimension);
-//     const int chunk_size = data_size / n_threads;
+void SparseProjection::build_multithreaded(){
+    const int n_threads = 8; 
 
-//     std::vector<std::thread> threads;
+    weights_delays = std::vector<sparse_t>(n_threads);
+    std::vector<std::thread> threads;
 
-//     for (int i = 0; i < n_threads; ++i) {
-//         threads.emplace_back(&SparseProjection::build, this, chunk_size);
-//     }
-//     cout << "Started ALL" << endl;
-//     for (auto& thread : threads) {
-//         thread.join();
-//     }
-//     cout << "Joined ALL" << endl;
-// }
+    for (int i=0; i < n_threads; i++){
+        weights_delays[i].reserve(n_connections/n_threads);
+        threads.emplace_back(&SparseProjection::build_sector, this , 
+                                    &(weights_delays[i]), n_connections/n_threads,
+                                    i*start_dimension/n_threads, (i+1)*start_dimension/n_threads,
+                                    0, end_dimension-1);
+    }
+    
+    cout << "SparseProjection::build_multithreaded: Started ALL" << endl;
+
+    for (auto& thread : threads) {
+        thread.join();
+    }
+    cout << "SparseProjection::build_multithreaded: Joined ALL" << endl;
+}
 
 
-std::pair<float, float> SparseLognormProjection::get_weight_delay(unsigned int /*i*/, unsigned int /*j*/){
-    float u, weight, delay; 
+const std::pair<float, float> SparseLognormProjection::get_weight_delay(unsigned int /*i*/, unsigned int /*j*/){
+    float u, new_weight, new_delay;
 
     u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
-    weight = std::exp(weight + weight_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
+    new_weight = std::exp(weight + weight_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
     
     u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
-    delay = std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
+    new_delay = std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
     
     // Inhibitory 
-    if (type == 1) weight *=  -1;
+    if (type == 1) new_weight *=  -1;
 
-    return std::make_pair(weight, delay);
+    return std::make_pair(new_weight, new_delay);
 }
+
+
+SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
+                                unsigned int start_dimension, unsigned int end_dimension,
+                                float weight, float weight_delta,
+                                float delay, float delay_delta):
+                                SparseProjection(connectivity, type, start_dimension, end_dimension), 
+                                weight(weight), weight_delta(weight_delta), 
+                                delay(delay), delay_delta(delay_delta){ 
+                                    std::cout << "Starting sparselognorm constructor from PID " <<std::this_thread::get_id()<< std::endl;
+                                    auto start = std::chrono::high_resolution_clock::now();
+                                    build_multithreaded();
+                                    // build(static_cast<int>(connectivity*start_dimension*end_dimension), 0, start_dimension, 0, end_dimension);
+                                    auto end = std::chrono::high_resolution_clock::now();
+
+                                    std::cout << "Ended sparselognorm constructor" << std::endl;
+                                    std::cout<< "LogNorm: number of connections: " << weights_delays.size() ;// << std::endl;
+                                    std::cout << " (should be " << n_connections << " )" <<std::endl;
+                                    std::cout << "LogNorm: Check time: "<< std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() <<" ms ";
+                                    cout << ((float)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/n_connections << " us/syn" << endl; 
+                                    
+                                    cout << "Check iter: start" << endl;
+                                    int iterations = 0;
+                                    for (auto it = this->weights_delays.begin(); it != this->weights_delays.end();){
+                                        iterations++;
+                                        it++;
+                                    }
+                                    cout << "Check iter: done" << endl;
+
+                                }
 
 
 Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network):
@@ -164,19 +203,19 @@ void Population::project(const Projection * projection, Population * efferent_po
 }
 
 void Population::project(const SparseProjection * projection, Population * efferent_population ){
-    cout << "Starting Population::project" << endl;
+    cout << "Starting Population::project (PID: "<<std::this_thread::get_id()<<")" << endl;
     auto start = std::chrono::high_resolution_clock::now();
-    cout << "Connections: "<<projection->weights_delays.size()<<endl;
-
-    progress bar(projection->weights_delays.size(), 1);
-    for (const auto & pair : projection->weights_delays){
-        // cout << bar.count <<"-";
-        neurons[pair.first.first]->connect(efferent_population->neurons[pair.first.second], pair.second.first, pair.second.second);
-        ++bar;
+    int n_connections = 0;
+    for (auto sector : projection->weights_delays){
+        for (auto connection : sector){
+            n_connections++;
+            neurons[connection.first.first]->connect(efferent_population->neurons[connection.first.second], connection.second.first, connection.second.second);
+        }
     }
+
     auto end = std::chrono::high_resolution_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() ;
-    cout << "Building population sparse projection took" << duration << "us"<<endl;
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() ;
+    cout << "Building population sparse projection took " << duration << " ms for "<< n_connections << " connections"<<endl;
 }
 
 /**
