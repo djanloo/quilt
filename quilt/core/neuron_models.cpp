@@ -9,7 +9,6 @@
 #include <queue>
 #include <chrono>
 #include <cmath>
-#include <stdexcept>
 #include <string>
 #include <boost/numeric/odeint.hpp>
 
