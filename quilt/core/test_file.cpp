@@ -178,11 +178,50 @@ void test_oscill(){
 
 
 void test_sparse(){
-    auto start = std::chrono::high_resolution_clock::now();
-    SparseLognormProjection sparseproj = SparseLognormProjection(0.02, 0, 0.5, 0.0, 1.2, 0.0, 600, 600 );
-    auto end = std::chrono::high_resolution_clock::now();
+    int Na = 1000;
+    int Nb = 1000;
 
-    cout << std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() << endl;
+    SpikingNetwork sn = SpikingNetwork();
+
+
+    map<string, float> map_of_params = {{"neuron_type", (float)neuron_type::aeif},
+                                        {"C_m", 40.1},
+                                        {"G_L",2.0},
+                                        {"E_l", -70.0},
+                                        {"V_reset", -55.0},
+                                        {"V_peak",0.1},
+                                        {"tau_refrac",0.0},
+                                        {"delta_T",1.7},
+                                        {"V_th", -40.0},
+                                        {"ada_a", 0.0},
+                                        {"ada_b",5.0},
+                                        {"ada_tau_w",100.0},
+                                        {"tau_ex", 10.},
+                                        {"tau_in", 5.5},
+                                        {"E_ex", 0.0},
+                                        {"E_in",-65}
+                                        };
+
+    ParaMap paramap = ParaMap(map_of_params);
+    
+    Population a = Population(Na, &paramap, &sn);
+    Population b = Population(Nb, &paramap, &sn);
+
+    cout << "size of neuron is " << sizeof(*(a.neurons[0])) << " bytes" << endl ;
+    cout << "size of population is " << sizeof(a) << " bytes" << endl;
+
+    SparseLognormProjection atob = SparseLognormProjection(0.02, 0, 
+                                                                100, 100, 
+                                                                1.2, 0.1, 
+                                                                1.5, 0.5 );
+
+    SparseLognormProjection btoa = SparseLognormProjection(0.02, 0, 
+                                                                100, 100, 
+                                                                1.2, 0.1, 
+                                                                1.5, 0.5 );
+
+    a.project(&atob, &b);
+    b.project(&btoa, &a);
 }
 
 int main(){
