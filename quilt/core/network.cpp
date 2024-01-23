@@ -32,58 +32,54 @@ Projection::Projection(float ** weights, float ** delays, unsigned int start_dim
         }
     }
 }
-
-SparseLognormProjection::SparseLognormProjection( float connectivity, int type,
-                                    float weight, float weight_delta,
-                                    float delay, float delay_delta,
-                                    unsigned int start_dimension, unsigned int end_dimension):
-    connectivity(connectivity),type(type), weight(weight), weight_delta(weight_delta), delay(delay), delay_delta(delay_delta),
-    start_dimension(start_dimension), end_dimension(end_dimension), weights(), delays(){
+void SparseProjection::build(){
+    cout << "Sparse proj build called" << endl;
     auto start = std::chrono::high_resolution_clock::now();
-
-    uint32_t i, j;
     int N = static_cast<int>(connectivity*start_dimension*end_dimension);
-    bool is_empty;
-    float u, lognorm;
-    
-    progress bar(N, 1);
+
+    cout << N << endl;
+
+    uint32_t i, j;  
     int checks = 0;
+
+    std::pair<int,int> coordinates;
+    bool is_empty;
+    progress bar(N, 1);
 
     for (int t = 0; t < N; t++){
         
-        // Finds an empty slot in the sparse matrices
+        // Finds an empty slot in the sparse matrix
         is_empty = false;
         do{
             checks++;
             i = static_cast<int>(random_utils::rng()) % start_dimension;
             j = static_cast<int>(random_utils::rng()) % end_dimension;
-            is_empty = (weights[std::make_pair(i,j)] == 0)&&(delays[std::make_pair(i,j)] == 0);
+            coordinates = std::make_pair(i,j);
+            is_empty = (weights_delays[coordinates].first == 0)&&(weights_delays[coordinates].second == 0);
         } while (!is_empty);
 
-        // TODO: ABSOLUTELY TRANSFORM MEAN AND VARIANCE
-        // Weights
-        u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
-        lognorm = std::exp(weight + weight_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
-        
-        if (type == 0){ // Excitatory
-            weights[std::make_pair(i,j)]  = lognorm;
-        }
-        else{ // Inhibitory
-            weights[std::make_pair(i,j)] =  -lognorm;
-        }
-
-        // Delays
-        u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
-        delays[std::make_pair(i,j)] = std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
+        // Insert weight and delay
+        weights_delays[coordinates] = this->get_weight_delay(i, j);
         ++bar;
     }
-
-    cout << N << endl;
-    cout << "checks: " << checks << endl; 
     auto end = std::chrono::high_resolution_clock::now();
-    double a = static_cast<double>(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/N;
-    cout << "Cost: "<<a << " us/synapse"<<endl;
+    cout << "Sparse proj: " << ((float)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/N << " us/syn" << endl; 
+}
 
+
+std::pair<float, float> SparseLognormProjection::get_weight_delay(unsigned int /*i*/, unsigned int /*j*/){
+    float u, weight, delay; 
+
+    u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
+    weight = std::exp(weight + weight_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
+    
+    u = static_cast<float>(random_utils::rng()) / UINT32_MAX;
+    delay = std::exp(delay + delay_delta * std::sqrt(-2.0 * std::log(1.0 - u)));
+    
+    // Inhibitory 
+    if (type == 1) weight *=  -1;
+
+    return std::make_pair(weight, delay);
 }
 
 
@@ -149,20 +145,14 @@ void Population::project(const Projection * projection, Population * efferent_po
     }
 }
 
-void Population::project(const SparseLognormProjection * projection, Population * efferent_population ){
-
-    // boost::numeric::ublas::compressed_matrix<double> weights = projection.weights;
-    // boost::numeric::ublas::compressed_matrix<double> delays = projection.delays;
-
-    // int i,j;
-    // for (auto iter = weights.begin1(); iter != weights.end1(); ++iter) {
-    //     for (auto nz_iter = iter.begin(); nz_iter != iter.end(); ++nz_iter) {
-    //         std::cout << "element (" << nz_iter.index1() << ", " << nz_iter.index2() << ") = " << *nz_iter << std::endl;
-    //         i = nz_iter.index1();
-    //         j = nz_iter.index2();
-    //         this->neurons[i]->connect(efferent_population->neurons[j], weights(i,j) , delays(i,j));
-    //     }
-    // }
+void Population::project(const SparseProjection * projection, Population * efferent_population ){
+    auto start = std::chrono::high_resolution_clock::now();
+    for (const auto & pair : projection->weights_delays){
+        neurons[pair.first.first]->connect(efferent_population->neurons[pair.first.second], pair.second.first, pair.second.second);
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end-start).count() ;
+    cout << "Building sparse projection took" << duration << "us"<<endl;
 }
 
 /**

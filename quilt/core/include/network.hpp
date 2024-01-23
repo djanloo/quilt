@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include <chrono>
 #include <variant>
 #include "base_objects.hpp"
@@ -49,6 +50,19 @@ class Projection{
         Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension);
 };
 
+struct SparseIntHash {
+    size_t operator()(const std::pair<int, int>& k) const {
+        return std::hash<int>()(k.first) ^ std::hash<int>()(k.second);
+    }
+};
+
+struct SparseEqual {
+    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) const {
+        return lhs.first == rhs.first && lhs.second == rhs.second;
+    }
+};
+
+
 /**
  * @class SparseLognormProjection
  * @brief Implements a sparse random projection between two populations
@@ -57,26 +71,43 @@ class Projection{
  * what one espects them to be.
  * 
 */
+class SparseProjection{
+    public: 
+        double connectivity;            //!< Density of connection (0 < connectivity < 1) 
+        int type;                       //!< Excitatory: 0, Inhibitory: 1
+        unsigned int start_dimension;   //!< The number of objects in efferent population
+        unsigned int end_dimension;     //!< The number of objects in afferent population
 
-class SparseLognormProjection{
-    public:
-        float connectivity;     //!< Density of connection (0 < connectivity < 1) 
-        int type;               //!< Excitatory: 0, Inhibitory: 1
+        std::unordered_map<std::pair<int, int>, std::pair<float, float>, SparseIntHash, SparseEqual> weights_delays;
+
+        SparseProjection(double connectivity,  int type, unsigned int start_dimension, unsigned int end_dimension):
+                    connectivity(connectivity), type(type), start_dimension(start_dimension), end_dimension(end_dimension){
+                        weights_delays.reserve(static_cast<int>(connectivity*start_dimension*end_dimension));
+                        std::cout << "building SP with params "<< connectivity << " " << type << " "<< start_dimension << " "<< end_dimension << std::endl;
+                    }        
+        void build();
+
+        virtual std::pair<float, float> get_weight_delay(unsigned int /*i*/, unsigned int /*j*/){
+            throw std::runtime_error("Using virtual get_weight_delay of sparse projection");
+        }
+};
+
+class SparseLognormProjection : public SparseProjection{
+    public:         
         float weight;           //!< Average weight
         float weight_delta;     //!< Weight standard deviation
         float delay;            //!< Average delay
         float delay_delta;      //!< Delay standard deviation
 
-        unsigned int start_dimension;   //!< Dimension of the efferent population
-        unsigned int end_dimension;     //< Dimension of the afferent population
+        SparseLognormProjection(double connectivity, int type,
+                                unsigned int start_dimension, unsigned int end_dimension,
+                                float weight, float weight_delta,
+                                float delay, float delay_delta):
+                                SparseProjection(connectivity, type, start_dimension, end_dimension), 
+                                weight(weight), weight_delta(weight_delta), 
+                                delay(delay), delay_delta(delay_delta){ build(); }
 
-        std::map<std::pair<int, int>, float>weights;    //!< Generated weights as map<<int,int> float>
-        std::map<std::pair<int, int>, float> delays;    //!< Generated delays as map<<int,int> float>
-
-        SparseLognormProjection(   float connectivity, int type,
-                            float weight, float weight_delta,
-                            float delay, float delay_delta,
-                            unsigned int start_dimension, unsigned int end_dimension);
+        std::pair<float, float> get_weight_delay(unsigned int i, unsigned int j) override;
 };
 
 /**
@@ -105,7 +136,7 @@ class Population{
         
         Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network);
         void project(const Projection * projection, Population * efferent_population);
-        void project(const SparseLognormProjection * projection, Population * efferent_population);
+        void project(const SparseProjection * projection, Population * efferent_population);
 
         void evolve_bunch(EvolutionContext * evo, unsigned int from, unsigned int to);
         void evolve(EvolutionContext * evo);
