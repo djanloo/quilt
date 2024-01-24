@@ -123,8 +123,8 @@ SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
                                     weight_mu   = std::log(weight) - 0.5 * weight_sigma * weight_sigma;
                                     delay_mu    = std::log(delay)  - 0.5 * delay_sigma * delay_sigma;
 
-                                    cout << "weight_mu "<< weight_mu <<endl;
-                                    cout << "weight_sigma "<< weight_sigma<<endl;
+                                    // cout << "weight_mu "<< weight_mu <<endl;
+                                    // cout << "weight_sigma "<< weight_sigma<<endl;
                                     // std::cout << "Starting sparselognorm constructor from PID " <<std::this_thread::get_id()<< std::endl;
                                     auto start = std::chrono::high_resolution_clock::now();
                                     build_multithreaded();
