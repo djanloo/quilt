@@ -88,7 +88,7 @@ class SparseProjection{
         SparseProjection(double connectivity,  int type, unsigned int start_dimension, unsigned int end_dimension):
                     connectivity(connectivity), type(type), start_dimension(start_dimension), end_dimension(end_dimension){
                         n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
-                        std::cout << "building SP with params "<< connectivity << " " << type << " "<< start_dimension << " "<< end_dimension << std::endl;
+                        // std::cout << "building SP with params "<< connectivity << " " << type << " "<< start_dimension << " "<< end_dimension << std::endl;
                     }      
         void build_sector(sparse_t *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
         void build_multithreaded();
@@ -100,10 +100,10 @@ class SparseProjection{
 
 class SparseLognormProjection : public SparseProjection{
     public:         
-        float weight;           //!< Average weight
-        float weight_delta;     //!< Weight standard deviation
-        float delay;            //!< Average delay
-        float delay_delta;      //!< Delay standard deviation
+        float weight_mu;                //!< Average weight
+        float weight_sigma;     //!< Weight variance
+        float delay_mu;                 //!< Average delay
+        float delay_sigma;      //!< Delay variance
 
         SparseLognormProjection(double connectivity, int type,
                                 unsigned int start_dimension, unsigned int end_dimension,
