@@ -1,6 +1,6 @@
 # Population number multiplier
 population_rescale_factor: 0.1
-# A parameter to uniformly enloose connectivity
+# A parameter to uniformly enloose connectivity:
 connection_rescale_factor: 1.0
 
 # TODO:
@@ -32,132 +32,155 @@ populations:
 projections:
   - name: D1->D1
     features:
-      inh_fraction: 0.0607
+      connectivity: 0.0607
       delay:        1.7
-      weight_inh:   0.12
+      weight:       0.12
+      type:         inh
 
   - name: D1->D2
     features:
-      inh_fraction: 0.0140
+      connectivity: 0.0140
       delay:        1.7
-      weight_inh:   0.30
+      weight:       0.30
+      type:         inh
+
 
   - name: D1->SNR
     features:
-      inh_fraction: 0.0132
+      connectivity: 0.0132
       delay:        7.0
-      weight_inh:   2.0
+      weight:       2.0
+      type:         inh
 
   - name: D2->D1
     features:
-      inh_fraction: 0.0653
+      connectivity: 0.0653
       delay:        1.7
-      weight_inh:   0.36
+      weight:       0.36
+      type:         inh
 
   - name: D2->D2
     features:
-      inh_fraction: 0.0840
+      connectivity: 0.0840
       delay:        1.7
-      weight_inh:   0.20
+      weight:       0.20
+      type:         inh
 
   - name: D2->GPeTI
     features:
-      inh_fraction: 0.0833
+      connectivity: 0.0833
       delay:        7.0
-      weight_inh:   1.28
+      weight:       1.28
+      type:         inh
 
   - name: FSN->D1
     features:
-      inh_fraction: 0.0381
+      connectivity: 0.0381
       delay:        1.7
-      weight_inh:   6.6
+      weight:       6.6
+      type:         inh
 
   - name: FSN->FSN
     features:
-      inh_fraction: 0.0238
+      connectivity: 0.0238
       delay:        1.0
-      weight_inh:   0.5
+      weight:       0.5
+      type:         inh
 
   - name: FSN->D2
     features:
-      inh_fraction: 0.0262
+      connectivity: 0.0262
       delay:        1.7
-      weight_inh:   4.8
+      weight:       4.8
+      type:         inh
 
   - name: GPeTI->GPeTI
     features:
-      inh_fraction: 0.0321
+      connectivity: 0.0321
       delay:        1.0
-      weight_inh:   1.2
+      weight:       1.2
+      type:         inh
 
   - name: GPeTI->GPeTA
     features:
-      inh_fraction: 0.0321
+      connectivity: 0.0321
       delay:        1.0
-      weight_inh:   0.35
+      weight:       0.35
+      type:         inh
 
   - name: GPeTI->FSN
     features:
-      inh_fraction: 0.0128
+      connectivity: 0.0128
       delay:        7.0
-      weight_inh:   1.6
+      weight:       1.6
+      type:         inh
 
   - name: GPeTI->STN
     features:
-      inh_fraction: 0.0385
+      connectivity: 0.0385
       delay:        1.0
-      weight_inh:   0.08
+      weight:       0.08
+      type:         inh
 
   - name: GPeTI->SNR
     features:
-      inh_fraction: 0.0324
+      connectivity: 0.0324
       delay:        3.0
-      weight_inh:   76.0
+      weight:       76.0
+      type:         inh
 
   - name: GPeTA->D1
     features:
-      inh_fraction: 0.0379
+      connectivity: 0.0379
       delay:        7.0
-      weight_inh:   0.35
+      weight:       0.35
+      type:         inh
 
   - name: GPeTA->D2
     features:
-      inh_fraction: 0.0379
+      connectivity: 0.0379
       delay:        7.0
-      weight_inh:   0.61
+      weight:       0.61
+      type:         inh
 
   - name: GPeTA->FSN
     features:
-      inh_fraction: 0.0379
+      connectivity: 0.0379
       delay:        7.0
-      weight_inh:   1.85
+      weight:       1.85
+      type:         inh
 
   - name: GPeTA->GPeTA
     features:
-      inh_fraction: 0.0189
+      connectivity: 0.0189
       delay:        1.0
-      weight_inh:   0.35
+      weight:       0.35
+      type:         inh
 
   - name: GPeTA->GPeTI
     features:
-      inh_fraction: 0.0189
+      connectivity: 0.0189
       delay:        1.0
-      weight_inh:   1.2
+      weight:       1.2
+      type:         inh
 
   - name: STN->GPeTA
     features:
-      exc_fraction: 0.0735
+      connectivity: 0.0735
       delay:        2.0
-      weight_exc:   0.13
+      weight:       0.13
+      type:         exc
 
   - name: STN->GPeTI
     features:
-      exc_fraction: 0.0735
+      connectivity: 0.0735
       delay:        2.0
-      weight_exc:   0.42
+      weight:       0.42
+      type:         exc
 
   - name: STN->SNR
     features:
-      exc_fraction: 0.0773
+      connectivity: 0.0773
       delay:        4.5
-      weight_exc:   0.91
+      weight:       0.91
+      type:         exc
