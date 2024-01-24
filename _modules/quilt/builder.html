@@ -208,7 +208,7 @@
                         <span class="k">pass</span>
 
                     <span class="c1"># Builds the projector</span>
-                    <span class="n">projector</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">RandomProjector</span><span class="p">(</span><span class="o">**</span><span class="p">(</span><span class="n">proj</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">]))</span>
+                    <span class="n">projector</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">SparseProjector</span><span class="p">(</span><span class="n">proj</span><span class="p">[</span><span class="s1">&#39;features&#39;</span><span class="p">],</span> <span class="n">dist_type</span><span class="o">=</span><span class="s2">&quot;lognorm&quot;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some value was wrong during projection </span><span class="si">{</span><span class="n">efferent</span><span class="si">}</span><span class="s2">-&gt;</span><span class="si">{</span><span class="n">afferent</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="n">efferent</span><span class="p">,</span> <span class="n">afferent</span> <span class="o">=</span> <span class="n">proj</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">)</span>
@@ -250,7 +250,6 @@
             <span class="n">catalogue</span><span class="o">.</span><span class="n">neurons_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">neuron_name</span> <span class="ow">in</span> <span class="n">catalogue</span><span class="o">.</span><span class="n">neurons_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="c1"># print(f&quot;Loaded model for neuron &#39;{neuron_name}&#39;&quot;)</span>
             <span class="n">catalogue</span><span class="o">.</span><span class="n">paramaps</span><span class="p">[</span><span class="n">neuron_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">base_objects</span><span class="o">.</span><span class="n">ParaMap</span><span class="p">(</span><span class="n">catalogue</span><span class="o">.</span><span class="n">neurons_dict</span><span class="p">[</span><span class="n">neuron_name</span><span class="p">])</span>
             <span class="n">catalogue</span><span class="o">.</span><span class="n">neuron_names</span> <span class="o">+=</span> <span class="p">[</span><span class="n">neuron_name</span><span class="p">]</span>
         
