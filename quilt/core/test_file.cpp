@@ -178,8 +178,8 @@ void test_oscill(){
 
 
 void test_sparse(){
-    int Na = 6000;
-    int Nb = 6000;
+    int Na = 4000;
+    int Nb = 4000;
 
     SpikingNetwork sn = SpikingNetwork();
 
@@ -210,27 +210,32 @@ void test_sparse(){
     cout << "size of neuron is " << sizeof(*(a.neurons[0])) << " bytes" << endl ;
     cout << "size of population is " << sizeof(a) << " bytes" << endl;
 
-    SparseLognormProjection btoa(0.02, 0, 
+    SparseLognormProjection btoa(0.05, 0, 
                                 Nb, Na, 
-                                1.2, 0.1, 
-                                1.5, 0.5 );
+                                1.2, 0.0, 
+                                1.5, 0.0 );
     auto start = std::chrono::high_resolution_clock::now();
-    SparseLognormProjection atob(0.02, 0, 
+    SparseLognormProjection atob(0.05, 0, 
                                 Na, Nb, 
-                                1.2, 0.1, 
-                                1.5, 0.5 );
+                                3, 1, 
+                                3, 1 );
     a.project(&atob, &b);
     auto end = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(end-start).count() ;
     cout << "MAIN: projection took "<< duration/1000/1000 << "ms ";
     cout << duration/atob.n_connections << " ns/syn" <<endl;
     b.project(&btoa, &a);
+
+    std::ofstream out_file("output.txt");
+    for (auto sector : atob.weights_delays){
+        for (auto pair : sector){
+            out_file << pair.first.first <<" "<< pair.first.second <<" "<< pair.second.first <<" "<<pair.second.second<<endl;
+        }
+    }
 }
 
 int main(){
     random_utils::rng.seed(1234);
-    for (int i =0; i< 30; i++){
-        test_sparse();
-    }
+    test_sparse();
 }
 
