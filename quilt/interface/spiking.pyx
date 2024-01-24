@@ -65,6 +65,51 @@ cdef class Projection:
     def delays(self):
         return self.delays
 
+cdef class SparseProjector():
+
+    cdef:
+        cinter.SparseProjection * _projection
+        int type
+        int dist_type
+        double connectivity
+        float weight, weight_delta, delay, delay_delta
+
+    def __cinit__(self, params_dict, dist_type="lognorm"):
+        self.type = 0 if params_dict["type"] == "exc" else 1
+           
+        if dist_type == "lognorm":
+                self.dist_type = 0
+                self.connectivity = params_dict['connectivity']
+                weight, weight_delta, delay, delay_delta = map(params_dict.get, ['weight', 'weight_delta', 'delay', 'delay_delta'])
+                
+                if weight is None or delay is None:
+                    raise KeyError("Weight and delay must be specified")
+                else:
+                    self.weight = weight 
+                    self.delay = delay
+
+                if weight_delta is None:
+                    self.weight_delta = 0.0
+                else:
+                    self.weight_delta = weight_delta
+
+                if delay_delta is None:
+                    self.delay_delta = 0.0
+                else:
+                    self.delay_delta = delay_delta
+
+                if self.weight < 0:
+                    raise ValueError("Synaptic weight must always be positive")
+                if self.delay < 0:
+                    raise ValueError("Synaptic delay must always be positive")
+            
+    
+    def get_projection(self, Population efferent,  Population afferent):
+        self._projection = new cinter.SparseLognormProjection(self.connectivity, <int>self.type, efferent.n_neurons, afferent.n_neurons, self.weight, self.weight_delta, self.delay, self.delay_delta)
+        return self
+
+    def __dealloc__(self):
+        del self._projection
 
 cdef class Population:
 
@@ -89,7 +134,10 @@ cdef class Population:
     def n_spikes_last_step(self):
         return self._population.n_spikes_last_step
 
-    def project(self, Projection proj, Population efferent_pop):
+    # def project(self, Projection proj, Population efferent_pop):
+    #     self._population.project(proj._projection, efferent_pop._population)
+    
+    def project(self, SparseProjector proj, Population efferent_pop):
         self._population.project(proj._projection, efferent_pop._population)
 
     def add_const_curr_injector(self, I, t_min, t_max):
@@ -121,7 +169,6 @@ cdef class Population:
         self._population.print_info()
 
     def __dealloc__(self):
-        # print("Deallocating a population")
         if self._population != NULL:
             del self._population
 
@@ -192,8 +239,6 @@ class RandomProjector:
         weights = np.zeros((N,M))
         delays = np.zeros((N,M))
 
-        # start = time()
-
         exc_weights = np.random.uniform(self.weight_exc - self.weight_exc_delta/2, self.weight_exc + self.weight_exc_delta/2, size=(N,M))
         inh_weights = np.random.uniform(0, self.weight_inh - self.weight_inh_delta/2, size=(N,M))
 
@@ -205,9 +250,6 @@ class RandomProjector:
         delays = np.random.uniform(self.delay - self.delay_delta/2, self.delay + self.delay_delta/2, size=(N,M))
         delays[(~active_inh_syn)&(~active_exc_syn)] = 0.0
 
-        # end = time()
-        # print(f"Generating weights and delays took {end-start:.3f} seconds")
-        # print(f"Min delay {np.min(delays[delays != 0])}")
 
         self.last_weights = weights
         self.last_delays = delays

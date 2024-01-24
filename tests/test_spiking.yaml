@@ -9,10 +9,13 @@ populations:
 projections:
   - name: Albert->MonaLisa 
     features:
-      exc_fraction: 0.1
-      weight_exc: 0.5
-      delay: 0.1
+      connectivity: 0.1
+      weight: 0.5
+      delay: 0.1001
+      type:    exc
   - name: MonaLisa->Albert
     features:
-      inh_fraction: 0.1
-      weight_inh: 0.03
+      connectivity: 0.1
+      weight: 0.03
+      delay:  0.2
+      type:   exc

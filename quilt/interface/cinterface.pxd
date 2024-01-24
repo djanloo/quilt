@@ -55,6 +55,15 @@ cdef extern from "../core/include/network.hpp":
         int start_dimension, end_dimension
         Projection(float ** weights, float ** delays, int start_dimension, int end_dimension)
 
+    cdef cppclass SparseProjection:
+        pass
+
+    cdef cppclass SparseLognormProjection(SparseProjection): 
+        SparseLognormProjection(double connectivity, int type,
+                                unsigned int start_dimension, unsigned int end_dimension,
+                                float weight, float weight_delta,
+                                float delay, float delay_delta)
+
     cdef cppclass Population:
         int n_neurons
         HierarchicalID * id
@@ -62,7 +71,8 @@ cdef extern from "../core/include/network.hpp":
         int n_spikes_last_step
 
         Population(int, ParaMap * , SpikingNetwork * ) except +
-        void project(Projection * , Population * )
+        # void project(Projection * , Population * )
+        void project(SparseProjection *, Population *)
         void evolve(EvolutionContext * )
 
         void print_info()

@@ -110,7 +110,7 @@ class SpikingNetwork:
                         pass
 
                     # Builds the projector
-                    projector = spiking.RandomProjector(**(proj['features']))
+                    projector = spiking.SparseProjector(proj['features'], dist_type="lognorm")
                 except ValueError as e:
                     raise ValueError(f"Some value was wrong during projection {efferent}->{afferent}")
                 efferent, afferent = proj['name'].split("->")
@@ -146,7 +146,6 @@ class NeuronCatalogue:
             catalogue.neurons_dict = yaml.safe_load(f)
 
         for neuron_name in catalogue.neurons_dict.keys():
-            # print(f"Loaded model for neuron '{neuron_name}'")
             catalogue.paramaps[neuron_name] = base_objects.ParaMap(catalogue.neurons_dict[neuron_name])
             catalogue.neuron_names += [neuron_name]
         
