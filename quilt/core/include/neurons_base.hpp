@@ -4,11 +4,9 @@
  */
 #pragma once
 #include "base_objects.hpp"
-#include <iostream>
-#include <vector>
 #include <queue>
 #include <limits>
-#include<string>
+#include <string>
 
 // #define MAX_GSYN_EXC 15.0 //!< Not in use: max value of excitatory synaptic conductance
 // #define MAX_GSYN_INH 15.0 //!< Not in use: max value of inhibitory synaptic conductance

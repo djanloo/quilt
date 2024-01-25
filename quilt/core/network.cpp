@@ -1,21 +1,16 @@
 #include "include/network.hpp"
-#include "include/base_objects.hpp"
 #include "include/neurons_base.hpp"
 #include "include/devices.hpp"
 #include "include/neuron_models.hpp"
 
 #include <boost/math/special_functions/erf.hpp>
-// #include <boost/thread/thread.hpp>
 
-#include <iostream>
-#include <vector>
-#include <map>
-#include <iomanip>
-#include <chrono>
 #include <string>
 #include <thread>
 
+
 using std::cout;
+using std::cerr;
 using std::endl;
 
 pcg32 random_utils::rng;
@@ -107,10 +102,10 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(unsigned
 
         new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
     }catch (const boost::wrapexcept<std::overflow_error>& e){
-        cout << "overflow:" << endl;
-        cout << "u: " << u <<endl;
-        cout << "weight mu: " << weight_mu << endl;
-        cout << "weight sigma:"<< weight_sigma <<endl;
+        cerr << "overflow in erf_inv:" << endl;
+        cerr << "u: " << u <<endl;
+        cerr << "weight mu: " << weight_mu << endl;
+        cerr << "weight sigma:"<< weight_sigma <<endl;
         throw(e);
     }
     try{
@@ -121,10 +116,10 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(unsigned
         }while((u == 1.0)||(u==0));
     new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
     }catch (const boost::wrapexcept<std::overflow_error>& e){
-        cout << "overflow:" << endl;
-        cout << "u: " << u <<endl;
-        cout << "delay mu: " << delay_mu << endl;
-        cout << "delay sigma:"<< delay_sigma << endl;
+        cerr << "overflow:" << endl;
+        cerr << "u: " << u <<endl;
+        cerr << "delay mu: " << delay_mu << endl;
+        cerr << "delay sigma:"<< delay_sigma << endl;
         throw(e);
     }
     // Inhibitory 
