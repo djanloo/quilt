@@ -6,7 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <boost/math/special_functions/erf.hpp>
+// #include <boost/math/special_functions/erf.hpp>
 
 #include "include/base_objects.hpp"
 #include "include/devices.hpp"
@@ -235,14 +235,13 @@ void test_sparse(){
     }
 }
 void test_erf_overflow(){
-    float u = 1.0;
-    float val = std::exp(-2.0 + 1.0 * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
+    // float u = 1.0;
+    // float val = std::exp(-2.0 + 1.0 * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
 
 }
 
 int main(){
-    random_utils::rng.seed(1234);
     // test_sparse();
-    test_erf_overflow();
+    test_sparse();
 }
 
