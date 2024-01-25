@@ -85,12 +85,12 @@ void SparseProjection::build_multithreaded(){
                                     0, end_dimension-1);
     }
     
-    cout << "SparseProjection::build_multithreaded: Started ALL" << endl;
+    // cout << "SparseProjection::build_multithreaded: Started ALL" << endl;
 
     for (auto& thread : threads) {
         thread.join();
     }
-    cout << "SparseProjection::build_multithreaded: Joined ALL" << endl;
+    // cout << "SparseProjection::build_multithreaded: Joined ALL" << endl;
 }
 
 const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng, int /*i*/, unsigned int /*j*/){

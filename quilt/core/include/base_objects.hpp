@@ -34,10 +34,10 @@ class RNGDispatcher{
         }
         ~RNGDispatcher(){
             for (RNG * rng : rngs ){
-                std::cout << "Deleting TLRNG at "<<rng<<std::endl;
+                // std::cout << "Deleting TLRNG at "<<rng<<std::endl;
                 delete rng;
             }
-            std::cout << "Deleted all " <<std::endl;
+            // std::cout << "Deleted all " <<std::endl;
         }
 
         RNG * get_rng(){
@@ -45,7 +45,7 @@ class RNGDispatcher{
 
             for (auto& rng : rngs){
                 if (!is_occupied[rng]){
-                    std::cout << "Giving TLRNG "<< rng << " to PID " << std::this_thread::get_id()<< std::endl; 
+                    // std::cout << "Giving TLRNG "<< rng << " to PID " << std::this_thread::get_id()<< std::endl; 
                     pids[std::this_thread::get_id()] = rng;
                     is_occupied[rng] = true;
                     return rng;
@@ -57,12 +57,12 @@ class RNGDispatcher{
         void free(){
             std::lock_guard<std::mutex> lock(mutex);
             RNG * rng = pids[std::this_thread::get_id()];
-            std::cout << "Freeing " <<  rng << " from PID: "<< std::this_thread::get_id()<<std::endl;
+            // std::cout << "Freeing " <<  rng << " from PID: "<< std::this_thread::get_id()<<std::endl;
             is_occupied[rng] = false;
             pids.erase(std::this_thread::get_id());
         }
 
-    private:
+    private: 
         std::mutex mutex; 
         std::vector<RNG*> rngs;
         std::map<RNG*, bool> is_occupied;
