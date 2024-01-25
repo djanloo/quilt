@@ -2,7 +2,7 @@
 
 CXX := g++
 PYTHON := python3
-CXXFLAGS := -std=c++11 -Wall -Wextra -g
+CXXFLAGS := -std=c++11 -Wall -Wextra -ggdb
 SOURCES :=  quilt/core/test_file.cpp quilt/core/oscillators.cpp quilt/core/network.cpp quilt/core/neuron_models.cpp quilt/core/neurons_base.cpp quilt/core/devices.cpp quilt/core/base_objects.cpp
 
 OBJECTS := $(SOURCES:.cpp=.o)
