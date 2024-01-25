@@ -42,7 +42,7 @@ namespace utilities{
 float Synapse::min_delay = std::numeric_limits<float>::infinity();
 
 void Synapse::fire(EvolutionContext * evo){
-    // Adds a (weight, delay) spike in the spike queue of the postsynaptic neuron
+    // Adds a (weight, now + delay) spike in the spike queue of the postsynaptic neuron
     if (this->delay < evo->dt){throw std::runtime_error("Synapse has delay less than timestep");}
     this->postsynaptic->incoming_spikes.emplace(this->weight, evo->now + this->delay);
 }
