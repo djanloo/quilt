@@ -85,7 +85,10 @@
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
 <section id="linux">
 <h2>Linux<a class="headerlink" href="#linux" title="Link to this heading"></a></h2>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-install<span class="w"> </span>libbost-all-dev
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/djanloo/quilt.git
+git<span class="w"> </span>submodule<span class="w"> </span>init
+git<span class="w"> </span>submodule<span class="w"> </span>update
+sudo<span class="w"> </span>apt-install<span class="w"> </span>libbost-all-dev
 pip<span class="w"> </span>install<span class="w"> </span>-<span class="w"> </span>r<span class="w"> </span>requirements.txt
 make
 </pre></div>
