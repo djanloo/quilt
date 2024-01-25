@@ -5,6 +5,7 @@ Linux
 -----
 
 .. code-block:: bash
+   
    git clone https://github.com/djanloo/quilt.git
    git submodule init
    git submodule update

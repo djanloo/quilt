@@ -3,8 +3,6 @@
 #include "base_objects.hpp"
 #include "neurons_base.hpp"
 
-#include <stdexcept>
-
 // The menu:
 class EvolutionContext;
 class HierarchicalID;
