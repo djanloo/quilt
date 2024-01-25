@@ -1,11 +1,13 @@
-.PHONY: generate cleanall clean
+.PHONY: generate cleanall clean test_file.hpp
 
 CXX := g++
 PYTHON := python3
 CXXFLAGS := -std=c++11 -Wall -Wextra -ggdb
-SOURCES :=  quilt/core/test_file.cpp quilt/core/oscillators.cpp quilt/core/network.cpp quilt/core/neuron_models.cpp quilt/core/neurons_base.cpp quilt/core/devices.cpp quilt/core/base_objects.cpp
+SOURCES := quilt/core/oscillators.cpp quilt/core/network.cpp quilt/core/neuron_models.cpp quilt/core/neurons_base.cpp quilt/core/devices.cpp quilt/core/base_objects.cpp
 
-OBJECTS := $(SOURCES:.cpp=.o)
+OBJECTS := $(patsubst %.cpp, %.o, $(SOURCES))
+DEPENDS := $(patsubst %.cpp,%.d, $(SOURCES))
+
 EXECUTABLE := quilt.exe
 
 generate:
@@ -23,12 +25,13 @@ cleanall: clean
 	@rm -R -f quilt/interface/*.so
 	@echo "Cleaned."
 
-
-$(EXECUTABLE): $(OBJECTS)
+$(EXECUTABLE): quilt/core/test_file.o $(OBJECTS)
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
-%.o: %.cpp %.hpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+-include $(DEPENDS)
+
+%.o: %.cpp Makefile
+	$(CXX) $(WARNING) $(CXXFLAGS) -MMD -MP -c $< -o $@
 
 clean:
 	rm -f $(OBJECTS) $(EXECUTABLE)
