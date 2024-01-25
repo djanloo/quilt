@@ -47,6 +47,7 @@ class PopulationStateMonitor{
 class PopInjector{
     public:
         PopInjector(Population * pop):pop(pop){}
+        virtual ~PopInjector() = default;
         virtual void inject(EvolutionContext * /*evo*/){std::cout <<"WARNING: using virtual PopInjector::inject()" << std::endl;}
         Population * pop;
 };

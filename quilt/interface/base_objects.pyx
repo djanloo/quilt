@@ -37,3 +37,7 @@ cdef class ParaMap:
         for key in params.keys():
             key_bytes = key.encode('utf-8') if isinstance(key, str) else key
             self._paramap.add(key_bytes, params[key])
+    
+    def __dealloc__(self):
+        if self._paramap != NULL:
+            del self._paramap

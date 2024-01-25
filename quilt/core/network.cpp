@@ -253,7 +253,11 @@ void Population::evolve(EvolutionContext * evo){
 
     auto end = std::chrono::high_resolution_clock::now();
     timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
-
+lete neuroparam;
+    std::cout << "Deleting population neurons"<<std::endl;
+    for (Neuron * neur : neurons){
+        delete neur;
+    }
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
@@ -277,8 +281,16 @@ void Population::print_info(){
     }
  }
 
+ Population::~Population(){
+    delete neuroparam;
+    // std::cout << "Deleting population neurons"<<std::endl;
+    for (Neuron * neur : neurons){
+        delete neur;
+    }
+}
+
 SpikingNetwork::SpikingNetwork():verbosity(1){
-    this->id = new HierarchicalID();
+    id = HierarchicalID();
 }
 
 PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population){
@@ -366,5 +378,15 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
             std::cout << "\t\tspike emission:\t" << pop->timestats_spike_emission/n_steps_done << " us/step";
             std::cout << "\t---\t" << static_cast<int>(pop->timestats_spike_emission/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
         }
+    }
+}
+
+SpikingNetwork::~SpikingNetwork(){
+    
+    for (auto monitor : population_spike_monitors){
+        delete monitor;
+    }
+    for (auto monitor : population_state_monitors){
+        delete monitor;
     }
 }
