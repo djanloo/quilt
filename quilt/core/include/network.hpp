@@ -159,7 +159,7 @@ class Population{
 class SpikingNetwork{
     public:
         std::vector<Population*> populations;
-        HierarchicalID  id;
+        HierarchicalID id;
         unsigned int verbosity;
         SpikingNetwork();
         ~SpikingNetwork();

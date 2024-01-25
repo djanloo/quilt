@@ -166,7 +166,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     timestats_evo(0), timestats_spike_emission(0){
     
     // Add itself to the hierarchical structure
-    id = HierarchicalID(spiking_network->id);
+    id = HierarchicalID(&(spiking_network->id));
 
     // Adds itself to the spiking network populations
     (spiking_network->populations).push_back(this);
