@@ -241,7 +241,7 @@ void test_erf_overflow(){
 }
 
 int main(){
-    // test_sparse();
     test_sparse();
+    // test_spiking();
 }
 

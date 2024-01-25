@@ -25,7 +25,7 @@ Projection::Projection(float ** weights, float ** delays, unsigned int start_dim
         }
     }
 }
-void SparseProjection::build_sector(sparse_t * sector, ThreadLockedRNGDispatcher * rng_dispatch,
+void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispatch,
                                     unsigned int sector_nconn, 
                                     unsigned int start_index_1, unsigned int end_index_1, 
                                     unsigned int start_index_2, unsigned int end_index_2){
@@ -40,7 +40,7 @@ void SparseProjection::build_sector(sparse_t * sector, ThreadLockedRNGDispatcher
 
     auto start = std::chrono::high_resolution_clock::now();
     
-    ThreadLockedRNG * rng = rng_dispatch->get_rng();
+    RNG * rng = rng_dispatch->get_rng();
 
     uint32_t i, j;  
     int checks = 0;
@@ -74,7 +74,7 @@ void SparseProjection::build_multithreaded(){
     weights_delays = std::vector<sparse_t>(n_threads);
     std::vector<std::thread> threads;
 
-    ThreadLockedRNGDispatcher rng_dispatcher(n_threads, 1997);
+    RNGDispatcher rng_dispatcher(n_threads, 1997);
 
     for (int i=0; i < n_threads; i++){
         weights_delays[i].reserve(n_connections/n_threads);
@@ -85,15 +85,15 @@ void SparseProjection::build_multithreaded(){
                                     0, end_dimension-1);
     }
     
-    // cout << "SparseProjection::build_multithreaded: Started ALL" << endl;
+    cout << "SparseProjection::build_multithreaded: Started ALL" << endl;
 
     for (auto& thread : threads) {
         thread.join();
     }
-    // cout << "SparseProjection::build_multithreaded: Joined ALL" << endl;
+    cout << "SparseProjection::build_multithreaded: Joined ALL" << endl;
 }
 
-const std::pair<float, float> SparseLognormProjection::get_weight_delay(ThreadLockedRNG* rng, int /*i*/, unsigned int /*j*/){
+const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng, int /*i*/, unsigned int /*j*/){
     double u;
     float new_weight, new_delay;
 
@@ -139,10 +139,10 @@ SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
                                     // cout << "weight_mu "<< weight_mu <<endl;
                                     // cout << "weight_sigma "<< weight_sigma<<endl;
                                     // std::cout << "Starting sparselognorm constructor from PID " <<std::this_thread::get_id()<< std::endl;
-                                    auto start = std::chrono::high_resolution_clock::now();
+                                    // auto start = std::chrono::high_resolution_clock::now();
                                     build_multithreaded();
                                     // build(static_cast<int>(connectivity*start_dimension*end_dimension), 0, start_dimension, 0, end_dimension);
-                                    auto end = std::chrono::high_resolution_clock::now();
+                                    // auto end = std::chrono::high_resolution_clock::now();
 
                                     // std::cout << "Ended sparselognorm constructor" << std::endl;
                                     // std::cout<< "LogNorm: number of connections: " << weights_delays.size() ;// << std::endl;

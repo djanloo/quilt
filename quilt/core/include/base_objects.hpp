@@ -11,68 +11,62 @@
 #include <thread>
 #include <mutex>
 
-class ThreadLockedRNG{
+class RNG{
     public:
-        ThreadLockedRNG(const uint64_t seed):
+        RNG(const uint64_t seed):
         rng(seed),
-        mutex(),
         uniform(std::numeric_limits<double>::epsilon(),1.0 - std::numeric_limits<double>::epsilon()){
-            unlock();
         }
-
-        void lock()  {uniqueLock.lock();  }
-        void unlock(){uniqueLock.unlock();}
-        bool is_locked(){ 
-            // std::cout << "TLRNG at "<<this<< " was asked if free and returned "<<uniqueLock.owns_lock()<<std::endl;
-            return uniqueLock.owns_lock();
-            }
-
         double get_uniform(){return uniform(rng);}
         int get_int(){return static_cast<int>(rng());}
 
     private:        
         pcg32 rng;
-
-        std::mutex mutex;
-        std::unique_lock<std::mutex> uniqueLock{mutex};
-
         std::uniform_real_distribution<double> uniform;
 };
 
-class ThreadLockedRNGDispatcher{
+class RNGDispatcher{
     public:
-        ThreadLockedRNGDispatcher(unsigned int n_rngs, const uint64_t seed0){
+        RNGDispatcher(unsigned int n_rngs, const uint64_t seed0):mutex(){
             for (unsigned int i=0; i < n_rngs; i++){
-                tl_rngs.push_back(new ThreadLockedRNG(seed0 + static_cast<uint64_t>(i)));
+                rngs.push_back(new RNG(seed0 + static_cast<uint64_t>(i)));
             }
         }
-        ~ThreadLockedRNGDispatcher(){
-            for (auto tl_rng : tl_rngs ){
-                delete tl_rng;
+        ~RNGDispatcher(){
+            for (RNG * rng : rngs ){
+                std::cout << "Deleting TLRNG at "<<rng<<std::endl;
+                delete rng;
             }
+            std::cout << "Deleted all " <<std::endl;
         }
 
-        ThreadLockedRNG * get_rng(){
-            for (auto& rng : tl_rngs){
-                if (!rng->is_locked()){
-                    rng->lock();
-                    // std::cout << "Giving TLRNG "<< rng << " to PID " << std::this_thread::get_id()<< std::endl; 
+        RNG * get_rng(){
+            std::lock_guard<std::mutex> lock(mutex);
+
+            for (auto& rng : rngs){
+                if (!is_occupied[rng]){
+                    std::cout << "Giving TLRNG "<< rng << " to PID " << std::this_thread::get_id()<< std::endl; 
                     pids[std::this_thread::get_id()] = rng;
+                    is_occupied[rng] = true;
                     return rng;
                 }
             }
             throw std::runtime_error("No thread-locked random number generator was found to be free");
         }
+
         void free(){
-            // std::cout << "Freeing for PID: "<< std::this_thread::get_id()<<std::endl;
-            ThreadLockedRNG * rng = pids[std::this_thread::get_id()];
+            std::lock_guard<std::mutex> lock(mutex);
+            RNG * rng = pids[std::this_thread::get_id()];
+            std::cout << "Freeing " <<  rng << " from PID: "<< std::this_thread::get_id()<<std::endl;
+            is_occupied[rng] = false;
             pids.erase(std::this_thread::get_id());
-            rng->unlock();
         }
 
     private:
-        std::vector<ThreadLockedRNG*> tl_rngs; //!< Thread locked random number generator
-        std::map<std::thread::id, ThreadLockedRNG*> pids;
+        std::mutex mutex; 
+        std::vector<RNG*> rngs;
+        std::map<RNG*, bool> is_occupied;
+        std::map<std::thread::id, RNG*> pids;
 
 };
 

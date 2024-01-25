@@ -66,9 +66,6 @@ typedef std::unordered_map<std::pair<int, int>, std::pair<float, float>, SparseI
  * @class SparseLognormProjection
  * @brief Implements a sparse random projection between two populations
  * 
- * Weights and delays are lognorm-distributed. TODO: mean and sigma of the distribution are not 
- * what one espects them to be.
- * 
 */
 class SparseProjection{
     protected:
@@ -88,10 +85,10 @@ class SparseProjection{
                         // std::cout << "building SP with params "<< connectivity << " " << type << " "<< start_dimension << " "<< end_dimension << std::endl;
                     }  
         virtual ~SparseProjection() = default;
-        void build_sector(sparse_t *, ThreadLockedRNGDispatcher *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+        void build_sector(sparse_t *, RNGDispatcher *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
         void build_multithreaded();
 
-        virtual const std::pair<float, float> get_weight_delay(ThreadLockedRNG* /*rng*/, int /*i*/, unsigned int /*j*/){
+        virtual const std::pair<float, float> get_weight_delay(RNG* /*rng*/, int /*i*/, unsigned int /*j*/){
             throw std::runtime_error("Using virtual get_weight_delay of sparse projection");
         }
 };
@@ -108,7 +105,7 @@ class SparseLognormProjection : public SparseProjection{
                                 float weight, float weight_delta,
                                 float delay, float delay_delta);
 
-        const std::pair<float, float> get_weight_delay(ThreadLockedRNG* rng, int i, unsigned int j) override;
+        const std::pair<float, float> get_weight_delay(RNG* rng, int i, unsigned int j) override;
 };
 
 /**
@@ -127,9 +124,6 @@ class Population{
     public:
         int n_neurons;
         std::vector<Neuron*> neurons;
-        HierarchicalID id;
-        double timestats_evo;
-        double timestats_spike_emission;
 
         // Biophysical attributes
         int n_spikes_last_step;
@@ -143,7 +137,13 @@ class Population{
 
         void evolve_bunch(EvolutionContext * evo, unsigned int from, unsigned int to);
         void evolve(EvolutionContext * evo);
+
+        // Bureaucracy
+        HierarchicalID id;
+        double timestats_evo;
+        double timestats_spike_emission;
         void print_info();
+
 };
 
 /**
