@@ -40,17 +40,17 @@ def plot_graph(network):
         efferent, afferent = proj['name'].split("->")
         efferent, afferent = efferent.strip(), afferent.strip()
         edge_dict = dict()
-        if "weight_inh" in proj['features']:
+        if proj['features']['type'] == "inh":
             edge_dict = dict(   color="b", 
-                                weight = proj['features']['weight_inh'],
+                                weight = proj['features']['weight'],
                                 lenght = proj['features']['delay'],
-                                strongness = proj['features']['inh_fraction']*proj['features']['weight_inh']
+                                strongness = proj['features']['connectivity']*proj['features']['weight']
                              )
         else:
             edge_dict = dict(   color="r", 
-                                weight = proj['features']['weight_exc'],
+                                weight = proj['features']['weight'],
                                 lenght = proj['features']['delay'],
-                                strongness = proj['features']['exc_fraction']*proj['features']['weight_exc']
+                                strongness = proj['features']['connectivity']*proj['features']['weight']
                              )
         G.add_edge(efferent,afferent, **edge_dict)
 

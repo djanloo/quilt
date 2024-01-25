@@ -25,7 +25,7 @@ class Projection;
 aqif_neuron::aqif_neuron(Population * population): Neuron(population){
     nt = neuron_type::aqif;
     aqif_param * p = static_cast<aqif_param*>(population->neuroparam);
-    state = neuron_state {p->E_l ,0.,0.,0.};
+    state = neuron_state {p->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ) ,0.,0.,0.};
 }
 
 void aqif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
@@ -77,7 +77,7 @@ void izhikevich_neuron::on_spike(EvolutionContext * /*evo*/){
 }
 
 aeif_neuron::aeif_neuron(Population * population): Neuron(population){
-    state = {population->neuroparam->E_l + 10*(((double)rand())/RAND_MAX - 0.5 ), 0.0, 0.0, 0.0};
+    state = {population->neuroparam->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ), 0.0, 0.0, 0.0};
 }
 
 void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
@@ -118,7 +118,7 @@ void aeif_neuron::on_spike(EvolutionContext * /*evo*/){
 aqif2_neuron::aqif2_neuron(Population * population): Neuron(population){
     nt = neuron_type::aqif2;
     aqif2_param * p = static_cast<aqif2_param*>(population->neuroparam);
-    state = neuron_state {p->E_l ,0.,0.,0.};
+    state = neuron_state {p->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ) ,0.,0.,0.};
 }
 
 void aqif2_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
