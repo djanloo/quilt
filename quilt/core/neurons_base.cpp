@@ -1,20 +1,15 @@
 #include "include/neurons_base.hpp"
-#include "include/base_objects.hpp"
 #include "include/devices.hpp"
 #include "include/network.hpp"
 
-#include <iostream>
-#include <vector>
-#include <algorithm>
-#include <queue>
 #include <map>
 #include <chrono>
 #include <cmath>
 #include <stdexcept>
-#include <string>
-#include <limits>
+
 
 #include <boost/numeric/odeint.hpp>
+
 
 namespace utilities{
 

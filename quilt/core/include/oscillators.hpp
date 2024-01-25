@@ -6,8 +6,6 @@
  * Numerical methods for delay differential equations Bellen Zennaro
 */
 #pragma once
-#include <vector>
-#include <stdexcept>
 #include "base_objects.hpp"
 #include "network.hpp"
 
