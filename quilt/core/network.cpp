@@ -98,12 +98,35 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(unsigned
     double u;
     float new_weight, new_delay;
 
-    u = static_cast<double>(random_utils::rng()) / UINT32_MAX;
-    new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
-    
-    u = static_cast<double>(random_utils::rng()) / UINT32_MAX;
+    try{
+        // Excludes u==1 from the results of rand
+        // because it's not in the domain of erf
+        do{
+            u = static_cast<double>(random_utils::rng()) / UINT32_MAX;
+        }while((u == 1.0)||(u==0));
+
+        new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
+    }catch (const boost::wrapexcept<std::overflow_error>& e){
+        cout << "overflow:" << endl;
+        cout << "u: " << u <<endl;
+        cout << "weight mu: " << weight_mu << endl;
+        cout << "weight sigma:"<< weight_sigma <<endl;
+        throw(e);
+    }
+    try{
+        // Excludes u==1 from the results of rand
+        // because it's not in the domain of erf
+        do{
+            u = static_cast<double>(random_utils::rng()) / UINT32_MAX;
+        }while((u == 1.0)||(u==0));
     new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
-    
+    }catch (const boost::wrapexcept<std::overflow_error>& e){
+        cout << "overflow:" << endl;
+        cout << "u: " << u <<endl;
+        cout << "delay mu: " << delay_mu << endl;
+        cout << "delay sigma:"<< delay_sigma << endl;
+        throw(e);
+    }
     // Inhibitory 
     if (type == 1) new_weight *=  -1;
 
@@ -253,11 +276,7 @@ void Population::evolve(EvolutionContext * evo){
 
     auto end = std::chrono::high_resolution_clock::now();
     timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
-lete neuroparam;
-    std::cout << "Deleting population neurons"<<std::endl;
-    for (Neuron * neur : neurons){
-        delete neur;
-    }
+
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
