@@ -135,29 +135,8 @@ SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
 
                                     weight_mu   = std::log(weight) - 0.5 * weight_sigma * weight_sigma;
                                     delay_mu    = std::log(delay)  - 0.5 * delay_sigma * delay_sigma;
-
-                                    // cout << "weight_mu "<< weight_mu <<endl;
-                                    // cout << "weight_sigma "<< weight_sigma<<endl;
-                                    // std::cout << "Starting sparselognorm constructor from PID " <<std::this_thread::get_id()<< std::endl;
-                                    // auto start = std::chrono::high_resolution_clock::now();
-                                    build_multithreaded();
-                                    // build(static_cast<int>(connectivity*start_dimension*end_dimension), 0, start_dimension, 0, end_dimension);
-                                    // auto end = std::chrono::high_resolution_clock::now();
-
-                                    // std::cout << "Ended sparselognorm constructor" << std::endl;
-                                    // std::cout<< "LogNorm: number of connections: " << weights_delays.size() ;// << std::endl;
-                                    // std::cout << " (should be " << n_connections << " )" <<std::endl;
-                                    // std::cout << "LogNorm: Check time: "<< std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count() <<" ms ";
-                                    // cout << ((float)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/n_connections << " us/syn" << endl; 
                                     
-                                    // cout << "Check iter: start" << endl;
-                                    // int iterations = 0;
-                                    // for (auto it = this->weights_delays.begin(); it != this->weights_delays.end();){
-                                    //     iterations++;
-                                    //     it++;
-                                    // }
-                                    // cout << "Check iter: done" << endl;
-
+                                    build_multithreaded();
                                 }
 
 
