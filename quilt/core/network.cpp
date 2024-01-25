@@ -8,12 +8,9 @@
 #include <string>
 #include <thread>
 
-
 using std::cout;
 using std::cerr;
 using std::endl;
-
-pcg32 random_utils::rng;
 
 Projection::Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension):
     weights(weights), delays(delays), start_dimension(start_dimension), end_dimension(end_dimension){
@@ -28,7 +25,8 @@ Projection::Projection(float ** weights, float ** delays, unsigned int start_dim
         }
     }
 }
-void SparseProjection::build_sector(sparse_t * sector, unsigned int sector_nconn, 
+void SparseProjection::build_sector(sparse_t * sector, ThreadLockedRNGDispatcher * rng_dispatch,
+                                    unsigned int sector_nconn, 
                                     unsigned int start_index_1, unsigned int end_index_1, 
                                     unsigned int start_index_2, unsigned int end_index_2){
     
@@ -41,6 +39,8 @@ void SparseProjection::build_sector(sparse_t * sector, unsigned int sector_nconn
     if (start_index_2 > end_index_2) throw std::runtime_error("SparseProjection::build : End index is before start index (afferent)");
 
     auto start = std::chrono::high_resolution_clock::now();
+    
+    ThreadLockedRNG * rng = rng_dispatch->get_rng();
 
     uint32_t i, j;  
     int checks = 0;
@@ -53,16 +53,17 @@ void SparseProjection::build_sector(sparse_t * sector, unsigned int sector_nconn
         is_empty = false;
         do{
             checks++;
-            i = start_index_1 + static_cast<int>(random_utils::rng()) % (end_index_1 - start_index_1);
-            j = start_index_2 + static_cast<int>(random_utils::rng()) % (end_index_2 - start_index_2);
+            i = start_index_1 + rng->get_int() % (end_index_1 - start_index_1);
+            j = start_index_2 + rng->get_int() % (end_index_2 - start_index_2);
             coordinates = std::make_pair(i,j);
             is_empty = ((*sector)[coordinates].first == 0)&&((*sector)[coordinates].second == 0);
         } while (!is_empty);
 
         // Insert weight and delay
-        (*sector)[coordinates] = this->get_weight_delay(i, j);
+        (*sector)[coordinates] = this->get_weight_delay(rng, i, j);
     }
     auto end = std::chrono::high_resolution_clock::now();
+    rng_dispatch->free();
     // cout << "SparseProjection::build_sector: took " << ((float)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/n_connections << " us/syn" << endl; 
     // cout << "SparseProjection::build_sector:  extra checks: " << checks - n_connections << endl;
 }
@@ -73,10 +74,13 @@ void SparseProjection::build_multithreaded(){
     weights_delays = std::vector<sparse_t>(n_threads);
     std::vector<std::thread> threads;
 
+    ThreadLockedRNGDispatcher rng_dispatcher(n_threads, 1997);
+
     for (int i=0; i < n_threads; i++){
         weights_delays[i].reserve(n_connections/n_threads);
         threads.emplace_back(&SparseProjection::build_sector, this , 
-                                    &(weights_delays[i]), n_connections/n_threads,
+                                    &(weights_delays[i]), &rng_dispatcher,
+                                    n_connections/n_threads,
                                     i*start_dimension/n_threads, (i+1)*start_dimension/n_threads,
                                     0, end_dimension-1);
     }
@@ -89,17 +93,12 @@ void SparseProjection::build_multithreaded(){
     // cout << "SparseProjection::build_multithreaded: Joined ALL" << endl;
 }
 
-const std::pair<float, float> SparseLognormProjection::get_weight_delay(unsigned int /*i*/, unsigned int /*j*/){
+const std::pair<float, float> SparseLognormProjection::get_weight_delay(ThreadLockedRNG* rng, int /*i*/, unsigned int /*j*/){
     double u;
     float new_weight, new_delay;
 
     try{
-        // Excludes u==1 from the results of rand
-        // because it's not in the domain of erf
-        do{
-            u = static_cast<double>(random_utils::rng()) / UINT32_MAX;
-        }while((u == 1.0)||(u==0));
-
+        u = rng->get_uniform();
         new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
     }catch (const boost::wrapexcept<std::overflow_error>& e){
         cerr << "overflow in erf_inv:" << endl;
@@ -109,12 +108,8 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(unsigned
         throw(e);
     }
     try{
-        // Excludes u==1 from the results of rand
-        // because it's not in the domain of erf
-        do{
-            u = static_cast<double>(random_utils::rng()) / UINT32_MAX;
-        }while((u == 1.0)||(u==0));
-    new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
+        u = rng->get_uniform();
+        new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
     }catch (const boost::wrapexcept<std::overflow_error>& e){
         cerr << "overflow:" << endl;
         cerr << "u: " << u <<endl;

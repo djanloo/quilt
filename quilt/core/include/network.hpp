@@ -1,6 +1,5 @@
 #pragma once
 #include "base_objects.hpp"
-#include "../pcg/include/pcg_random.hpp"
 
 // #include <iostream>
 // #include <vector>
@@ -29,10 +28,6 @@ class PopulationSpikeMonitor;
 class PopulationStateMonitor;
 class PopInjector;
 
-
-namespace random_utils{
-    extern pcg32 rng;
-};
 
 /**
  * @class Projection
@@ -92,28 +87,28 @@ class SparseProjection{
                         n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
                         // std::cout << "building SP with params "<< connectivity << " " << type << " "<< start_dimension << " "<< end_dimension << std::endl;
                     }  
-        virtual ~SparseProjection() = default;    
-        void build_sector(sparse_t *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+        virtual ~SparseProjection() = default;
+        void build_sector(sparse_t *, ThreadLockedRNGDispatcher *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
         void build_multithreaded();
 
-        virtual const std::pair<float, float> get_weight_delay(unsigned int /*i*/, unsigned int /*j*/){
+        virtual const std::pair<float, float> get_weight_delay(ThreadLockedRNG* /*rng*/, int /*i*/, unsigned int /*j*/){
             throw std::runtime_error("Using virtual get_weight_delay of sparse projection");
         }
 };
 
 class SparseLognormProjection : public SparseProjection{
     public:         
-        float weight_mu;                //!< Average weight
-        float weight_sigma;     //!< Weight variance
-        float delay_mu;                 //!< Average delay
-        float delay_sigma;      //!< Delay variance
+        float weight_mu;        //!< Average weight
+        float weight_sigma;     //!< Weight std
+        float delay_mu;         //!< Average delay
+        float delay_sigma;      //!< Delay std
 
         SparseLognormProjection(double connectivity, int type,
                                 unsigned int start_dimension, unsigned int end_dimension,
                                 float weight, float weight_delta,
                                 float delay, float delay_delta);
 
-        const std::pair<float, float> get_weight_delay(unsigned int i, unsigned int j) override;
+        const std::pair<float, float> get_weight_delay(ThreadLockedRNG* rng, int i, unsigned int j) override;
 };
 
 /**
