@@ -89,7 +89,8 @@ class SparseProjection{
                     connectivity(connectivity), type(type), start_dimension(start_dimension), end_dimension(end_dimension){
                         n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
                         // std::cout << "building SP with params "<< connectivity << " " << type << " "<< start_dimension << " "<< end_dimension << std::endl;
-                    }      
+                    }  
+        virtual ~SparseProjection() = default;    
         void build_sector(sparse_t *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
         void build_multithreaded();
 
@@ -138,6 +139,8 @@ class Population{
         NeuroParam * neuroparam;
         
         Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network);
+        ~Population();
+        
         void project(const Projection * projection, Population * efferent_population);
         void project(const SparseProjection * projection, Population * efferent_population);
 
@@ -159,9 +162,10 @@ class Population{
 class SpikingNetwork{
     public:
         std::vector<Population*> populations;
-        HierarchicalID * id;
+        HierarchicalID  id;
         unsigned int verbosity;
         SpikingNetwork();
+        ~SpikingNetwork();
 
         // Injectors (inputs)
         std::vector<PopInjector*> injectors;

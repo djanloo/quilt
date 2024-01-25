@@ -129,6 +129,7 @@ class Neuron{
         double last_spike_time;
 
         Neuron(Population * population); 
+        virtual ~Neuron() = default;
 
         /**The evolution function*/
         void evolve(EvolutionContext * evo);

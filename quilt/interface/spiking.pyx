@@ -7,7 +7,7 @@ Convention:
 """
 
 from time import time
-from libc.stdlib cimport malloc
+from libc.stdlib cimport malloc, free
 from libcpp.vector cimport vector
 
 import ctypes
@@ -64,6 +64,14 @@ cdef class Projection:
     @property
     def delays(self):
         return self.delays
+    
+    def __dealloc__(self):
+        if self._projection != NULL:
+            del self._projection
+        if self._weights != NULL:
+            free(self._weights)
+        if self._delays != NULL:
+            free(self._delays)
 
 cdef class SparseProjector():
 
@@ -109,7 +117,8 @@ cdef class SparseProjector():
         return self
 
     def __dealloc__(self):
-        del self._projection
+        if self._projection != NULL:
+            del self._projection
 
 cdef class Population:
 
@@ -190,8 +199,10 @@ cdef class SpikingNetwork:
         self._spiking_network.run(self._evo, time)
 
     def __dealloc__(self):
-        del self._spiking_network
-        del self._evo
+        if self._spiking_network != NULL:
+            del self._spiking_network
+        if self._evo != NULL:
+            del self._evo
 
 def set_verbosity(v):
     global VERBOSITY
