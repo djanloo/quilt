@@ -5,7 +5,9 @@ Linux
 -----
 
 .. code-block:: bash
-   
+   git clone https://github.com/djanloo/quilt.git
+   git submodule init
+   git submodule update
    sudo apt-install libbost-all-dev
    pip install - r requirements.txt
    make
