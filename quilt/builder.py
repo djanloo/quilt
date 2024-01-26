@@ -93,13 +93,13 @@ class SpikingNetwork:
                 try:
                     # Rescaling connections & weights
                     try:
-                        proj['features']['inh_fraction'] *= self.connectivity_rescale_factor
-                        proj['features']['weight_inh'] *= self.weight_rescale_factor
+                        proj['features']['connectivity'] *= self.connectivity_rescale_factor
+                        proj['features']['weight'] *= self.weight_rescale_factor
                     except KeyError:
                         pass
                     try:
-                        proj['features']['exc_fraction'] *= self.connectivity_rescale_factor
-                        proj['features']['weight_exc'] *= self.weight_rescale_factor
+                        proj['features']['connectivity'] *= self.connectivity_rescale_factor
+                        proj['features']['weight'] *= self.weight_rescale_factor
                     except KeyError:
                         pass
 
