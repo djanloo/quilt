@@ -8,6 +8,11 @@
 #include <string>
 #include <thread>
 
+#define MAX_N_1_THREADS 150
+#define MAX_N_2_THREADS 300
+#define MAX_N_3_THREADS 600
+#define MAX_N_4_THREADS 1000
+
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -202,46 +207,54 @@ void Population::project(const SparseProjection * projection, Population * effer
     }
 }
 
-/**
- * 
- * This function evolves a bunch of neurons, from <from> to <to>.
- * It must be thread safe.
- * 
-*/
-void Population::evolve_bunch(EvolutionContext * evo, unsigned int from, unsigned int to){
-    for (unsigned int i = from; i< to; i++){
-        this->neurons[i]->evolve(evo);
-    }
-}
-
 void Population::evolve(EvolutionContext * evo){
     auto start = std::chrono::high_resolution_clock::now();
 
     // Splits the work in equal parts using Nthreads threads
-    unsigned int n_threads = 4;
+    unsigned int n_threads;
 
-    std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
+    if (n_neurons < MAX_N_1_THREADS)        n_threads = 0;
+    else if (n_neurons < MAX_N_2_THREADS)   n_threads = 2;
+    else if (n_neurons < MAX_N_3_THREADS)   n_threads = 3;
+    else if (n_neurons < MAX_N_4_THREADS)   n_threads = 4;
+    else                                    n_threads = std::thread::hardware_concurrency();
 
-    for (unsigned int i = 0; i < n_threads; i++){
-        bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
-        bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
+    auto evolve_bunch = [this](EvolutionContext * evo, unsigned int from, unsigned int to){
+                            for (unsigned int i = from; i< to; i++){
+                                this->neurons[i]->evolve(evo);
+                            }
+                        };
+
+    // In case few neurons are present, do not use multithreading
+    // to avoid overhead
+    if (n_threads == 0){
+        evolve_bunch(evo, 0, n_neurons);
     }
+    else{// multithreading case begin
 
-    // Ensures that all neurons are covered
-    bunch_ends[3] = this->n_neurons-1;
+        std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
 
-    // Starts the threads
-    // NOTE: spawning threads costs roughly 10 us/thread
-    // it is a non-negligible overhead
-    std::vector<std::thread> evolver_threads(n_threads);
-    for (unsigned int i = 0; i < n_threads; i++){
-        evolver_threads[i] = std::thread(&Population::evolve_bunch, this, evo, bunch_starts[i], bunch_ends[i] );
-    }
+        for (unsigned int i = 0; i < n_threads; i++){
+            bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
+            bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
+        }
 
-    // Waits four threads
-    for (unsigned int i = 0; i < n_threads; i++){
-        evolver_threads[i].join();
-    }
+        // Ensures that all neurons are covered
+        bunch_ends[n_threads-1] = this->n_neurons-1;
+
+        // Starts the threads
+        // NOTE: spawning threads costs roughly 10 us/thread
+        // it is a non-negligible overhead
+        std::vector<std::thread> evolver_threads(n_threads);
+        for (unsigned int i = 0; i < n_threads; i++){
+            evolver_threads[i] = std::thread(evolve_bunch, evo, bunch_starts[i], bunch_ends[i] );
+        }
+
+        // Waits the threads
+        for (unsigned int i = 0; i < n_threads; i++){
+            evolver_threads[i].join();
+        }
+    } // multithreading case end
 
     auto end = std::chrono::high_resolution_clock::now();
     timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());

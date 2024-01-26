@@ -135,7 +135,6 @@ class Population{
         void project(const Projection * projection, Population * efferent_population);
         void project(const SparseProjection * projection, Population * efferent_population);
 
-        void evolve_bunch(EvolutionContext * evo, unsigned int from, unsigned int to);
         void evolve(EvolutionContext * evo);
 
         // Bureaucracy
