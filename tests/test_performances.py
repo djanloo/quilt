@@ -1,7 +1,7 @@
 from quilt.builder import SpikingNetwork, NeuronCatalogue
 
-nn = NeuronCatalogue.from_yaml("tests/basal_ganglia_neurons.yaml")
-sn = SpikingNetwork.from_yaml("tests/basal_ganglia_network.yaml", nn)
+nn = NeuronCatalogue.from_yaml("bg_analysis/basal_ganglia_neurons.yaml")
+sn = SpikingNetwork.from_yaml("bg_analysis/basal_ganglia_network.yaml", nn)
 
 sn.build()
 
