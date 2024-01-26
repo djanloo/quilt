@@ -113,8 +113,6 @@ void aeif_neuron::on_spike(EvolutionContext * /*evo*/){
     state[3] += p->ada_b;
 }
 
-
-
 aqif2_neuron::aqif2_neuron(Population * population): Neuron(population){
     nt = neuron_type::aqif2;
     aqif2_param * p = static_cast<aqif2_param*>(population->neuroparam);
@@ -136,6 +134,3 @@ void aqif2_neuron::on_spike(EvolutionContext * /*evo*/){
     state[0]  = p->V_reset;
     state[3] += p->ada_b;
 }
-
-// void poisson_neuron::
-
