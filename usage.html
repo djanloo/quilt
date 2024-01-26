@@ -168,14 +168,13 @@ Each population uses a model defined in a catalogue.</p>
 <p>The parameters of a projection between an efferent population of size <code class="docutils literal notranslate"><span class="pre">N</span></code> and an afferent population of size <code class="docutils literal notranslate"><span class="pre">M</span></code> are (see <a class="reference external" href="https://github.com/djanloo/quilt/issues/2">here</a>):</p>
 <blockquote>
 <div><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">exc_fraction</span></code>: fraction of excitatory links over total (<code class="docutils literal notranslate"><span class="pre">N</span></code> * <code class="docutils literal notranslate"><span class="pre">M</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">inh_fraction</span></code>: fraction of inhibitory links over total (<code class="docutils literal notranslate"><span class="pre">N</span></code> * <code class="docutils literal notranslate"><span class="pre">M</span></code>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">min_delay</span></code>: minimum value of delay (uniformly distributed)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">max_delay</span></code>: maximum value of delay (uniformly distributed)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">min_inh</span></code>: minimum value of inhibitory weight (uniformly distributed)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">max_inh</span></code>: maximum value of inhibitory weight (uniformly distributed)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">min_exc</span></code>: minimum value of excitatory weight (uniformly distributed)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">max_exc</span></code>: maximum value of excitatory weight (uniformly distributed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">connectivity</span></code>: fraction of links over total (<code class="docutils literal notranslate"><span class="pre">N</span></code> * <code class="docutils literal notranslate"><span class="pre">M</span></code>).
+It’s the probability that neuron <code class="docutils literal notranslate"><span class="pre">i</span></code> of the efferent population will be linked to neuron <code class="docutils literal notranslate"><span class="pre">j</span></code> of the afferent population.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delay</span></code>: central value of delay (lognorm distributed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delay_delta</span></code>: standard deviation of delay (lognorm distributed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight</span></code>: central value of weight (lognorm distributed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight_delta</span></code>: standard deviation of weight (lognorm distributed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: <code class="docutils literal notranslate"><span class="pre">inh</span></code> or <code class="docutils literal notranslate"><span class="pre">exc</span></code></p></li>
 </ul>
 </div></blockquote>
 <p>To build a spiking network:</p>
