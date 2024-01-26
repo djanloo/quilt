@@ -85,14 +85,13 @@ Each population uses a model defined in a catalogue.
 
 The parameters of a projection between an efferent population of size ``N`` and an afferent population of size ``M`` are (see `here <https://github.com/djanloo/quilt/issues/2>`_):
 
-  - ``exc_fraction``: fraction of excitatory links over total (``N`` * ``M``)
-  - ``inh_fraction``: fraction of inhibitory links over total (``N`` * ``M``)
-  - ``min_delay``: minimum value of delay (uniformly distributed)
-  - ``max_delay``: maximum value of delay (uniformly distributed)
-  - ``min_inh``: minimum value of inhibitory weight (uniformly distributed)
-  - ``max_inh``: maximum value of inhibitory weight (uniformly distributed)
-  - ``min_exc``: minimum value of excitatory weight (uniformly distributed)
-  - ``max_exc``: maximum value of excitatory weight (uniformly distributed)
+  - ``connectivity``: fraction of links over total (``N`` * ``M``). 
+    It's the probability that neuron ``i`` of the efferent population will be linked to neuron ``j`` of the afferent population.
+  - ``delay``: central value of delay (lognorm distributed)
+  - ``delay_delta``: standard deviation of delay (lognorm distributed)
+  - ``weight``: central value of weight (lognorm distributed)
+  - ``weight_delta``: standard deviation of weight (lognorm distributed)
+  - ``type``: ``inh`` or ``exc``
 
 
 To build a spiking network:
