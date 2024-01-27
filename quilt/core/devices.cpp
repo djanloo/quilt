@@ -45,8 +45,9 @@ PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weigh
     }else{
         this->t_max = t_max;
     }
-
 };
+
+// std::ofstream PoissonSpikeSource::outfile = std::ofstream("spikes.txt");
 
 void PoissonSpikeSource::inject(EvolutionContext * evo){
     float delta;
@@ -55,8 +56,9 @@ void PoissonSpikeSource::inject(EvolutionContext * evo){
 
     if (evo->now > this->t_max){return;}
 
+    // std::cout << "Generating spikes" << std::endl;
     for (int i = 0; i < pop->n_neurons; i++){
-
+        
         while (next_spike_times[i] < evo->now + evo->dt){ // If the last emitted spike was received, emit a new one
 
             // std::cout << "t: "<<evo->now<<  " <--> Adding poisson spike at neuron " << i << " of pop " << pop->id.get_id();
@@ -71,9 +73,11 @@ void PoissonSpikeSource::inject(EvolutionContext * evo){
 
             next_spike_times[i] += delta;
             // std::cout << " -- next t: " << next_spike_times[i] << std::endl;
-            
+            // outfile << pop->id.get_id() << " " << i << " " << next_spike_times[i] << std::endl;
+            if (next_spike_times[i] < evo->now) {std::cerr << "Spike produced in past" << std::endl;}
             pop->neurons[i]->incoming_spikes.emplace(this->weight, next_spike_times[i]);
         }
     }
+    // std::cout << "Done generating spikes" << std::endl;
     // std::cout << "AVG delta T: "<< avg_delta/generated_spikes << std::endl;
 }

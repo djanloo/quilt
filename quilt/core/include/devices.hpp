@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <fstream>
 #include <variant>
 #include <vector>
 
@@ -86,5 +87,6 @@ class PoissonSpikeSource: public PopInjector{
         float rate;
         float weight;
         double t_min, t_max;
+        // static std::ofstream outfile;
         std::vector<double> next_spike_times;
 };      

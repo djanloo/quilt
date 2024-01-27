@@ -127,6 +127,58 @@ void test_spiking()
     }
 }
 
+void test_poisson(){
+    int Na = 5;
+    int Nb = 5;
+
+    SpikingNetwork sn = SpikingNetwork();
+
+
+    map<string, float> map_of_params = {{"neuron_type", (float)neuron_type::aeif},
+                                        {"C_m", 40.1},
+                                        {"G_L",2.0},
+                                        {"E_l", -70.0},
+                                        {"V_reset", -55.0},
+                                        {"V_peak",0.1},
+                                        {"tau_refrac",0.0},
+                                        {"delta_T",1.7},
+                                        {"V_th", -40.0},
+                                        {"ada_a", 0.0},
+                                        {"ada_b",5.0},
+                                        {"ada_tau_w",100.0},
+                                        {"tau_ex", 10.},
+                                        {"tau_in", 5.5},
+                                        {"E_ex", 0.0},
+                                        {"E_in",-65}
+                                        };
+
+    ParaMap paramap = ParaMap(map_of_params);
+    
+    Population a = Population(Na, &paramap, &sn);
+    Population b = Population(Nb, &paramap, &sn);
+
+    SparseLognormProjection btoa(0.05, 0, 
+                                Nb, Na, 
+                                1.2, 0.0, 
+                                1.5, 0.0 );
+
+    SparseLognormProjection atob(0.05, 0, 
+                                Na, Nb, 
+                                3, 1, 
+                                3, 1 );
+    a.project(&atob, &b);
+    b.project(&btoa, &a);
+
+    PoissonSpikeSource stimulus_a = PoissonSpikeSource(&a, 6000, 10.0, 0.1, -0.1);
+    PoissonSpikeSource stimulus_b = PoissonSpikeSource(&b, 6000, 10.0, 0.1, -0.1);
+
+    sn.add_injector(&stimulus_a);
+    sn.add_injector(&stimulus_b);
+
+    EvolutionContext evo = EvolutionContext(0.1);
+    sn.run(&evo, 5000);
+}
+
 void test_oscill(){
 
     int N = 4;
@@ -242,6 +294,6 @@ void test_erf_overflow(){
 
 int main(){
     // test_sparse();
-    test_spiking();
+    test_poisson();
 }
 
