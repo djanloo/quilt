@@ -69,19 +69,21 @@ Each population uses a model defined in a catalogue.
         efferent: GPi
         afferent: STR1
         features:
-            exc_fraction:     0.1
-            weight_exc:       0.5
-            weight_exc_delta: 0.05
-            delay:            1.1
-            delay_delta:      0.1
+            connectivity: 0.1
+            weight:       0.5
+            weight_delta: 0.05
+            delay:        1.1
+            delay_delta:  0.1
+            type:         exc
 
       - name: STR1->GPi
         efferent: STR1
         afferent: GPi
         features:
-            inh_fraction: 0.1
-            weight_inh: 0.03
-            weight_inh_delta: 0.001
+            connectivity: 0.1
+            weight:       0.03
+            weight_delta: 0.001
+            type:         inh
 
 The parameters of a projection between an efferent population of size ``N`` and an afferent population of size ``M`` are (see `here <https://github.com/djanloo/quilt/issues/2>`_):
 
@@ -114,7 +116,10 @@ I/O and running
 .. code-block:: python
 
     # Adds a 25 pA current from t=10ms to t=20ms
-    spikenet.add_injector(25.0, 10, 20)
+    spikenet.populations["STR1"].add_injector(25.0, 10, 20)
+
+    # Adds an excitatory poisson injector with rate 500 Hz and weight 0.1
+    sn.populations["GPi"].add_poisson_spike_injector(500, 0.1)
 
     # Saves spikes
     spikenet.populations["STR1"].monitorize_spikes()
