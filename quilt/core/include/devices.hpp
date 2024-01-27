@@ -74,9 +74,7 @@ class PopCurrentInjector: public PopInjector{
  * @class PoissonSpikeSource
  * @brief Source of poisson-distributed spikes
  * 
- * Note: a maximum of one spike per timestep can be generated for now.
- * This means that the cutoff frequency is timestep dependent and is equal to
- * @f$ \nu_{max} = \frac{1}{dt} @f$, e.g. for @f$ dt = 0.1@f$ms the maximum frequency is 10 kHz.
+ * For now only one-to-one connection is implemented
 */
 class PoissonSpikeSource: public PopInjector{
     public:
