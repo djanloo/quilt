@@ -150,19 +150,21 @@ Each population uses a model defined in a catalogue.</p>
 <span class="w">    </span><span class="nt">efferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GPi</span>
 <span class="w">    </span><span class="nt">afferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1</span>
 <span class="w">    </span><span class="nt">features</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">exc_fraction</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
-<span class="w">        </span><span class="nt">weight_exc</span><span class="p">:</span><span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
-<span class="w">        </span><span class="nt">weight_exc_delta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
-<span class="w">        </span><span class="nt">delay</span><span class="p">:</span><span class="w">            </span><span class="l l-Scalar l-Scalar-Plain">1.1</span>
-<span class="w">        </span><span class="nt">delay_delta</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">        </span><span class="nt">connectivity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">        </span><span class="nt">weight</span><span class="p">:</span><span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">0.5</span>
+<span class="w">        </span><span class="nt">weight_delta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<span class="w">        </span><span class="nt">delay</span><span class="p">:</span><span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">1.1</span>
+<span class="w">        </span><span class="nt">delay_delta</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w">         </span><span class="l l-Scalar l-Scalar-Plain">exc</span>
 
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1-&gt;GPi</span>
 <span class="w">    </span><span class="nt">efferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">STR1</span>
 <span class="w">    </span><span class="nt">afferent</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">GPi</span>
 <span class="w">    </span><span class="nt">features</span><span class="p">:</span>
-<span class="w">        </span><span class="nt">inh_fraction</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
-<span class="w">        </span><span class="nt">weight_inh</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.03</span>
-<span class="w">        </span><span class="nt">weight_inh_delta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span>
+<span class="w">        </span><span class="nt">connectivity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.1</span>
+<span class="w">        </span><span class="nt">weight</span><span class="p">:</span><span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">0.03</span>
+<span class="w">        </span><span class="nt">weight_delta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span>
+<span class="w">        </span><span class="nt">type</span><span class="p">:</span><span class="w">         </span><span class="l l-Scalar l-Scalar-Plain">inh</span>
 </pre></div>
 </div>
 <p>The parameters of a projection between an efferent population of size <code class="docutils literal notranslate"><span class="pre">N</span></code> and an afferent population of size <code class="docutils literal notranslate"><span class="pre">M</span></code> are (see <a class="reference external" href="https://github.com/djanloo/quilt/issues/2">here</a>):</p>
@@ -192,7 +194,10 @@ It’s the probability that neuron <code class="docutils literal notranslate"><s
 <section id="i-o-and-running">
 <h4>I/O and running<a class="headerlink" href="#i-o-and-running" title="Link to this heading"></a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Adds a 25 pA current from t=10ms to t=20ms</span>
-<span class="n">spikenet</span><span class="o">.</span><span class="n">add_injector</span><span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="n">spikenet</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="s2">&quot;STR1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_injector</span><span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># Adds an excitatory poisson injector with rate 500 Hz and weight 0.1</span>
+<span class="n">sn</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="s2">&quot;GPi&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_poisson_spike_injector</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
 
 <span class="c1"># Saves spikes</span>
 <span class="n">spikenet</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="s2">&quot;STR1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">monitorize_spikes</span><span class="p">()</span>
