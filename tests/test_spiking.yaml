@@ -1,21 +1,20 @@
 populations:
-  - name: Albert
+  Albert:
     size: 50
     neuron_model: dummy_aeif
-  - name: MonaLisa
+  MonaLisa:
     size: 50
     neuron_model: dummy_aqif
 
 projections:
-  - name: Albert->MonaLisa 
-    features:
-      connectivity: 0.1
-      weight: 0.5
-      delay: 0.1001
-      type:    exc
-  - name: MonaLisa->Albert
-    features:
-      connectivity: 0.1
-      weight: 0.03
-      delay:  0.2
-      type:   exc
+  Albert->MonaLisa:
+    connectivity: 0.1
+    weight: 0.5
+    delay: 0.1001
+    type:    exc
+
+  MonaLisa->Albert:
+    connectivity: 0.1
+    weight: 0.03
+    delay:  0.2
+    type:   exc

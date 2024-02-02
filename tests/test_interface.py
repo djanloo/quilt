@@ -27,18 +27,18 @@ def test_yaml_builder():
 def test_run():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
-    spikenet.run(dt=0.1, time=10)
+    spikenet.run(dt=0.1, time=3)
 
 def test_neurons():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NEURONS, test_catalogue)
-    spikenet.run(dt=0.1, time=10)
+    spikenet.run(dt=0.1, time=3)
 
 def test_delay_control():
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
     try:
-        spikenet.run(dt=2.0, time=10)
+        spikenet.run(dt=2.0, time=3)
     except RuntimeError:
         print("This thest successfully failed.")
     else:
@@ -83,6 +83,7 @@ def test_parametric_sn():
 
 if __name__=="__main__":
     test_parametric_sn()
+    # test_run()
     exit()
     # import numpy as np
     import matplotlib.pyplot as plt 
