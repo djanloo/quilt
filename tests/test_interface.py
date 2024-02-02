@@ -3,6 +3,7 @@ from quilt.builder import SpikingNetwork, NeuronCatalogue
 TEST_NET="tests/test_spiking.yaml"
 TEST_NEURONS = "tests/test_neurons.yaml"
 TEST_PARAMS = "tests/test_params.yaml"
+TEST_SUCEPTIBILITY = "tests/test_susceptibility.yaml"
 
 """Parameters and models"""
 def test_paramaps():
@@ -74,8 +75,14 @@ def test_poisson_spike_injector():
     spikenet.populations["Albert"].add_poisson_spike_injector(250, 0.3)
     spikenet.run(dt=0.1, time=1)
 
+def test_parametric_sn():
+    from quilt.builder import ParametricSpikingNetwork
+    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
+    sn = ParametricSpikingNetwork.from_yaml(TEST_NET, TEST_SUCEPTIBILITY, test_catalogue)
+    sn.build(alpha=0.1)
+
 if __name__=="__main__":
-    test_poisson_spike_injector()
+    test_parametric_sn()
     exit()
     # import numpy as np
     import matplotlib.pyplot as plt 

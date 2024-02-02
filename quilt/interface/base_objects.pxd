@@ -6,3 +6,4 @@ cdef class ParaMap:
         cinter.ParaMap * _paramap
         bool is_neuron_paramap
         bool is_oscillator_paramap
+        dict params_dict, converted_params_dict
