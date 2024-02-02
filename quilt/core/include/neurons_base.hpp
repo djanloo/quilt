@@ -1,6 +1,6 @@
 /**
  * @file neurons_base.h
- * @brief Dichiarazione degli oggetti di base..
+ * @brief Base-level neural dynamics (spikes, spike porcessing and generation, population parameters)
  */
 #pragma once
 #include "base_objects.hpp"
@@ -166,7 +166,7 @@ class NeuroParam{
         float V_reset;  //!< Reset potential [mV]
         float V_peak;   //!< Spike-emission threshold [mV]
         float E_ex;     //!< Excitatory synaptic potential [mV]
-        float E_in;    //!< Inhibitory synaptic potential [mV]
+        float E_in;     //!< Inhibitory synaptic potential [mV]
 
         float C_m;      //!< Membrane potential [pF]
 
@@ -174,7 +174,7 @@ class NeuroParam{
         float tau_in;   //!< Inhibitory synapse decay time [ms]
         float tau_refrac;   //!< Refractory time
         
-        float I_e;    //!< External current (constant) amplitude [nA]
+        float I_e;      //!< External current (constant) amplitude [nA]
         float I_osc;    //!< External current (oscillatory) amplitude [nA]
         float omega_I;  //!< External current (oscillatory) angular frequency [rad/s]
         

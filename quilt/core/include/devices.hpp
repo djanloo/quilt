@@ -82,6 +82,10 @@ class PoissonSpikeSource: public PopInjector{
         PoissonSpikeSource( Population * pop,
                             float rate, float weight, 
                             double t_min, double t_max);
+        /**
+         * Generates spikes until a spike is generated in another time bin to prevent the spike queue from being uselessly too much long.
+         * 
+        */
         void inject(EvolutionContext * evo) override;
     private:
         float rate;

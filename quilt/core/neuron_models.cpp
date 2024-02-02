@@ -82,9 +82,6 @@ aeif_neuron::aeif_neuron(Population * population): Neuron(population){
 
 void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
     aeif_param * p = static_cast<aeif_param*>(population->neuroparam);
-
-    // if(p->delta_T > 0){dxdt[0] = 0;}
-    // if(p->V_th > 0){dxdt[0] = 0;}
     
     if (t > last_spike_time + p->tau_refrac){
         dxdt[0] = 1.0/p->C_m * (\
