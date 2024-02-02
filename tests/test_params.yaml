@@ -27,7 +27,7 @@ dummy_aeif:
 
   E_l: -70.0
   V_reset: -55.0
-  V_peak: 0.0
+  V_peak: 0.5
   tau_refrac: 0.0
 
   # Exp pars

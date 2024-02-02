@@ -1,0 +1,14 @@
+parameters:
+  - name: alpha
+    min: 0
+    max: 1
+    shift: 0.8
+
+parametric:
+  alpha:
+    - population: Albert
+      attribute: V_peak
+      susceptibility: 0.5
+    - projection: Albert->MonaLisa
+      attribute: weight
+      susceptibility: -0.8
