@@ -76,11 +76,12 @@ class SpikingNetwork:
         self.populations = dict()
         
         for pop in self.features_dict['populations']:
-            paramap = self.neuron_catalogue[pop['neuron_model']]
+            features = self.features_dict['populations'][pop]
+            paramap = self.neuron_catalogue[features['neuron_model']]
             try:
-                self.populations[pop['name']] = spiking.Population( int(self.population_rescale * pop['size']), paramap, self._interface )
+                self.populations[pop] = spiking.Population( int(self.population_rescale * features['size']), paramap, self._interface )
             except IndexError as e:
-                message = f"While building population {pop['name']} an error was raised:\n\t"
+                message = f"While building population {pop} an error was raised:\n\t"
                 message += str(e)
                 raise IndexError(message)
         start = time()
@@ -90,30 +91,31 @@ class SpikingNetwork:
             else:
                 iter = self.features_dict['projections']
             for proj in iter:
+                features = self.features_dict['projections'][proj]
                 try:
                     # Rescaling connections & weights
                     try:
-                        proj['features']['connectivity'] *= self.connectivity_rescale_factor
-                        proj['features']['weight'] *= self.weight_rescale_factor
+                        features['connectivity'] *= self.connectivity_rescale_factor
+                        features['weight'] *= self.weight_rescale_factor
                     except KeyError:
                         pass
                     try:
-                        proj['features']['connectivity'] *= self.connectivity_rescale_factor
-                        proj['features']['weight'] *= self.weight_rescale_factor
+                        features['connectivity'] *= self.connectivity_rescale_factor
+                        features['weight'] *= self.weight_rescale_factor
                     except KeyError:
                         pass
 
                     # Rescaling delays
                     try:
-                        proj['features']['delay'] *= self.delay_rescale_factor
+                        features['delay'] *= self.delay_rescale_factor
                     except KeyError:
                         pass
 
                     # Builds the projector
-                    projector = spiking.SparseProjector(proj['features'], dist_type="lognorm")
+                    projector = spiking.SparseProjector(features, dist_type="lognorm")
                 except ValueError as e:
                     raise ValueError(f"Some value was wrong during projection {efferent}->{afferent}")
-                efferent, afferent = proj['name'].split("->")
+                efferent, afferent = proj.split("->")
                 efferent, afferent = efferent.strip(), afferent.strip()
                 
                 if efferent not in self.populations.keys():
@@ -158,14 +160,16 @@ class ParametricSpikingNetwork(SpikingNetwork):
         self.params_shift = dict()
 
         # Initializes all possible parameters to zero
-        for parameter_description in self.susceptibility_dict['parameters']:
-            # Initilaizes to 'shift' value to have zero driving force
-            self.params_value[parameter_description['name']] = parameter_description['shift']
-            self.params_shift[parameter_description['name']] = parameter_description['shift']
-            self.params_range[parameter_description['name']] = [parameter_description['min'], parameter_description['max']]
+        for param_name in self.susceptibility_dict['parameters']:
 
-            print(f"initialized parameter {parameter_description['name']} with value {self.params_value[parameter_description['name']]} "+
-                  f"and range {self.params_range[parameter_description['name']]}")
+            # Initilaizes to 'shift' value to have zero driving force
+            self.params_value[param_name] = self.susceptibility_dict['parameters'][param_name]['shift']
+            self.params_shift[param_name] = self.susceptibility_dict['parameters'][param_name]['shift']
+            self.params_range[param_name] = [self.susceptibility_dict['parameters'][param_name]['min'],
+                                            self.susceptibility_dict['parameters'][param_name]['max']]
+
+            # print(f"initialized parameter {param_name} with value {self.params_value[param_name]} "+
+                #   f"and range {self.params_range[param_name]}")
 
         # Checks that specified params are contained in possible params
         for param in params.keys():
@@ -178,7 +182,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
 
         for param in self.params_value:
             for object in self.susceptibility_dict['parametric'][param]:
-                print(f"Parametrizing {object}")
+                # print(f"Parametrizing {object}")
 
                 attribute = object['attribute']
                 chi = object['susceptibility']
@@ -187,35 +191,24 @@ class ParametricSpikingNetwork(SpikingNetwork):
                 if "population" in object:
                     pop = object['population']
 
+                    if pop not in self.features_dict['populations']:
+                        raise KeyError(f"Population {pop} not found in network")
+                    
                     is_pop_attr = False
                     is_neuron_attr = False
 
-                    is_population_present = False
-                    for available_population in self.features_dict['populations']:
-                            if available_population['name'] == pop:
-                                is_population_present = True
-
-                    if not is_population_present:
-                            raise KeyError(f"Population '{pop}' was not found in the network.")
-                        
                     # Check if is a direct population attribute (size)
                     # I know it's uselessly too general, it's just in case I have add some pop attributes
                     try:
-                        for available_population in self.features_dict['populations']:
-                            if available_population['name'] == pop:
-                                base_value = available_population[attribute]
-                                available_population[attribute] = base_value + parametric_delta
-                                print(f"changed {base_value} to {available_population[attribute]}")
+                        base_value = self.features_dict['populations'][pop][attribute]
+                        self.features_dict['populations'][pop][attribute] = base_value + parametric_delta
                         is_pop_attr = True
                     except KeyError as error:
-                        print(error)
                         is_pop_attr = False
 
                     # Check if is a neuron attribute
                     try:
-                        for available_population in self.features_dict['populations']:
-                            if available_population['name'] == pop:
-                                neuron_model = available_population['neuron_model']
+                        neuron_model = self.features_dict['populations'][pop]['neuron_model']
                         base_value = self.neuron_catalogue.neurons_dict[neuron_model][attribute]
                         self.neuron_catalogue.update(neuron_model, attribute, base_value + parametric_delta)
                         is_neuron_attr = True
@@ -228,7 +221,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
                 elif "projection" in object:
                     proj = object['projection']
                     try:
-                        proj_attributes =  self.features_dict['projections'][proj]
+                        _ =  self.features_dict['projections'][proj]
                     except KeyError as e:
                         raise KeyError(f"Projection '{proj}' was not found in {list(self.features_dict['projections'].keys())}")
 
