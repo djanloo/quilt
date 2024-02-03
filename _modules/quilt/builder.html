@@ -79,6 +79,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">time</span> <span class="kn">import</span> <span class="n">time</span>
 <span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">import</span> <span class="nn">yaml</span>
 <span class="kn">from</span> <span class="nn">rich</span> <span class="kn">import</span> <span class="nb">print</span>
@@ -93,12 +94,49 @@
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_built</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">population_rescale_factor</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_rescale_factor</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">weight_rescale_factor</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">delay_rescale_factor</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spike_monitored_pops</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_monitored_pops</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 
+<div class="viewcode-block" id="SpikingNetwork.monitorize_spikes">
+<a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.monitorize_spikes">[docs]</a>
+    <span class="k">def</span> <span class="nf">monitorize_spikes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_built</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Adding monitors after building the network will trigger another rebuild&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Monitors are built after populations</span>
+        <span class="c1"># This is needed for rebuilding</span>
+        <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">spike_monitored_pops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_monitored_pops</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">populations</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SpikingNetwork.monitorize_states">
+<a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.monitorize_states">[docs]</a>
+    <span class="k">def</span> <span class="nf">monitorize_states</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">populations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_built</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Adding monitors after building the network will trigger another rebuild&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">is_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># Monitors are built after populations</span>
+        <span class="c1"># This is needed for rebuilding</span>
+        <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">state_monitored_pops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_monitored_pops</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">populations</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span> <span class="nf">_build_monitors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_monitored_pops</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span><span class="o">.</span><span class="n">monitorize_spikes</span><span class="p">()</span>
+        
+        <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_monitored_pops</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span><span class="o">.</span><span class="n">monitorize_states</span><span class="p">()</span>
+
+    
 <div class="viewcode-block" id="SpikingNetwork.run">
 <a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.run">[docs]</a>
     <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -106,30 +144,6 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_built</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="SpikingNetwork.rescale_populations">
-<a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.rescale_populations">[docs]</a>
-    <span class="k">def</span> <span class="nf">rescale_populations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">population_rescale_factor</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">population_rescale</span> <span class="o">=</span> <span class="n">population_rescale_factor</span></div>
-
-    
-<div class="viewcode-block" id="SpikingNetwork.rescale_connectivity">
-<a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.rescale_connectivity">[docs]</a>
-    <span class="k">def</span> <span class="nf">rescale_connectivity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">connectivity_rescale_factor</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_rescale_factor</span> <span class="o">=</span> <span class="n">connectivity_rescale_factor</span></div>
-
-    
-<div class="viewcode-block" id="SpikingNetwork.rescale_weights">
-<a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.rescale_weights">[docs]</a>
-    <span class="k">def</span> <span class="nf">rescale_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">weight_rescale_factor</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">weight_rescale_factor</span> <span class="o">=</span> <span class="n">weight_rescale_factor</span></div>
-
-
-<div class="viewcode-block" id="SpikingNetwork.rescale_delays">
-<a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.rescale_delays">[docs]</a>
-    <span class="k">def</span> <span class="nf">rescale_delays</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">delay_rescale_factor</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">delay_rescale_factor</span> <span class="o">=</span> <span class="n">delay_rescale_factor</span></div>
 
 
     <span class="nd">@property</span>
@@ -156,18 +170,28 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">features_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 
-        <span class="n">net</span><span class="o">.</span><span class="n">population_rescale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="s2">&quot;population_rescale_factor&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span> <span class="k">else</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s2">&quot;population_rescale_factor&quot;</span><span class="p">]</span>
-        <span class="n">net</span><span class="o">.</span><span class="n">connection_rescale</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="k">if</span> <span class="s2">&quot;connection_rescale_factor&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span> <span class="k">else</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s2">&quot;connection_rescale_factor&quot;</span><span class="p">]</span>
-
         <span class="k">return</span> <span class="n">net</span></div>
+
+    
+<div class="viewcode-block" id="SpikingNetwork.refresh_all">
+<a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.refresh_all">[docs]</a>
+    <span class="k">def</span> <span class="nf">refresh_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Destroys and rebuilds C++ network</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">:</span>
+                <span class="k">del</span> <span class="n">pop</span></div>
 
     
 
 <div class="viewcode-block" id="SpikingNetwork.build">
 <a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.build">[docs]</a>
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">refresh_all</span><span class="p">()</span>
+    
         <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">SpikingNetwork</span><span class="p">(</span><span class="s2">&quot;05535&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">progress_bar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -178,16 +202,19 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         
-        <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">]:</span>
-            <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">][</span><span class="n">pop</span><span class="p">]</span>
-            <span class="n">paramap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neuron_catalogue</span><span class="p">[</span><span class="n">features</span><span class="p">[</span><span class="s1">&#39;neuron_model&#39;</span><span class="p">]]</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">population_rescale</span> <span class="o">*</span> <span class="n">features</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">]),</span> <span class="n">paramap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="p">)</span>
-            <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;While building population </span><span class="si">{</span><span class="n">pop</span><span class="si">}</span><span class="s2"> an error was raised:</span><span class="se">\n\t</span><span class="s2">&quot;</span>
-                <span class="n">message</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
-        <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+        <span class="c1"># Builds populations</span>
+        <span class="k">if</span> <span class="s2">&quot;populations&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">pop</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">]:</span>
+                <span class="n">features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">][</span><span class="n">pop</span><span class="p">]</span>
+                <span class="n">paramap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">neuron_catalogue</span><span class="p">[</span><span class="n">features</span><span class="p">[</span><span class="s1">&#39;neuron_model&#39;</span><span class="p">]]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">pop</span><span class="p">]</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">Population</span><span class="p">(</span> <span class="n">features</span><span class="p">[</span><span class="s1">&#39;size&#39;</span><span class="p">],</span> <span class="n">paramap</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="p">)</span>
+                <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">message</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;While building population </span><span class="si">{</span><span class="n">pop</span><span class="si">}</span><span class="s2"> an error was raised:</span><span class="se">\n\t</span><span class="s2">&quot;</span>
+                    <span class="n">message</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+            
+        <span class="c1"># Builds projections</span>
         <span class="k">if</span> <span class="s2">&quot;projections&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;projections&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">progress_bar</span><span class="p">:</span>
                 <span class="nb">iter</span> <span class="o">=</span> <span class="n">track</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;projections&#39;</span><span class="p">],</span> <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Building connections..&quot;</span><span class="p">)</span>
@@ -205,34 +232,44 @@
                     <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In projection </span><span class="si">{</span><span class="n">efferent</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">afferent</span><span class="si">}</span><span class="s2">: &lt;</span><span class="si">{</span><span class="n">afferent</span><span class="si">}</span><span class="s2">&gt; was not defined&quot;</span><span class="p">)</span>
 
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="c1"># Rescaling connections &amp; weights</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">features</span><span class="p">[</span><span class="s1">&#39;connectivity&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_rescale_factor</span>
-                        <span class="n">features</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_rescale_factor</span>
-                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                        <span class="k">pass</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">features</span><span class="p">[</span><span class="s1">&#39;connectivity&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connectivity_rescale_factor</span>
-                        <span class="n">features</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_rescale_factor</span>
-                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                        <span class="k">pass</span>
-
-                    <span class="c1"># Rescaling delays</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">features</span><span class="p">[</span><span class="s1">&#39;delay&#39;</span><span class="p">]</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delay_rescale_factor</span>
-                    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                        <span class="k">pass</span>
-
                     <span class="c1"># Builds the projector</span>
                     <span class="n">projector</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">SparseProjector</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">dist_type</span><span class="o">=</span><span class="s2">&quot;lognorm&quot;</span><span class="p">)</span>
-                    
                 <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Some value was wrong during projection </span><span class="si">{</span><span class="n">efferent</span><span class="si">}</span><span class="s2">-&gt;</span><span class="si">{</span><span class="n">afferent</span><span class="si">}</span><span class="s2">:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 
                 <span class="n">efferent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">efferent</span><span class="p">]</span>
                 <span class="n">afferent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">afferent</span><span class="p">]</span>
                 <span class="n">efferent</span><span class="o">.</span><span class="n">project</span><span class="p">(</span><span class="n">projector</span><span class="o">.</span><span class="n">get_projection</span><span class="p">(</span><span class="n">efferent</span><span class="p">,</span> <span class="n">afferent</span><span class="p">),</span> <span class="n">afferent</span><span class="p">)</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>            
+
+        <span class="c1"># Builds external devices</span>
+        <span class="k">if</span> <span class="s2">&quot;devices&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;devices&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">device_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;devices&#39;</span><span class="p">]:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">hierarchical_level</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="n">device_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error while building device from yaml (format error?): </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="n">device_features</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;devices&#39;</span><span class="p">][</span><span class="n">device_name</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">hierarchical_level</span> <span class="o">==</span> <span class="s2">&quot;pop&quot;</span><span class="p">:</span>
+                    <span class="k">match</span> <span class="n">device_features</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]:</span>
+                        <span class="k">case</span> <span class="s2">&quot;poisson_spike_source&quot;</span><span class="p">:</span>
+
+                            <span class="n">t_min</span> <span class="o">=</span> <span class="n">device_features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;t_min&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                            <span class="n">t_max</span> <span class="o">=</span> <span class="n">device_features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;t_max&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+                            <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">add_poisson_spike_injector</span><span class="p">(</span><span class="n">device_features</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">],</span> <span class="n">device_features</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">],</span> <span class="n">t_min</span><span class="o">=</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="o">=</span><span class="n">t_max</span><span class="p">)</span>
+                        <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
+                            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device of type &#39;</span><span class="si">{</span><span class="n">device_features</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; is not implemented&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device at hierarchical level &#39;</span><span class="si">{</span><span class="n">hierarchical_level</span><span class="si">}</span><span class="s2">&#39; is not implemented&quot;</span><span class="p">)</span>
+                        
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No devices found&quot;</span><span class="p">)</span>
+
+
+        <span class="c1"># Adds back the monitors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_monitors</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_built</span> <span class="o">=</span> <span class="kc">True</span></div>
 </div>
 

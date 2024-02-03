@@ -63,10 +63,9 @@
 <li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.build"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.build()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.from_yaml"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.from_yaml()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.interface"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.interface</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.rescale_connectivity"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.rescale_connectivity()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.rescale_delays"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.rescale_delays()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.rescale_populations"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.rescale_populations()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.rescale_weights"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.rescale_weights()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.monitorize_spikes"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.monitorize_spikes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.monitorize_states"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.monitorize_states()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.refresh_all"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.refresh_all()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.run"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.run()</span></code></a></li>
 </ul>
 </li>
@@ -154,23 +153,18 @@
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.rescale_connectivity">
-<span class="sig-name descname"><span class="pre">rescale_connectivity</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity_rescale_factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.rescale_connectivity"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.rescale_connectivity" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.monitorize_spikes">
+<span class="sig-name descname"><span class="pre">monitorize_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.monitorize_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.monitorize_spikes" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.rescale_delays">
-<span class="sig-name descname"><span class="pre">rescale_delays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delay_rescale_factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.rescale_delays"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.rescale_delays" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.monitorize_states">
+<span class="sig-name descname"><span class="pre">monitorize_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.monitorize_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.monitorize_states" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.rescale_populations">
-<span class="sig-name descname"><span class="pre">rescale_populations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">population_rescale_factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.rescale_populations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.rescale_populations" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.rescale_weights">
-<span class="sig-name descname"><span class="pre">rescale_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight_rescale_factor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.rescale_weights"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.rescale_weights" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.refresh_all">
+<span class="sig-name descname"><span class="pre">refresh_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.refresh_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.refresh_all" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
