@@ -158,7 +158,14 @@ cdef class Population:
         cdef cinter.PopCurrentInjector * injector = new cinter.PopCurrentInjector(self._population, I, t_min, t_max)
         self.spikenet._spiking_network.add_injector(injector)
     
-    def add_poisson_spike_injector(self, rate, weight, t_min=0, t_max=-1):
+    def add_poisson_spike_injector(self, rate, weight, t_min=None, t_max=None):
+
+        # Adapt to C++ convention that tmax< tmin means no stop
+        if t_min is None:
+            t_min = 0
+        if t_max is None:
+            t_max = -1
+
         cdef cinter.PoissonSpikeSource * injector = new cinter.PoissonSpikeSource(self._population, rate, weight, t_min, t_max)
         self.spikenet._spiking_network.add_injector(injector)
 

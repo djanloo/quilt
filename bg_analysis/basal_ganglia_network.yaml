@@ -1,11 +1,3 @@
-# Population number multiplier
-population_rescale_factor: 1.0
-# A parameter to uniformly enloose connectivity:
-connection_rescale_factor: 1.0
-
-# TODO:
-#delay_scale_factor: 
-
 populations:
   D1:
     size: 6000
@@ -29,6 +21,7 @@ populations:
     size: 754
     neuron_model: SNR_neuron
 
+# Note: projections must be in the A->B format
 projections:
   D1->D1:
     connectivity: 0.0607
@@ -162,3 +155,11 @@ projections:
     delay:      4.5
     weight:     0.91
     type:       exc
+
+# Note: devices must be in the pop_population_description format
+devices:
+  pop_D1_spikesource:
+    type: poisson_spike_source
+    weight: 
+    rate:
+    

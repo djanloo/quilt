@@ -18,3 +18,11 @@ projections:
     weight: 0.03
     delay:  0.2
     type:   exc
+
+devices:
+  pop_Albert_spikesource:
+    type: poisson_spike_source
+    rate: 100
+    weight: 0.1
+    t_min: 2
+    t_max: 50
