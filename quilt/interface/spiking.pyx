@@ -110,6 +110,11 @@ cdef class SparseProjector():
                     raise ValueError("Synaptic weight must always be positive")
                 if self.delay < 0:
                     raise ValueError("Synaptic delay must always be positive")
+
+                if self.connectivity < 0:
+                    raise ValueError("Connectivity must always be > 0")
+                if self.connectivity > 1:
+                    raise ValueError("Connectivity must always be < 1")
             
     
     def get_projection(self, Population efferent,  Population afferent):

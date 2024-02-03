@@ -50,7 +50,7 @@ class SpikingNetwork:
     @classmethod
     def from_yaml(cls, features_file, neuron_catalogue):
         net = cls()
-        net._interface = spiking.SpikingNetwork("dummy")
+        net._interface = None#spiking.SpikingNetwork("05535")
 
         net.features_file = features_file
         net.neuron_catalogue = copy.deepcopy(neuron_catalogue)
@@ -65,8 +65,13 @@ class SpikingNetwork:
         net.connection_rescale = 1.0 if "connection_rescale_factor" not in net.features_dict else net.features_dict["connection_rescale_factor"]
 
         return net
+    
 
     def build(self, progress_bar=None):
+        if self._interface is not None:
+            del self._interface
+        self._interface = spiking.SpikingNetwork("05535")
+
         if progress_bar is None:
             if spiking.VERBOSITY == 1:
                 progress_bar = True
@@ -92,6 +97,15 @@ class SpikingNetwork:
                 iter = self.features_dict['projections']
             for proj in iter:
                 features = self.features_dict['projections'][proj]
+
+                efferent, afferent = proj.split("->")
+                efferent, afferent = efferent.strip(), afferent.strip()
+                
+                if efferent not in self.populations.keys():
+                    raise KeyError(f"In projection {efferent} -> {afferent}: <{efferent}> was not defined")
+                if afferent not in self.populations.keys():
+                    raise KeyError(f"In projection {efferent} -> {afferent}: <{afferent}> was not defined")
+
                 try:
                     # Rescaling connections & weights
                     try:
@@ -113,15 +127,9 @@ class SpikingNetwork:
 
                     # Builds the projector
                     projector = spiking.SparseProjector(features, dist_type="lognorm")
+                    
                 except ValueError as e:
-                    raise ValueError(f"Some value was wrong during projection {efferent}->{afferent}")
-                efferent, afferent = proj.split("->")
-                efferent, afferent = efferent.strip(), afferent.strip()
-                
-                if efferent not in self.populations.keys():
-                    raise KeyError(f"In projection {efferent} -> {afferent}: <{efferent}> was not defined")
-                if afferent not in self.populations.keys():
-                    raise KeyError(f"In projection {efferent} -> {afferent}: <{afferent}> was not defined")
+                    raise ValueError(f"Some value was wrong during projection {efferent}->{afferent}:\n{e}")
                 
                 efferent = self.populations[efferent]
                 afferent = self.populations[afferent]
@@ -154,7 +162,10 @@ class ParametricSpikingNetwork(SpikingNetwork):
     
         return net
 
-    def build(self, **params): 
+    def set_parameters(self, **params):
+        # Signals to the build method that this must be rebuilt
+        self.is_built = False
+
         self.params_value = dict()
         self.params_range = dict()
         self.params_shift = dict()
@@ -178,7 +189,14 @@ class ParametricSpikingNetwork(SpikingNetwork):
             
         # Assigns the specified parameters of the network
         self.params_value.update(params)
-        del params # Now use only self.params
+        del params # Now use only self.params_value
+
+        # Check that parameter is in range
+        for param in self.params_value:
+            if self.params_value[param] < self.params_range[param][0] or self.params_value[param] > self.params_range[param][1]:
+                raise ValueError(f"Value {self.params_value[param]} for parameter '{param}' is not in range {self.params_range[param]}")
+        
+        print(f"Building parametric network with params {self.params_value}")
 
         for param in self.params_value:
             for object in self.susceptibility_dict['parametric'][param]:
@@ -186,57 +204,59 @@ class ParametricSpikingNetwork(SpikingNetwork):
 
                 attribute = object['attribute']
                 chi = object['susceptibility']
-                parametric_delta = chi * (self.params_value[param] - self.params_shift[param])
+                parametric_relative_delta = chi * (self.params_value[param] - self.params_shift[param])
 
                 if "population" in object:
-                    pop = object['population']
+                    parametric_populations = object['population'].split(',')
+                    parametric_populations = [pop.strip() for pop in parametric_populations]
 
-                    if pop not in self.features_dict['populations']:
-                        raise KeyError(f"Population {pop} not found in network")
-                    
-                    is_pop_attr = False
-                    is_neuron_attr = False
+                    for pop in parametric_populations:
 
-                    # Check if is a direct population attribute (size)
-                    # I know it's uselessly too general, it's just in case I have add some pop attributes
-                    try:
-                        base_value = self.features_dict['populations'][pop][attribute]
-                        self.features_dict['populations'][pop][attribute] = base_value + parametric_delta
-                        is_pop_attr = True
-                    except KeyError as error:
+                        if pop not in self.features_dict['populations']:
+                            raise KeyError(f"Population {pop} not found in network")
+                        
                         is_pop_attr = False
-
-                    # Check if is a neuron attribute
-                    try:
-                        neuron_model = self.features_dict['populations'][pop]['neuron_model']
-                        base_value = self.neuron_catalogue.neurons_dict[neuron_model][attribute]
-                        self.neuron_catalogue.update(neuron_model, attribute, base_value + parametric_delta)
-                        is_neuron_attr = True
-                    except KeyError as e:
                         is_neuron_attr = False
-                    
-                    if not is_neuron_attr and not is_pop_attr:
-                        raise KeyError(f"Paremetric attribute '{attribute}' was specified on population '{pop}' but was not found neither in the population nor in the neuron model.")
+
+                        # Check if is a direct population attribute (size)
+                        # I know it's uselessly too general, it's just in case I have add some pop attributes
+                        try:
+                            base_value = self.features_dict['populations'][pop][attribute]
+                            self.features_dict['populations'][pop][attribute] = base_value * ( 1 + parametric_relative_delta)
+                            is_pop_attr = True
+                        except KeyError as error:
+                            is_pop_attr = False
+
+                        # Check if is a neuron attribute
+                        try:
+                            neuron_model = self.features_dict['populations'][pop]['neuron_model']
+                            base_value = self.neuron_catalogue.neurons_dict[neuron_model][attribute]
+                            self.neuron_catalogue.update(neuron_model, attribute, base_value * ( 1 + parametric_relative_delta))
+                            is_neuron_attr = True
+                        except KeyError as e:
+                            is_neuron_attr = False
+                        
+                        if not is_neuron_attr and not is_pop_attr:
+                            raise KeyError(f"Paremetric attribute '{attribute}' was specified on population '{pop}' but was not found neither in the population nor in the neuron model.")
 
                 elif "projection" in object:
-                    proj = object['projection']
-                    try:
-                        _ =  self.features_dict['projections'][proj]
-                    except KeyError as e:
-                        raise KeyError(f"Projection '{proj}' was not found in {list(self.features_dict['projections'].keys())}")
+                    parametric_projections = object['projection'].split(",")
+                    parametric_projections = [proj.strip() for proj in parametric_projections]
 
-                    try:
-                        base_value = self.features_dict['projections'][proj][attribute]
-                        self.features_dict['projections'][proj][attribute] = base_value + parametric_delta
+                    for proj in parametric_projections:
 
-                    except KeyError as e:
-                        raise KeyError(f"Paremetric attribute '{attribute}' was specified on projection '{proj}' but was not found.")
+                        if proj not in self.features_dict['projections'].keys():
+                            raise KeyError(f"Projection '{proj}' was not found in {list(self.features_dict['projections'].keys())}")
+
+                        try:
+                            base_value = self.features_dict['projections'][proj][attribute]
+                            self.features_dict['projections'][proj][attribute] = base_value * ( 1 + parametric_relative_delta)
+
+                        except KeyError as e:
+                            raise KeyError(f"Paremetric attribute '{attribute}' was specified on projection '{proj}' but was not found.")
                 
                 else:
                     raise KeyError(f"Parametric object {object} was not found in the network")
-
-        super().build()
-
 
 class NeuronCatalogue:
 

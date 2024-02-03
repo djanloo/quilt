@@ -33,24 +33,26 @@ def plot_graph(network):
     G = nx.DiGraph()
 
     for pop in pops:
-        G.add_node(pop['name'])
+        G.add_node(pop)
 
 
     for proj in projections:
-        efferent, afferent = proj['name'].split("->")
+        efferent, afferent = proj.split("->")
         efferent, afferent = efferent.strip(), afferent.strip()
         edge_dict = dict()
-        if proj['features']['type'] == "inh":
+
+        features = projections[proj]
+        if features['type'] == "inh":
             edge_dict = dict(   color="b", 
-                                weight = proj['features']['weight'],
-                                lenght = proj['features']['delay'],
-                                strongness = proj['features']['connectivity']*proj['features']['weight']
+                                weight = features['weight'],
+                                lenght = features['delay'],
+                                strongness = features['connectivity']*features['weight']
                              )
         else:
             edge_dict = dict(   color="r", 
-                                weight = proj['features']['weight'],
-                                lenght = proj['features']['delay'],
-                                strongness = proj['features']['connectivity']*proj['features']['weight']
+                                weight = features['weight'],
+                                lenght = features['delay'],
+                                strongness = features['connectivity']*features['weight']
                              )
         G.add_edge(efferent,afferent, **edge_dict)
 

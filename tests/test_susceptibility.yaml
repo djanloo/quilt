@@ -16,10 +16,10 @@ parametric:
     - population: MonaLisa
       attribute: size
       susceptibility: 0.2
-    - projection: Albert->MonaLisa
+    - projection: Albert->MonaLisa, MonaLisa->Albert
       attribute: weight
       susceptibility: -0.8
   beta:
-    - population: MonaLisa
+    - population: MonaLisa, Albert
       attribute: C_m
       susceptibility: -0.2
