@@ -182,6 +182,8 @@ class ParametricSpikingNetwork(SpikingNetwork):
     @classmethod
     def from_yaml(cls, features_file, susceptibility_file, neuron_catalogue):
         net = super().from_yaml(features_file, neuron_catalogue)
+        net.original_features = copy.deepcopy(net.features_dict)
+
         net.susceptibility_file = susceptibility_file
 
         if not os.path.exists(net.susceptibility_file):
@@ -200,27 +202,27 @@ class ParametricSpikingNetwork(SpikingNetwork):
         except KeyError as e:
             raise KeyError("Susceptibility file must have a 'parametric' field")
     
+
+        net.params_value = dict()
+        net.params_range = dict()
+        net.params_shift = dict()
+
+        # Initializes all possible parameters to zero
+        for param_name in net.susceptibility_dict['parameters']:
+
+            # Initilaizes to 'shift' value to have zero driving force
+            net.params_value[param_name] = net.susceptibility_dict['parameters'][param_name]['shift']
+            net.params_shift[param_name] = net.susceptibility_dict['parameters'][param_name]['shift']
+            net.params_range[param_name] = [net.susceptibility_dict['parameters'][param_name]['min'],
+                                            net.susceptibility_dict['parameters'][param_name]['max']]
         return net
 
     def set_parameters(self, **params):
-        # Signals to the build method that this must be rebuilt
+        # Signals to the run method that this must be rebuilt
         self.is_built = False
 
-        self.params_value = dict()
-        self.params_range = dict()
-        self.params_shift = dict()
-
-        # Initializes all possible parameters to zero
-        for param_name in self.susceptibility_dict['parameters']:
-
-            # Initilaizes to 'shift' value to have zero driving force
-            self.params_value[param_name] = self.susceptibility_dict['parameters'][param_name]['shift']
-            self.params_shift[param_name] = self.susceptibility_dict['parameters'][param_name]['shift']
-            self.params_range[param_name] = [self.susceptibility_dict['parameters'][param_name]['min'],
-                                            self.susceptibility_dict['parameters'][param_name]['max']]
-
-            # print(f"initialized parameter {param_name} with value {self.params_value[param_name]} "+
-                #   f"and range {self.params_range[param_name]}")
+        # Reset features
+        self.features_dict = copy.deepcopy(self.original_features)
 
         # Checks that specified params are contained in possible params
         for param in params.keys():
@@ -236,7 +238,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
             if self.params_value[param] < self.params_range[param][0] or self.params_value[param] > self.params_range[param][1]:
                 raise ValueError(f"Value {self.params_value[param]} for parameter '{param}' is not in range {self.params_range[param]}")
         
-        print(f"Building parametric network with params {self.params_value}")
+        # print(f"Building parametric network with params {self.params_value}")
 
         for param in self.params_value:
             for object in self.susceptibility_dict['parametric'][param]:
