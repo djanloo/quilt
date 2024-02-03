@@ -16,28 +16,34 @@ class SpikingNetwork:
     def __init__(self):
         self.is_built = False
 
-        self.population_rescale_factor = 1
-        self.connectivity_rescale_factor = 1
-        self.weight_rescale_factor = 1
-        self.delay_rescale_factor = 1
+        self.spike_monitored_pops = set()
+        self.state_monitored_pops = set()
 
+    def monitorize_spikes(self, populations=None):
+        if populations is None:
+            populations = self.populations.keys()
+        
+        # Keeps trace in case of rebuild
+        self.spike_monitored_pops = self.spike_monitored_pops.union(populations)
+
+        for pop in populations:
+            self.populations[pop].monitorize_spikes()
+    
+    def monitorize_states(self, populations=None):
+        if populations is None:
+            populations = self.populations.keys()
+
+        # Keeps trace in case of rebuild
+        self.state_monitored_pops = self.state_monitored_pops.union(populations)
+
+        for pop in populations:
+            self.populations[pop].monitorize_states()
+    
     def run(self, dt=0.1, time=1):
 
         if not self.is_built:
             self.build()
         self._interface.run(dt, time)
-
-    def rescale_populations(self, population_rescale_factor):
-        self.population_rescale = population_rescale_factor
-    
-    def rescale_connectivity(self, connectivity_rescale_factor):
-        self.connectivity_rescale_factor = connectivity_rescale_factor
-    
-    def rescale_weights(self, weight_rescale_factor):
-        self.weight_rescale_factor = weight_rescale_factor
-
-    def rescale_delays(self, delay_rescale_factor):
-        self.delay_rescale_factor = delay_rescale_factor
 
     @property
     def interface(self):
@@ -61,16 +67,20 @@ class SpikingNetwork:
         with open(net.features_file, "r") as f:
             net.features_dict = yaml.safe_load(f)
 
-        net.population_rescale = 1.0 if "population_rescale_factor" not in net.features_dict else net.features_dict["population_rescale_factor"]
-        net.connection_rescale = 1.0 if "connection_rescale_factor" not in net.features_dict else net.features_dict["connection_rescale_factor"]
-
         return net
     
 
     def build(self, progress_bar=None):
+
+        # Destroys and rebuilds C++ network
         if self._interface is not None:
             del self._interface
         self._interface = spiking.SpikingNetwork("05535")
+        
+        # Adds back monitors
+        self.monitorize_spikes(populations=self.spike_monitored_pops)
+        self.monitorize_states(populations=self.state_monitored_pops)
+
 
         if progress_bar is None:
             if spiking.VERBOSITY == 1:
@@ -107,27 +117,8 @@ class SpikingNetwork:
                     raise KeyError(f"In projection {efferent} -> {afferent}: <{afferent}> was not defined")
 
                 try:
-                    # Rescaling connections & weights
-                    try:
-                        features['connectivity'] *= self.connectivity_rescale_factor
-                        features['weight'] *= self.weight_rescale_factor
-                    except KeyError:
-                        pass
-                    try:
-                        features['connectivity'] *= self.connectivity_rescale_factor
-                        features['weight'] *= self.weight_rescale_factor
-                    except KeyError:
-                        pass
-
-                    # Rescaling delays
-                    try:
-                        features['delay'] *= self.delay_rescale_factor
-                    except KeyError:
-                        pass
-
                     # Builds the projector
                     projector = spiking.SparseProjector(features, dist_type="lognorm")
-                    
                 except ValueError as e:
                     raise ValueError(f"Some value was wrong during projection {efferent}->{afferent}:\n{e}")
                 
