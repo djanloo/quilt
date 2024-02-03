@@ -76,11 +76,10 @@ class SpikingNetwork:
         if self._interface is not None:
             del self._interface
         self._interface = spiking.SpikingNetwork("05535")
-        
+
         # Adds back monitors
         self.monitorize_spikes(populations=self.spike_monitored_pops)
         self.monitorize_states(populations=self.state_monitored_pops)
-
 
         if progress_bar is None:
             if spiking.VERBOSITY == 1:
@@ -90,16 +89,19 @@ class SpikingNetwork:
 
         self.populations = dict()
         
-        for pop in self.features_dict['populations']:
-            features = self.features_dict['populations'][pop]
-            paramap = self.neuron_catalogue[features['neuron_model']]
-            try:
-                self.populations[pop] = spiking.Population( int(self.population_rescale * features['size']), paramap, self._interface )
-            except IndexError as e:
-                message = f"While building population {pop} an error was raised:\n\t"
-                message += str(e)
-                raise IndexError(message)
-        start = time()
+        # Builds populations
+        if "populations" in self.features_dict and self.features_dict['populations'] is not None:
+            for pop in self.features_dict['populations']:
+                features = self.features_dict['populations'][pop]
+                paramap = self.neuron_catalogue[features['neuron_model']]
+                try:
+                    self.populations[pop] = spiking.Population( features['size'], paramap, self._interface )
+                except IndexError as e:
+                    message = f"While building population {pop} an error was raised:\n\t"
+                    message += str(e)
+                    raise IndexError(message)
+            
+        # Builds projections
         if "projections" in self.features_dict and self.features_dict['projections'] is not None:
             if progress_bar:
                 iter = track(self.features_dict['projections'], description="Building connections..")
@@ -125,7 +127,37 @@ class SpikingNetwork:
                 efferent = self.populations[efferent]
                 afferent = self.populations[afferent]
                 efferent.project(projector.get_projection(efferent, afferent), afferent)
-        end = time()            
+
+        # Builds external devices
+        if "devices" in self.features_dict and self.features_dict['devices'] is not None:
+
+            for device_name in self.features_dict['devices']:
+                try:
+                    hierarchical_level, target, description = device_name.split("_")
+                except ValueError as e:
+                    raise ValueError(f"Error while building device from yaml (format error?): {e}")
+                device_features = self.features_dict['devices'][device_name]
+                print(f"building device {device_name}")
+                if hierarchical_level == "pop":
+                    match device_features['type']:
+                        case "poisson_spike_source":
+                            t_min, t_max = None, None
+                            try:
+                                t_min = device_features['t_min']
+                            except KeyError:
+                                pass
+                            try:
+                                t_max = device_features['t_max']
+                            except KeyError:
+                                pass
+                            self.populations[target].add_poisson_spike_injector(device_features['rate'], device_features['weight'], t_min=t_min, t_max=t_max)
+                        case _:
+                            raise NotImplementedError(f"Device of type '{device_features['type']}' is not implemented")
+                else:
+                    raise NotImplementedError(f"Device at hierarchical level '{hierarchical_level}' is not implemented")
+                        
+        else:
+            print("No devices found")
         self.is_built = True
 
 class ParametricSpikingNetwork(SpikingNetwork):
