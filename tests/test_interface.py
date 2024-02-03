@@ -79,7 +79,8 @@ def test_parametric_sn():
     from quilt.builder import ParametricSpikingNetwork
     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
     sn = ParametricSpikingNetwork.from_yaml(TEST_NET, TEST_SUCEPTIBILITY, test_catalogue)
-    sn.build(alpha=0.1)
+    sn.set_parameters(alpha=0.1)
+    sn.build()
 
 if __name__=="__main__":
     test_parametric_sn()
