@@ -166,6 +166,12 @@ cdef class Population:
         if t_max is None:
             t_max = -1
 
+        if rate is None or rate < 0:
+            raise ValueError(f"Invalid rate in poisson spike source: {rate}")
+        
+        if weight is None:
+            raise ValueError(f"Invalid weight in poisson spike source: {weight}")
+
         cdef cinter.PoissonSpikeSource * injector = new cinter.PoissonSpikeSource(self._population, rate, weight, t_min, t_max)
         self.spikenet._spiking_network.add_injector(injector)
 
@@ -175,17 +181,21 @@ cdef class Population:
     def monitorize_states(self):
         self._state_monitor = self.spikenet._spiking_network.add_state_monitor(self._population)
     
-    def get_data(self):
-        data = dict()
+    def get_data(self, what):
 
-        if self._spike_monitor:
-            data['spikes'] = np.array(self._spike_monitor.get_history())
+        if what == "spikes":
+            if self._spike_monitor == NULL:
+                raise KeyError("Spikes were not monitorized for this population")
+            else:
+                return np.array(self._spike_monitor.get_history())
+        elif what == "states":
+            if self._state_monitor == NULL:
+                raise KeyError("States were not monitorized for this population")
+            else:
+                return np.array(self._state_monitor.get_history())
+        else:
+            raise KeyError(f"Invalid data request to population: '{what}'")
 
-        if self._state_monitor:
-            data['states'] = np.array(self._state_monitor.get_history())
-        
-        return data
-    
     def print_info(self):
         self._population.print_info()
 

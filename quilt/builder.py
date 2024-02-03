@@ -3,6 +3,7 @@
 import os
 from time import time
 import copy
+import warnings
 
 import yaml
 from rich import print
@@ -15,29 +16,42 @@ class SpikingNetwork:
 
     def __init__(self):
         self.is_built = False
+        self.populations = None
 
         self.spike_monitored_pops = set()
         self.state_monitored_pops = set()
 
     def monitorize_spikes(self, populations=None):
+        if self.is_built:
+            warnings.warn("Adding monitors after building the network will trigger another rebuild")
+            self.is_built = False
+
+        # Monitors are built after populations
+        # This is needed for rebuilding
         if populations is None:
-            populations = self.populations.keys()
+            populations = self.features_dict['populations'].keys()
         
-        # Keeps trace in case of rebuild
         self.spike_monitored_pops = self.spike_monitored_pops.union(populations)
 
-        for pop in populations:
-            self.populations[pop].monitorize_spikes()
-    
     def monitorize_states(self, populations=None):
-        if populations is None:
-            populations = self.populations.keys()
+        if self.is_built:
+            warnings.warn("Adding monitors after building the network will trigger another rebuild")
+            self.is_built = False
 
-        # Keeps trace in case of rebuild
+        # Monitors are built after populations
+        # This is needed for rebuilding
+        if populations is None:
+            populations = self.features_dict['populations'].keys()
+        
         self.state_monitored_pops = self.state_monitored_pops.union(populations)
 
-        for pop in populations:
+    def _build_monitors(self):
+        for pop in self.spike_monitored_pops:
+            self.populations[pop].monitorize_spikes()
+        
+        for pop in self.state_monitored_pops:
             self.populations[pop].monitorize_states()
+
     
     def run(self, dt=0.1, time=1):
 
@@ -69,17 +83,21 @@ class SpikingNetwork:
 
         return net
     
-
-    def build(self, progress_bar=None):
-
+    def refresh_all(self):
         # Destroys and rebuilds C++ network
         if self._interface is not None:
             del self._interface
-        self._interface = spiking.SpikingNetwork("05535")
+        
+        if self.populations is not None:
+            for pop in self.populations:
+                del pop
+    
 
-        # Adds back monitors
-        self.monitorize_spikes(populations=self.spike_monitored_pops)
-        self.monitorize_states(populations=self.state_monitored_pops)
+    def build(self, progress_bar=None):
+
+        self.refresh_all()
+    
+        self._interface = spiking.SpikingNetwork("05535")
 
         if progress_bar is None:
             if spiking.VERBOSITY == 1:
@@ -137,19 +155,14 @@ class SpikingNetwork:
                 except ValueError as e:
                     raise ValueError(f"Error while building device from yaml (format error?): {e}")
                 device_features = self.features_dict['devices'][device_name]
-                print(f"building device {device_name}")
+
                 if hierarchical_level == "pop":
                     match device_features['type']:
                         case "poisson_spike_source":
-                            t_min, t_max = None, None
-                            try:
-                                t_min = device_features['t_min']
-                            except KeyError:
-                                pass
-                            try:
-                                t_max = device_features['t_max']
-                            except KeyError:
-                                pass
+
+                            t_min = device_features.get('t_min', None)
+                            t_max = device_features.get('t_max', None)
+
                             self.populations[target].add_poisson_spike_injector(device_features['rate'], device_features['weight'], t_min=t_min, t_max=t_max)
                         case _:
                             raise NotImplementedError(f"Device of type '{device_features['type']}' is not implemented")
@@ -158,6 +171,10 @@ class SpikingNetwork:
                         
         else:
             print("No devices found")
+
+
+        # Adds back the monitors
+        self._build_monitors()
         self.is_built = True
 
 class ParametricSpikingNetwork(SpikingNetwork):
