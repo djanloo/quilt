@@ -51,6 +51,12 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Python code references</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#quilt.builder.NeuronCatalogue"><code class="docutils literal notranslate"><span class="pre">NeuronCatalogue</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#quilt.builder.NeuronCatalogue.from_yaml"><code class="docutils literal notranslate"><span class="pre">NeuronCatalogue.from_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.NeuronCatalogue.update"><code class="docutils literal notranslate"><span class="pre">NeuronCatalogue.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quilt.builder.ParametricSpikingNetwork"><code class="docutils literal notranslate"><span class="pre">ParametricSpikingNetwork</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.ParametricSpikingNetwork.from_yaml"><code class="docutils literal notranslate"><span class="pre">ParametricSpikingNetwork.from_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.ParametricSpikingNetwork.set_parameters"><code class="docutils literal notranslate"><span class="pre">ParametricSpikingNetwork.set_parameters()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#quilt.builder.SpikingNetwork"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork</span></code></a><ul>
@@ -105,6 +111,27 @@
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#NeuronCatalogue.from_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.NeuronCatalogue.from_yaml" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.NeuronCatalogue.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neuron_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#NeuronCatalogue.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.NeuronCatalogue.update" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quilt.builder.ParametricSpikingNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">quilt.builder.</span></span><span class="sig-name descname"><span class="pre">ParametricSpikingNetwork</span></span><a class="reference internal" href="_modules/quilt/builder.html#ParametricSpikingNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.ParametricSpikingNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#quilt.builder.SpikingNetwork" title="quilt.builder.SpikingNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikingNetwork</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.ParametricSpikingNetwork.from_yaml">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">susceptibility_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron_catalogue</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#ParametricSpikingNetwork.from_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.ParametricSpikingNetwork.from_yaml" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.ParametricSpikingNetwork.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#ParametricSpikingNetwork.set_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.ParametricSpikingNetwork.set_parameters" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -118,7 +145,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.from_yaml">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron_catalogue</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.from_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.from_yaml" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron_catalogue</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.from_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.from_yaml" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py property">
