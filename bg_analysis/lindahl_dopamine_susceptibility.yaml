@@ -3,11 +3,11 @@ parameters:
     min: 0
     max: 1
     shift: 0.8
-  striatum_scale:
+  striatum_scale:     # ortone: 0.16
     min: -1
     max: 1
     shift: 0
-  non_striatum_scale:
+  non_striatum_scale: # ortone: 0.78
     min: -1
     max: 1
     shift: 0
