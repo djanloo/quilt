@@ -81,6 +81,24 @@ class SpikingNetwork:
         with open(net.features_file, "r") as f:
             net.features_dict = yaml.safe_load(f)
 
+        # Converts to connectivity in case fan-in is specified
+        for proj in net.features_dict['projections']:
+            features = net.features_dict['projections'][proj]
+
+            efferent, _ = proj.split("->")
+            efferent = efferent.strip()
+            
+            if "fan_in" in features.keys():
+                if features["fan_in"] < 0:
+                    raise ValueError("in projection {proj}: fan-in must be greater than zero")
+                elif features["fan_in"] < 1:
+                    raise ValueError("in projection {proj}: fan-in must be greater than one")
+                
+                if "connectivity" in features.keys():
+                    warnings.warn(f"While building projection {proj}, fan-in overrided connectivity")
+                features['connectivity'] = features['fan_in']/net.features_dict['populations'][efferent]['size']
+                del features['fan_in']
+
         return net
     
     def refresh_all(self):
@@ -136,18 +154,6 @@ class SpikingNetwork:
                 if afferent not in self.populations.keys():
                     raise KeyError(f"In projection {efferent} -> {afferent}: <{afferent}> was not defined")
 
-                # Converts to connectivity in case fan-in is specified
-                if "fan_in" in features.keys():
-                    if features["fan_in"] < 1:
-                        raise ValueError("in projection {proj}: fan-in must be greater than one")
-                    elif features["fan_in"] < 0:
-                        raise ValueError("in projection {proj}: fan-in must be greater than zero")
-                    
-                    if "connectivity" in features.keys():
-                        warnings.warn(f"While building projection {proj}, fan-in overrided connectivity")
-                    features['connectivity'] = features['fan_in']/self.features_dict['populations'][efferent]['size']
-                    del features['fan_in']
-                    
                 try:
                     # Builds the projector
                     projector = spiking.SparseProjector(features, dist_type="lognorm")
@@ -222,11 +228,10 @@ class ParametricSpikingNetwork(SpikingNetwork):
         # Initializes all possible parameters to zero
         for param_name in net.susceptibility_dict['parameters']:
 
-            # Initilaizes to 'shift' value to have zero driving force
-            net.params_value[param_name] = net.susceptibility_dict['parameters'][param_name]['shift']
-            net.params_shift[param_name] = net.susceptibility_dict['parameters'][param_name]['shift']
-            net.params_range[param_name] = [net.susceptibility_dict['parameters'][param_name]['min'],
-                                            net.susceptibility_dict['parameters'][param_name]['max']]
+            net.params_value[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0) # Initilaizes to 'shift' value to have zero driving force
+            net.params_shift[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0)
+            net.params_range[param_name] = [net.susceptibility_dict['parameters'][param_name].get('min',0),
+                                            net.susceptibility_dict['parameters'][param_name].get('max',1)]
         return net
 
     def set_parameters(self, **params):
@@ -257,7 +262,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
                 # print(f"Parametrizing {object}")
 
                 attribute = object['attribute']
-                chi = object['susceptibility']
+                chi = object.get('susceptibility', 1)
                 parametric_relative_delta = chi * (self.params_value[param] - self.params_shift[param])
 
                 if "population" in object:
