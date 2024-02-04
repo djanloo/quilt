@@ -136,6 +136,18 @@ class SpikingNetwork:
                 if afferent not in self.populations.keys():
                     raise KeyError(f"In projection {efferent} -> {afferent}: <{afferent}> was not defined")
 
+                # Converts to connectivity in case fan-in is specified
+                if "fan_in" in features.keys():
+                    if features["fan_in"] < 1:
+                        raise ValueError("in projection {proj}: fan-in must be greater than one")
+                    elif features["fan_in"] < 0:
+                        raise ValueError("in projection {proj}: fan-in must be greater than zero")
+                    
+                    if "connectivity" in features.keys():
+                        warnings.warn(f"While building projection {proj}, fan-in overrided connectivity")
+                    features['connectivity'] = features['fan_in']/self.features_dict['populations'][efferent]['size']
+                    del features['fan_in']
+                    
                 try:
                     # Builds the projector
                     projector = spiking.SparseProjector(features, dist_type="lognorm")
