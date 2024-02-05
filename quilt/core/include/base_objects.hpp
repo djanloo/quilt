@@ -150,7 +150,7 @@ class progress{
         
         void print(){
             if (verbosity > 0){
-                std::cout << "*"<< std::flush; ;
+                std::cout << "*"<< std::flush;
                 if (_count == _max-1) std::cout << std::endl;
             }
             _count ++;
