@@ -205,7 +205,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
     def from_yaml(cls, features_file, susceptibility_file, neuron_catalogue):
         net = super().from_yaml(features_file, neuron_catalogue)
         net.original_features = copy.deepcopy(net.features_dict)
-        net.original_neuron_catalogue = copy.deepcopy(net.neuron_catalogue)
+        net.original_neuron_catalogue = copy.deepcopy(neuron_catalogue)
 
         net.susceptibility_file = susceptibility_file
 
@@ -246,7 +246,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
         # Reset features
         self.features_dict = copy.deepcopy(self.original_features)
         self.neuron_catalogue = copy.deepcopy(self.original_neuron_catalogue)
-        
+
         # Checks that specified params are contained in possible params
         for param in params.keys():
             if param not in self.params_value.keys():
