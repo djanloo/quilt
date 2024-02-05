@@ -17,6 +17,7 @@ class SpikingNetwork:
     def __init__(self):
         self.is_built = False
         self.populations = None
+        self._interface = None
 
         self.spike_monitored_pops = set()
         self.state_monitored_pops = set()
@@ -30,6 +31,8 @@ class SpikingNetwork:
         # This is needed for rebuilding
         if populations is None:
             populations = self.features_dict['populations'].keys()
+        elif isinstance(populations, str):
+            populations = [populations]
         
         self.spike_monitored_pops = self.spike_monitored_pops.union(populations)
 
@@ -42,7 +45,9 @@ class SpikingNetwork:
         # This is needed for rebuilding
         if populations is None:
             populations = self.features_dict['populations'].keys()
-        
+        elif isinstance(populations, str):
+            populations = [populations]
+    
         self.state_monitored_pops = self.state_monitored_pops.union(populations)
 
     def _build_monitors(self):
@@ -114,7 +119,6 @@ class SpikingNetwork:
     def build(self, progress_bar=None):
 
         self.refresh_all()
-    
         self._interface = spiking.SpikingNetwork("05535")
 
         if progress_bar is None:
@@ -201,6 +205,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
     def from_yaml(cls, features_file, susceptibility_file, neuron_catalogue):
         net = super().from_yaml(features_file, neuron_catalogue)
         net.original_features = copy.deepcopy(net.features_dict)
+        net.original_neuron_catalogue = copy.deepcopy(net.neuron_catalogue)
 
         net.susceptibility_file = susceptibility_file
 
@@ -240,7 +245,8 @@ class ParametricSpikingNetwork(SpikingNetwork):
 
         # Reset features
         self.features_dict = copy.deepcopy(self.original_features)
-
+        self.neuron_catalogue = copy.deepcopy(self.original_neuron_catalogue)
+        
         # Checks that specified params are contained in possible params
         for param in params.keys():
             if param not in self.params_value.keys():
