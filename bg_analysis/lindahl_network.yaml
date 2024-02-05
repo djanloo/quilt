@@ -34,7 +34,6 @@ projections:
     weight:     0.30
     type:       inh
 
-
   D1->SNR:
     fan_in:     500
     delay:      7.0
