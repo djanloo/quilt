@@ -31,11 +31,19 @@ aqif_neuron::aqif_neuron(Population * population): Neuron(population){
 void aqif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
     aqif_param * p = static_cast<aqif_param*>(population->neuroparam);
 
-    dxdt[0] = 1/p->C_m * ( p->k*(x[0] - p->E_l)*(x[0] - p->V_th) - x[1]*(x[0]- p->E_ex) - x[2]*(x[0]- p->E_in) \
-                          - x[3] + p->I_e + p->I_osc*std::sin(p->omega_I*t) );                              
+    // Division by membrane capacity is later
+    dxdt[0] = p->k*(x[0] - p->E_l)*(x[0] - p->V_th) - x[1]*(x[0]- p->E_ex) - x[2]*(x[0]- p->E_in) \
+                          - x[3] + p->I_e;
+
+    // Trig functions are expensive
+    if (p->I_osc > OSCILLATORY_AMPLITUDE_MIN) dxdt[0] += p->I_osc*std::sin(p->omega_I*t);
+    dxdt[0] /= p->C_m;  // Just one division for membrane capacity
+
     dxdt[1] = -x[1]/p->tau_ex;                                                                       
-    dxdt[2] = -x[2]/p->tau_in;                                                                       
-    dxdt[3] = -x[3]/p->ada_tau_w + p->ada_a/p->ada_tau_w * (x[0] - p->E_l);  
+    dxdt[2] = -x[2]/p->tau_in;
+
+    dxdt[3] = -x[3]+ p->ada_a * (x[0] - p->E_l);  
+    dxdt[3] /= p->ada_tau_w;
 }
 
 void aqif_neuron::on_spike(EvolutionContext * /*evo*/){
@@ -84,13 +92,15 @@ void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , cons
     aeif_param * p = static_cast<aeif_param*>(population->neuroparam);
     
     if (t > last_spike_time + p->tau_refrac){
-        dxdt[0] = 1.0/p->C_m * (\
-                                - p->G_L * (x[0]-p->E_l)                                    +\
-                                + p->G_L * p->delta_T * exp((x[0] - p->V_th)/p->delta_T)    +\
-                              
-                                + x[1]*(p->E_ex - x[0]) + x[2]*(p->E_in - x[0]) - x[3]    +\
-                                +  ( p->I_e  + p->I_osc*std::sin(p->omega_I*t))
-                                ); 
+        dxdt[0] =   - p->G_L * (x[0]-p->E_l)                                    +\
+                    + p->G_L * p->delta_T * exp((x[0] - p->V_th)/p->delta_T)    +\
+                    
+                    + x[1]*(p->E_ex - x[0]) + x[2]*(p->E_in - x[0]) - x[3]    +\
+                    +  p->I_e;
+        // Trig functions are expensive
+        if (p->I_osc > OSCILLATORY_AMPLITUDE_MIN) dxdt[0] += p->I_osc*std::sin(p->omega_I*t);
+        dxdt[0] /= p->C_m;
+
     }else{
         dxdt[0] = 0.0;
     }
@@ -100,8 +110,11 @@ void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , cons
     if (dxdt[0] > MAX_POTENTIAL_SLOPE){dxdt[0] = MAX_POTENTIAL_SLOPE;}
 
     dxdt[1] = -x[1]/p->tau_ex;                                                                       
-    dxdt[2] = -x[2]/p->tau_in;                                                                      
-    dxdt[3] = -x[3]/p->ada_tau_w + p->ada_a/p->ada_tau_w*(x[0]-p->E_l);                                           
+    dxdt[2] = -x[2]/p->tau_in;
+
+
+    dxdt[3] = -x[3] + p->ada_a*(x[0]-p->E_l);  
+    dxdt[3] /= p->ada_tau_w;                                         
 }
 
 void aeif_neuron::on_spike(EvolutionContext * /*evo*/){
@@ -118,8 +131,13 @@ aqif2_neuron::aqif2_neuron(Population * population): Neuron(population){
 
 void aqif2_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
     aqif2_param * p = static_cast<aqif2_param*>(population->neuroparam);
-    dxdt[0] = 1/p->C_m * ( p->k*(x[0]-p->E_l)*(x[0]-p->V_th) - x[1]*(x[0]-p->E_ex) \
-                          - x[2]*(x[0]-p->E_in) - x[3] + p->I_e + p->I_osc*sin(p->omega_I*t) );         
+    dxdt[0] =   p->k*(x[0]-p->E_l)*(x[0]-p->V_th) - x[1]*(x[0]-p->E_ex) \
+                - x[2]*(x[0]-p->E_in) - x[3] + p->I_e ;
+
+     // Trig functions are expensive
+    if (p->I_osc > OSCILLATORY_AMPLITUDE_MIN) dxdt[0] += p->I_osc*std::sin(p->omega_I*t);
+    dxdt[0] /= p->C_m;     
+
     dxdt[1] = -x[1]/p->tau_ex;                                                                       
     dxdt[2] = -x[2]/p->tau_in;                                                                 
     if (x[0] < p->V_b)  dxdt[3] = -x[3]/p->ada_tau_w + p->ada_a/p->ada_tau_w * std::pow((x[0]-p->V_b),3);
