@@ -117,8 +117,6 @@ void Neuron::evolve(EvolutionContext * evo){
         on_spike(evo);
         spike_flag = false;
     }
-    // Process incoming spikes
-    handle_incoming_spikes(evo);
 
     // Evolve
     boost::numeric::odeint::runge_kutta4<neuron_state> stepper;
@@ -127,6 +125,13 @@ void Neuron::evolve(EvolutionContext * evo){
                                 };
 
     stepper.do_step(lambda, this->state, evo->now, evo->dt);
+
+    // Process incoming spikes from t and t+dt
+    // Note: it is conceptually wrong to first evaluate incoming spikes and then do the step
+    // because EXACTLY at time t the spikes are not arrived yet
+    // The other way of doing this is to evaluate at the beginning of the evolution the spikes
+    // that arrived from t-dt and t
+    handle_incoming_spikes(evo);
 
     // THIS CHECKS NANS
     // auto before_step = state;
