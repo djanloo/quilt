@@ -12,11 +12,6 @@
 using std::cout;
 using std::endl;
 
-// std::uniform_real_distribution<double> distribution(
-//     std::numeric_limits<double>::epsilon(),  // valore minimo escluso
-//     1.0 - std::numeric_limits<double>::epsilon()  // valore massimo escluso
-// ); 
-
 HierarchicalID::HierarchicalID(HierarchicalID * parent): parent(parent),n_subclasses(0){
     local_id = parent->n_subclasses;
     parent->n_subclasses ++;
