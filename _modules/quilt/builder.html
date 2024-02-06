@@ -95,6 +95,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_built</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">populations</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">spike_monitored_pops</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state_monitored_pops</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
@@ -110,6 +111,8 @@
         <span class="c1"># This is needed for rebuilding</span>
         <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">populations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">populations</span><span class="p">]</span>
         
         <span class="bp">self</span><span class="o">.</span><span class="n">spike_monitored_pops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spike_monitored_pops</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">populations</span><span class="p">)</span></div>
 
@@ -125,7 +128,9 @@
         <span class="c1"># This is needed for rebuilding</span>
         <span class="k">if</span> <span class="n">populations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">populations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">populations</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">populations</span> <span class="o">=</span> <span class="p">[</span><span class="n">populations</span><span class="p">]</span>
+    
         <span class="bp">self</span><span class="o">.</span><span class="n">state_monitored_pops</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_monitored_pops</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">populations</span><span class="p">)</span></div>
 
 
@@ -157,18 +162,39 @@
 <div class="viewcode-block" id="SpikingNetwork.from_yaml">
 <a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.SpikingNetwork.from_yaml">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">features_file</span><span class="p">,</span> <span class="n">neuron_catalogue</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">features_file</span><span class="p">,</span> <span class="n">neuron_file</span><span class="p">):</span>
         <span class="n">net</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
         <span class="n">net</span><span class="o">.</span><span class="n">_interface</span> <span class="o">=</span> <span class="kc">None</span><span class="c1">#spiking.SpikingNetwork(&quot;05535&quot;)</span>
 
         <span class="n">net</span><span class="o">.</span><span class="n">features_file</span> <span class="o">=</span> <span class="n">features_file</span>
-        <span class="n">net</span><span class="o">.</span><span class="n">neuron_catalogue</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">neuron_catalogue</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">neuron_catalogue</span> <span class="o">=</span> <span class="n">NeuronCatalogue</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="n">neuron_file</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">features_file</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;YAML file &#39;</span><span class="si">{</span><span class="n">net</span><span class="o">.</span><span class="n">features_file</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
         
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">features_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+        <span class="c1"># Converts to connectivity in case fan-in is specified</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;projections&#39;</span><span class="p">]:</span>
+                <span class="n">features</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;projections&#39;</span><span class="p">][</span><span class="n">proj</span><span class="p">]</span>
+
+                <span class="n">efferent</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">proj</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">)</span>
+                <span class="n">efferent</span> <span class="o">=</span> <span class="n">efferent</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                
+                <span class="k">if</span> <span class="s2">&quot;fan_in&quot;</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="k">if</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;fan_in&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;in projection </span><span class="si">{proj}</span><span class="s2">: fan-in must be greater than zero&quot;</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;fan_in&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;in projection </span><span class="si">{proj}</span><span class="s2">: fan-in must be greater than one&quot;</span><span class="p">)</span>
+                    
+                    <span class="k">if</span> <span class="s2">&quot;connectivity&quot;</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;While building projection </span><span class="si">{</span><span class="n">proj</span><span class="si">}</span><span class="s2">, fan-in overrided connectivity&quot;</span><span class="p">)</span>
+                    <span class="n">features</span><span class="p">[</span><span class="s1">&#39;connectivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s1">&#39;fan_in&#39;</span><span class="p">]</span><span class="o">/</span><span class="n">net</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">][</span><span class="n">efferent</span><span class="p">][</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
+                    <span class="k">del</span> <span class="n">features</span><span class="p">[</span><span class="s1">&#39;fan_in&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
 
         <span class="k">return</span> <span class="n">net</span></div>
 
@@ -191,7 +217,6 @@
     <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">progress_bar</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">refresh_all</span><span class="p">()</span>
-    
         <span class="bp">self</span><span class="o">.</span><span class="n">_interface</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">SpikingNetwork</span><span class="p">(</span><span class="s2">&quot;05535&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">progress_bar</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -231,18 +256,6 @@
                 <span class="k">if</span> <span class="n">afferent</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
                     <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;In projection </span><span class="si">{</span><span class="n">efferent</span><span class="si">}</span><span class="s2"> -&gt; </span><span class="si">{</span><span class="n">afferent</span><span class="si">}</span><span class="s2">: &lt;</span><span class="si">{</span><span class="n">afferent</span><span class="si">}</span><span class="s2">&gt; was not defined&quot;</span><span class="p">)</span>
 
-                <span class="c1"># Converts to connectivity in case fan-in is specified</span>
-                <span class="k">if</span> <span class="s2">&quot;fan_in&quot;</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                    <span class="k">if</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;fan_in&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;in projection </span><span class="si">{proj}</span><span class="s2">: fan-in must be greater than one&quot;</span><span class="p">)</span>
-                    <span class="k">elif</span> <span class="n">features</span><span class="p">[</span><span class="s2">&quot;fan_in&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;in projection </span><span class="si">{proj}</span><span class="s2">: fan-in must be greater than zero&quot;</span><span class="p">)</span>
-                    
-                    <span class="k">if</span> <span class="s2">&quot;connectivity&quot;</span> <span class="ow">in</span> <span class="n">features</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;While building projection </span><span class="si">{</span><span class="n">proj</span><span class="si">}</span><span class="s2">, fan-in overrided connectivity&quot;</span><span class="p">)</span>
-                    <span class="n">features</span><span class="p">[</span><span class="s1">&#39;connectivity&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="s1">&#39;fan_in&#39;</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;populations&#39;</span><span class="p">][</span><span class="n">efferent</span><span class="p">][</span><span class="s1">&#39;size&#39;</span><span class="p">]</span>
-                    <span class="k">del</span> <span class="n">features</span><span class="p">[</span><span class="s1">&#39;fan_in&#39;</span><span class="p">]</span>
-                    
                 <span class="k">try</span><span class="p">:</span>
                     <span class="c1"># Builds the projector</span>
                     <span class="n">projector</span> <span class="o">=</span> <span class="n">spiking</span><span class="o">.</span><span class="n">SparseProjector</span><span class="p">(</span><span class="n">features</span><span class="p">,</span> <span class="n">dist_type</span><span class="o">=</span><span class="s2">&quot;lognorm&quot;</span><span class="p">)</span>
@@ -269,8 +282,8 @@
 
                             <span class="n">t_min</span> <span class="o">=</span> <span class="n">device_features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;t_min&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
                             <span class="n">t_max</span> <span class="o">=</span> <span class="n">device_features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;t_max&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
-                            <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">add_poisson_spike_injector</span><span class="p">(</span><span class="n">device_features</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">],</span> <span class="n">device_features</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">],</span> <span class="n">t_min</span><span class="o">=</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="o">=</span><span class="n">t_max</span><span class="p">)</span>
+                            <span class="n">weight_delta</span> <span class="o">=</span> <span class="n">device_features</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;weight_delta&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="n">target</span><span class="p">]</span><span class="o">.</span><span class="n">add_poisson_spike_injector</span><span class="p">(</span><span class="n">device_features</span><span class="p">[</span><span class="s1">&#39;rate&#39;</span><span class="p">],</span> <span class="n">device_features</span><span class="p">[</span><span class="s1">&#39;weight&#39;</span><span class="p">],</span> <span class="n">weight_delta</span><span class="p">,</span> <span class="n">t_min</span><span class="o">=</span><span class="n">t_min</span><span class="p">,</span> <span class="n">t_max</span><span class="o">=</span><span class="n">t_max</span><span class="p">)</span>
                         <span class="k">case</span><span class="w"> </span><span class="k">_</span><span class="p">:</span>
                             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Device of type &#39;</span><span class="si">{</span><span class="n">device_features</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&#39; is not implemented&quot;</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -293,41 +306,53 @@
 <div class="viewcode-block" id="ParametricSpikingNetwork.from_yaml">
 <a class="viewcode-back" href="../../autodoc_py.html#quilt.builder.ParametricSpikingNetwork.from_yaml">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">features_file</span><span class="p">,</span> <span class="n">susceptibility_file</span><span class="p">,</span> <span class="n">neuron_catalogue</span><span class="p">):</span>
-        <span class="n">net</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="n">features_file</span><span class="p">,</span> <span class="n">neuron_catalogue</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">from_yaml</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">network_file</span><span class="p">,</span>  
+                        <span class="n">neuron_file</span><span class="p">,</span>
+                        <span class="n">susceptibility_files</span><span class="p">):</span>
+        <span class="n">net</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="n">network_file</span><span class="p">,</span> <span class="n">neuron_file</span><span class="p">)</span>
+
+        <span class="c1"># Backups for parametrization</span>
         <span class="n">net</span><span class="o">.</span><span class="n">original_features</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">features_dict</span><span class="p">)</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">original_neuron_catalogue</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">neuron_catalogue</span><span class="p">)</span>
 
-        <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_file</span> <span class="o">=</span> <span class="n">susceptibility_file</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_files</span> <span class="o">=</span> <span class="n">susceptibility_files</span>
+        <span class="c1"># In case is a single file</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">susceptibility_files</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">net</span><span class="o">.</span><span class="n">susceptibility_files</span><span class="p">]</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">susceptibility_file</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;YAML file &#39;</span><span class="si">{</span><span class="n">net</span><span class="o">.</span><span class="n">susceptibility_file</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
-        
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">susceptibility_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
-        
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Susceptibility file must have a &#39;parameters&#39; field&quot;</span><span class="p">)</span>
-        
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parametric&#39;</span><span class="p">]</span>
-        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;Susceptibility file must have a &#39;parametric&#39; field&quot;</span><span class="p">)</span>
-    
+        <span class="c1"># Loads parameters</span>
+        <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="nb">dict</span><span class="p">(),</span> <span class="n">parametric</span><span class="o">=</span><span class="nb">dict</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">susceptibility_file</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">susceptibility_file</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;YAML file &#39;</span><span class="si">{</span><span class="n">susceptibility_file</span><span class="si">}</span><span class="s2">&#39; not found&quot;</span><span class="p">)</span>
+            
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">susceptibility_file</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">chi_dict</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>            
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">chi_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Susceptibility file </span><span class="si">{</span><span class="n">susceptibility_file</span><span class="si">}</span><span class="s2"> must have a &#39;parameters&#39; field&quot;</span><span class="p">)</span>
+            
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">chi_dict</span><span class="p">[</span><span class="s1">&#39;parametric&#39;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Susceptibility file </span><span class="si">{</span><span class="n">susceptibility_file</span><span class="si">}</span><span class="s2"> must have a &#39;parametric&#39; field&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Adds to parameters</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chi_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">])</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parametric&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">chi_dict</span><span class="p">[</span><span class="s1">&#39;parametric&#39;</span><span class="p">])</span>
 
         <span class="n">net</span><span class="o">.</span><span class="n">params_value</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">net</span><span class="o">.</span><span class="n">params_range</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
         <span class="n">net</span><span class="o">.</span><span class="n">params_shift</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
 
-        <span class="c1"># Initializes all possible parameters to zero</span>
+        <span class="c1"># Initializes all possible parameters to default (shift) value so the have no &#39;driving force&#39;</span>
         <span class="k">for</span> <span class="n">param_name</span> <span class="ow">in</span> <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">]:</span>
 
-            <span class="c1"># Initilaizes to &#39;shift&#39; value to have zero driving force</span>
-            <span class="n">net</span><span class="o">.</span><span class="n">params_value</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">param_name</span><span class="p">][</span><span class="s1">&#39;shift&#39;</span><span class="p">]</span>
-            <span class="n">net</span><span class="o">.</span><span class="n">params_shift</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">param_name</span><span class="p">][</span><span class="s1">&#39;shift&#39;</span><span class="p">]</span>
-            <span class="n">net</span><span class="o">.</span><span class="n">params_range</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">param_name</span><span class="p">][</span><span class="s1">&#39;min&#39;</span><span class="p">],</span>
-                                            <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">param_name</span><span class="p">][</span><span class="s1">&#39;max&#39;</span><span class="p">]]</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">params_value</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">param_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shift&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">params_shift</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">param_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;shift&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">net</span><span class="o">.</span><span class="n">params_range</span><span class="p">[</span><span class="n">param_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">param_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;min&#39;</span><span class="p">,</span><span class="mi">0</span><span class="p">),</span>
+                                            <span class="n">net</span><span class="o">.</span><span class="n">susceptibility_dict</span><span class="p">[</span><span class="s1">&#39;parameters&#39;</span><span class="p">][</span><span class="n">param_name</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
         <span class="k">return</span> <span class="n">net</span></div>
 
 
@@ -339,6 +364,7 @@
 
         <span class="c1"># Reset features</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_features</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">neuron_catalogue</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_neuron_catalogue</span><span class="p">)</span>
 
         <span class="c1"># Checks that specified params are contained in possible params</span>
         <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -361,7 +387,7 @@
                 <span class="c1"># print(f&quot;Parametrizing {object}&quot;)</span>
 
                 <span class="n">attribute</span> <span class="o">=</span> <span class="nb">object</span><span class="p">[</span><span class="s1">&#39;attribute&#39;</span><span class="p">]</span>
-                <span class="n">chi</span> <span class="o">=</span> <span class="nb">object</span><span class="p">[</span><span class="s1">&#39;susceptibility&#39;</span><span class="p">]</span>
+                <span class="n">chi</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;susceptibility&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
                 <span class="n">parametric_relative_delta</span> <span class="o">=</span> <span class="n">chi</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params_value</span><span class="p">[</span><span class="n">param</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">params_shift</span><span class="p">[</span><span class="n">param</span><span class="p">])</span>
 
                 <span class="k">if</span> <span class="s2">&quot;population&quot;</span> <span class="ow">in</span> <span class="nb">object</span><span class="p">:</span>
@@ -398,8 +424,11 @@
                             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Paremetric attribute &#39;</span><span class="si">{</span><span class="n">attribute</span><span class="si">}</span><span class="s2">&#39; was specified on population &#39;</span><span class="si">{</span><span class="n">pop</span><span class="si">}</span><span class="s2">&#39; but was not found neither in the population nor in the neuron model.&quot;</span><span class="p">)</span>
 
                 <span class="k">elif</span> <span class="s2">&quot;projection&quot;</span> <span class="ow">in</span> <span class="nb">object</span><span class="p">:</span>
-                    <span class="n">parametric_projections</span> <span class="o">=</span> <span class="nb">object</span><span class="p">[</span><span class="s1">&#39;projection&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
-                    <span class="n">parametric_projections</span> <span class="o">=</span> <span class="p">[</span><span class="n">proj</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">parametric_projections</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="nb">object</span><span class="p">[</span><span class="s1">&#39;projection&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;ALL&quot;</span><span class="p">:</span>
+                        <span class="n">parametric_projections</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">features_dict</span><span class="p">[</span><span class="s1">&#39;projections&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">parametric_projections</span> <span class="o">=</span> <span class="nb">object</span><span class="p">[</span><span class="s1">&#39;projection&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                        <span class="n">parametric_projections</span> <span class="o">=</span> <span class="p">[</span><span class="n">proj</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">parametric_projections</span><span class="p">]</span>
 
                     <span class="k">for</span> <span class="n">proj</span> <span class="ow">in</span> <span class="n">parametric_projections</span><span class="p">:</span>
 

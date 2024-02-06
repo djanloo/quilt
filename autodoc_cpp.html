@@ -71,6 +71,8 @@
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv47Synapse"><code class="docutils literal notranslate"><span class="pre">Synapse</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7Synapse7SynapseEP6NeuronP6Neuronff"><code class="docutils literal notranslate"><span class="pre">Synapse::Synapse()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7Synapse4fireEP16EvolutionContext"><code class="docutils literal notranslate"><span class="pre">Synapse::fire()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7Synapse9set_delayEf"><code class="docutils literal notranslate"><span class="pre">Synapse::set_delay()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7Synapse9get_delayEv"><code class="docutils literal notranslate"><span class="pre">Synapse::get_delay()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7Synapse9min_delayE"><code class="docutils literal notranslate"><span class="pre">Synapse::min_delay</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7Synapse11presynapticE"><code class="docutils literal notranslate"><span class="pre">Synapse::presynaptic</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N7Synapse12postsynapticE"><code class="docutils literal notranslate"><span class="pre">Synapse::postsynaptic</span></code></a></li>
@@ -157,12 +159,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#_CPPv418PoissonSpikeSource"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationffdd"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::PoissonSpikeSource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationfffdd"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::PoissonSpikeSource()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource6injectEP16EvolutionContext"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::inject()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource4rateE"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::rate</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource6weightE"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::weight</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource12weight_deltaE"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::weight_delta</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource5t_minE"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::t_min</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource5t_maxE"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::t_max</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource7weightsE"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::weights</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N18PoissonSpikeSource16next_spike_timesE"><code class="docutils literal notranslate"><span class="pre">PoissonSpikeSource::next_spike_times</span></code></a></li>
 </ul>
 </li>
@@ -316,6 +320,12 @@
 <dd><p>Cutoff value of potential slope [mV/ms]. </p>
 </dd></dl>
 
+<dl class="cpp macro">
+<dt class="sig sig-object cpp" id="c.OSCILLATORY_AMPLITUDE_MIN">
+<span class="target" id="neurons__base_8hpp_1a487c596ced75090d17ee8b4558928a06"></span><span class="sig-name descname"><span class="n"><span class="pre">OSCILLATORY_AMPLITUDE_MIN</span></span></span><a class="headerlink" href="#c.OSCILLATORY_AMPLITUDE_MIN" title="Link to this definition"></a><br /></dt>
+<dd><p>Minimal value for an oscillatory input to be considered valid [pA]. </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-typedefs">Typedefs</p>
@@ -422,6 +432,16 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N7Synapse4fireEP16EvolutionContext">
 <span id="_CPPv3N7Synapse4fireEP16EvolutionContext"></span><span id="_CPPv2N7Synapse4fireEP16EvolutionContext"></span><span id="Synapse::fire__EvolutionContextP"></span><span class="target" id="classSynapse_1a6193d0671bd320637927b733c9cf524c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fire</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">EvolutionContext</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">evo</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7Synapse4fireEP16EvolutionContext" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7Synapse9set_delayEf">
+<span id="_CPPv3N7Synapse9set_delayEf"></span><span id="_CPPv2N7Synapse9set_delayEf"></span><span id="Synapse::set_delay__float"></span><span class="target" id="classSynapse_1ad3189876c8f8f4d034c002b48c21c16a"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">set_delay</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">new_delay</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7Synapse9set_delayEf" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N7Synapse9get_delayEv">
+<span id="_CPPv3N7Synapse9get_delayEv"></span><span id="_CPPv2N7Synapse9get_delayEv"></span><span id="Synapse::get_delay"></span><span class="target" id="classSynapse_1a03a59f19362c8a88aacff0002cae84e0"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">get_delay</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N7Synapse9get_delayEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -893,8 +913,8 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationffdd">
-<span id="_CPPv3N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationffdd"></span><span id="_CPPv2N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationffdd"></span><span id="PoissonSpikeSource::PoissonSpikeSource__PopulationP.float.float.double.double"></span><span class="target" id="classPoissonSpikeSource_1a48b0cd9b7b285c38a71e6c34df6a84d0"></span><span class="sig-name descname"><span class="n"><span class="pre">PoissonSpikeSource</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Population</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pop</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rate</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">t_min</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">t_max</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationffdd" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationfffdd">
+<span id="_CPPv3N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationfffdd"></span><span id="_CPPv2N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationfffdd"></span><span id="PoissonSpikeSource::PoissonSpikeSource__PopulationP.float.float.float.double.double"></span><span class="target" id="classPoissonSpikeSource_1a47360a980553d956bfed2089c4f1fcf8"></span><span class="sig-name descname"><span class="n"><span class="pre">PoissonSpikeSource</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Population</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">pop</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rate</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight_delta</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">t_min</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">t_max</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N18PoissonSpikeSource18PoissonSpikeSourceEP10Populationfffdd" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -917,6 +937,11 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N18PoissonSpikeSource12weight_deltaE">
+<span id="_CPPv3N18PoissonSpikeSource12weight_deltaE"></span><span id="_CPPv2N18PoissonSpikeSource12weight_deltaE"></span><span id="PoissonSpikeSource::weight_delta__float"></span><span class="target" id="classPoissonSpikeSource_1aa19cb21b6184cd0271c989e3990662d8"></span><span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">weight_delta</span></span></span><a class="headerlink" href="#_CPPv4N18PoissonSpikeSource12weight_deltaE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N18PoissonSpikeSource5t_minE">
 <span id="_CPPv3N18PoissonSpikeSource5t_minE"></span><span id="_CPPv2N18PoissonSpikeSource5t_minE"></span><span id="PoissonSpikeSource::t_min__double"></span><span class="target" id="classPoissonSpikeSource_1aa2c322544d1a23db9922a47cb3cc3bf6"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">t_min</span></span></span><a class="headerlink" href="#_CPPv4N18PoissonSpikeSource5t_minE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -924,6 +949,11 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N18PoissonSpikeSource5t_maxE">
 <span id="_CPPv3N18PoissonSpikeSource5t_maxE"></span><span id="_CPPv2N18PoissonSpikeSource5t_maxE"></span><span id="PoissonSpikeSource::t_max__double"></span><span class="target" id="classPoissonSpikeSource_1adaa930b7c6680e13d66d4a7f8b935831"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">t_max</span></span></span><a class="headerlink" href="#_CPPv4N18PoissonSpikeSource5t_maxE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N18PoissonSpikeSource7weightsE">
+<span id="_CPPv3N18PoissonSpikeSource7weightsE"></span><span id="_CPPv2N18PoissonSpikeSource7weightsE"></span><span id="PoissonSpikeSource::weights__std::vector:float:"></span><span class="target" id="classPoissonSpikeSource_1a36136ae8b03f29af6ef0bacece5bf235"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">float</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">weights</span></span></span><a class="headerlink" href="#_CPPv4N18PoissonSpikeSource7weightsE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
