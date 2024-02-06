@@ -182,29 +182,36 @@ devices:
   pop_D1_spikesource:
     type: poisson_spike_source
     weight: 0.45
+    weight_delta: 0.1
     rate: 1120 
   pop_D2_spikesource:
     type: poisson_spike_source
     weight: 0.45
+    weight_delta: 0.1
     rate: 973 
   pop_STN_spikesource:
     type: poisson_spike_source
     weight: 0.25
+    weight_delta: 0.1
     rate: 500
   pop_GPeTA_spikesource:
     type: poisson_spike_source
     weight: 0.15
+    weight_delta: 0.1
     rate: 170
   pop_GPeTI_spikesource:
     type: poisson_spike_source
     weight: 0.25
+    weight_delta: 0.1
     rate: 1530
   pop_FSN_spikesource:
     type: poisson_spike_source
     weight: 0.5
+    weight_delta: 0.1
     rate: 944.4
   pop_SNR_spikesource:
     type: poisson_spike_source
     weight: 0.55
+    weight_delta: 0.1
     rate: 6000
     

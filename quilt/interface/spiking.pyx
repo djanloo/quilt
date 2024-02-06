@@ -5,8 +5,6 @@ Convention:
     - Python-visible objects get nice names
     - C++ objects get a '_' prefix
 """
-
-from time import time
 from libc.stdlib cimport malloc, free
 from libcpp.vector cimport vector
 
@@ -158,7 +156,7 @@ cdef class Population:
         cdef cinter.PopCurrentInjector * injector = new cinter.PopCurrentInjector(self._population, I, t_min, t_max)
         self.spikenet._spiking_network.add_injector(injector)
     
-    def add_poisson_spike_injector(self, rate, weight, t_min=None, t_max=None):
+    def add_poisson_spike_injector(self, rate, weight, weight_delta, t_min=None, t_max=None):
 
         # Adapt to C++ convention that tmax< tmin means no stop
         if t_min is None:
@@ -166,13 +164,15 @@ cdef class Population:
         if t_max is None:
             t_max = -1
 
+        if weight < 0.5*weight_delta:
+            raise ValueError(f"Poisson spike source has weight too dispersed: {weight}+-{0.5*weight_delta}")
         if rate is None or rate < 0:
             raise ValueError(f"Invalid rate in poisson spike source: {rate}")
         
         if weight is None:
             raise ValueError(f"Invalid weight in poisson spike source: {weight}")
 
-        cdef cinter.PoissonSpikeSource * injector = new cinter.PoissonSpikeSource(self._population, rate, weight, t_min, t_max)
+        cdef cinter.PoissonSpikeSource * injector = new cinter.PoissonSpikeSource(self._population, rate, weight, weight_delta, t_min, t_max)
         self.spikenet._spiking_network.add_injector(injector)
 
     def monitorize_spikes(self):

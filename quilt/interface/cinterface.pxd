@@ -33,7 +33,7 @@ cdef extern from "../core/include/devices.hpp":
     
     cdef cppclass PoissonSpikeSource:
         PoissonSpikeSource( Population * pop,
-                            float rate, float weight, 
+                            float rate, float weight, float weight_delta,
                             float t_min, float t_max
                             )
 

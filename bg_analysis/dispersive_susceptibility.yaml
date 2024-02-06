@@ -1,0 +1,11 @@
+parameters:
+  delay_dispersion:
+    min: -1
+    max: 2
+
+parametric:
+  delay_dispersion:
+    - projection: ALL
+      attribute: delay_delta
+      susceptibility: 1
+ 

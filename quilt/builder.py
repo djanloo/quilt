@@ -73,12 +73,12 @@ class SpikingNetwork:
         self._interface = interface
 
     @classmethod
-    def from_yaml(cls, features_file, neuron_catalogue):
+    def from_yaml(cls, features_file, neuron_file):
         net = cls()
         net._interface = None#spiking.SpikingNetwork("05535")
 
         net.features_file = features_file
-        net.neuron_catalogue = copy.deepcopy(neuron_catalogue)
+        net.neuron_catalogue = NeuronCatalogue.from_yaml(neuron_file)
         
         if not os.path.exists(net.features_file):
             raise FileNotFoundError(f"YAML file '{net.features_file}' not found")
@@ -87,22 +87,25 @@ class SpikingNetwork:
             net.features_dict = yaml.safe_load(f)
 
         # Converts to connectivity in case fan-in is specified
-        for proj in net.features_dict['projections']:
-            features = net.features_dict['projections'][proj]
+        try:
+            for proj in net.features_dict['projections']:
+                features = net.features_dict['projections'][proj]
 
-            efferent, _ = proj.split("->")
-            efferent = efferent.strip()
-            
-            if "fan_in" in features.keys():
-                if features["fan_in"] < 0:
-                    raise ValueError("in projection {proj}: fan-in must be greater than zero")
-                elif features["fan_in"] < 1:
-                    raise ValueError("in projection {proj}: fan-in must be greater than one")
+                efferent, _ = proj.split("->")
+                efferent = efferent.strip()
                 
-                if "connectivity" in features.keys():
-                    warnings.warn(f"While building projection {proj}, fan-in overrided connectivity")
-                features['connectivity'] = features['fan_in']/net.features_dict['populations'][efferent]['size']
-                del features['fan_in']
+                if "fan_in" in features.keys():
+                    if features["fan_in"] < 0:
+                        raise ValueError("in projection {proj}: fan-in must be greater than zero")
+                    elif features["fan_in"] < 1:
+                        raise ValueError("in projection {proj}: fan-in must be greater than one")
+                    
+                    if "connectivity" in features.keys():
+                        warnings.warn(f"While building projection {proj}, fan-in overrided connectivity")
+                    features['connectivity'] = features['fan_in']/net.features_dict['populations'][efferent]['size']
+                    del features['fan_in']
+        except KeyError:
+            pass
 
         return net
     
@@ -184,8 +187,8 @@ class SpikingNetwork:
 
                             t_min = device_features.get('t_min', None)
                             t_max = device_features.get('t_max', None)
-
-                            self.populations[target].add_poisson_spike_injector(device_features['rate'], device_features['weight'], t_min=t_min, t_max=t_max)
+                            weight_delta = device_features.get('weight_delta', 0)
+                            self.populations[target].add_poisson_spike_injector(device_features['rate'], device_features['weight'], weight_delta, t_min=t_min, t_max=t_max)
                         case _:
                             raise NotImplementedError(f"Device of type '{device_features['type']}' is not implemented")
                 else:
@@ -202,38 +205,50 @@ class SpikingNetwork:
 class ParametricSpikingNetwork(SpikingNetwork):
 
     @classmethod
-    def from_yaml(cls, features_file, susceptibility_file, neuron_catalogue):
-        net = super().from_yaml(features_file, neuron_catalogue)
+    def from_yaml(cls, network_file,  
+                        neuron_file,
+                        susceptibility_files):
+        net = super().from_yaml(network_file, neuron_file)
+
+        # Backups for parametrization
         net.original_features = copy.deepcopy(net.features_dict)
-        net.original_neuron_catalogue = copy.deepcopy(neuron_catalogue)
+        net.original_neuron_catalogue = copy.deepcopy(net.neuron_catalogue)
 
-        net.susceptibility_file = susceptibility_file
+        net.susceptibility_files = susceptibility_files
+        # In case is a single file
+        if isinstance(net.susceptibility_files, str):
+            net.susceptibility_files = [net.susceptibility_files]
 
-        if not os.path.exists(net.susceptibility_file):
-            raise FileNotFoundError(f"YAML file '{net.susceptibility_file}' not found")
-        
-        with open(net.susceptibility_file, "r") as f:
-            net.susceptibility_dict = yaml.safe_load(f)
-        
-        try:
-            net.susceptibility_dict['parameters']
-        except KeyError as e:
-            raise KeyError("Susceptibility file must have a 'parameters' field")
-        
-        try:
-            net.susceptibility_dict['parametric']
-        except KeyError as e:
-            raise KeyError("Susceptibility file must have a 'parametric' field")
-    
+        # Loads parameters
+        net.susceptibility_dict = dict(parameters=dict(), parametric=dict())
+        for susceptibility_file in net.susceptibility_files:
+            if not os.path.exists(susceptibility_file):
+                raise FileNotFoundError(f"YAML file '{susceptibility_file}' not found")
+            
+            with open(susceptibility_file, "r") as f:
+                chi_dict = yaml.safe_load(f)            
+            try:
+                chi_dict['parameters']
+            except KeyError as e:
+                raise KeyError(f"Susceptibility file {susceptibility_file} must have a 'parameters' field")
+            
+            try:
+                chi_dict['parametric']
+            except KeyError as e:
+                raise KeyError(f"Susceptibility file {susceptibility_file} must have a 'parametric' field")
+
+            # Adds to parameters
+            net.susceptibility_dict['parameters'].update(chi_dict['parameters'])
+            net.susceptibility_dict['parametric'].update(chi_dict['parametric'])
 
         net.params_value = dict()
         net.params_range = dict()
         net.params_shift = dict()
 
-        # Initializes all possible parameters to zero
+        # Initializes all possible parameters to default (shift) value so the have no 'driving force'
         for param_name in net.susceptibility_dict['parameters']:
 
-            net.params_value[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0) # Initilaizes to 'shift' value to have zero driving force
+            net.params_value[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0)
             net.params_shift[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0)
             net.params_range[param_name] = [net.susceptibility_dict['parameters'][param_name].get('min',0),
                                             net.susceptibility_dict['parameters'][param_name].get('max',1)]
@@ -305,8 +320,11 @@ class ParametricSpikingNetwork(SpikingNetwork):
                             raise KeyError(f"Paremetric attribute '{attribute}' was specified on population '{pop}' but was not found neither in the population nor in the neuron model.")
 
                 elif "projection" in object:
-                    parametric_projections = object['projection'].split(",")
-                    parametric_projections = [proj.strip() for proj in parametric_projections]
+                    if object['projection'] == "ALL":
+                        parametric_projections = self.features_dict['projections'].keys()
+                    else:
+                        parametric_projections = object['projection'].split(",")
+                        parametric_projections = [proj.strip() for proj in parametric_projections]
 
                     for proj in parametric_projections:
 

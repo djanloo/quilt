@@ -80,7 +80,7 @@ class PopCurrentInjector: public PopInjector{
 class PoissonSpikeSource: public PopInjector{
     public:
         PoissonSpikeSource( Population * pop,
-                            float rate, float weight, 
+                            float rate, float weight,float weight_delta,
                             double t_min, double t_max);
         /**
          * Generates spikes until a spike is generated in another time bin to prevent the spike queue from being uselessly too much long.
@@ -90,7 +90,10 @@ class PoissonSpikeSource: public PopInjector{
     private:
         float rate;
         float weight;
+        float weight_delta;
         double t_min, t_max;
+
+        std::vector<float> weights;
         // static std::ofstream outfile;
         std::vector<double> next_spike_times;
 };      

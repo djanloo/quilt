@@ -34,10 +34,9 @@ void PopCurrentInjector::inject(EvolutionContext * evo){
     }
 }
 
-
-PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weight, double t_min, double t_max): 
+PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weight, float weight_delta, double t_min, double t_max): 
                                                 PopInjector(pop),
-                                                rate(rate), weight(weight), 
+                                                rate(rate), weight(weight), weight_delta(weight_delta), 
                                                 t_min(t_min){
     next_spike_times = std::vector<double> (pop->n_neurons, t_min);
     if (t_max<t_min){
@@ -45,39 +44,30 @@ PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weigh
     }else{
         this->t_max = t_max;
     }
+    RNG rng(8);
+    weights = std::vector<float>(pop->n_neurons, 0);
+
+    for (int i = 0; i < pop->n_neurons; i++){
+        weights[i] = weight + weight_delta * (rng.get_uniform() - 0.5);
+        if (weights[i] < 0) throw std::runtime_error("Poisson spikesource weight is < 0");
+    }
+
 };
 
 // std::ofstream PoissonSpikeSource::outfile = std::ofstream("spikes.txt");
 
 void PoissonSpikeSource::inject(EvolutionContext * evo){
     float delta;
-    float avg_delta = 0;
-    float generated_spikes = 0;
 
     if (evo->now > this->t_max){return;}
 
-    // std::cout << "Generating spikes" << std::endl;
     for (int i = 0; i < pop->n_neurons; i++){
         
-        while (next_spike_times[i] < evo->now + evo->dt){ // If the last emitted spike was received, emit a new one
-
-            // std::cout << "t: "<<evo->now<<  " <--> Adding poisson spike at neuron " << i << " of pop " << pop->id.get_id();
+        while (next_spike_times[i] < evo->now + evo->dt){
             delta = -std::log(static_cast<float>(rand())/RAND_MAX)/this->rate * 1000;
-            // if (delta < evo->dt){
-            //     // std::cout << "PoissonSpikeSource generated a time smaller than timestep" << std::endl;
-            //     delta = evo->dt;
-            // }
-            // std::cout << " -- delta: "<< delta; 
-            avg_delta += delta;
-            generated_spikes ++;
-
             next_spike_times[i] += delta;
-            // std::cout << " -- next t: " << next_spike_times[i] << std::endl;
-            // outfile << pop->id.get_id() << " " << i << " " << next_spike_times[i] << std::endl;
-            if (next_spike_times[i] < evo->now) {std::cerr << "Spike produced in past" << std::endl;}
-            pop->neurons[i]->incoming_spikes.emplace(this->weight, next_spike_times[i]);
+            if (next_spike_times[i] < evo->now) {throw std::runtime_error("Poisson spike produced in past");}
+            pop->neurons[i]->incoming_spikes.emplace(this->weights[i], next_spike_times[i]);
         }
     }
-    // std::cout << "Done generating spikes" << std::endl;
-    // std::cout << "AVG delta T: "<< avg_delta/generated_spikes << std::endl;
 }
