@@ -43,8 +43,8 @@ float Synapse::min_delay = std::numeric_limits<float>::infinity();
 
 void Synapse::fire(EvolutionContext * evo){
     // Adds a (weight, now + delay) spike in the spike queue of the postsynaptic neuron
-    if (this->delay < evo->dt){throw std::runtime_error("Synapse has delay less than timestep");}
-    this->postsynaptic->incoming_spikes.emplace(this->weight, evo->now + this->delay);
+    if (this->delay < evo->dt){throw std::runtime_error("Synapse has delay less than timestep: " + std::to_string(delay));}
+    this->postsynaptic->incoming_spikes.emplace(weight, evo->now + delay);
 }
 
 Neuron::Neuron(Population * population):population(population){
@@ -56,16 +56,13 @@ Neuron::Neuron(Population * population):population(population){
 };
 
 void Neuron::connect(Neuron * neuron, double weight, double delay){
-    (this -> efferent_synapses).push_back(Synapse(this, neuron, weight, delay));
+    (this->efferent_synapses).push_back(Synapse(this, neuron, weight, delay));
 }
 
 
 void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 
-    // if (incoming_spikes.size() > MAX_SPIKE_QUEUE_LENGTH){
-    //     std::cerr << ("WARNING - spike queue: reached length of " + std::to_string(MAX_SPIKE_QUEUE_LENGTH)) << std::endl;
-    // }
-    while (!(incoming_spikes.empty())){
+    while (!(incoming_spikes.empty())){ // This loop will be broken later
 
         auto spike = incoming_spikes.top();
 
@@ -93,20 +90,15 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
                 }
                 spike.processed = true;
 
-                // std::cout << population->id->get_id() << " - " << id->get_id() << ") processed spike with t = " << spike.arrival_time;
-                // std::cout << "\tnow: "<<evo->now<<std::endl;
-
                 // Removes the spike from the incoming spikes
                 incoming_spikes.pop();
             } else {
-                // std::cout << population->id->get_id() << " - " << id->get_id()  << ") stopped at spike with t = " << spike.arrival_time;
-                // std::cout << "\tnow: "<<evo->now<<std::endl;
 
                 // If a spike is not to process, neither the rest will be
                 break;
             }
         }else{
-            std::cout << "spike already processed" << std::endl;
+            throw std::runtime_error("Spike was processed two timesss");
         }
     }
 }

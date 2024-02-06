@@ -323,9 +323,9 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
         std::string message = "Globally minimum synaptic delay is " + std::to_string(Synapse::min_delay);
         message += " while dt is " + std::to_string(evo->dt) + ".\n";
         int n_cutoff_synapses = 0;
-        for (auto pop : populations){
-            for (auto neur : pop->neurons){
-                for (auto syn : neur->efferent_synapses){
+        for (Population * pop : populations){
+            for (Neuron * neur : pop->neurons){
+                for (Synapse & syn : neur->efferent_synapses){
                     if (syn.get_delay() < evo->dt){
                         syn.set_delay(evo->dt);
                         n_cutoff_synapses ++;
@@ -334,7 +334,7 @@ void SpikingNetwork::run(EvolutionContext * evo, double time){
             }
         }
         message += std::to_string(n_cutoff_synapses) +" synaptic delays were rounded to " + std::to_string(evo->dt);
-        std::cerr << message;
+        std::cerr << message << std::endl;
     }
 
     if (verbosity > 0){

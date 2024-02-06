@@ -1,9 +1,10 @@
 from quilt.builder import SpikingNetwork, NeuronCatalogue
 
 TEST_NET="tests/test_spiking.yaml"
-TEST_NEURONS = "tests/test_neurons.yaml"
-TEST_PARAMS = "tests/test_params.yaml"
-TEST_SUCEPTIBILITY = "tests/test_susceptibility.yaml"
+TEST_EVOLUTION = "tests/test_evolution.yaml"
+TEST_NEURONS    = "tests/test_neurons.yaml"
+TEST_SUSCEPTIBILITY_1 = "tests/test_susceptibility.yaml"
+TEST_SUSCEPTIBILITY_2 = "tests/test_susceptibility_2.yaml"
 
 """Parameters and models"""
 def test_paramaps():
@@ -18,128 +19,70 @@ def test_paramaps():
     pop = spiking.Population(10, paramap, sn)
 
 def test_catalogue():
-    catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
+    catalogue = NeuronCatalogue.from_yaml(TEST_NEURONS)
 
 def test_yaml_builder():
-    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    SpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS)
 
 def test_run():
-    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    spikenet = SpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS)
     spikenet.run(dt=0.1, time=3)
 
-def test_neurons():
-    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    spikenet = SpikingNetwork.from_yaml(TEST_NEURONS, test_catalogue)
-    spikenet.run(dt=0.1, time=3)
+# def test_neurons():
+#     spikenet = SpikingNetwork.from_yaml(TEST_NEURONS, TEST_PARAMS)
+#     spikenet.run(dt=0.1, time=3)
 
-def test_delay_control():
-    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
-    try:
-        spikenet.run(dt=2.0, time=3)
-    except RuntimeError:
-        print("This thest successfully failed.")
-    else:
-        raise RuntimeError("Synaptic delay test check did not fail, but it was supposed to")
+# def test_delay_control():
+#     test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
+#     spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+#     try:
+#         spikenet.run(dt=2.0, time=3)
+#     except RuntimeError:
+#         print("This thest successfully failed.")
+#     else:
+#         raise RuntimeError("Synaptic delay test check did not fail, but it was supposed to")
 
 
 """
 Input/Output devices
 """
 def test_spike_monitor():
-    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    spikenet = SpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS)
     spikenet.build()
     spikenet.populations['Albert'].monitorize_spikes()
 
 def test_state_monitor():
-    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    spikenet = SpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS)
     spikenet.build()
     spikenet.populations['Albert'].monitorize_states()
     spikenet.run(dt=0.1, time=1)
 
 def test_const_curr_injector():
-    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    spikenet = SpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS)
     spikenet.build()
     spikenet.populations["Albert"].add_const_curr_injector(0.5, 0.0, 2)
     spikenet.run(dt=0.1, time=1)
 
 def test_poisson_spike_injector():
-    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    spikenet = SpikingNetwork.from_yaml(TEST_NET, test_catalogue)
+    spikenet = SpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS)
     spikenet.build()
-    spikenet.populations["Albert"].add_poisson_spike_injector(250, 0.3)
+    spikenet.populations["Albert"].add_poisson_spike_injector(250, 0.3, 0.05)
     spikenet.run(dt=0.1, time=1)
 
 def test_parametric_sn():
     from quilt.builder import ParametricSpikingNetwork
-    test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    sn = ParametricSpikingNetwork.from_yaml(TEST_NET, TEST_SUCEPTIBILITY, test_catalogue)
+    sn = ParametricSpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS, TEST_SUSCEPTIBILITY_1)
     sn.set_parameters(alpha=0.1)
     sn.build()
 
+def test_multiparametric_sn():
+    from quilt.builder import ParametricSpikingNetwork
+    sn = ParametricSpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS, [TEST_SUSCEPTIBILITY_1, TEST_SUSCEPTIBILITY_2])
+    sn.set_parameters(alpha=0.1)
+    sn.build()
+
+
 if __name__=="__main__":
-    test_parametric_sn()
-    # test_run()
+    test_multiparametric_sn()
     exit()
-    # import numpy as np
-    import matplotlib.pyplot as plt 
-
-    # test_catalogue = NeuronCatalogue.from_yaml(TEST_PARAMS)
-    # spikenet = SpikingNetwork.from_yaml("tests/spiking.yaml", test_catalogue)
-    # spikenet.populations["Albert"].add_injector(300, 0, 10.0)
-    # spikenet.populations["Albert"].monitorize_spikes()
-    # spikenet.populations["Albert"].monitorize_states()
-    # spikenet.populations["MonaLisa"].monitorize_spikes()
-    # spikenet.populations["MonaLisa"].monitorize_states()
-
-    # spikenet.interface.run(dt=0.1, time=200)
-
-    # albert_spikes = spikenet.populations['Albert'].get_data()["spikes"]
-    # monalisa_spikes = spikenet.populations['MonaLisa'].get_data()["spikes"]
-    # plt.step(np.arange(len(albert_spikes)), albert_spikes, alpha=0.3)
-    # plt.step(np.arange(len(albert_spikes)), monalisa_spikes, alpha=0.3)
-    # N = 10
-    # plt.plot(np.convolve(albert_spikes, np.ones(N)/N))
-
-    # states = np.array(spikenet.populations['Albert'].get_data()['states'])
-
-    # plt.figure(2)
-    # for i in range(1):
-    #     plt.plot(states[:, i, 0],marker=".")
-    #     plt.title("V")
-
-    # plt.figure(3)
-    # for i in range(5):
-    #     plt.plot(states[:, i, 1],marker=".")
-    #     plt.title("gsyn_exc")
-
-    # plt.figure(4)
-    # for i in range(5):
-    #     plt.plot(states[:, i, 2],marker=".")
-    #     plt.title("gsyn_inh")
-
-    # plt.figure(5)
-    # for i in range(5):
-    #     plt.plot(states[:, i, 3],marker=".")
-    #     plt.title("u")
-
-    # states = np.array(spikenet.populations['MonaLisa'].get_data()['states'])
-
-    # plt.figure(6)
-    # for idx, feat in enumerate(["V", "gsyne", "gsyni", "u"]):
-    #     plt.plot(states[:, 0, idx], label=feat)
-    # plt.title("MonaLisa")
-    # plt.legend()
-
-    nn = NeuronCatalogue.from_yaml("tests/basal_ganglia_neurons.yaml")
-    sn = SpikingNetwork.from_yaml("tests/basal_ganglia_network.yaml", nn)
-    from quilt.view import plot_graph
-
-    plot_graph(sn)
-
-    plt.show()
+    

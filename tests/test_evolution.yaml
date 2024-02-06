@@ -1,0 +1,12 @@
+# Build a tiny population for each neuron type
+# to check for evolution issues
+populations:
+  izh_pop:
+    size: 5
+    neuron_model: dummy_izhikevich
+  aeif_pop:
+    size: 5
+    neuron_model: dummy_aeif
+  aqif_pop:
+    size: 5
+    neuron_model: dummy_aqif
