@@ -1,10 +1,9 @@
 parameters:
   gamma:
-    min: 0
-    max: 1
+    min: -85
+    max: 0
 
 parametric:
   gamma:
     - population: Albert
       attribute: V_peak
-      susceptibility: 0.5

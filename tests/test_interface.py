@@ -69,20 +69,25 @@ def test_poisson_spike_injector():
     spikenet.populations["Albert"].add_poisson_spike_injector(250, 0.3, 0.05)
     spikenet.run(dt=0.1, time=1)
 
-def test_parametric_sn():
+def test_parametric_suscettivity():
     from quilt.builder import ParametricSpikingNetwork
     sn = ParametricSpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS, TEST_SUSCEPTIBILITY_1)
     sn.set_parameters(alpha=0.1)
     sn.build()
 
+def test_parametric_set():
+    from quilt.builder import ParametricSpikingNetwork
+    sn = ParametricSpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS, TEST_SUSCEPTIBILITY_2)
+    sn.set_parameters(gamma=-6)
+    sn.build()
+
 def test_multiparametric_sn():
     from quilt.builder import ParametricSpikingNetwork
     sn = ParametricSpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS, [TEST_SUSCEPTIBILITY_1, TEST_SUSCEPTIBILITY_2])
-    sn.set_parameters(alpha=0.1)
+    sn.set_parameters(alpha=0.1, gamma=-10)
     sn.build()
 
-
 if __name__=="__main__":
-    test_multiparametric_sn()
+    test_parametric_set()
     exit()
     
