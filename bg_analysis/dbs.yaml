@@ -1,0 +1,15 @@
+parameters:
+  current:
+    min: 0
+    max: 30
+  omega:
+    min: 0
+    max: 1000
+
+parametric:
+  current:
+    - population: GPeTA
+      attribute: I_osc
+  omega:
+    - population: STN
+      attribute: omega_I

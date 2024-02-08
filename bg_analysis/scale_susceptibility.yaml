@@ -16,12 +16,16 @@ parametric:
   MSN_scale:
     - population: D1, D2
       attribute: size
+      susceptilibilty: 1
   FSN_scale:
     - population: FSN
       attribute: size
+      susceptilibilty: 1
   GPe_scale:
     - population: GPeTA, GPeTI
       attribute: size
+      susceptilibilty: 1
   STN_scale:
     - population: STN
       attribute:  size
+      susceptilibilty: 1
