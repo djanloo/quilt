@@ -81,6 +81,9 @@ cdef class SparseProjector():
         float weight, weight_delta, delay, delay_delta
 
     def __cinit__(self, params_dict, dist_type="lognorm"):
+        if params_dict["type"] != 'exc' and params_dict["type"] != 'inh':
+            raise ValueError(f"Unrecognized synapse type: '{params_dict['type']}'")
+            
         self.type = 0 if params_dict["type"] == "exc" else 1
            
         if dist_type == "lognorm":
