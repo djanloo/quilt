@@ -80,7 +80,6 @@ void izhikevich_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt 
 
 void izhikevich_neuron::on_spike(EvolutionContext * /*evo*/){
     izhikevich_param * p = static_cast<izhikevich_param*>(population->neuroparam); 
-    // state[0]  = p->E_l;
     state[3] += p->d;
 }
 
