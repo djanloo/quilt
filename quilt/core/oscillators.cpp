@@ -56,8 +56,20 @@ osc_state Link<Oscillator,Oscillator>::get(double now){
 template <class SOURCE, class DESTINATION>
 float Link<SOURCE, DESTINATION>::timestep = 0.0;
 
+Oscillator::Oscillator(OscillatorNetwork * oscnet):oscnet(oscnet){
+    // cout << "Creating oscillator"<< endl;
+    // cout << "\tstate"<<endl;
+    state = {0.0, 0.0};
+    // cout << "\tid"<<endl;
+    id = HierarchicalID(oscnet->id);
+    // cout << "\tadding to oscillators"<<endl;
+    oscnet->oscillators.push_back(this); 
+    // cout << "Oscillator created" << endl;
+}
+
 void Oscillator::connect(Oscillator * osc, float weight, float delay){
     osc->incoming_osc.push_back(Link<Oscillator, Oscillator>(this, osc, weight, delay));
+    cout << "connectiong to oscillator with weight "<<weight << " and delay "<<delay << endl;
 }
 
 void Oscillator::evolve(EvolutionContext * evo){
@@ -73,49 +85,6 @@ void Oscillator::evolve(EvolutionContext * evo){
     stepper.do_step(lambda, this->state, evo->now, evo->dt);
 }
 
-OscillatorNetwork::OscillatorNetwork(oscillator_type osc_type, vector<ParaMap*> params, const Projection & self_projection){
-
-    if (self_projection.start_dimension != self_projection.end_dimension){
-        throw std::runtime_error("Oscillator Network: projection is not between the same objects.");
-    }
-    if (self_projection.start_dimension != params.size()){
-        throw std::runtime_error("Oscillator Network: number of ParaMaps does not match space dimension.");
-    }
-
-    int N = self_projection.start_dimension;
-
-    oscillators.reserve(self_projection.start_dimension);
-    for (int i = 0; i < self_projection.start_dimension; i++){
-        switch (osc_type)
-        {
-        case oscillator_type::harmonic:
-            oscillators.push_back(new harmonic(*(params[i])));
-            break;
-        
-        case oscillator_type::jensen_rit:
-            break;
-
-        default:
-            throw std::runtime_error("OscillatorNetwork: the given oscillator type is not acceptable");
-            break;
-        }
-    }
-    for (int i = 0; i<N; i++){
-        for (int j = 0; j<N; j++){
-            if (i !=j ){
-                if (std::abs(self_projection.weights[i][j]) > WEIGHT_EPS){
-                    std::cout << "Connected " << i << " to " << j << std::endl;
-                    oscillators[i]->connect(oscillators[j], self_projection.weights[i][j], self_projection.delays[i][j]);
-                }
-            }
-        }
-    }
-}
-
-void OscillatorNetwork::add_oscillator(Oscillator * oscillator){
-    this->oscillators.push_back(oscillator);
-}
-
 void OscillatorNetwork::run(EvolutionContext * evo, double time){
     while (evo->now < time){
         cout << "Time: "<< evo->now <<endl;
@@ -128,14 +97,22 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time){
 
 osc_state Oscillator::none_state = {0.0, 0.0};
 
-harmonic::harmonic(const ParaMap & params){
-    cout << "creating harmonic oscillator" << endl;
-    state = {params.get("x0"), params.get("v0")};
-    k = params.get("k");
-    cout << "harmonic oscill state set" <<endl;
+// *************** Models **************** //
+
+harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap, OscillatorNetwork * oscnet):Oscillator(oscnet){
+    state = {0,0};
+    try{
+        state[0] = paramap->get("x_0");
+        state[1] = paramap->get("v_0");
+        k = paramap->get("k");
+    } catch (const std::out_of_range & e){
+        std::string error_message = "Error in harmonic oscillator: ";
+        error_message += e.what();
+        throw std::out_of_range(error_message);
+    }
 }
 
-void harmonic::evolve_state(const osc_state & state, osc_state & dxdt, double t){
+void harmonic_oscillator::evolve_state(const osc_state & state, osc_state & dxdt, double t){
     dxdt[0] =   state[1];
     dxdt[1] = - k*state[0];
 
@@ -144,6 +121,6 @@ void harmonic::evolve_state(const osc_state & state, osc_state & dxdt, double t)
     }  
 }
 
-osc_state harmonic::none_state = {0.0, 0.0};
+osc_state harmonic_oscillator::none_state = {0.0, 0.0};
 
 
