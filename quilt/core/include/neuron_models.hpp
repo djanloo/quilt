@@ -61,20 +61,16 @@ class aqif_param : public NeuroParam {
                 (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif2) ){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
-            std::string last = "";
             try {
-                last = "k";
-                k = paramap.get(last);
-                last = "V_th";
-                V_th = paramap.get(last);
-                last = "ada_a";
-                ada_a = paramap.get(last);
-                last = "ada_b";
-                ada_b = paramap.get(last);
-                last = "ada_tau_w";
-                ada_tau_w = paramap.get(last);
-            }catch(const std::out_of_range & e){
-                throw std::out_of_range("Missing parameter for aqif neuron:" + last);
+                k = paramap.get("k");
+                V_th = paramap.get("V_th");
+                ada_a = paramap.get("ada_a");
+                ada_b = paramap.get("ada_b");
+                ada_tau_w = paramap.get("ada_tau_w");
+            }catch (const std::out_of_range & e){
+                std::string error_message = "Error in aqif neuron: ";
+                error_message += e.what();
+                throw std::out_of_range(error_message);
             }
         }
 };
@@ -111,16 +107,14 @@ class izhikevich_param : public NeuroParam {
             if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::izhikevich){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
-            std::string last = "";
             try{
-                last = "a";
-                a = paramap.get(last);
-                last = "b";
-                b = paramap.get(last);
-                last = "d";
-                d = paramap.get(last);
+                a = paramap.get("a");
+                b = paramap.get("b");
+                d = paramap.get("d");
             } catch (const std::out_of_range & e){
-                throw (std::out_of_range("Missing parameter for Izhikevich neuron: "+ last));
+                std::string error_message = "Error in izhikevich neuron: ";
+                error_message += e.what();
+                throw std::out_of_range(error_message);
             }
         };
 };
@@ -160,29 +154,24 @@ class aeif_param : public NeuroParam{
         float ada_a;            //!< drift coefficient of the recovery variable 
         float ada_b;            //!< jump coefficient of the recovery variable
         float ada_tau_w;        //!< timescale parameter of the recovery variable [ms]
-        float G_L;      //!< Membrane leak conductance [nS]
+        float G_L;              //!< Membrane leak conductance [nS]
 
         aeif_param (const ParaMap & paramap):
         NeuroParam(paramap){
             if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aeif){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
-            std::string last = "";
             try{
-                last = "G_L";
-                G_L = paramap.get(last);
-                last = "delta_T";
-                delta_T = paramap.get(last);
-                last = "V_th";
-                V_th = paramap.get(last);
-                last = "ada_a";
-                ada_a = paramap.get(last);
-                last="ada_b";
-                ada_b = paramap.get(last);
-                last = "ada_tau_w";
-                ada_tau_w = paramap.get(last);
+                G_L = paramap.get("G_L");
+                delta_T = paramap.get("delta_T");
+                V_th = paramap.get("V_th");
+                ada_a = paramap.get("ada_a");
+                ada_b = paramap.get("ada_b");
+                ada_tau_w = paramap.get("ada_tau_w");
             } catch (const std::out_of_range & e){
-                throw std::out_of_range("Missing parameter for aeif neuron:" + last);
+                std::string error_message = "Error in aeif neuron: ";
+                error_message += e.what();
+                throw std::out_of_range(error_message);
             }
         }
 };
@@ -204,7 +193,9 @@ class aqif2_param : public aqif_param {
                 V_b = paramap.get("V_b");
             }
             catch (const std::out_of_range & e){
-                throw std::out_of_range("Missing parameter for aqif2 neuron: V_b");
+                std::string error_message = "Error in aqif2 neuron: ";
+                error_message += e.what();
+                throw std::out_of_range(error_message);
             }
         }
 }; 

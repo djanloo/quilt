@@ -28,7 +28,15 @@ ParaMap::ParaMap(const std::map<std::string, float> & value_map):value_map(value
 void ParaMap::add(const std::string& key, float value){
         value_map[key] = value;
         }
-float ParaMap::get(const std::string& key) const { return value_map.at(key);}
+float ParaMap::get(const std::string& key) const {
+    float return_value = 0.0;
+    try{
+        return_value = value_map.at(key);
+    }catch (const std::out_of_range & e){
+        throw std::out_of_range("Missing parameter " + key);
+    }
+    return return_value;
+    }
 
 void ParaMap::update(const ParaMap & new_values){
     for (const auto & couple: new_values.value_map){
