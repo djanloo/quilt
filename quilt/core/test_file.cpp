@@ -184,8 +184,13 @@ void test_oscill(){
     int N = 4;
     float ** weights, **delays;
 
-    weights = get_rand_proj_mat(N, N, 0.01, 0.05);
-    delays = get_rand_proj_mat(N, N, 10.0, 20.0);
+    weights = get_rand_proj_mat(N, N, 1, 1);
+    delays = get_rand_proj_mat(N, N, 0.5, 0.1);
+
+    for (int i =0; i< N; i++){
+        weights[i][i] = 0.0;
+    }
+
     Projection proj = Projection(weights, delays, N, N);
 
     cout << "Preparing params" << endl;
@@ -294,6 +299,7 @@ void test_erf_overflow(){
 
 int main(){
     // test_sparse();
-    test_poisson();
+    // test_poisson();
+    test_oscill();
 }
 

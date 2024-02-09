@@ -35,12 +35,15 @@ OSCILLATOR_TYPES = {"harmonic":0}
 
 cdef class OscillatorNetwork:
     cdef cinter.OscillatorNetwork * _osc_net
-    def __cinit__(self, string oscillator, ParaMap):
-        self._osc_net = new cinter.OscillatorNetwork()
-    
-    # def add_oscillator(self, Oscillator oscillator):
-    #     self._osc_net.add_oscillator(oscillator._oscillator)
-    
+    cdef cinter.EvolutionContext * evo
+
+    def __cinit__(self, str oscillator, cinter.ParaMap params):
+        try:
+            oscillator_type = OSCILLATOR_TYPES[oscillator]
+        except KeyError:
+            raise KeyError(f"Oscillator '{oscillator}' is not in {list(OSCILLATOR_TYPES.keys())}")
+        self._osc_net = new cinter.OscillatorNetwork(oscillator_type, )
+
     def run(self, dt=0.1, t=1):
         self._evo = new cinter.EvolutionContext(dt)
         self._osc_net.run(self._evo, t)
