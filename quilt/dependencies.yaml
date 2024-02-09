@@ -25,9 +25,10 @@ spiking:
   include_dirs:
     - core/include
   
-# oscill:
-#   sources:
-#     - interface/oscill.pyx
-#     - core/oscillators.cpp
-#   include_dirs:
-#     - core/include
+oscill:
+  sources:
+    - interface/oscill.pyx
+    - core/oscillators.cpp
+    - core/base_objects.cpp
+  include_dirs:
+    - core/include
