@@ -8,8 +8,6 @@ Convention:
 from libc.stdlib cimport malloc, free
 from libcpp.vector cimport vector
 
-import ctypes
-
 import numpy as np
 cimport numpy as np
 
@@ -20,58 +18,7 @@ VERBOSITY = 1
 
 ctypedef vector[double] neuron_state
 
-
-cdef class Projection:
-
-    cdef int start_dimension, end_dimension
-    cdef float ** _weights
-    cdef float ** _delays 
-    cdef cinter.Projection * _projection
-
-    cdef float [:,:] weights, delays
-
-    def __cinit__(self,  np.ndarray[np.float32_t, ndim=2,mode='c'] weights, np.ndarray[np.float32_t,ndim=2,mode='c'] delays):
-        self.weights = weights
-        self.delays = delays
-
-        self.start_dimension = weights.shape[0]
-        self.end_dimension   = weights.shape[1]
-
-        cdef np.ndarray[np.float32_t, ndim=2, mode="c"] contiguous_weights = np.ascontiguousarray(weights, dtype = ctypes.c_float)
-        cdef np.ndarray[np.float32_t, ndim=2, mode="c"] contiguous_delays  = np.ascontiguousarray(delays,  dtype = ctypes.c_float)
-
-        self._weights = <float **> malloc(self.start_dimension * sizeof(float*))
-        self._delays  = <float **> malloc(self.start_dimension * sizeof(float*))
-
-        if not self._weights or not self._delays:
-            raise MemoryError
-
-        cdef int i
-        for i in range(self.start_dimension):
-            self._weights[i] = &contiguous_weights[i, 0]
-            self._delays[i] = &contiguous_delays[i,0]
-
-        self._projection = new cinter.Projection(  <float**> &self._weights[0], 
-                                            <float**> &self._delays[0], 
-                                            self.start_dimension, 
-                                            self.end_dimension)
-    @property
-    def weights(self):
-        return self.weights
-    
-    @property
-    def delays(self):
-        return self.delays
-    
-    def __dealloc__(self):
-        if self._projection != NULL:
-            del self._projection
-        if self._weights != NULL:
-            free(self._weights)
-        if self._delays != NULL:
-            free(self._delays)
-
-cdef class SparseProjector():
+cdef class SparseProjector:
 
     cdef:
         cinter.SparseProjection * _projection
@@ -83,7 +30,7 @@ cdef class SparseProjector():
     def __cinit__(self, params_dict, dist_type="lognorm"):
         if params_dict["type"] != 'exc' and params_dict["type"] != 'inh':
             raise ValueError(f"Unrecognized synapse type: '{params_dict['type']}'")
-            
+
         self.type = 0 if params_dict["type"] == "exc" else 1
            
         if dist_type == "lognorm":
@@ -290,5 +237,5 @@ class RandomProjector:
         self.last_weights = weights
         self.last_delays = delays
 
-        self.last_projection = Projection(weights.astype(np.float32), delays.astype(np.float32))
+        self.last_projection = base_objects.Projection(weights.astype(np.float32), delays.astype(np.float32))
         return self.last_projection
