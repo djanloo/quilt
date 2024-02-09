@@ -7,19 +7,6 @@ parameters:
 parametric:
 
   dopamine:
-    # Cortical inputs
-    # these are a bit conceptually incorrect
-    # because there is no AMPA/NMDA differentiation
-    - device: pop_D1_spikesource
-      attribute: weight
-      susceptibility: 1.04
-    - device: pop_D2_spikesource
-      attribute: weight
-      susceptibility: -0.26
-    - device: pop_STN_spikesource
-      attribute: weight
-      susceptibility: -0.45
-
     # Populations
     - population: FSN
       attribute:  E_l
