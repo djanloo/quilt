@@ -16,9 +16,14 @@
 using std::cout;
 using std::cerr;
 using std::endl;
+using std::vector;
 
-Projection::Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension):
-    weights(weights), delays(delays), start_dimension(start_dimension), end_dimension(end_dimension){
+Projection::Projection(vector<vector<float>> weights, vector<vector<float>> delays):
+    weights(weights), delays(delays){
+    start_dimension = weights.size();
+    if (start_dimension = 0) throw std::runtime_error("start dimension of projection is zero");
+    end_dimension = weights[0].size();
+    if (end_dimension = 0) throw std::runtime_error("end dimension of projection is zero");
 
     int n_links = 0;
 
