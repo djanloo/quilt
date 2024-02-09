@@ -278,19 +278,24 @@ class ParametricSpikingNetwork(SpikingNetwork):
         
 
         for param in self.params_value:
-            for object in self.susceptibility_dict['parametric'][param]:
+            for parametric_object in self.susceptibility_dict['parametric'][param]:
 
-                attribute = object['attribute']
+                attribute = parametric_object['attribute']
+
 
                 # Choses action: if susceptibility is not specified, use action 'set'
                 # Not the most elegant way of doing this
                 action = "set"
-                if "susceptibility" in object:
+                if "susceptibility" in parametric_object:
                     action = "multiply"
 
-                if "population" in object:
-                    parametric_populations = object['population'].split(',')
-                    parametric_populations = [pop.strip() for pop in parametric_populations]
+                if "population" in parametric_object:
+
+                    if parametric_object['population'] == "ALL":
+                        parametric_populations = self.features_dict['populations'].keys()
+                    else:
+                        parametric_populations = parametric_object['population'].split(",")
+                        parametric_populations = [pop.strip() for pop in parametric_populations]
 
                     for pop in parametric_populations:
 
@@ -299,7 +304,6 @@ class ParametricSpikingNetwork(SpikingNetwork):
                         
                         is_pop_attr = False
                         is_neuron_attr = False
-                        # is_device_attr = False
 
                         # Check if is a direct population attribute (size)
                         # I know it's uselessly too general, it's just in case I have add some pop attributes
@@ -309,7 +313,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
                                 case 'set':
                                     self.features_dict['populations'][pop][attribute] = self.params_value[param]
                                 case 'multiply':
-                                    self.features_dict['populations'][pop][attribute] = base_value * ( 1 + object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
+                                    self.features_dict['populations'][pop][attribute] = base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
                                     
                             is_pop_attr = True
                         except KeyError as error:
@@ -324,19 +328,20 @@ class ParametricSpikingNetwork(SpikingNetwork):
                                 case 'set':
                                     self.neuron_catalogue.update(neuron_model, attribute, self.params_value[param])
                                 case 'multiply':
-                                    self.neuron_catalogue.update(neuron_model, attribute, base_value * ( 1 + object['susceptibility'] * (self.params_value[param] - self.params_shift[param])))
+                                    self.neuron_catalogue.update(neuron_model, attribute, base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param])))
                             
                             is_neuron_attr = True
                         except KeyError as e:
                             is_neuron_attr = False
+
                         if not is_neuron_attr and not is_pop_attr:
                             raise KeyError(f"Paremetric attribute '{attribute}' was specified on population '{pop}' but was not found neither in the population nor in the neuron model.")
 
-                elif "projection" in object:
-                    if object['projection'] == "ALL":
+                elif "projection" in parametric_object:
+                    if parametric_object['projection'] == "ALL":
                         parametric_projections = self.features_dict['projections'].keys()
                     else:
-                        parametric_projections = object['projection'].split(",")
+                        parametric_projections = parametric_object['projection'].split(",")
                         parametric_projections = [proj.strip() for proj in parametric_projections]
 
                     for proj in parametric_projections:
@@ -350,13 +355,32 @@ class ParametricSpikingNetwork(SpikingNetwork):
                                 case 'set':
                                     self.features_dict['projections'][proj][attribute] = self.params_value[param]
                                 case 'multiply':
-                                    self.features_dict['projections'][proj][attribute] = base_value * ( 1 + object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
+                                    self.features_dict['projections'][proj][attribute] = base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
 
                         except KeyError as e:
                             raise KeyError(f"Parametric attribute '{attribute}' was specified on projection '{proj}' but was not found.")
                 
+                elif "device" in parametric_object:
+                    parametric_devices = parametric_object['device'].split(",")
+                    parametric_devices = [dev.strip() for dev in parametric_devices]
+
+                    for dev in parametric_devices:
+
+                        if dev not in self.features_dict['devices'].keys():
+                            raise KeyError(f"Device {dev} was not found in {list(self.features_dict['devices'].keys())}")
+                        try:
+                            base_value = self.features_dict['devices'][dev][attribute]
+                            match action:
+                                case 'set':
+                                    self.features_dict['devices'][dev][attribute] = self.params_value[param]
+                                case 'multiply':
+                                    self.features_dict['devices'][dev][attribute] = base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
+
+                        except KeyError as e:
+                            raise KeyError(f"Parametric attribute '{attribute}' was specified on device '{dev}' but was not found.")
+                
                 else:
-                    raise KeyError(f"Parametric object {object} was not found in the network")
+                    raise KeyError(f"Parametric object {parametric_object} was not found in the network")
 
 class NeuronCatalogue:
 
