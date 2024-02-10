@@ -10,8 +10,10 @@ from libcpp cimport vector
 # TODO: solve relative import from quilt.interface import cinterface
 from quilt.interface.cinterface cimport ParaMap as cParaMap
 
+# TODO: import these as extern from C++ file
 NEURON_TYPES = {"base_neuron":0, "aqif":1,"aqif2":2 ,"izhikevich":3, "aeif":4}
 OSCILLATOR_TYPES = {"base_oscillator":0, "harmonic": 1}
+
 cdef class ParaMap:
 
     def __cinit__(self, dict params):
@@ -98,11 +100,4 @@ cdef class Projection:
     @property
     def cdelays(self):
         return self._delays
-    
-    # def __dealloc__(self):
-    #     if self._projection != NULL:
-    #         del self._projection
-    #     if self._weights != NULL:
-    #         free(self._weights)
-    #     if self._delays != NULL:
-    #         free(self._delays)
+

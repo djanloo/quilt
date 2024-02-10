@@ -114,10 +114,10 @@ harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap, OscillatorNetw
 
 void harmonic_oscillator::evolve_state(const osc_state & state, osc_state & dxdt, double t){
     dxdt[0] =   state[1];
-    dxdt[1] = - k*state[0];
+    // dxdt[1] = - k*state[0];
 
     for (auto input : incoming_osc){
-        dxdt[1] += input.get(t)[0];
+        dxdt[1] += -k * (state[0] - input.get(t)[0]);
     }  
 }
 

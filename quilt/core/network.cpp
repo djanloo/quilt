@@ -21,11 +21,9 @@ using std::vector;
 Projection::Projection(vector<vector<float>> weights, vector<vector<float>> delays):
     weights(weights), delays(delays){
     start_dimension = weights.size();
-    if (start_dimension = 0) throw std::runtime_error("start dimension of projection is zero");
-    end_dimension = weights[0].size();
+    if (start_dimension == 0) throw std::runtime_error("start dimension of projection is zero");
+    end_dimension == weights[0].size();
     if (end_dimension = 0) throw std::runtime_error("end dimension of projection is zero");
-
-    int n_links = 0;
 
     for (unsigned int i = 0; i < start_dimension; i++){
         for (unsigned int j =0 ; j< end_dimension; j++){
@@ -40,10 +38,6 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
                                     unsigned int start_index_1, unsigned int end_index_1, 
                                     unsigned int start_index_2, unsigned int end_index_2){
     
-    // cout << "SparseProjection::build_sector PID "<< std::this_thread::get_id();
-    // cout << "\t 1_indexes: "<< start_index_1 << " " << end_index_1;
-    // cout << "\t 2_indexes: "<< start_index_2 << " " << end_index_2;
-    // cout << endl;
 
     if (start_index_1 > end_index_1) throw std::runtime_error("SparseProjection::build : End index is before start index (efferent)");
     if (start_index_2 > end_index_2) throw std::runtime_error("SparseProjection::build : End index is before start index (afferent)");
@@ -74,8 +68,6 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
     }
     auto end = std::chrono::high_resolution_clock::now();
     rng_dispatch->free();
-    // cout << "SparseProjection::build_sector: took " << ((float)std::chrono::duration_cast<std::chrono::microseconds>(end-start).count())/n_connections << " us/syn" << endl; 
-    // cout << "SparseProjection::build_sector:  extra checks: " << checks - n_connections << endl;
 }
 
 void SparseProjection::build_multithreaded(){
@@ -95,12 +87,9 @@ void SparseProjection::build_multithreaded(){
                                     0, end_dimension-1);
     }
     
-    // cout << "SparseProjection::build_multithreaded: Started ALL" << endl;
-
     for (auto& thread : threads) {
         thread.join();
     }
-    // cout << "SparseProjection::build_multithreaded: Joined ALL" << endl;
 }
 
 const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng, int /*i*/, unsigned int /*j*/){
@@ -163,7 +152,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     try{ 
         params->get("neuron_type");
     }catch (const std::out_of_range & e) {
-        throw( std::out_of_range("Neuron params must havce field neuron_type"));
+        throw( std::out_of_range("Neuron params must have field neuron_type"));
     }
     
     switch(static_cast<neuron_type> (static_cast<int>(params->get("neuron_type")))){
@@ -289,7 +278,6 @@ void Population::print_info(){
 
  Population::~Population(){
     delete neuroparam;
-    // std::cout << "Deleting population neurons"<<std::endl;
     for (Neuron * neur : neurons){
         delete neur;
     }

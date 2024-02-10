@@ -47,6 +47,9 @@ class Projection{
         unsigned int start_dimension, end_dimension;
 
         Projection(vector<vector<float>> weights, vector<vector<float>> delays);
+    
+    private:
+        int n_links = 0;
 };
 
 struct SparseIntHash {
