@@ -104,13 +104,14 @@ cdef extern from "../core/include/oscillators.hpp" namespace "osc_type":
 cdef extern from "../core/include/oscillators.hpp":
     cdef cppclass Oscillator:
         vector[double] state
-        vector[vector[double]] history
+        vector[vector[double]] get_history()
         void connect(Oscillator *, float, float)
 
     cdef cppclass OscillatorNetwork:
-        vector [Oscillator *] oscillators
+        vector [Oscillator *] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
         OscillatorNetwork()
         void run(EvolutionContext * evo, double t)
 
     cdef cppclass harmonic_oscillator:
         harmonic_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
+        vector[vector[double]] get_history()

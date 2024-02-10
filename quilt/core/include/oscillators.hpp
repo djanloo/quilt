@@ -55,6 +55,7 @@ class Oscillator{
         OscillatorNetwork * oscnet;
 
         std::vector<osc_state> history; //!< History of the state
+        vector<osc_state> get_history(){return history;}
 
         std::vector< Link<Oscillator, Oscillator>> incoming_osc;
 
