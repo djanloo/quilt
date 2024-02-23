@@ -6,17 +6,71 @@
  * Numerical methods for delay differential equations Bellen Zennaro
 */
 #pragma once
+#include <functional>
 #include "base_objects.hpp"
 #include "network.hpp"
 
 class EvolutionContext;
 class Population;
 
+using std::vector;
+using std::cout;
+using std::endl;
+
 typedef std::vector<double> osc_state;
 class OscillatorNetwork;
 
 /**Available type of oscillators*/
 enum class oscillator_type : unsigned int {base_oscillator, harmonic, jensen_rit, red_wong_wang};
+
+class ContinuousRK{
+    public:
+        
+        // These are the coefficients of the RK method
+        vector<double> a = {0, 0.5, 0.5, 1};
+        vector<double> b = {1.0/3.0, 1.0/6.0, 1.0/6.0, 1.0/3.0};
+        vector<double> c = {0, 0.5, 0.5, 1};
+
+        // These two make it possible to do a sequential updating.
+        // The system of equation (if no vanishing delays are present)
+        // requires to update just one subsystem at a time since all the other variables
+        // are locked to past values 
+        osc_state proposed_state;
+        vector<osc_state> proposed_evaluation;
+
+        void set_dimension(unsigned int dimension){space_dimension = dimension;}
+        void set_evolution_equation(std::function<void(const osc_state & x, osc_state & dxdt, double t)> F){evolve_state = F;};
+
+        /**
+         * The continuous parameters of the NCE. See "Natural Continuous extensions of Runge-Kutta methods", M. Zennaro, 1986.
+        */
+        vector<double> b_functions(double theta);
+
+        ContinuousRK(EvolutionContext * evo):evo(evo){cout << "created CRK" << endl;};
+
+        vector<osc_state> state_history;
+
+        /**
+         * The K coefficients of RK method.
+         * 
+         * For each step previously computed, there are nu intermediate steps function evalutaions.
+         * For each evluation the number of coeffiecients is equal to the dimension of the oscillator.
+         * Thus for a N-long history of a nu-stage RK of an M-dimensional oscillator, the K coefficients
+         * have shape (N, nu, M).
+        */
+        vector<vector<osc_state>> evaluation_history;
+        /**
+         * Computes the interpolation using the Natural Continuous Extension at a given time for a given axis (one variable of interest).
+        */
+        double get_past(int axis, double abs_time);
+        void compute_next();
+        void fix_next();
+    private:
+        EvolutionContext * evo;
+        unsigned int space_dimension = -1;
+        std::function<void(const osc_state & x, osc_state & dxdt, double t)> evolve_state;
+
+};
 
 /**
  * @class Link
@@ -34,9 +88,14 @@ class Link{
         float weight, delay;
         static float timestep;
 
-        Link(SOURCE * source, DESTINATION * destination, float weight, float delay):
-        source(source), destination(destination),weight(weight),delay(delay){}
-        osc_state get(double now);
+        Link(SOURCE * source, DESTINATION * destination, 
+                float weight, float delay,
+                EvolutionContext * evo
+                ):
+        source(source), destination(destination),weight(weight),delay(delay),evo(evo){}
+        double get(int axis, double now);
+    private:
+        EvolutionContext * evo;
 };
 
 
@@ -48,24 +107,22 @@ class Link{
 */
 class Oscillator{
     public:
-        osc_state state; //!< Current state: may be moved as history.end()
-        static osc_state none_state; //!< This is temporary! The problem starts in C[-T, 0]
+        ContinuousRK memory_integrator;
+
+        static const unsigned int space_dimension = 2;
+        static osc_state none_state;    //!< This is temporary! The problem starts in C[-T, 0]
         oscillator_type osc_type = oscillator_type::base_oscillator;
         HierarchicalID id;
         OscillatorNetwork * oscnet;
 
-        std::vector<osc_state> history; //!< History of the state
-        vector<osc_state> get_history(){return history;}
-
         std::vector< Link<Oscillator, Oscillator>> incoming_osc;
 
-        Oscillator(OscillatorNetwork * oscnet);
+        Oscillator(OscillatorNetwork * oscnet, EvolutionContext * evo);
         void connect(Oscillator * osc, float weight, float delay);
-        void evolve(EvolutionContext * evo);
         
-        virtual void evolve_state(const osc_state & /*state*/, osc_state & /*dxdt*/, double /*t*/){
-            throw std::runtime_error("Using virtual evolve_state of oscillator");
-            };
+        std::function<void(const osc_state & x, osc_state & dxdt, double t)> evolve_state;
+    private:
+        EvolutionContext * evo;
 };
 
 /**
@@ -101,8 +158,7 @@ class harmonic_oscillator : public Oscillator{
     public:
         float k;
         static osc_state none_state;
-        harmonic_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
-        void evolve_state(const osc_state & state, osc_state & dxdt, double t) override;
+        harmonic_oscillator(const ParaMap * params, OscillatorNetwork * oscnet, EvolutionContext * evo);
 };
 
 /**
@@ -114,9 +170,12 @@ class harmonic_oscillator : public Oscillator{
 class OscillatorNetwork{
     public:
         HierarchicalID id;
-        OscillatorNetwork():id(){};
+        OscillatorNetwork(EvolutionContext * evo):id(), evo(evo){};
         
         std::vector<Oscillator*> oscillators;
         
+        void init_oscillators(vector<osc_state> init_conds);
         void run(EvolutionContext * evo, double time);
+    private:
+        EvolutionContext * evo;
 };

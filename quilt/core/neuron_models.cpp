@@ -12,16 +12,6 @@
 #include <string>
 #include <boost/numeric/odeint.hpp>
 
-// The menu:
-class EvolutionContext;
-class HierarchicalID;
-class Spike;
-class Synapse;
-class Neuron;
-class Population;
-class Projection;
-
-
 aqif_neuron::aqif_neuron(Population * population): Neuron(population){
     nt = neuron_type::aqif;
     aqif_param * p = static_cast<aqif_param*>(population->neuroparam);
