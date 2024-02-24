@@ -145,7 +145,7 @@ class ContinuousRK{
         */
         vector<double> b_functions(double theta);
 
-        ContinuousRK(EvolutionContext * evo):evo(evo){cout << "created CRK" << endl;};
+        ContinuousRK(){cout << "created CRK" << endl;};
 
         vector<dynamical_state> state_history;
 
@@ -164,7 +164,13 @@ class ContinuousRK{
         double get_past(int axis, double abs_time);
         void compute_next();
         void fix_next();
+
+        void set_evolution_context(EvolutionContext * evo){
+            cout << "Setting evolution context in CRK" << endl;
+            this->evo = evo;
+        }
     private:
+        bool initialized = false;
         EvolutionContext * evo;
         unsigned int space_dimension = -1;
         std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> evolve_state;

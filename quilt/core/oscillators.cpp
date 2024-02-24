@@ -24,8 +24,8 @@ double Link<Oscillator,Oscillator>::get(int axis, double now){
 template <class SOURCE, class DESTINATION>
 float Link<SOURCE, DESTINATION>::timestep = 0.0;
 
-Oscillator::Oscillator(OscillatorNetwork * oscnet, EvolutionContext * evo)
-    :oscnet(oscnet), evo(evo), memory_integrator(evo){
+Oscillator::Oscillator(OscillatorNetwork * oscnet)
+    :oscnet(oscnet), memory_integrator(){
     id = HierarchicalID(oscnet->id);
     oscnet->oscillators.push_back(this); 
     evolve_state = [](const dynamical_state & x, dynamical_state & dxdt, double t){cout << "Warning: using virtual evolve_state of Oscillator" << endl;};
@@ -35,7 +35,7 @@ void Oscillator::connect(Oscillator * osc, float weight, float delay){
     osc->incoming_osc.push_back(Link<Oscillator, Oscillator>(this, osc, weight, delay, evo));
 }
 
-void OscillatorNetwork::init_oscillators(vector<dynamical_state> init_conds){
+void OscillatorNetwork::init_oscillators(EvolutionContext * evo, vector<dynamical_state> init_conds){
     cout << "Initializing oscillators" << endl;
     if (init_conds.size() != oscillators.size()) throw runtime_error("Number of initial conditions is not equal to number of oscillators");
     
@@ -83,9 +83,14 @@ void OscillatorNetwork::init_oscillators(vector<dynamical_state> init_conds){
     }
 
     cout << "After initialization Evolutioncontext is at "<< evo->now<<endl;
+    is_initialized = true;
 }
 
 void OscillatorNetwork::run(EvolutionContext * evo, double time){
+    if (!is_initialized) throw runtime_error("The network must be initialized before running");
+    // Synchronizes every component
+    set_evolution_context(evo);
+
     while (evo->now < time){
         cout << "Time: "<< evo->now <<endl;
         for (auto oscillator : oscillators){
@@ -101,9 +106,9 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time){
 
 // *************** Models **************** //
 harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap,       // Required to be a pointer for the interface                 
-                                        OscillatorNetwork * oscnet, EvolutionContext * evo)     // Required to be a pointer for the interface
+                                        OscillatorNetwork * oscnet)     // Required to be a pointer for the interface
                                         :
-                                        Oscillator(oscnet, evo)
+                                        Oscillator(oscnet)
     {
     try{
         k = paramap->get("k");
@@ -128,9 +133,9 @@ harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap,       // Requi
 }
 
 test_oscillator::test_oscillator(const ParaMap * paramap,       // Required to be a pointer for the interface                 
-                                        OscillatorNetwork * oscnet, EvolutionContext * evo)     // Required to be a pointer for the interface
+                                        OscillatorNetwork * oscnet)     // Required to be a pointer for the interface
                                         :
-                                        Oscillator(oscnet, evo)
+                                        Oscillator(oscnet)
     {
     space_dimension = 6;
 
@@ -157,8 +162,8 @@ double jansen_rit_oscillator::sigm(double v, float nu_max, float v0, float r) {
 }
 
 jansen_rit_oscillator::jansen_rit_oscillator(   const ParaMap * paramap,                                // Required to be a pointer for the interface                 
-                                                OscillatorNetwork * oscnet, EvolutionContext * evo)     // Required to be a pointer for the interface
-                                        : Oscillator(oscnet, evo){
+                                                OscillatorNetwork * oscnet)     // Required to be a pointer for the interface
+                                        : Oscillator(oscnet){
     
     // Parameters directly from references for now
     A = 3.25,

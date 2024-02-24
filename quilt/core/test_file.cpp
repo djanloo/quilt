@@ -199,11 +199,11 @@ void test_oscill(){
     cout << "params done "<< endl;
     EvolutionContext evo = EvolutionContext(1);
 
-    OscillatorNetwork osc_net = OscillatorNetwork(&evo);
+    OscillatorNetwork osc_net = OscillatorNetwork();
 
     vector<dynamical_state> init_cond;
     for (int i=0; i< N; i++){
-        new jansen_rit_oscillator(params[i], &osc_net, &evo);
+        new jansen_rit_oscillator(params[i], &osc_net);
         vector<double> initstate(6, 0);
 
         initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
@@ -218,7 +218,7 @@ void test_oscill(){
     osc_net.oscillators[1]-> connect(osc_net.oscillators[0], 1, 100);
     osc_net.oscillators[0]-> connect(osc_net.oscillators[1], 1, 100);
 
-    osc_net.init_oscillators(init_cond);
+    // osc_net.init_oscillators(&evo, init_cond);
 
     ofstream file("output.txt");
     osc_net.run(&evo, 10000);

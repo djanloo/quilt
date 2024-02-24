@@ -12,7 +12,7 @@ cimport numpy as np
 cimport quilt.interface.cinterface as cinter
 cimport quilt.interface.base_objects as base_objects
 
-get_class = {"harmonic": harmonic_oscillator} 
+get_class = {"harmonic": harmonic_oscillator, "jansen-rit": jansen_rit_oscillator} 
 
 cdef class OscillatorNetwork:
 
@@ -32,8 +32,27 @@ cdef class OscillatorNetwork:
                                                                 proj.weights[i,j], proj.delays[i,j])
 
     def run(self, dt=0.1, time=1):
-        self._evo = new cinter.EvolutionContext(dt)
         self._oscillator_network.run(self._evo, time)
+    
+    def init(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt = 1.0,):
+        print("From Cython: initializing oscillator network")
+        self._evo = new cinter.EvolutionContext(dt)
+
+        n_oscillators = states.shape[0]
+        space_dimension = states.shape[1]
+
+        cdef vector[vector[double]] _states
+        _states = vector[vector[double]](n_oscillators)
+
+        for i in range(n_oscillators):
+            row = vector[double](space_dimension)
+            for j in range(space_dimension):
+                row[j] = states[i,j]
+
+            _states[i] = row
+        
+        self._oscillator_network.init_oscillators(self._evo, _states)
+
 
 
 cdef class harmonic_oscillator:
@@ -53,4 +72,18 @@ cdef class harmonic_oscillator:
         return np.array(self._oscillator.get_history())
     
 
+cdef class jansen_rit_oscillator:
+    cdef:
+        cinter.jansen_rit_oscillator * _oscillator
+        OscillatorNetwork osc_net
+        base_objects.ParaMap paramap
 
+    def __cinit__(self, dict params, OscillatorNetwork oscillator_network):
+        """Do the checks here instead C++?"""
+        params['oscillator_type'] = 'harmonic'
+        self.paramap = base_objects.ParaMap(params)
+        self._oscillator = <cinter.jansen_rit_oscillator *> new cinter.jansen_rit_oscillator(self.paramap._paramap, oscillator_network._oscillator_network)
+        
+    @property
+    def history(self):
+        return np.array(self._oscillator.get_history())

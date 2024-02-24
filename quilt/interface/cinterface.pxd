@@ -111,7 +111,12 @@ cdef extern from "../core/include/oscillators.hpp":
         vector [Oscillator *] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
         OscillatorNetwork()
         void run(EvolutionContext * evo, double t)
+        void init_oscillators(EvolutionContext * evo, vector[vector[double]] init_state)
 
     cdef cppclass harmonic_oscillator:
         harmonic_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
+        vector[vector[double]] get_history()
+    
+    cdef cppclass jansen_rit_oscillator:
+        jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
         vector[vector[double]] get_history()
