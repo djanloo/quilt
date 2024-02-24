@@ -109,7 +109,7 @@ class Oscillator{
     public:
         ContinuousRK memory_integrator;
 
-        static const unsigned int space_dimension = 2;
+        unsigned int space_dimension = 2;
         static osc_state none_state;    //!< This is temporary! The problem starts in C[-T, 0]
         oscillator_type osc_type = oscillator_type::base_oscillator;
         HierarchicalID id;
@@ -157,8 +157,20 @@ class spiking_oscillator : public Oscillator{
 class harmonic_oscillator : public Oscillator{
     public:
         float k;
-        static osc_state none_state;
         harmonic_oscillator(const ParaMap * params, OscillatorNetwork * oscnet, EvolutionContext * evo);
+};
+
+class test_oscillator : public Oscillator{
+    public:
+        float k;
+        test_oscillator(const ParaMap * params, OscillatorNetwork * oscnet, EvolutionContext * evo);
+};
+
+class jansen_rit_oscillator : public Oscillator{
+    public:
+        float a, b, A, B, v0, C, r, vmax;
+        jansen_rit_oscillator(const ParaMap * params, OscillatorNetwork * oscnet, EvolutionContext * evo);
+        static double sigm(double v, float nu_max, float v0, float r);
 };
 
 /**
