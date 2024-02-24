@@ -3,6 +3,7 @@
 #include "include/neurons_base.hpp"
 #include "include/network.hpp"
 
+#include <cmath>
 #include <stdexcept>
 #include <limits>
 #include <boost/numeric/odeint.hpp>
@@ -13,7 +14,7 @@ vector<double> ContinuousRK::b_functions(double theta){
     vector<double> result(4);
 
     result[0] = 2*(1-4*b[0])*std::pow(theta, 3) + 3*(3*b[0] - 1)*theta*theta + theta;
-    for (int i=1; i<4; i++){
+    for (int i = 1; i < 4; i++){
         result[i] = 4*(3*c[i] - 2)*b[i]*std::pow(theta, 3) + 3*(3-4*c[i])*b[i]*theta*theta;
     }
     return result;
@@ -27,6 +28,8 @@ double ContinuousRK::get_past(int axis, double abs_time){
     
     // Cutoff small negative values (1e-16) to zero
     if (theta < 0) theta = 0.0; 
+
+    if (bin_id == state_history.size()) bin_id -= 1;
 
     if (bin_id<0) throw runtime_error("Requested past state that lays before initialization");
 
@@ -47,26 +50,35 @@ double ContinuousRK::get_past(int axis, double abs_time){
 }
 
 void ContinuousRK::compute_next(){
-    cout << "Computing next in CRK" << endl;
+    cout << "Computing next in CRK of dimension "<< space_dimension << endl;
     if (space_dimension < 0) throw runtime_error("Space dimension not set in ContinuousRK");
 
     proposed_evaluation = vector<osc_state>(4, osc_state(space_dimension, 0));
+
     double t_eval;
     osc_state x_eval;
-    
-    for (int nu = 0; nu < 4; nu++){ // Compute the K values
+
+    // Compute the K values
+    for (int nu = 0; nu < 4; nu++){ 
+
+        // When
         t_eval = evo->now + c[nu] * evo->dt;
-        cout << "nu: "<< nu << " t_eval: "<<t_eval<<endl;  
+
+        // Where
         x_eval = state_history.back();
         if (nu != 0) {
             for (int i = 0; i < space_dimension; i++){
-                x_eval[i] += a[nu] * proposed_evaluation[nu-1][i];
+                x_eval[i] += evo->dt * a[nu] * proposed_evaluation[nu-1][i];
             }
-        }
+        }//~Where
+
+
         // Assigns the new K evaluation to the value of the evolution function
         evolve_state(x_eval, proposed_evaluation[nu], t_eval);
-
-    }//End compute K values
+        for (int i =0; i< space_dimension; i++){
+            cout << "K[" <<nu<< "][" <<i<< "] = " <<  proposed_evaluation[nu][i] << endl;
+        }
+    }//~Compute K values
 
     // Updates the state
     proposed_state = state_history.back();
@@ -74,8 +86,9 @@ void ContinuousRK::compute_next(){
         for (int nu = 0; nu < 4; nu++){
             proposed_state[i] += evo->dt * b[nu] * proposed_evaluation[nu][i];
         }
+        cout << "X["<<i<<"] = "<< proposed_state[i]<<endl;
     }
-    cout << "Done computing next in CRK" <<endl;
+    // cout << "Done computing next in CRK" <<endl;
 }
 
 void ContinuousRK::fix_next(){
@@ -91,7 +104,7 @@ double Link<Oscillator,Oscillator>::get(int axis, double now){
 
     // Here do whatever the funk you want with the state variable
     // It depends on which types of oscillators you are linking
-
+    cout << "Link has weight " << weight <<endl;
     return weight*past_state;
 }
 
@@ -123,8 +136,8 @@ void OscillatorNetwork::init_oscillators(vector<osc_state> init_conds){
     cout << "Max tau is " << max_tau<<endl;
     // end brutal search of maximum delay
     
-    int n_init_pts = static_cast<int>(max_tau/evo->dt);
-    if (n_init_pts == 0) n_init_pts = 1;
+    int n_init_pts = static_cast<int>(max_tau/evo->dt) + 1;
+
     cout << "Adding " << n_init_pts << " initial points"<<endl;
     for (int i = 0; i < init_conds.size(); i++ ){
         cout << "oscillator "<<i<<endl; 
@@ -152,7 +165,7 @@ void OscillatorNetwork::init_oscillators(vector<osc_state> init_conds){
     // Set the current time to max_tau
     // This makes the initialization to be in [0, T] instead of [-T, 0]
     // but otherwise we should consider negative times in the `get()` method of links
-    for (int n = 0; n < n_init_pts; n++){
+    for (int n = 0; n < n_init_pts - 1; n++){  // If I make n points I am at t = (n-1)*h because zero is included
         evo->do_step();
     }
 
@@ -172,10 +185,8 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time){
     }
 }
 
-osc_state Oscillator::none_state = {0.0, 0.0};
 
 // *************** Models **************** //
-
 harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap,       // Required to be a pointer for the interface                 
                                         OscillatorNetwork * oscnet, EvolutionContext * evo)     // Required to be a pointer for the interface
                                         :
@@ -192,11 +203,10 @@ harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap,       // Requi
     memory_integrator.set_dimension(space_dimension);
 
     evolve_state = [this](const osc_state & x, osc_state & dxdt, double t){
-        cout << "calling evolution of harmonic oscillator "<<endl;
         dxdt[0] = x[1]; // dx/dt = v
 
         for (auto input : incoming_osc){
-            dxdt[1] += -k * (x[0] - input.get(0, t) );
+            dxdt[1] += x[0] - k*input.get(0, t) ;
         }  
     };
 
@@ -204,6 +214,72 @@ harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap,       // Requi
 
 }
 
-osc_state harmonic_oscillator::none_state = {0.0, 0.0};
+test_oscillator::test_oscillator(const ParaMap * paramap,       // Required to be a pointer for the interface                 
+                                        OscillatorNetwork * oscnet, EvolutionContext * evo)     // Required to be a pointer for the interface
+                                        :
+                                        Oscillator(oscnet, evo)
+    {
+    space_dimension = 6;
 
+    evolve_state = [this](const osc_state & x, osc_state & dxdt, double t){
+
+        dxdt[0] = x[1];
+        dxdt[1] = -x[0];
+
+        dxdt[2] = x[3];
+        dxdt[3] = -x[2];
+
+        dxdt[4] = x[5];
+        dxdt[5] = -x[4];
+    };
+
+    memory_integrator.set_dimension(space_dimension);
+    memory_integrator.set_evolution_equation(evolve_state);
+}
+
+// Auxiliary for Jansen-Rit
+double jansen_rit_oscillator::sigm(double v, float nu_max, float v0, float r) {
+    double result = nu_max / (1.0 + std::exp(r*(v0-v)));
+    // cout << "sigma" result << endl;
+    return result;
+}
+
+jansen_rit_oscillator::jansen_rit_oscillator(   const ParaMap * paramap,                                // Required to be a pointer for the interface                 
+                                                OscillatorNetwork * oscnet, EvolutionContext * evo)     // Required to be a pointer for the interface
+                                        : Oscillator(oscnet, evo){
+    
+    // Parameters directly from references for now
+    A = 3.25,
+    B = 22.0;
+    a = 100.0/1000.0;   // ms^(-1)
+    b = 50.0/1000.0;    // ms^(-1)
+
+    vmax = 5.0/1000.0; // ms^(-1)
+    v0 = 6.0;
+    C = 135.0;
+    r = 0.56;
+
+    space_dimension = 6;
+    evolve_state = [this](const osc_state & x, osc_state & dxdt, double t){
+        cout << "In evolve state X is [";
+        for (auto xx : x){cout << xx << " ";}cout <<endl;
+        double external_inputs = 200.0/1000.0; // ms^(-1)
+        double piece = 0.0;
+
+        for (auto input : incoming_osc){
+            external_inputs += input.get(0, t);
+        }
+
+        dxdt[0] = x[3];
+        dxdt[1] = x[4];
+        dxdt[2] = x[5];
+
+        dxdt[3] = A*a*sigm( x[1] - x[2], vmax, v0, r) - 2*a*x[3] - a*a*x[0];
+        dxdt[4] = A*a*(  external_inputs + 0.8*C*sigm(C*x[0], vmax, v0, r) ) - 2*a*x[4] - a*a*x[1];
+        dxdt[5] = B*b*0.25*C*sigm(0.25*C*x[0], vmax, v0, r) - 2*b*x[5] - b*b*x[2];
+
+    };
+    memory_integrator.set_dimension(space_dimension); // Solve this, it's stupid to say things twice
+    memory_integrator.set_evolution_equation(evolve_state);
+}
 
