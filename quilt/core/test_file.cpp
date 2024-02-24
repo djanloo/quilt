@@ -169,7 +169,7 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 1;
+    int N = 2;
     vector<vector<float>> weights, delays;
 
 
@@ -194,34 +194,34 @@ void test_oscill(){
     vector<ParaMap*> params(N);
 
     params[0] = new ParaMap();
-    // params[0]->add("k", 1.0);
+    params[1] = new ParaMap();
 
     cout << "params done "<< endl;
     EvolutionContext evo = EvolutionContext(1);
 
     OscillatorNetwork osc_net = OscillatorNetwork(&evo);
 
-    vector<osc_state> init_cond;
+    vector<dynamical_state> init_cond;
     for (int i=0; i< N; i++){
         new jansen_rit_oscillator(params[i], &osc_net, &evo);
-        vector<double> initstate(6, -100);
-        //  0.13,  23.9,  16.2,  -0.14,   5.68, 108.2]
-        initstate[0] = 0.13;
-        initstate[1] = 23.9;
-        initstate[2] = 16.2;
-        initstate[3] = -0.14/1e6;
-        initstate[4] = 5.68/1e6;
-        initstate[5] = 108.2/1e6;
+        vector<double> initstate(6, 0);
+
+        initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
 
         init_cond.push_back(initstate);
-    }
-    cout << "Before connection oscnet has " << osc_net.oscillators.size() << " oscilators" <<endl;
-    // osc_net.oscillators[0]-> connect(osc_net.oscillators[0],-1, 1);
+    }    
+    osc_net.oscillators[1]-> connect(osc_net.oscillators[0], 1, 100);
+    osc_net.oscillators[0]-> connect(osc_net.oscillators[1], 1, 100);
 
     osc_net.init_oscillators(init_cond);
 
     ofstream file("output.txt");
-    osc_net.run(&evo, 1000);
+    osc_net.run(&evo, 10000);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){
