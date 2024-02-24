@@ -169,78 +169,59 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 4;
+    int N = 1;
     vector<vector<float>> weights, delays;
 
 
-    cout << "making weights" << endl;
-    weights = get_rand_proj_mat(N,N, 0,0);
-    delays = get_rand_proj_mat(N,N, 0,0);
+    // cout << "making weights" << endl;
+    // weights = get_rand_proj_mat(N,N, 0,0);
+    // delays = get_rand_proj_mat(N,N, 0,0);
 
-    for (int i = 0; i< N;i++){
-        for (int j=0; j< N; j++){
-            weights[i][j] = 0.5;
-            delays[i][j] = 1;
-        }
-    }
+    // for (int i = 0; i< N;i++){
+    //     for (int j=0; j< N; j++){
+    //         weights[i][j] = 0.5;
+    //         delays[i][j] = 1;
+    //     }
+    // }
 
-    for (int i =0; i< N; i++){
-        weights[i][i] = 0.0;
-    }
-    cout << "making projection" << endl;
-    Projection proj = Projection(weights, delays);
+    // for (int i =0; i< N; i++){
+    //     weights[i][i] = 0.0;
+    // }
+    // cout << "making projection" << endl;
+    // Projection proj = Projection(weights, delays);
 
     cout << "Preparing params" << endl;
-    vector<ParaMap*> params(4);
+    vector<ParaMap*> params(N);
 
     params[0] = new ParaMap();
-    params[0]->add("x_0", 0.0);
-    params[0]->add("v_0", 1.0);
-    params[0]->add("k", 1.0);
+    // params[0]->add("k", 1.0);
 
-    params[1] = new ParaMap();
-    params[1]->add("x_0", 0.0);
-    params[1]->add("v_0", 0.0);
-    params[1]->add("k", 5.0);
-
-    params[2] = new ParaMap();
-    params[2]->add("x_0", 0.0);
-    params[2]->add("v_0", 0.0);
-    params[2]->add("k", 2.0);
-
-    params[3] = new ParaMap();
-    params[3]->add("x_0", 0.0);
-    params[3]->add("v_0", 0.0);
-    params[3]->add("k", 2.5);
-    
     cout << "params done "<< endl;
-    EvolutionContext evo = EvolutionContext(0.1);
+    EvolutionContext evo = EvolutionContext(1);
 
     OscillatorNetwork osc_net = OscillatorNetwork(&evo);
 
     vector<osc_state> init_cond;
     for (int i=0; i< N; i++){
-        new harmonic_oscillator(params[i], &osc_net, &evo);
-        vector<double> initstate(2,0);
-        initstate[0] = 0.1*i;
+        new jansen_rit_oscillator(params[i], &osc_net, &evo);
+        vector<double> initstate(6, -100);
+        //  0.13,  23.9,  16.2,  -0.14,   5.68, 108.2]
+        initstate[0] = 0.13;
+        initstate[1] = 23.9;
+        initstate[2] = 16.2;
+        initstate[3] = -0.14/1e6;
+        initstate[4] = 5.68/1e6;
+        initstate[5] = 108.2/1e6;
+
         init_cond.push_back(initstate);
     }
     cout << "Before connection oscnet has " << osc_net.oscillators.size() << " oscilators" <<endl;
-    osc_net.oscillators[3]-> connect(osc_net.oscillators[0], 1, 10);
-    osc_net.oscillators[0]-> connect(osc_net.oscillators[3], 1, 1);
-    // for (int i=0; i< N; i++){
-    //     for(int j=0;j<N;j++){
-    //         if (i != j){
-    //             osc_net.oscillators[i]-> connect(osc_net.oscillators[j], weights[i][j], delays[i][j]);
-    //         }
-    //     }
-    // }
-
+    // osc_net.oscillators[0]-> connect(osc_net.oscillators[0],-1, 1);
 
     osc_net.init_oscillators(init_cond);
 
     ofstream file("output.txt");
-    osc_net.run(&evo, 100.0);
+    osc_net.run(&evo, 1000);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){
