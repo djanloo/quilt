@@ -10,101 +10,14 @@
 
 using namespace std;
 
-vector<double> ContinuousRK::b_functions(double theta){
-    vector<double> result(4);
-
-    result[0] = 2*(1-4*b[0])*std::pow(theta, 3) + 3*(3*b[0] - 1)*theta*theta + theta;
-    for (int i = 1; i < 4; i++){
-        result[i] = 4*(3*c[i] - 2)*b[i]*std::pow(theta, 3) + 3*(3-4*c[i])*b[i]*theta*theta;
-    }
-    return result;
-}
-
-double ContinuousRK::get_past(int axis, double abs_time){
-    cout << "getting past of CRK (abs time: "<<abs_time <<")" << endl;
-    // Split in bin_index + fractionary part
-    int bin_id = static_cast<int>(abs_time/evo->dt); // This is dangerous in case of variable step! ACHTUNG!
-    double theta = abs_time/evo->dt - bin_id;
-    
-    // Cutoff small negative values (1e-16) to zero
-    if (theta < 0) theta = 0.0; 
-
-    if (bin_id == state_history.size()) bin_id -= 1;
-
-    if (bin_id<0) throw runtime_error("Requested past state that lays before initialization");
-
-    cout << "Asked for point " << bin_id << " + " << theta<< endl;
-    cout << "\tA" << endl;
-    // Get the values and the interpolation weights related to that moment in time
-    double y = state_history[bin_id][axis];
-    vector<double> b_func_values = b_functions(theta);
-    cout << "\tB" << endl;
-
-    // Updates using the interpolant
-    for (int nu = 0; nu < 4; nu++){
-        y += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
-    }
-    cout << "\tC" << endl;
-
-    return y;
-}
-
-void ContinuousRK::compute_next(){
-    cout << "Computing next in CRK of dimension "<< space_dimension << endl;
-    if (space_dimension < 0) throw runtime_error("Space dimension not set in ContinuousRK");
-
-    proposed_evaluation = vector<osc_state>(4, osc_state(space_dimension, 0));
-
-    double t_eval;
-    osc_state x_eval;
-
-    // Compute the K values
-    for (int nu = 0; nu < 4; nu++){ 
-
-        // When
-        t_eval = evo->now + c[nu] * evo->dt;
-
-        // Where
-        x_eval = state_history.back();
-        if (nu != 0) {
-            for (int i = 0; i < space_dimension; i++){
-                x_eval[i] += evo->dt * a[nu] * proposed_evaluation[nu-1][i];
-            }
-        }//~Where
-
-
-        // Assigns the new K evaluation to the value of the evolution function
-        evolve_state(x_eval, proposed_evaluation[nu], t_eval);
-        for (int i =0; i< space_dimension; i++){
-            cout << "K[" <<nu<< "][" <<i<< "] = " <<  proposed_evaluation[nu][i] << endl;
-        }
-    }//~Compute K values
-
-    // Updates the state
-    proposed_state = state_history.back();
-    for (int i = 0; i < space_dimension; i++){
-        for (int nu = 0; nu < 4; nu++){
-            proposed_state[i] += evo->dt * b[nu] * proposed_evaluation[nu][i];
-        }
-        cout << "X["<<i<<"] = "<< proposed_state[i]<<endl;
-    }
-    // cout << "Done computing next in CRK" <<endl;
-}
-
-void ContinuousRK::fix_next(){
-    cout << "Fixing next in CRK" << endl;
-    state_history.push_back(proposed_state);
-    evaluation_history.push_back(proposed_evaluation);
-}
-
 template <>
 double Link<Oscillator,Oscillator>::get(int axis, double now){
-    cout << "Link is requesting " << now - delay << " since now = "<< now << " , delay = " << delay<< endl;
+    // cout << "Link is requesting " << now - delay << " since now = "<< now << " , delay = " << delay<< endl;
     double past_state = source->memory_integrator.get_past(axis, now - delay);
 
     // Here do whatever the funk you want with the state variable
     // It depends on which types of oscillators you are linking
-    cout << "Link has weight " << weight <<endl;
+    // cout << "Link has weight " << weight << " while past state is "<< past_state <<endl;
     return weight*past_state;
 }
 
@@ -115,14 +28,14 @@ Oscillator::Oscillator(OscillatorNetwork * oscnet, EvolutionContext * evo)
     :oscnet(oscnet), evo(evo), memory_integrator(evo){
     id = HierarchicalID(oscnet->id);
     oscnet->oscillators.push_back(this); 
-    evolve_state = [](const osc_state & x, osc_state & dxdt, double t){cout << "Warning: using virtual evolve_state of Oscillator" << endl;};
+    evolve_state = [](const dynamical_state & x, dynamical_state & dxdt, double t){cout << "Warning: using virtual evolve_state of Oscillator" << endl;};
 }
 
 void Oscillator::connect(Oscillator * osc, float weight, float delay){
     osc->incoming_osc.push_back(Link<Oscillator, Oscillator>(this, osc, weight, delay, evo));
 }
 
-void OscillatorNetwork::init_oscillators(vector<osc_state> init_conds){
+void OscillatorNetwork::init_oscillators(vector<dynamical_state> init_conds){
     cout << "Initializing oscillators" << endl;
     if (init_conds.size() != oscillators.size()) throw runtime_error("Number of initial conditions is not equal to number of oscillators");
     
@@ -141,7 +54,7 @@ void OscillatorNetwork::init_oscillators(vector<osc_state> init_conds){
     cout << "Adding " << n_init_pts << " initial points"<<endl;
     for (int i = 0; i < init_conds.size(); i++ ){
         cout << "oscillator "<<i<<endl; 
-        vector<osc_state> new_K(4, vector<double>(oscillators[i]->space_dimension));
+        vector<dynamical_state> new_K(4, vector<double>(oscillators[i]->space_dimension));
 
         // Computes the value of X and K for the past values
         for (int n = 0; n < n_init_pts; n++){
@@ -202,7 +115,7 @@ harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap,       // Requi
 
     memory_integrator.set_dimension(space_dimension);
 
-    evolve_state = [this](const osc_state & x, osc_state & dxdt, double t){
+    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t){
         dxdt[0] = x[1]; // dx/dt = v
 
         for (auto input : incoming_osc){
@@ -221,7 +134,7 @@ test_oscillator::test_oscillator(const ParaMap * paramap,       // Required to b
     {
     space_dimension = 6;
 
-    evolve_state = [this](const osc_state & x, osc_state & dxdt, double t){
+    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t){
 
         dxdt[0] = x[1];
         dxdt[1] = -x[0];
@@ -240,8 +153,7 @@ test_oscillator::test_oscillator(const ParaMap * paramap,       // Required to b
 // Auxiliary for Jansen-Rit
 double jansen_rit_oscillator::sigm(double v, float nu_max, float v0, float r) {
     double result = nu_max / (1.0 + std::exp(r*(v0-v)));
-    // cout << "sigma" result << endl;
-    return result;
+    return nu_max / (1.0 + std::exp(r*(v0-v)));
 }
 
 jansen_rit_oscillator::jansen_rit_oscillator(   const ParaMap * paramap,                                // Required to be a pointer for the interface                 
@@ -260,16 +172,14 @@ jansen_rit_oscillator::jansen_rit_oscillator(   const ParaMap * paramap,        
     r = 0.56;
 
     space_dimension = 6;
-    evolve_state = [this](const osc_state & x, osc_state & dxdt, double t){
-        cout << "In evolve state X is [";
-        for (auto xx : x){cout << xx << " ";}cout <<endl;
-        double external_inputs = 200.0/1000.0; // ms^(-1)
-        double piece = 0.0;
+    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t){
 
+        double external_currents = 0;
         for (auto input : incoming_osc){
-            external_inputs += input.get(0, t);
+            external_currents += input.get(0, t);
         }
-
+        double external_inputs = 130.0/1000.0 + external_currents ;//+ 130*static_cast<double>(rand())/RAND_MAX/1000/10;
+        // cout << "External input is " << external_inputs << endl;
         dxdt[0] = x[3];
         dxdt[1] = x[4];
         dxdt[2] = x[5];
