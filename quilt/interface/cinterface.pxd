@@ -1,7 +1,7 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 
-cdef extern from "../core/include/base_objects.hpp":
+cdef extern from "../core/include/base.hpp":
     cdef cppclass EvolutionContext:
         double dt
         double now
@@ -111,7 +111,7 @@ cdef extern from "../core/include/oscillators.hpp":
         vector [Oscillator *] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
         OscillatorNetwork()
         void run(EvolutionContext * evo, double t)
-        void init_oscillators(EvolutionContext * evo, vector[vector[double]] init_state)
+        void initialize(EvolutionContext * evo, vector[vector[double]] init_state)
 
     cdef cppclass harmonic_oscillator:
         harmonic_oscillator(ParaMap * params, OscillatorNetwork * oscnet)

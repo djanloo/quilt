@@ -20,10 +20,12 @@ using std::vector;
 
 Projection::Projection(vector<vector<float>> weights, vector<vector<float>> delays):
     weights(weights), delays(delays){
+    
     start_dimension = weights.size();
     if (start_dimension == 0) throw std::runtime_error("start dimension of projection is zero");
-    end_dimension == weights[0].size();
-    if (end_dimension = 0) throw std::runtime_error("end dimension of projection is zero");
+    
+    end_dimension = weights[0].size();
+    if (end_dimension == 0) throw std::runtime_error("end dimension of projection is zero");
 
     for (unsigned int i = 0; i < start_dimension; i++){
         for (unsigned int j =0 ; j< end_dimension; j++){
@@ -42,7 +44,7 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
     if (start_index_1 > end_index_1) throw std::runtime_error("SparseProjection::build : End index is before start index (efferent)");
     if (start_index_2 > end_index_2) throw std::runtime_error("SparseProjection::build : End index is before start index (afferent)");
 
-    auto start = std::chrono::high_resolution_clock::now();
+    // auto start = std::chrono::high_resolution_clock::now();
     
     RNG * rng = rng_dispatch->get_rng();
 
@@ -66,7 +68,7 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
         // Insert weight and delay
         (*sector)[coordinates] = this->get_weight_delay(rng, i, j);
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    // auto end = std::chrono::high_resolution_clock::now();
     rng_dispatch->free();
 }
 

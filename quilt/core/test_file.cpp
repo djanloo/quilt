@@ -8,7 +8,7 @@
 #include <string>
 // #include <boost/math/special_functions/erf.hpp>
 
-#include "include/base_objects.hpp"
+#include "include/base.hpp"
 #include "include/devices.hpp"
 #include "include/neurons_base.hpp"
 #include "include/neuron_models.hpp"
@@ -218,7 +218,7 @@ void test_oscill(){
     osc_net.oscillators[1]-> connect(osc_net.oscillators[0], 1, 100);
     osc_net.oscillators[0]-> connect(osc_net.oscillators[1], 1, 100);
 
-    // osc_net.init_oscillators(&evo, init_cond);
+    osc_net.initialize(&evo, init_cond);
 
     ofstream file("output.txt");
     osc_net.run(&evo, 10000);

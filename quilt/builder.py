@@ -4,6 +4,7 @@ import os
 from time import time
 import copy
 import warnings
+import zipfile
 
 import yaml
 import numpy as np
@@ -11,7 +12,7 @@ from rich import print
 from rich.progress import track
 
 
-import quilt.interface.base_objects as base_objects
+import quilt.interface.base as base
 import quilt.interface.spiking as spiking
 import quilt.interface.oscill as oscill
 
@@ -409,7 +410,7 @@ class NeuronCatalogue:
             catalogue.neurons_dict = yaml.safe_load(f)
 
         for neuron_name in catalogue.neurons_dict.keys():
-            catalogue.paramaps[neuron_name] = base_objects.ParaMap(catalogue.neurons_dict[neuron_name])
+            catalogue.paramaps[neuron_name] = base.ParaMap(catalogue.neurons_dict[neuron_name])
             catalogue.neuron_names += [neuron_name]
         
         return catalogue
@@ -417,7 +418,7 @@ class NeuronCatalogue:
     def update(self, neuron_model, attribute, value):
         if attribute in self.neurons_dict[neuron_model].keys():
             self.neurons_dict[neuron_model][attribute] = value
-            self.paramaps[neuron_model] = base_objects.ParaMap(self.neurons_dict[neuron_model])
+            self.paramaps[neuron_model] = base.ParaMap(self.neurons_dict[neuron_model])
         else:
             print(f"neuron model '{neuron_model}' raised error")
             raise KeyError(f"Neuron model {neuron_model} has no attribute {attribute}")
@@ -427,8 +428,7 @@ class NeuronCatalogue:
         try:
             paramap = self.paramaps[neuron]
         except KeyError:
-            raise KeyError(f"Neural model '{neuron}' does not exist in this catalogue")
-
+            raise KeyError(f"Neuron model '{neuron}' does not exist in this catalogue")
         return paramap
 
 class OscillatorNetwork:
@@ -463,7 +463,7 @@ class OscillatorNetwork:
         try:
             weights = np.array(self.features['connectivity']['weights']).astype(np.float32)
             delays = np.array(self.features['connectivity']['delays']).astype(np.float32)
-            proj = base_objects.Projection(weights, delays)
+            proj = base.Projection(weights, delays)
 
             self._interface.build_connections(proj)
         except KeyError as e:
@@ -489,6 +489,42 @@ class OscillatorNetwork:
         net.features['connectivity']['delays'] = delays
 
         return net
+    
+    @classmethod
+    def homogeneous_from_TVB(cls, connectivity_file, oscillator_parameters):
 
+        net = cls()
+        net.features['oscillators'] = dict()
+        net.features['connectivity'] = dict()
+    
+        with zipfile.ZipFile(connectivity_file, 'r') as zip_ref:
+
+            # Load oscillator names
+            if "centres.txt" in zip_ref.namelist():
+                centres = zip_ref.read("centres.txt")
+                for line in centres.decode('utf-8').splitlines():
+                    name, x,y,z, _ = line.split()
+                    net.features['oscillators'][name] = oscillator_parameters
+            else:
+                print(f"centres.txt not in connectivity.")
+            
+            net.n_oscillators = len(net.features['oscillators'])
+
+            # Load tract lengths
+            if "tract_lengths.txt" in zip_ref.namelist():
+                tracts = zip_ref.read("tract_lengths.txt").decode('utf-8')
+                net.features['connectivity']['delays'] = np.loadtxt(tracts.splitlines())
+            else:
+                print(f"tract_lengths.txt not in connectivity.")
+            
+            # Load weights
+            if "weights.txt" in zip_ref.namelist():
+                tracts = zip_ref.read("weights.txt").decode('utf-8')
+                net.features['connectivity']['weights'] = np.loadtxt(tracts.splitlines())
+            else:
+                print(f"weights.txt not in connectivity.")
+            
+
+        return net
 
 

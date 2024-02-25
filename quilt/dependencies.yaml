@@ -6,22 +6,21 @@
 # .hpp files must not be written here
 # as long as they are used in 'extern' blocks
 
-base_objects:
+base:
   sources:
-    - interface/base_objects.pyx
-    - core/base_objects.cpp
+    - interface/base.pyx
+    - core/base.cpp
   include_dirs:
     - core/include
 
 spiking:
   sources:
     - interface/spiking.pyx
-
     - core/neurons_base.cpp
     - core/neuron_models.cpp
     - core/network.cpp
     - core/devices.cpp
-    - core/base_objects.cpp
+    - core/base.cpp
   include_dirs:
     - core/include
   
@@ -29,6 +28,6 @@ oscill:
   sources:
     - interface/oscill.pyx
     - core/oscillators.cpp
-    - core/base_objects.cpp
+    - core/base.cpp
   include_dirs:
     - core/include

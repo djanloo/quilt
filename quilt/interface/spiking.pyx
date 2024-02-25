@@ -12,7 +12,7 @@ import numpy as np
 cimport numpy as np
 
 cimport quilt.interface.cinterface as cinter
-cimport quilt.interface.base_objects as base_objects
+cimport quilt.interface.base as base
 
 VERBOSITY = 1
 
@@ -81,7 +81,7 @@ cdef class Population:
 
     cdef SpikingNetwork spikenet
 
-    def __cinit__(self, int n_neurons, base_objects.ParaMap params, SpikingNetwork spikenet):
+    def __cinit__(self, int n_neurons, base.ParaMap params, SpikingNetwork spikenet):
 
         self.spikenet = spikenet
         self._population = new cinter.Population(<int>n_neurons, params._paramap, spikenet._spiking_network)
@@ -237,5 +237,5 @@ class RandomProjector:
         self.last_weights = weights
         self.last_delays = delays
 
-        self.last_projection = base_objects.Projection(weights.astype(np.float32), delays.astype(np.float32))
+        self.last_projection = base.Projection(weights.astype(np.float32), delays.astype(np.float32))
         return self.last_projection
