@@ -108,6 +108,7 @@ class HierarchicalID{
 class EvolutionContext{
     public:
         double dt, now; // time in millis
+        unsigned int n_steps_done;
 
         EvolutionContext(double dt);
         void do_step();
@@ -145,7 +146,7 @@ class ContinuousRK{
         */
         vector<double> b_functions(double theta);
 
-        ContinuousRK(){cout << "created CRK" << endl;};
+        ContinuousRK(){};
 
         vector<dynamical_state> state_history;
 
@@ -166,13 +167,12 @@ class ContinuousRK{
         void fix_next();
 
         void set_evolution_context(EvolutionContext * evo){
-            cout << "Setting evolution context in CRK" << endl;
             this->evo = evo;
         }
     private:
         bool initialized = false;
         EvolutionContext * evo;
-        unsigned int space_dimension = -1;
+        unsigned int space_dimension = 0;
         std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> evolve_state;
 };
 
@@ -194,6 +194,7 @@ class ParaMap{
         void update(const ParaMap & new_values);
         void add(const string & key, float value);
         float get(const string & key) const ;
+        float get(const string & key, float default_value) const;
 };
 
 /**

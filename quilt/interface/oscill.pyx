@@ -10,7 +10,7 @@ import numpy as np
 cimport numpy as np
 
 cimport quilt.interface.cinterface as cinter
-cimport quilt.interface.base_objects as base_objects
+cimport quilt.interface.base as base
 
 get_class = {"harmonic": harmonic_oscillator, "jansen-rit": jansen_rit_oscillator} 
 
@@ -22,7 +22,7 @@ cdef class OscillatorNetwork:
     def __cinit__(self):
         self._oscillator_network = new cinter.OscillatorNetwork()
 
-    def build_connections(self, base_objects.Projection proj):
+    def build_connections(self, base.Projection proj):
         cdef int i,j
         if proj.start_dimension != proj.end_dimension:
             raise ValueError("Dimension mismatch in oscillator projection")
@@ -34,8 +34,7 @@ cdef class OscillatorNetwork:
     def run(self, dt=0.1, time=1):
         self._oscillator_network.run(self._evo, time)
     
-    def init(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt = 1.0,):
-        print("From Cython: initializing oscillator network")
+    def init(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt=1.0,):
         self._evo = new cinter.EvolutionContext(dt)
 
         n_oscillators = states.shape[0]
@@ -51,20 +50,18 @@ cdef class OscillatorNetwork:
 
             _states[i] = row
         
-        self._oscillator_network.init_oscillators(self._evo, _states)
-
+        self._oscillator_network.initialize(self._evo, _states)
 
 
 cdef class harmonic_oscillator:
     cdef:
         cinter.harmonic_oscillator * _oscillator
         OscillatorNetwork osc_net
-        base_objects.ParaMap paramap
+        base.ParaMap paramap
 
     def __cinit__(self, dict params, OscillatorNetwork oscillator_network):
-        """Do the checks here instead C++?"""
         params['oscillator_type'] = 'harmonic'
-        self.paramap = base_objects.ParaMap(params)
+        self.paramap = base.ParaMap(params)
         self._oscillator = <cinter.harmonic_oscillator *> new cinter.harmonic_oscillator(self.paramap._paramap, oscillator_network._oscillator_network)
         
     @property
@@ -76,12 +73,11 @@ cdef class jansen_rit_oscillator:
     cdef:
         cinter.jansen_rit_oscillator * _oscillator
         OscillatorNetwork osc_net
-        base_objects.ParaMap paramap
+        base.ParaMap paramap
 
     def __cinit__(self, dict params, OscillatorNetwork oscillator_network):
-        """Do the checks here instead C++?"""
-        params['oscillator_type'] = 'harmonic'
-        self.paramap = base_objects.ParaMap(params)
+        params['oscillator_type'] = 'jansen-rit'
+        self.paramap = base.ParaMap(params)
         self._oscillator = <cinter.jansen_rit_oscillator *> new cinter.jansen_rit_oscillator(self.paramap._paramap, oscillator_network._oscillator_network)
         
     @property

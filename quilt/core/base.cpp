@@ -7,7 +7,7 @@
 #include <string>
 
 #include <boost/timer/progress_display.hpp>
-#include "include/base_objects.hpp"
+#include "include/base.hpp"
 
 using std::cout;
 using std::endl;
@@ -21,7 +21,10 @@ HierarchicalID::HierarchicalID(HierarchicalID * parent): parent(parent),n_subcla
 unsigned int HierarchicalID::get_id(){return local_id;}
 
 EvolutionContext::EvolutionContext(double dt):dt(dt),now(0.0){}
-void EvolutionContext::do_step(){now += dt;}
+void EvolutionContext::do_step(){
+    now += dt;
+    n_steps_done ++;
+}
 
 ParaMap::ParaMap(){
     }
@@ -30,12 +33,23 @@ ParaMap::ParaMap(const std::map<std::string, float> & value_map):value_map(value
 void ParaMap::add(const std::string& key, float value){
         value_map[key] = value;
         }
+
 float ParaMap::get(const std::string& key) const {
     float return_value = 0.0;
     try{
         return_value = value_map.at(key);
     }catch (const std::out_of_range & e){
         throw std::out_of_range("Missing parameter " + key);
+    }
+    return return_value;
+    }
+
+float ParaMap::get(const std::string& key, float default_value) const {
+    float return_value = 0.0;
+    try{
+        return_value = value_map.at(key);
+    }catch (const std::out_of_range & e){
+        return default_value;
     }
     return return_value;
     }
@@ -82,7 +96,7 @@ double ContinuousRK::get_past(int axis, double abs_time){
 }
 
 void ContinuousRK::compute_next(){
-    if (space_dimension < 0) throw runtime_error("Space dimension not set in ContinuousRK");
+    if (space_dimension == 0) throw runtime_error("Space dimension not set in ContinuousRK");
 
     proposed_evaluation = vector<dynamical_state>(4, dynamical_state(space_dimension, 0));
 

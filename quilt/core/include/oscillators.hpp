@@ -6,7 +6,7 @@
  * Numerical methods for delay differential equations Bellen Zennaro
 */
 #pragma once
-#include "base_objects.hpp"
+#include "base.hpp"
 #include "network.hpp"
 
 class EvolutionContext;
@@ -18,17 +18,12 @@ using std::endl;
 
 class OscillatorNetwork;
 
-/**Available type of oscillators*/
-enum class oscillator_type : unsigned int {base_oscillator, harmonic, jensen_rit, red_wong_wang};
-
-
 /**
  * @class Link
  * @brief Delay-weight link for oscillators
  * 
- * The main method is `get()`, that returns the `dynamical_state` of `source` at \f$t = t_{now}-\tau_{i,j} \f$.
+ * The main method is `get(axis, time)`, that returns the specified state variable of `dynamical_state` of `source` at \f$t = t_{now}-\tau_{i,j} \f$.
  * 
- * This is a patchwork for now. DDEs are not a just ODEs with a-posteriori interpolation.
 */
 template <class SOURCE, class DESTINATION>
 class Link{
@@ -36,19 +31,15 @@ class Link{
         SOURCE * source;
         DESTINATION * destination;
         float weight, delay;
-        static float timestep;
 
-        Link(SOURCE * source, DESTINATION * destination, 
-                float weight, float delay,
-                EvolutionContext * evo
-                ):
-        source(source), destination(destination),weight(weight),delay(delay),evo(evo){}
+        Link(SOURCE * source, DESTINATION * destination,float weight, float delay):
+        source(source), destination(destination), weight(weight), delay(delay){}
+
         double get(int axis, double now);
 
         void set_evolution_context(EvolutionContext * evo){
-            cout << "Setting evocontext in link"<<endl;
             this->evo = evo;
-            };
+        };
     private:
         EvolutionContext * evo;
 };
@@ -62,13 +53,10 @@ class Link{
 */
 class Oscillator{
     public:
-        ContinuousRK memory_integrator;
-
         unsigned int space_dimension = 2;
-        static dynamical_state none_state;    //!< This is temporary! The problem starts in C[-T, 0]
-        oscillator_type osc_type = oscillator_type::base_oscillator;
         HierarchicalID id;
         OscillatorNetwork * oscnet;
+        ContinuousRK memory_integrator;
 
         std::vector< Link<Oscillator, Oscillator>> incoming_osc;
 
@@ -80,7 +68,6 @@ class Oscillator{
         std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> evolve_state;
         
         void set_evolution_context(EvolutionContext * evo){
-            cout << "Setting evocontext in oscillator"<<endl;
             this->evo = evo;
             memory_integrator.set_evolution_context(evo);
             for (auto & incoming_link : incoming_osc){
@@ -114,12 +101,6 @@ class spiking_oscillator : public Oscillator{
 };
 
 
-/**
- * @class harmonic
- * @brief test harmonic oscillator
- * 
- * Must be removed in future.
-*/
 class harmonic_oscillator : public Oscillator{
     public:
         float k;
@@ -152,11 +133,10 @@ class OscillatorNetwork{
         
         std::vector<Oscillator*> oscillators;
         
-        void init_oscillators(EvolutionContext * evo, vector<dynamical_state> init_conds);
+        void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
         void run(EvolutionContext * evo, double time);
 
         void set_evolution_context(EvolutionContext * evo){
-            cout << "Setting evocontext in oscillator network"<<endl;
             this->evo = evo;
             for (auto & oscillator : oscillators){
                 oscillator->set_evolution_context(evo);

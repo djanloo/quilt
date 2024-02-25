@@ -3,7 +3,7 @@
  * @brief Base-level neural dynamics (spikes, spike porcessing and generation, population parameters)
  */
 #pragma once
-#include "base_objects.hpp"
+#include "base.hpp"
 #include <queue>
 #include <limits>
 #include <string>
