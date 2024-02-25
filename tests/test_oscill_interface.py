@@ -1,5 +1,5 @@
 from quilt.interface import oscill
-from quilt.interface import base_objects
+from quilt.interface import base
 import numpy as np
 
 def test_oscnet():
@@ -21,16 +21,10 @@ def test_build_connections():
     w = np.arange(16).reshape((4,4)).astype(np.float32) + 1
     d = w.copy()
 
-    proj = base_objects.Projection(w,d)
+    proj = base.Projection(w,d)
     net.build_connections(proj)
         
     return net
-
-# def test_add_osc():
-#     params = dict(k=1, x_0=0, v_0=2)
-#     net = oscill.OscillatorNetwork()
-#     net.add_oscillator(params)
-    
 
 def test_run():
     
@@ -41,15 +35,16 @@ def test_run():
 def test_homogeneous_builder():
     from quilt.builder import OscillatorNetwork
     N = 2
-    params = dict(oscillator_type='jansen-rit', k=1, x_0=1, v_0=1)
+    params = dict(oscillator_type='jansen-rit')
     w = np.ones((N,N))
     for i in range(N):
         w[i,i] = 0
     d = np.ones((N,N))*0
     net = OscillatorNetwork.homogeneous(params, w, d)
     net.build()
-    net.init(np.arange(N*6).reshape(N, 6).astype(float), dt=0.1)
-    net.run(dt=0.1,time=30)
+    init_cond = np.array([[0.13, 20.0, 20.0, 1e-6, 1e-6, 1e-6],[0.13, 20.0, 20.0, 1e-6, 1e-6, 1e-6]])
+    net.init(init_cond, dt=0.1)
+    net.run(dt=1,time=1000)
     return net
 
 def test_get_history():
@@ -58,8 +53,26 @@ def test_get_history():
         net.oscillators[osc].history
     return net
 
+def test_connect():
+    from quilt.builder import OscillatorNetwork
+    N = 2
+    params = dict(oscillator_type='jansen-rit')
+    w =  np.random.normal(0.5, 0.1, size=(N,N))
+    for i in range(N):
+        w[i,i] = 0
+    d = np.random.normal(1, 0.1, size=(N,N))
+    net = OscillatorNetwork.homogeneous(params, w, d)
+    net.build()
+    init_cond = np.array([[0.13, 20.0, 20.0, 1e-6, 1e-6, 1e-6],
+                          [0.13, 20.0, 20.0, 1e-6, 1e-6, 1e-6]])
+    net.init(init_cond, dt=0.1)
+    net.run(dt=1,time=1000)
+    return net
+
+
+
 if __name__=="__main__":
-    net = test_get_history()
+    net = test_connect()
     import matplotlib.pyplot as plt 
     plt.figure(1)
     for osc in net.oscillators:
