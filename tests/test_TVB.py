@@ -7,10 +7,10 @@ net.build()
 
 states = np.random.uniform(0, 0.05, size=6*net.n_oscillators).reshape(net.n_oscillators, 6)
 net.init(states, dt=1)
-net.run(time=10000, dt=1)
+net.run(time=1000, dt=1)
 
-for name, number in zip(net.oscillators.keys(), range(2)):
-    plt.plot(net.oscillators[name].history[:, 0], label=name)
-plt.xlabel("t [ms]")
-plt.legend()
-plt.show()
+# for name, number in zip(net.oscillators.keys(), range(2)):
+#     plt.plot(net.oscillators[name].history[:, 0], label=name)
+# plt.xlabel("t [ms]")
+# plt.legend()
+# plt.show()
