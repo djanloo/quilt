@@ -8,7 +8,7 @@
 #include <string>
 // #include <boost/math/special_functions/erf.hpp>
 
-#include "include/base_objects.hpp"
+#include "include/base.hpp"
 #include "include/devices.hpp"
 #include "include/neurons_base.hpp"
 #include "include/neuron_models.hpp"
@@ -23,11 +23,9 @@ float rand_01(){
     return ((float)rand())/RAND_MAX;
 }
 
-float ** get_rand_proj_mat(int N, int M, double min, double max){
-    float** matrix = new float*[N];
-    for (int i = 0; i < N; ++i) {
-        matrix[i] = new float[M];
-    }
+vector<vector<float>> get_rand_proj_mat(int N, int M, double min, double max){
+    
+    vector<vector<float>> matrix(N, vector<float>(M, 0));
 
     for (int i=0;i<N;i++){
         for (int j=0; j< M; j++){
@@ -37,12 +35,6 @@ float ** get_rand_proj_mat(int N, int M, double min, double max){
     return matrix;
 }
 
-void free_proj_mat(float** matrix, int N) {
-    for (int i = 0; i < N; ++i) {
-        delete[] matrix[i];
-    }
-    delete[] matrix;
-}
 
 void test_spiking()
 {
@@ -79,7 +71,7 @@ void test_spiking()
     cout << "size of neuron is " << sizeof(*(a.neurons[0])) << " bytes" << endl ;
     cout << "size of population is " << sizeof(a) << " bytes" << endl;
 
-    float ** weights, **delays;
+    vector<vector<float>>  weights, delays;
 
     weights = get_rand_proj_mat(Na,Nb, -0.02,0.1);
     delays = get_rand_proj_mat(Na,Nb, 0.5, 1.0);
@@ -97,14 +89,10 @@ void test_spiking()
         }
     }
 
-    Projection projection = Projection(weights, delays, Na, Nb);
+    Projection projection = Projection(weights, delays);
 
     a.project(&projection, &b);
     b.project(&projection, &a);
-
-
-    free_proj_mat(weights, Na);
-    free_proj_mat(delays, Nb);
 
 
     // PopCurrentInjector stimulus_a = PopCurrentInjector(&a, 500.0, 0.0, 10.0);
@@ -181,52 +169,63 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 4;
-    float ** weights, **delays;
+    int N = 2;
+    vector<vector<float>> weights, delays;
 
-    weights = get_rand_proj_mat(N, N, 1, 1);
-    delays = get_rand_proj_mat(N, N, 0.5, 0.1);
 
-    for (int i =0; i< N; i++){
-        weights[i][i] = 0.0;
-    }
+    // cout << "making weights" << endl;
+    // weights = get_rand_proj_mat(N,N, 0,0);
+    // delays = get_rand_proj_mat(N,N, 0,0);
 
-    Projection proj = Projection(weights, delays, N, N);
+    // for (int i = 0; i< N;i++){
+    //     for (int j=0; j< N; j++){
+    //         weights[i][j] = 0.5;
+    //         delays[i][j] = 1;
+    //     }
+    // }
+
+    // for (int i =0; i< N; i++){
+    //     weights[i][i] = 0.0;
+    // }
+    // cout << "making projection" << endl;
+    // Projection proj = Projection(weights, delays);
 
     cout << "Preparing params" << endl;
-    vector<ParaMap*> params(4);
+    vector<ParaMap*> params(N);
 
     params[0] = new ParaMap();
-    params[0]->add("x0", 0.0);
-    params[0]->add("v0", 1.0);
-    params[0]->add("k", 1.0);
-
     params[1] = new ParaMap();
-    params[1]->add("x0", 0.0);
-    params[1]->add("v0", 0.0);
-    params[1]->add("k", 5.0);
 
-    params[2] = new ParaMap();
-    params[2]->add("x0", 0.0);
-    params[2]->add("v0", 0.0);
-    params[2]->add("k", 2.0);
-
-    params[3] = new ParaMap();
-    params[3]->add("x0", 0.0);
-    params[3]->add("v0", 0.0);
-    params[3]->add("k", 2.5);
-    
     cout << "params done "<< endl;
-    OscillatorNetwork osc_net = OscillatorNetwork(oscillator_type::harmonic, params, proj);    
+    EvolutionContext evo = EvolutionContext(1);
 
-    EvolutionContext evo = EvolutionContext(0.1);
+    OscillatorNetwork osc_net = OscillatorNetwork();
+
+    vector<dynamical_state> init_cond;
+    for (int i=0; i< N; i++){
+        new jansen_rit_oscillator(params[i], &osc_net);
+        vector<double> initstate(6, 0);
+
+        initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+
+        init_cond.push_back(initstate);
+    }    
+    osc_net.oscillators[1]-> connect(osc_net.oscillators[0], 1, 100);
+    osc_net.oscillators[0]-> connect(osc_net.oscillators[1], 1, 100);
+
+    osc_net.initialize(&evo, init_cond);
 
     ofstream file("output.txt");
-    osc_net.run(&evo, 900.0);
+    osc_net.run(&evo, 10000);
 
-    for (int i=0; i < osc_net.oscillators[0]->history.size(); i++){
+    for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){
-            for (auto val : osc->history[i]){
+            for (auto val : osc->memory_integrator.state_history[i]){
                 file << val << " ";
             }
         }

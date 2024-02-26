@@ -1,5 +1,5 @@
 #pragma once
-#include "base_objects.hpp"
+#include "base.hpp"
 
 // #include <iostream>
 // #include <vector>
@@ -11,6 +11,8 @@
 
 
 #define WEIGHT_EPS 0.00001
+
+using std::vector;
 
 // The menu
 class HierarchicalID;
@@ -41,10 +43,13 @@ class PopInjector;
 */
 class Projection{
     public:
-        float ** weights, **delays;
+        vector<vector<float>>  weights, delays;
         unsigned int start_dimension, end_dimension;
 
-        Projection(float ** weights, float ** delays, unsigned int start_dimension, unsigned int end_dimension);
+        Projection(vector<vector<float>> weights, vector<vector<float>> delays);
+    
+    private:
+        int n_links = 0;
 };
 
 struct SparseIntHash {
@@ -82,7 +87,6 @@ class SparseProjection{
         SparseProjection(double connectivity,  int type, unsigned int start_dimension, unsigned int end_dimension):
                     connectivity(connectivity), type(type), start_dimension(start_dimension), end_dimension(end_dimension){
                         n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
-                        // std::cout << "building SP with params "<< connectivity << " " << type << " "<< start_dimension << " "<< end_dimension << std::endl;
                     }  
         virtual ~SparseProjection() = default;
         void build_sector(sparse_t *, RNGDispatcher *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);

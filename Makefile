@@ -3,7 +3,7 @@
 CXX := g++
 PYTHON := python3
 CXXFLAGS := -std=c++11 -Wall -Wextra -ggdb
-SOURCES := quilt/core/oscillators.cpp quilt/core/network.cpp quilt/core/neuron_models.cpp quilt/core/neurons_base.cpp quilt/core/devices.cpp quilt/core/base_objects.cpp
+SOURCES := quilt/core/oscillators.cpp quilt/core/network.cpp quilt/core/neuron_models.cpp quilt/core/neurons_base.cpp quilt/core/devices.cpp quilt/core/base.cpp
 
 OBJECTS := $(patsubst %.cpp, %.o, $(SOURCES))
 DEPENDS := $(patsubst %.cpp,%.d, $(SOURCES))

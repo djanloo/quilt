@@ -1,5 +1,5 @@
 #include "include/neuron_models.hpp"
-#include "include/base_objects.hpp"
+#include "include/base.hpp"
 #include "include/neurons_base.hpp"
 #include "include/network.hpp"
 
@@ -12,15 +12,7 @@
 #include <string>
 #include <boost/numeric/odeint.hpp>
 
-// The menu:
-class EvolutionContext;
-class HierarchicalID;
-class Spike;
-class Synapse;
-class Neuron;
-class Population;
-class Projection;
-
+// *********************************** AQIF **************************************************//
 
 aqif_neuron::aqif_neuron(Population * population): Neuron(population){
     nt = neuron_type::aqif;
@@ -52,6 +44,9 @@ void aqif_neuron::on_spike(EvolutionContext * /*evo*/){
     state[3] += p->ada_b;
 }
 
+// ******************************** IZHIKEVICH **************************************************//
+
+
 izhikevich_neuron::izhikevich_neuron(Population * population): Neuron(population){
     nt = neuron_type::izhikevich;
     izhikevich_param * p = static_cast<izhikevich_param*>(population->neuroparam);
@@ -80,9 +75,10 @@ void izhikevich_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt 
 
 void izhikevich_neuron::on_spike(EvolutionContext * /*evo*/){
     izhikevich_param * p = static_cast<izhikevich_param*>(population->neuroparam); 
-    // state[0]  = p->E_l;
     state[3] += p->d;
 }
+
+// *********************************** AEIF **************************************************//
 
 aeif_neuron::aeif_neuron(Population * population): Neuron(population){
     state = {population->neuroparam->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ), 0.0, 0.0, 0.0};
@@ -122,6 +118,8 @@ void aeif_neuron::on_spike(EvolutionContext * /*evo*/){
     state[0]  = p->V_reset;
     state[3] += p->ada_b;
 }
+
+// *********************************** AQIF2 **************************************************//
 
 aqif2_neuron::aqif2_neuron(Population * population): Neuron(population){
     nt = neuron_type::aqif2;

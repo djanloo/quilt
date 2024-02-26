@@ -6,24 +6,24 @@
  * Numerical methods for delay differential equations Bellen Zennaro
 */
 #pragma once
-#include "base_objects.hpp"
+#include "base.hpp"
 #include "network.hpp"
 
 class EvolutionContext;
 class Population;
 
-typedef std::vector<double> osc_state;
+using std::vector;
+using std::cout;
+using std::endl;
 
-/**Available type of oscillators*/
-enum class oscillator_type : unsigned int {harmonic, jensen_rit, red_wong_wang};
+class OscillatorNetwork;
 
 /**
  * @class Link
  * @brief Delay-weight link for oscillators
  * 
- * The main method is `get()`, that retruns the `osc_state` of `source` at \f$t = t_{now}-\tau_{i,j} \f$.
+ * The main method is `get(axis, time)`, that returns the specified state variable of `dynamical_state` of `source` at \f$t = t_{now}-\tau_{i,j} \f$.
  * 
- * This is a patchwork for now. DDEs are not a just ODEs with a-posteriori interpolation.
 */
 template <class SOURCE, class DESTINATION>
 class Link{
@@ -31,11 +31,17 @@ class Link{
         SOURCE * source;
         DESTINATION * destination;
         float weight, delay;
-        static float timestep;
 
-        Link(SOURCE * source, DESTINATION * destination, float weight, float delay):
-        source(source), destination(destination),weight(weight),delay(delay){}
-        osc_state get(double now);
+        Link(SOURCE * source, DESTINATION * destination,float weight, float delay):
+        source(source), destination(destination), weight(weight), delay(delay){}
+
+        double get(int axis, double now);
+
+        void set_evolution_context(EvolutionContext * evo){
+            this->evo = evo;
+        };
+    private:
+        EvolutionContext * evo;
 };
 
 
@@ -47,22 +53,29 @@ class Link{
 */
 class Oscillator{
     public:
-        osc_state state; //!< Current state: may be moved as history.end()
-        static osc_state none_state; //!< This is temporary! The problem starts in C[-T, 0]
-
-        std::vector<osc_state> history; //!< History of the state
+        unsigned int space_dimension = 2;
+        HierarchicalID id;
+        OscillatorNetwork * oscnet;
+        ContinuousRK memory_integrator;
 
         std::vector< Link<Oscillator, Oscillator>> incoming_osc;
 
-        Oscillator(){state = {0.0, 0.0};}
+        Oscillator(OscillatorNetwork * oscnet);
         void connect(Oscillator * osc, float weight, float delay);
+        vector<dynamical_state> get_history(){return memory_integrator.state_history ;}
 
-        void evolve(EvolutionContext * evo);
+        // The (virtual) evolution function
+        std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> evolve_state;
         
-        virtual void evolve_state(const osc_state & /*state*/, osc_state & /*dxdt*/, double /*t*/){
-            throw std::runtime_error("Using virtual evolve_state of oscillator");
-            
+        void set_evolution_context(EvolutionContext * evo){
+            this->evo = evo;
+            memory_integrator.set_evolution_context(evo);
+            for (auto & incoming_link : incoming_osc){
+                incoming_link.set_evolution_context(evo);
+            }
             };
+    private:
+        EvolutionContext * evo;
 };
 
 /**
@@ -88,32 +101,49 @@ class spiking_oscillator : public Oscillator{
 };
 
 
-/**
- * @class harmonic
- * @brief test harmonic oscillator
- * 
- * Must be removed in future.
-*/
-class harmonic : public Oscillator{
+class harmonic_oscillator : public Oscillator{
     public:
         float k;
-        static osc_state none_state;
-        harmonic(const ParaMap & params);
-        void evolve_state(const osc_state & state, osc_state & dxdt, double t) override;
+        harmonic_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
+};
+
+class test_oscillator : public Oscillator{
+    public:
+        float k;
+        test_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
+};
+
+class jansen_rit_oscillator : public Oscillator{
+    public:
+        float a, b, A, B, v0, C, r, vmax;
+        jansen_rit_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
+        static double sigm(double v, float nu_max, float v0, float r);
 };
 
 /**
  * @class OscillatorNetwork
- * @brief A (homogeneous) network of oscillators
+ * @brief A network of oscillators
  * 
  * I
 */
 class OscillatorNetwork{
     public:
-        OscillatorNetwork(oscillator_type osc_type, std::vector<ParaMap*> params, const Projection & self_projection);
+        HierarchicalID id;
+        OscillatorNetwork():id(){};
         
         std::vector<Oscillator*> oscillators;
         
+        void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
         void run(EvolutionContext * evo, double time);
-        void add_oscillator(Oscillator * oscillator);
+
+        void set_evolution_context(EvolutionContext * evo){
+            this->evo = evo;
+            for (auto & oscillator : oscillators){
+                oscillator->set_evolution_context(evo);
+            }
+        };
+
+    private:
+        bool is_initialized = false;
+        EvolutionContext * evo;
 };
