@@ -48,8 +48,7 @@ void Synapse::fire(EvolutionContext * evo){
 }
 
 Neuron::Neuron(Population * population):population(population){
-    
-    id = HierarchicalID( population -> id);
+    id = HierarchicalID(population->id);
     state = neuron_state { population->neuroparam->E_l + ((double)rand())/RAND_MAX, 0.0, 0.0};
     last_spike_time = - std::numeric_limits<float>::infinity();
     population -> neurons.push_back(this);        

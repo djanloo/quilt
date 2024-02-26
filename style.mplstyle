@@ -1,0 +1,6 @@
+font.family: sans-serif
+font.sans-serif: TeX Gyre Pagella
+mathtext.fontset: cm
+font.size: 11
+
+figure.figsize: 7.0866, 3.54

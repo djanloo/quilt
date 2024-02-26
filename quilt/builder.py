@@ -4,13 +4,17 @@ import os
 from time import time
 import copy
 import warnings
+import zipfile
 
 import yaml
+import numpy as np
 from rich import print
 from rich.progress import track
 
+
+import quilt.interface.base as base
 import quilt.interface.spiking as spiking
-import quilt.interface.base_objects as base_objects
+import quilt.interface.oscill as oscill
 
 class SpikingNetwork:
 
@@ -22,6 +26,11 @@ class SpikingNetwork:
         self.spike_monitored_pops = set()
         self.state_monitored_pops = set()
 
+        # Here are stored the information about the structure
+        # without a built network.
+        # Features is a dict having possible fields ['populations', 'projections', 'devices']
+        self.features = dict() 
+
     def monitorize_spikes(self, populations=None):
         if self.is_built:
             warnings.warn("Adding monitors after building the network will trigger another rebuild")
@@ -30,7 +39,7 @@ class SpikingNetwork:
         # Monitors are built after populations
         # This is needed for rebuilding
         if populations is None:
-            populations = self.features_dict['populations'].keys()
+            populations = self.features['populations'].keys()
         elif isinstance(populations, str):
             populations = [populations]
         
@@ -44,7 +53,7 @@ class SpikingNetwork:
         # Monitors are built after populations
         # This is needed for rebuilding
         if populations is None:
-            populations = self.features_dict['populations'].keys()
+            populations = self.features['populations'].keys()
         elif isinstance(populations, str):
             populations = [populations]
     
@@ -84,12 +93,12 @@ class SpikingNetwork:
             raise FileNotFoundError(f"YAML file '{net.features_file}' not found")
         
         with open(net.features_file, "r") as f:
-            net.features_dict = yaml.safe_load(f)
+            net.features = yaml.safe_load(f)
 
         # Converts to connectivity in case fan-in is specified
         try:
-            for proj in net.features_dict['projections']:
-                features = net.features_dict['projections'][proj]
+            for proj in net.features['projections']:
+                features = net.features['projections'][proj]
 
                 efferent, _ = proj.split("->")
                 efferent = efferent.strip()
@@ -102,7 +111,7 @@ class SpikingNetwork:
                     
                     if "connectivity" in features.keys():
                         warnings.warn(f"While building projection {proj}, fan-in overrided connectivity")
-                    features['connectivity'] = features['fan_in']/net.features_dict['populations'][efferent]['size']
+                    features['connectivity'] = features['fan_in']/net.features['populations'][efferent]['size']
                     del features['fan_in']
         except KeyError:
             pass
@@ -133,9 +142,9 @@ class SpikingNetwork:
         self.populations = dict()
         
         # Builds populations
-        if "populations" in self.features_dict and self.features_dict['populations'] is not None:
-            for pop in self.features_dict['populations']:
-                features = self.features_dict['populations'][pop]
+        if "populations" in self.features and self.features['populations'] is not None:
+            for pop in self.features['populations']:
+                features = self.features['populations'][pop]
                 paramap = self.neuron_catalogue[features['neuron_model']]
                 try:
                     self.populations[pop] = spiking.Population( features['size'], paramap, self._interface )
@@ -145,13 +154,13 @@ class SpikingNetwork:
                     raise IndexError(message)
             
         # Builds projections
-        if "projections" in self.features_dict and self.features_dict['projections'] is not None:
+        if "projections" in self.features and self.features['projections'] is not None:
             if progress_bar:
-                iter = track(self.features_dict['projections'], description="Building connections..")
+                iter = track(self.features['projections'], description="Building connections..")
             else:
-                iter = self.features_dict['projections']
+                iter = self.features['projections']
             for proj in iter:
-                features = self.features_dict['projections'][proj]
+                features = self.features['projections'][proj]
 
                 efferent, afferent = proj.split("->")
                 efferent, afferent = efferent.strip(), afferent.strip()
@@ -172,14 +181,14 @@ class SpikingNetwork:
                 efferent.project(projector.get_projection(efferent, afferent), afferent)
 
         # Builds external devices
-        if "devices" in self.features_dict and self.features_dict['devices'] is not None:
+        if "devices" in self.features and self.features['devices'] is not None:
 
-            for device_name in self.features_dict['devices']:
+            for device_name in self.features['devices']:
                 try:
                     hierarchical_level, target, description = device_name.split("_")
                 except ValueError as e:
                     raise ValueError(f"Error while building device from yaml (format error?): {e}")
-                device_features = self.features_dict['devices'][device_name]
+                device_features = self.features['devices'][device_name]
 
                 if hierarchical_level == "pop":
                     match device_features['type']:
@@ -211,7 +220,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
         net = super().from_yaml(network_file, neuron_file)
 
         # Backups for parametrization
-        net.original_features = copy.deepcopy(net.features_dict)
+        net.original_features = copy.deepcopy(net.features)
         net.original_neuron_catalogue = copy.deepcopy(net.neuron_catalogue)
 
         net.susceptibility_files = susceptibility_files
@@ -259,7 +268,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
         self.is_built = False
 
         # Reset features
-        self.features_dict = copy.deepcopy(self.original_features)
+        self.features = copy.deepcopy(self.original_features)
         self.neuron_catalogue = copy.deepcopy(self.original_neuron_catalogue)
 
         # Checks that specified params are contained in possible params
@@ -292,14 +301,14 @@ class ParametricSpikingNetwork(SpikingNetwork):
                 if "population" in parametric_object:
 
                     if parametric_object['population'] == "ALL":
-                        parametric_populations = self.features_dict['populations'].keys()
+                        parametric_populations = self.features['populations'].keys()
                     else:
                         parametric_populations = parametric_object['population'].split(",")
                         parametric_populations = [pop.strip() for pop in parametric_populations]
 
                     for pop in parametric_populations:
 
-                        if pop not in self.features_dict['populations']:
+                        if pop not in self.features['populations']:
                             raise KeyError(f"Population {pop} not found in network")
                         
                         is_pop_attr = False
@@ -308,12 +317,12 @@ class ParametricSpikingNetwork(SpikingNetwork):
                         # Check if is a direct population attribute (size)
                         # I know it's uselessly too general, it's just in case I have add some pop attributes
                         try:
-                            base_value = self.features_dict['populations'][pop][attribute]
+                            base_value = self.features['populations'][pop][attribute]
                             match action:
                                 case 'set':
-                                    self.features_dict['populations'][pop][attribute] = self.params_value[param]
+                                    self.features['populations'][pop][attribute] = self.params_value[param]
                                 case 'multiply':
-                                    self.features_dict['populations'][pop][attribute] = base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
+                                    self.features['populations'][pop][attribute] = base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
                                     
                             is_pop_attr = True
                         except KeyError as error:
@@ -321,7 +330,7 @@ class ParametricSpikingNetwork(SpikingNetwork):
 
                         # Check if is a neuron attribute
                         try:
-                            neuron_model = self.features_dict['populations'][pop]['neuron_model']
+                            neuron_model = self.features['populations'][pop]['neuron_model']
                             base_value = self.neuron_catalogue.neurons_dict[neuron_model][attribute]
 
                             match action:
@@ -339,23 +348,23 @@ class ParametricSpikingNetwork(SpikingNetwork):
 
                 elif "projection" in parametric_object:
                     if parametric_object['projection'] == "ALL":
-                        parametric_projections = self.features_dict['projections'].keys()
+                        parametric_projections = self.features['projections'].keys()
                     else:
                         parametric_projections = parametric_object['projection'].split(",")
                         parametric_projections = [proj.strip() for proj in parametric_projections]
 
                     for proj in parametric_projections:
 
-                        if proj not in self.features_dict['projections'].keys():
-                            raise KeyError(f"Projection '{proj}' was not found in {list(self.features_dict['projections'].keys())}")
+                        if proj not in self.features['projections'].keys():
+                            raise KeyError(f"Projection '{proj}' was not found in {list(self.features['projections'].keys())}")
 
                         try:
-                            base_value = self.features_dict['projections'][proj][attribute]
+                            base_value = self.features['projections'][proj][attribute]
                             match action:
                                 case 'set':
-                                    self.features_dict['projections'][proj][attribute] = self.params_value[param]
+                                    self.features['projections'][proj][attribute] = self.params_value[param]
                                 case 'multiply':
-                                    self.features_dict['projections'][proj][attribute] = base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
+                                    self.features['projections'][proj][attribute] = base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
 
                         except KeyError as e:
                             raise KeyError(f"Parametric attribute '{attribute}' was specified on projection '{proj}' but was not found.")
@@ -366,15 +375,15 @@ class ParametricSpikingNetwork(SpikingNetwork):
 
                     for dev in parametric_devices:
 
-                        if dev not in self.features_dict['devices'].keys():
-                            raise KeyError(f"Device {dev} was not found in {list(self.features_dict['devices'].keys())}")
+                        if dev not in self.features['devices'].keys():
+                            raise KeyError(f"Device {dev} was not found in {list(self.features['devices'].keys())}")
                         try:
-                            base_value = self.features_dict['devices'][dev][attribute]
+                            base_value = self.features['devices'][dev][attribute]
                             match action:
                                 case 'set':
-                                    self.features_dict['devices'][dev][attribute] = self.params_value[param]
+                                    self.features['devices'][dev][attribute] = self.params_value[param]
                                 case 'multiply':
-                                    self.features_dict['devices'][dev][attribute] = base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
+                                    self.features['devices'][dev][attribute] = base_value * ( 1 + parametric_object['susceptibility'] * (self.params_value[param] - self.params_shift[param]))
 
                         except KeyError as e:
                             raise KeyError(f"Parametric attribute '{attribute}' was specified on device '{dev}' but was not found.")
@@ -401,7 +410,7 @@ class NeuronCatalogue:
             catalogue.neurons_dict = yaml.safe_load(f)
 
         for neuron_name in catalogue.neurons_dict.keys():
-            catalogue.paramaps[neuron_name] = base_objects.ParaMap(catalogue.neurons_dict[neuron_name])
+            catalogue.paramaps[neuron_name] = base.ParaMap(catalogue.neurons_dict[neuron_name])
             catalogue.neuron_names += [neuron_name]
         
         return catalogue
@@ -409,7 +418,7 @@ class NeuronCatalogue:
     def update(self, neuron_model, attribute, value):
         if attribute in self.neurons_dict[neuron_model].keys():
             self.neurons_dict[neuron_model][attribute] = value
-            self.paramaps[neuron_model] = base_objects.ParaMap(self.neurons_dict[neuron_model])
+            self.paramaps[neuron_model] = base.ParaMap(self.neurons_dict[neuron_model])
         else:
             print(f"neuron model '{neuron_model}' raised error")
             raise KeyError(f"Neuron model {neuron_model} has no attribute {attribute}")
@@ -419,6 +428,103 @@ class NeuronCatalogue:
         try:
             paramap = self.paramaps[neuron]
         except KeyError:
-            raise KeyError(f"Neural model '{neuron}' does not exist in this catalogue")
-
+            raise KeyError(f"Neuron model '{neuron}' does not exist in this catalogue")
         return paramap
+
+class OscillatorNetwork:
+
+    def __init__(self):
+        self.is_built = False
+        self._interface = None
+        self.connectivity = None
+        self.oscillators = dict()
+
+        # Here is stored the information about network structure
+        # without having to build it
+        self.features = dict()
+    
+    def init(self, states, dt=0.1):
+        self._interface.init(states, dt=dt)
+
+    def run(self, dt=0.2, time=1):
+        if not self.is_built:
+            self.build()
+        self._interface.run(dt, time)
+    
+    def build(self):
+        self._interface = oscill.OscillatorNetwork()
+        self.oscillators = dict()
+
+        for oscillator_name in self.features['oscillators']:
+            osctype = self.features['oscillators'][oscillator_name]['oscillator_type']
+            params = self.features['oscillators'][oscillator_name]
+            self.oscillators[oscillator_name] = oscill.get_class[osctype](params, self._interface)
+        
+        try:
+            weights = np.array(self.features['connectivity']['weights']).astype(np.float32)
+            delays = np.array(self.features['connectivity']['delays']).astype(np.float32)
+            proj = base.Projection(weights, delays)
+
+            self._interface.build_connections(proj)
+        except KeyError as e:
+            raise KeyError(f"Missing parameter while building OscillatorNetwork connectivity: {e}")
+
+        self.is_built = True
+
+
+    @classmethod 
+    def homogeneous(cls, oscillator_parameters, weights, delays, names=None):
+        n_oscillators = len(weights)
+        names = [f"osc_{i}" for i in range(n_oscillators)] if names is None else names
+        if len(names) != n_oscillators:
+            raise ValueError("List of oscillator names must have len() equal to n_oscillators")
+        net = cls()
+
+        net.features['oscillators'] = dict()
+        for name in names:
+            net.features['oscillators'][name] = oscillator_parameters
+
+        net.features['connectivity'] = dict()
+        net.features['connectivity']['weights'] = weights
+        net.features['connectivity']['delays'] = delays
+
+        return net
+    
+    @classmethod
+    def homogeneous_from_TVB(cls, connectivity_file, oscillator_parameters):
+
+        net = cls()
+        net.features['oscillators'] = dict()
+        net.features['connectivity'] = dict()
+    
+        with zipfile.ZipFile(connectivity_file, 'r') as zip_ref:
+
+            # Load oscillator names
+            if "centres.txt" in zip_ref.namelist():
+                centres = zip_ref.read("centres.txt")
+                for line in centres.decode('utf-8').splitlines():
+                    name, x,y,z, _ = line.split()
+                    net.features['oscillators'][name] = oscillator_parameters
+            else:
+                print(f"centres.txt not in connectivity.")
+            
+            net.n_oscillators = len(net.features['oscillators'])
+
+            # Load tract lengths
+            if "tract_lengths.txt" in zip_ref.namelist():
+                tracts = zip_ref.read("tract_lengths.txt").decode('utf-8')
+                net.features['connectivity']['delays'] = np.loadtxt(tracts.splitlines())
+            else:
+                print(f"tract_lengths.txt not in connectivity.")
+            
+            # Load weights
+            if "weights.txt" in zip_ref.namelist():
+                tracts = zip_ref.read("weights.txt").decode('utf-8')
+                net.features['connectivity']['weights'] = np.loadtxt(tracts.splitlines())
+            else:
+                print(f"weights.txt not in connectivity.")
+            
+
+        return net
+
+

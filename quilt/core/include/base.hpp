@@ -10,12 +10,20 @@
 #include <random>
 #include <thread>
 #include <mutex>
+#include <functional>
+
+using std::cout;
+using std::endl;
+using std::runtime_error;
+using std::vector;
+using std::map;
+using std::string;
 
 class RNG{
     public:
         RNG(const uint64_t seed):
         rng(seed),
-        uniform(std::numeric_limits<double>::epsilon(),1.0 - std::numeric_limits<double>::epsilon()){
+        uniform(std::numeric_limits<double>::epsilon(), 1.0 - std::numeric_limits<double>::epsilon()){
         }
         double get_uniform(){return uniform(rng);}
         int get_int(){return static_cast<int>(rng());}
@@ -65,8 +73,8 @@ class RNGDispatcher{
     private: 
         std::mutex mutex; 
         std::vector<RNG*> rngs;
-        std::map<RNG*, bool> is_occupied;
-        std::map<std::thread::id, RNG*> pids;
+        map<RNG*, bool> is_occupied;
+        map<std::thread::id, RNG*> pids;
 
 };
 
@@ -91,7 +99,7 @@ class HierarchicalID{
 };
 
 /**
- * @class EvolutuionContext
+ * @class EvolutionContext
  * @brief The object that contains time evolution infos
  * 
  * @param[in] dt
@@ -100,10 +108,74 @@ class HierarchicalID{
 class EvolutionContext{
     public:
         double dt, now; // time in millis
+        unsigned int n_steps_done;
 
         EvolutionContext(double dt);
         void do_step();
 };
+
+typedef vector<double> dynamical_state;
+
+/**
+ * @class ContinuousRK
+ * @brief A Natural Continuous Extension (Zennaro, 1986) of the famous fourth-order Runge Kutta method.
+*/
+class ContinuousRK{
+    public:
+        
+        // These are the coefficients of the RK method
+        vector<double> a = {0, 0.5, 0.5, 1};
+        vector<double> b = {1.0/3.0, 1.0/6.0, 1.0/6.0, 1.0/3.0};
+        vector<double> c = {0, 0.5, 0.5, 1};
+
+        // These two make it possible to do a sequential updating of a set of CRK.
+        // The system of equation (if no vanishing delays are present)
+        // requires to update just one subsystem at a time since all the other variables
+        // are locked to past values. To prevent the histories of two subsystems
+        // from "shearing" and refernecing wrong past elements, the new point is first proposed
+        // calling `compute_next()`
+        // then when every CRK has done its proposal they are fixed using `fix_next()`
+        dynamical_state proposed_state;
+        vector<dynamical_state> proposed_evaluation;
+
+        void set_dimension(unsigned int dimension){space_dimension = dimension;}
+        void set_evolution_equation(std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> F){evolve_state = F;};
+
+        /**
+         * The continuous parameters of the NCE. See "Natural Continuous extensions of Runge-Kutta methods", M. Zennaro, 1986.
+        */
+        vector<double> b_functions(double theta);
+
+        ContinuousRK(){};
+
+        vector<dynamical_state> state_history;
+
+        /**
+         * The K coefficients of RK method.
+         * 
+         * For each step previously computed, there are nu intermediate steps function evalutaions.
+         * For each evluation the number of coeffiecients is equal to the dimension of the oscillator.
+         * Thus for a N-long history of a nu-stage RK of an M-dimensional oscillator, the K coefficients
+         * have shape (N, nu, M).
+        */
+        vector<vector<dynamical_state>> evaluation_history;
+        /**
+         * Computes the interpolation using the Natural Continuous Extension at a given time for a given axis (one variable of interest).
+        */
+        double get_past(int axis, double abs_time);
+        void compute_next();
+        void fix_next();
+
+        void set_evolution_context(EvolutionContext * evo){
+            this->evo = evo;
+        }
+    private:
+        bool initialized = false;
+        EvolutionContext * evo;
+        unsigned int space_dimension = 0;
+        std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> evolve_state;
+};
+
 
 /**
  * 
@@ -115,13 +187,14 @@ class EvolutionContext{
 */
 class ParaMap{
     public:
-        std::map<std::string, float> value_map;
+        map<string, float> value_map;
         ParaMap();
-        ParaMap(const std::map<std::string, float> & value_map);
+        ParaMap(const map<string, float> & value_map);
 
         void update(const ParaMap & new_values);
-        void add(const std::string & key, float value);
-        float get(const std::string & key) const ;
+        void add(const string & key, float value);
+        float get(const string & key) const ;
+        float get(const string & key, float default_value) const;
 };
 
 /**

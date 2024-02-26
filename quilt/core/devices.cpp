@@ -1,7 +1,7 @@
 #include "include/devices.hpp"
 #include "include/neurons_base.hpp"
 #include "include/network.hpp"
-#include "include/base_objects.hpp"
+#include "include/base.hpp"
 
 #include <stdexcept>
 #include <limits>
@@ -64,6 +64,7 @@ void PoissonSpikeSource::inject(EvolutionContext * evo){
     for (int i = 0; i < pop->n_neurons; i++){
         
         while (next_spike_times[i] < evo->now + evo->dt){
+            // TODO: use pcg
             delta = -std::log(static_cast<float>(rand())/RAND_MAX)/this->rate * 1000;
             next_spike_times[i] += delta;
             if (next_spike_times[i] < evo->now) {throw std::runtime_error("Poisson spike produced in past");}

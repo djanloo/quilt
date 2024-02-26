@@ -1,7 +1,7 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 
-cdef extern from "../core/include/base_objects.hpp":
+cdef extern from "../core/include/base.hpp":
     cdef cppclass EvolutionContext:
         double dt
         double now
@@ -98,17 +98,25 @@ cdef extern from "../core/include/oscillators.hpp":
     cdef cppclass oscillator_type:
         pass
 
-
 cdef extern from "../core/include/oscillators.hpp" namespace "osc_type":
     cdef oscillator_type harmonic
-
 
 cdef extern from "../core/include/oscillators.hpp":
     cdef cppclass Oscillator:
         vector[double] state
-        vector[vector[double]] history
+        vector[vector[double]] get_history()
+        void connect(Oscillator *, float, float)
 
     cdef cppclass OscillatorNetwork:
-        vector[Oscillator] oscillators
-        OscillatorNetwork(oscillator_type osc_type, vector[ParaMap] params, const Projection & self_projection)
+        vector [Oscillator *] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
+        OscillatorNetwork()
         void run(EvolutionContext * evo, double t)
+        void initialize(EvolutionContext * evo, vector[vector[double]] init_state)
+
+    cdef cppclass harmonic_oscillator:
+        harmonic_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
+        vector[vector[double]] get_history()
+    
+    cdef cppclass jansen_rit_oscillator:
+        jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
+        vector[vector[double]] get_history()
