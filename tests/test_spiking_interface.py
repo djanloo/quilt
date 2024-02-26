@@ -8,7 +8,7 @@ TEST_SUSCEPTIBILITY_2 = "tests/test_susceptibility_2.yaml"
 
 """Parameters and models"""
 def test_paramaps():
-    import quilt.interface.base_objects as base_objs
+    import quilt.interface.base as base_objs
     import quilt.interface.spiking as spiking
     paramap = base_objs.ParaMap(dict(neuron_type='aeif', E_l=-70, 
                                 V_peak=0, G_L=10, V_reset=-65,E_ex=0, E_in=-70,
