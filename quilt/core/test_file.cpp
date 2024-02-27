@@ -108,7 +108,7 @@ void test_spiking()
 
     EvolutionContext evo = EvolutionContext(0.1);
     
-    sn.run(&evo, 5);
+    sn.run(&evo, 5, 1);
 
     for (auto val : sn.population_spike_monitors[0]->get_history()){
         cout << val << " "; 
@@ -164,7 +164,7 @@ void test_poisson(){
     sn.add_injector(&stimulus_b);
 
     EvolutionContext evo = EvolutionContext(0.1);
-    sn.run(&evo, 5000);
+    sn.run(&evo, 5000, 1);
 }
 
 void test_oscill(){
@@ -221,7 +221,7 @@ void test_oscill(){
     osc_net.initialize(&evo, init_cond);
 
     ofstream file("output.txt");
-    osc_net.run(&evo, 10000);
+    osc_net.run(&evo, 10000, 1);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){

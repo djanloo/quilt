@@ -89,7 +89,7 @@ cdef extern from "../core/include/network.hpp":
         PopulationSpikeMonitor * add_spike_monitor(Population * population)
         PopulationStateMonitor * add_state_monitor(Population * population)
 
-        void run(EvolutionContext * evo, double time) except +
+        void run(EvolutionContext * evo, double time, int verbosity) except +
 
 
 #---------------------- OSCILLATORS ------------------ #
@@ -110,7 +110,7 @@ cdef extern from "../core/include/oscillators.hpp":
     cdef cppclass OscillatorNetwork:
         vector [Oscillator *] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
         OscillatorNetwork()
-        void run(EvolutionContext * evo, double t)
+        void run(EvolutionContext * evo, double t, int verbosity) except +
         void initialize(EvolutionContext * evo, vector[vector[double]] init_state)
 
     cdef cppclass harmonic_oscillator:
