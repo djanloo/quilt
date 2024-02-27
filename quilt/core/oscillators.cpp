@@ -7,12 +7,10 @@
 #include <stdexcept>
 #include <limits>
 
-using namespace std;
-
 template <>
-double Link<Oscillator,Oscillator>::get(int axis, double now){
-
-    double past_state = source->memory_integrator.get_past(axis, now - delay);
+double Link<Oscillator,Oscillator>::get(int axis, double now)
+{
+    double past_state = source->get_past(axis, now - delay);
 
     // Here do whatever the funk you want with the state variable
     // It depends on which types of oscillators you are linking
@@ -21,17 +19,21 @@ double Link<Oscillator,Oscillator>::get(int axis, double now){
 }
 
 Oscillator::Oscillator(OscillatorNetwork * oscnet)
-    :oscnet(oscnet), memory_integrator(){
+    :   oscnet(oscnet), 
+        memory_integrator()
+{
     id = HierarchicalID(oscnet->id);
     oscnet->oscillators.push_back(this); 
     evolve_state = [](const dynamical_state & /*x*/, dynamical_state & /*dxdt*/, double /*t*/){cout << "Warning: using virtual evolve_state of Oscillator" << endl;};
 }
 
-void Oscillator::connect(Oscillator * osc, float weight, float delay){
+void Oscillator::connect(Oscillator * osc, float weight, float delay)
+{
     osc->incoming_osc.push_back(Link<Oscillator, Oscillator>(this, osc, weight, delay));
 }
 
-void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds){
+void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds)
+{
     cout << "Initializing oscillators" << endl;
     if (init_conds.size() != oscillators.size()) throw runtime_error("Number of initial conditions is not equal to number of oscillators");
     
@@ -76,14 +78,25 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     is_initialized = true;
 }
 
-void OscillatorNetwork::run(EvolutionContext * evo, double time){
+void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
+{
     if (!is_initialized) throw runtime_error("The network must be initialized before running");
     
     // Synchronizes every component
     set_evolution_context(evo);
 
+    // Some verbose output
+    double t0 = evo->now;
+    int n_steps_total = static_cast<int>(time/evo->dt);
+    if (verbosity > 0){
+        std::cout << "Running network consisting of " << oscillators.size() << " oscillators for " << n_steps_total <<" timesteps"<<std::endl;
+    }
+
+    // Evolve
+    progress bar(n_steps_total, verbosity);
+
     auto start = std::chrono::high_resolution_clock::now();
-    while (evo->now < time){
+    while (evo->now < t0 + time){
             
         // Gets the new values
         for (auto oscillator : oscillators){
@@ -95,18 +108,18 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time){
             oscillator->memory_integrator.fix_next();
         }
         evo->do_step();
+        ++bar;
     }
     auto end = std::chrono::high_resolution_clock::now();
     cout << "Simulation took " << std::chrono::duration_cast<std::chrono::seconds>(end-start).count()<< " seconds ";
-    cout << "( " << static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count())/evo->n_steps_done << " ms/step)" << endl;
+    cout << "( " << static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count())/n_steps_total<< " ms/step)" << endl;
 }
 
 
 // **************************************** Models ***************************************** //
 harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap, OscillatorNetwork * oscnet)    
-                                        :
-                                        Oscillator(oscnet)
-    {
+    :   Oscillator(oscnet)
+{
     k = paramap->get("k");
 
 
@@ -124,11 +137,9 @@ harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap, OscillatorNetw
 
 }
 
-test_oscillator::test_oscillator(const ParaMap * /*paramap*/,       // Required to be a pointer for the interface                 
-                                        OscillatorNetwork * oscnet)     // Required to be a pointer for the interface
-                                        :
-                                        Oscillator(oscnet)
-    {
+test_oscillator::test_oscillator(const ParaMap * /*paramap*/, OscillatorNetwork * oscnet)
+    :   Oscillator(oscnet)
+{
     space_dimension = 6;
 
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t){
@@ -149,12 +160,14 @@ test_oscillator::test_oscillator(const ParaMap * /*paramap*/,       // Required 
 }
 
 // Auxiliary for Jansen-Rit
-double jansen_rit_oscillator::sigm(double v, float nu_max, float v0, float r) {
+double jansen_rit_oscillator::sigm(double v, float nu_max, float v0, float r)
+{
     return nu_max / (1.0 + std::exp(r*(v0-v)));
 }
 
 jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, OscillatorNetwork * oscnet) 
-                                        : Oscillator(oscnet){
+    :   Oscillator(oscnet)
+{
     space_dimension = 6;
 
     // Parameters default from references for now
@@ -189,4 +202,3 @@ jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, Oscillato
     memory_integrator.set_dimension(space_dimension);
     memory_integrator.set_evolution_equation(evolve_state);
 }
-

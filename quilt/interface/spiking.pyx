@@ -162,13 +162,10 @@ cdef class SpikingNetwork:
     def __cinit__(self, str name):
         self._spiking_network = new cinter.SpikingNetwork()
         self.name = name
-        self._spiking_network.verbosity = VERBOSITY # Takes the gloabl value at creation
-
 
     def run(self, dt=0.1, time=1):
-        self._spiking_network.verbosity = VERBOSITY # For last minute decisions
         self._evo = new cinter.EvolutionContext(dt)
-        self._spiking_network.run(self._evo, time)
+        self._spiking_network.run(self._evo, time, VERBOSITY)
 
     def __dealloc__(self):
         if self._spiking_network != NULL:

@@ -1,10 +1,4 @@
-from libcpp cimport string
-
-from time import time
-from libc.stdlib cimport malloc
 from libcpp.vector cimport vector
-
-import ctypes
 
 import numpy as np
 cimport numpy as np
@@ -13,6 +7,12 @@ cimport quilt.interface.cinterface as cinter
 cimport quilt.interface.base as base
 
 get_class = {"harmonic": harmonic_oscillator, "jansen-rit": jansen_rit_oscillator} 
+
+VERBOSITY = 1
+
+def set_verbosity(v):
+    global VERBOSITY
+    VERBOSITY = v
 
 cdef class OscillatorNetwork:
 
@@ -32,7 +32,7 @@ cdef class OscillatorNetwork:
                                                                 proj.weights[i,j], proj.delays[i,j])
 
     def run(self, dt=0.1, time=1):
-        self._oscillator_network.run(self._evo, time)
+        self._oscillator_network.run(self._evo, time, VERBOSITY)
     
     def init(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt=1.0,):
         self._evo = new cinter.EvolutionContext(dt)

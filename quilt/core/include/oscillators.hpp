@@ -37,7 +37,8 @@ class Link{
 
         double get(int axis, double now);
 
-        void set_evolution_context(EvolutionContext * evo){
+        void set_evolution_context(EvolutionContext * evo)
+        {
             this->evo = evo;
         };
     private:
@@ -62,42 +63,30 @@ class Oscillator{
 
         Oscillator(OscillatorNetwork * oscnet);
         void connect(Oscillator * osc, float weight, float delay);
-        vector<dynamical_state> get_history(){return memory_integrator.state_history ;}
+
+        vector<dynamical_state> get_history()
+        {
+            return memory_integrator.state_history;
+        }
+
+        double get_past(unsigned int axis, double t)
+        {
+            return memory_integrator.get_past(axis, t);
+        }
 
         // The (virtual) evolution function
         std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> evolve_state;
         
-        void set_evolution_context(EvolutionContext * evo){
+        void set_evolution_context(EvolutionContext * evo)
+        {
             this->evo = evo;
             memory_integrator.set_evolution_context(evo);
             for (auto & incoming_link : incoming_osc){
                 incoming_link.set_evolution_context(evo);
             }
-            };
+        };
     private:
         EvolutionContext * evo;
-};
-
-/**
- * @class spiking_oscillator
- * @brief An oscillator linked to a spiking population
-*/
-class spiking_oscillator : public Oscillator{
-    public:
-        Population * population;
-
-        /**
-         * 
-         * @brief Coarse-grain transformer function
-         * 
-         * This function  must mirror the evolution of a population, i.e. 
-         * it must perform, if \f$\gamma(t)\f$ is the state of the spiking population:
-         * 
-         * @f[
-         *      \Gamma(t+dt_{osc}) = F(\gamma(t), \gamma(t - dt_{spiking}, .., \gamma(t- n \cdot dt_{spiking})) 
-         * @f]
-         */
-        void evolve_state();
 };
 
 
@@ -134,7 +123,7 @@ class OscillatorNetwork{
         std::vector<Oscillator*> oscillators;
         
         void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
-        void run(EvolutionContext * evo, double time);
+        void run(EvolutionContext * evo, double time, int verbosity);
 
         void set_evolution_context(EvolutionContext * evo){
             this->evo = evo;
