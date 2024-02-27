@@ -7,12 +7,20 @@
 #include <limits>
 
 
+void PopulationRateMonitor::gather()
+{
+    double rate = monitored_population->n_spikes_last_step;
+    rate /= monitored_population->evo->dt;
+    rate /= monitored_population->n_neurons;
+    history.push_back(rate);
+}
+
 void PopulationSpikeMonitor::gather(){
     this->history.push_back(this->monitored_pop->n_spikes_last_step);
 }
 
 void PopulationStateMonitor::gather(){
-    std::vector<neuron_state> current_state;
+    std::vector<dynamical_state> current_state;
 
     for (auto neuron : this->monitored_pop->neurons){
         current_state.push_back(neuron->get_state());
@@ -34,10 +42,13 @@ void PopCurrentInjector::inject(EvolutionContext * evo){
     }
 }
 
-PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weight, float weight_delta, double t_min, double t_max): 
-                                                PopInjector(pop),
-                                                rate(rate), weight(weight), weight_delta(weight_delta), 
-                                                t_min(t_min){
+PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weight, float weight_delta, double t_min, double t_max)
+    :   PopInjector(pop),
+        rate(rate), 
+        weight(weight), 
+        weight_delta(weight_delta), 
+        t_min(t_min)
+{
     next_spike_times = std::vector<double> (pop->n_neurons, t_min);
     if (t_max<t_min){
         this->t_max = std::numeric_limits<double>::infinity();

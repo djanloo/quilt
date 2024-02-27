@@ -141,11 +141,14 @@ SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
                                 }
 
 
-Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network):
-    n_neurons(n_neurons),n_spikes_last_step(0), 
-    timestats_evo(0), timestats_spike_emission(0){
-    
-    // Add itself to the hierarchical structure
+Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network)
+    :   n_neurons(n_neurons),
+        n_spikes_last_step(0), 
+        spiking_network(spiking_network),
+        timestats_evo(0), 
+        timestats_spike_emission(0)
+{
+    // Adds itself to the hierarchical structure
     id = HierarchicalID(&(spiking_network->id));
 
     // Adds itself to the spiking network populations
@@ -181,7 +184,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
             throw std::runtime_error("Invalid neuron type");
         };
     }
-    }
+}
 
 void Population::project(const Projection * projection, Population * efferent_population){
     int connections = 0;
@@ -278,30 +281,32 @@ void Population::print_info(){
     }
  }
 
- Population::~Population(){
+Population::~Population(){
     delete neuroparam;
     for (Neuron * neur : neurons){
         delete neur;
     }
 }
 
-SpikingNetwork::SpikingNetwork():verbosity(1){
+SpikingNetwork::SpikingNetwork(){
     id = HierarchicalID();
 }
 
-PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population){
-            PopulationSpikeMonitor * new_monitor = new PopulationSpikeMonitor(population);
-            this->population_spike_monitors.push_back(new_monitor);
-            return new_monitor;
-            };
+PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population)
+{
+    PopulationSpikeMonitor * new_monitor = new PopulationSpikeMonitor(population);
+    this->population_spike_monitors.push_back(new_monitor);
+    return new_monitor;
+};
 
-PopulationStateMonitor * SpikingNetwork::add_state_monitor(Population * population){
+PopulationStateMonitor * SpikingNetwork::add_state_monitor(Population * population)
+{
     PopulationStateMonitor * new_monitor = new PopulationStateMonitor(population);
     this->population_state_monitors.push_back(new_monitor);
     return new_monitor;
-    };
+};
 
-void SpikingNetwork::run(EvolutionContext * evo, double time){  
+void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity){  
 
     auto start = std::chrono::high_resolution_clock::now();
     int n_steps_done  = 0;

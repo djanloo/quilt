@@ -20,7 +20,7 @@ aqif_neuron::aqif_neuron(Population * population): Neuron(population){
     state = neuron_state {p->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ) ,0.,0.,0.};
 }
 
-void aqif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
+void aqif_neuron::evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ){
     aqif_param * p = static_cast<aqif_param*>(population->neuroparam);
 
     // Division by membrane capacity is later
@@ -59,7 +59,7 @@ izhikevich_neuron::izhikevich_neuron(Population * population): Neuron(population
                             };
 }
 
-void izhikevich_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double /*t*/ ){
+void izhikevich_neuron::evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double /*t*/ ){
     izhikevich_param * p = static_cast<izhikevich_param*>(population->neuroparam);
 
     dxdt[0] =  0.04*x[0]*x[0] + 5*x[0] + 140 \
@@ -84,7 +84,7 @@ aeif_neuron::aeif_neuron(Population * population): Neuron(population){
     state = {population->neuroparam->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ), 0.0, 0.0, 0.0};
 }
 
-void aeif_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
+void aeif_neuron::evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ){
     aeif_param * p = static_cast<aeif_param*>(population->neuroparam);
     
     if (t > last_spike_time + p->tau_refrac){
@@ -127,7 +127,7 @@ aqif2_neuron::aqif2_neuron(Population * population): Neuron(population){
     state = neuron_state {p->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ) ,0.,0.,0.};
 }
 
-void aqif2_neuron::evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ){
+void aqif2_neuron::evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ){
     aqif2_param * p = static_cast<aqif2_param*>(population->neuroparam);
     dxdt[0] =   p->k*(x[0]-p->E_l)*(x[0]-p->V_th) - x[1]*(x[0]-p->E_ex) \
                 - x[2]*(x[0]-p->E_in) - x[3] + p->I_e ;

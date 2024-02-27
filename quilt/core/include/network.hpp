@@ -1,9 +1,6 @@
 #pragma once
 #include "base.hpp"
 
-// #include <iostream>
-// #include <vector>
-// #include <map>
 #include <unordered_map>
 #include <chrono>
 #include <mutex>
@@ -53,13 +50,15 @@ class Projection{
 };
 
 struct SparseIntHash {
-    size_t operator()(const std::pair<int, int>& k) const {
+    size_t operator()(const std::pair<int, int>& k) const 
+    {
         return std::hash<int>()(k.first) ^ std::hash<int>()(k.second);
     }
 };
 
 struct SparseEqual {
-    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) const {
+    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) const 
+    {
         return lhs.first == rhs.first && lhs.second == rhs.second;
     }
 };
@@ -68,7 +67,7 @@ typedef std::unordered_map<std::pair<int, int>, std::pair<float, float>, SparseI
 
 
 /**
- * @class SparseLognormProjection
+ * @class SparseProjection
  * @brief Implements a sparse random projection between two populations
  * 
 */
@@ -84,15 +83,20 @@ class SparseProjection{
 
         std::vector<sparse_t> weights_delays;
 
-        SparseProjection(double connectivity,  int type, unsigned int start_dimension, unsigned int end_dimension):
-                    connectivity(connectivity), type(type), start_dimension(start_dimension), end_dimension(end_dimension){
-                        n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
-                    }  
+        SparseProjection(double connectivity,  int type, unsigned int start_dimension, unsigned int end_dimension)
+            :   connectivity(connectivity), 
+                type(type), 
+                start_dimension(start_dimension), 
+                end_dimension(end_dimension)
+        {
+            n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
+        }  
         virtual ~SparseProjection() = default;
         void build_sector(sparse_t *, RNGDispatcher *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
         void build_multithreaded();
 
-        virtual const std::pair<float, float> get_weight_delay(RNG* /*rng*/, int /*i*/, unsigned int /*j*/){
+        virtual const std::pair<float, float> get_weight_delay(RNG* /*rng*/, int /*i*/, unsigned int /*j*/)
+        {
             throw std::runtime_error("Using virtual get_weight_delay of sparse projection");
         }
 };
@@ -143,6 +147,7 @@ class Population{
 
         // Bureaucracy
         HierarchicalID id;
+        SpikingNetwork * spiking_network;
         double timestats_evo;
         double timestats_spike_emission;
         void print_info();
@@ -163,13 +168,16 @@ class SpikingNetwork{
     public:
         std::vector<Population*> populations;
         HierarchicalID id;
-        unsigned int verbosity;
+
         SpikingNetwork();
         ~SpikingNetwork();
 
         // Injectors (inputs)
         std::vector<PopInjector*> injectors;
-        void add_injector(PopInjector * injector){this->injectors.push_back(injector);}
+        void add_injector(PopInjector * injector)
+        {
+            this->injectors.push_back(injector);
+        }
 
         // Monitors (outputs)
         std::vector<PopulationSpikeMonitor*> population_spike_monitors;
@@ -179,5 +187,5 @@ class SpikingNetwork{
         PopulationStateMonitor * add_state_monitor(Population * population);
 
         // Evolution stuff
-        void run(EvolutionContext * evo, double time);
+        void run(EvolutionContext * evo, double time, int verbosity);
 };

@@ -49,7 +49,7 @@ void Synapse::fire(EvolutionContext * evo){
 
 Neuron::Neuron(Population * population):population(population){
     id = HierarchicalID(population->id);
-    state = neuron_state { population->neuroparam->E_l + ((double)rand())/RAND_MAX, 0.0, 0.0};
+    state = dynamical_state { population->neuroparam->E_l + ((double)rand())/RAND_MAX, 0.0, 0.0};
     last_spike_time = - std::numeric_limits<float>::infinity();
     population -> neurons.push_back(this);        
 };
@@ -110,8 +110,8 @@ void Neuron::evolve(EvolutionContext * evo){
     }
 
     // Evolve
-    boost::numeric::odeint::runge_kutta4<neuron_state> stepper;
-    auto lambda = [this](const neuron_state & state, neuron_state & dxdt, double t) {
+    boost::numeric::odeint::runge_kutta4<dynamical_state> stepper;
+    auto lambda = [this](const dynamical_state & state, dynamical_state & dxdt, double t) {
                                     this->evolve_state(state, dxdt, t);
                                 };
 
@@ -165,40 +165,25 @@ NeuroParam::NeuroParam(){
 NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
 
     this->paramap.update(paramap);
-    this->neur_type = static_cast<neuron_type>(this->paramap.get("neuron_type"));
+    neur_type = static_cast<neuron_type>(paramap.get("neuron_type"));
 
-    std::string last = "";
-    try{
-        last = "E_l";
-        this->E_l = this->paramap.get(last);
-        last = "V_reset";
-        this->V_reset = this->paramap.get(last);
-        last = "V_peak";
-        this->V_peak = this->paramap.get(last);
+    // Soma
+    E_l = paramap.get("E_l");
+    C_m = paramap.get("C_m");
+    V_reset = paramap.get("V_reset");
+    V_peak = paramap.get("V_peak");
+    tau_refrac = paramap.get("tau_refrac");
 
-        last = "C_m";
-        this->C_m = this->paramap.get(last);
-
-        last = "tau_ex";
-        this->tau_ex = this->paramap.get(last);
-        last = "tau_in";
-        this->tau_in = this->paramap.get(last);
-        last = "E_ex";
-        this->E_ex = this->paramap.get(last);
-        last = "E_in";
-        this->E_in = this->paramap.get(last);
-        
-        last = "tau_refrac";
-        this->tau_refrac = this->paramap.get(last);
-        last = "I_e";
-        this->I_e = this->paramap.get(last);
-        last = "I_osc";
-        this->I_osc = this->paramap.get(last);
-        last = "omega_I";
-        this->omega_I = this->paramap.get(last);
-    } catch (const std::out_of_range & e){
-        throw std::out_of_range("Missing parameter for NeuroParam: " + last);
-    }
+    // Synapses
+    tau_ex = paramap.get("tau_ex");
+    tau_in = paramap.get("tau_in");
+    E_ex = paramap.get("E_ex");
+    E_in = paramap.get("E_in");
+    
+    // External inputs
+    I_e = paramap.get("I_e");
+    I_osc = paramap.get("I_osc");
+    omega_I = paramap.get("omega_I");
 }
 
 void NeuroParam::add(const std::string & key, float value){paramap.add(key, value);}

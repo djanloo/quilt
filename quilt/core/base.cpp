@@ -20,21 +20,41 @@ HierarchicalID::HierarchicalID(HierarchicalID * parent): parent(parent),n_subcla
 }
 unsigned int HierarchicalID::get_id(){return local_id;}
 
-EvolutionContext::EvolutionContext(double dt):dt(dt),now(0.0){}
+EvolutionContext::EvolutionContext(double dt)
+    :   dt(dt),
+        now(0.0){}
+
 void EvolutionContext::do_step(){
     now += dt;
     n_steps_done ++;
+    times.push_back(now);
 }
 
-ParaMap::ParaMap(){
-    }
+int EvolutionContext::index_of(double time)
+{
+    if (time < 0) throw runtime_error("Requested index of a negative time");
+    return static_cast<int>(time/dt);
+}
+double EvolutionContext::deviation_of(double time)
+{
+    double deviation = time/dt - index_of(time);
+    // Deviation is by definition positive
+    deviation = (deviation < 0) ? 0.0 : deviation;
+    return deviation;
+}
 
-ParaMap::ParaMap(const std::map<std::string, float> & value_map):value_map(value_map){}
+
+ParaMap::ParaMap(){}
+
+ParaMap::ParaMap(const std::map<std::string, float> & value_map)
+    :   value_map(value_map){}
+
 void ParaMap::add(const std::string& key, float value){
         value_map[key] = value;
         }
 
-float ParaMap::get(const std::string& key) const {
+float ParaMap::get(const std::string& key) const 
+{
     float return_value = 0.0;
     try{
         return_value = value_map.at(key);
@@ -44,7 +64,8 @@ float ParaMap::get(const std::string& key) const {
     return return_value;
     }
 
-float ParaMap::get(const std::string& key, float default_value) const {
+float ParaMap::get(const std::string& key, float default_value) const 
+{
     float return_value = 0.0;
     try{
         return_value = value_map.at(key);
@@ -52,7 +73,7 @@ float ParaMap::get(const std::string& key, float default_value) const {
         return default_value;
     }
     return return_value;
-    }
+}
 
 void ParaMap::update(const ParaMap & new_values){
     for (const auto & couple: new_values.value_map){
@@ -73,11 +94,8 @@ vector<double> ContinuousRK::b_functions(double theta){
 double ContinuousRK::get_past(int axis, double abs_time){
 
     // Split in bin_index + fractionary part
-    int bin_id = static_cast<int>(abs_time/evo->dt); // This is dangerous in case of variable step! ACHTUNG!
-    double theta = abs_time/evo->dt - bin_id;
-    
-    // Cutoff small negative values (1e-16) to zero
-    if (theta < 0) theta = 0.0; 
+    int bin_id = evo->index_of(abs_time);
+    double theta = evo->deviation_of(abs_time);
 
     if (bin_id == static_cast<int>(state_history.size())) bin_id -= 1;
 
