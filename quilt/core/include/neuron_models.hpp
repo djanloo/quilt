@@ -39,7 +39,7 @@ class Projection;
 class aqif_neuron : public Neuron {
     public:
         aqif_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
+        void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
 };
 
@@ -56,7 +56,9 @@ class aqif_param : public NeuroParam {
         float ada_b;    //!< Adaptive variable jump term
         float ada_tau_w;//!< Adaptive variable decay time
 
-        aqif_param(ParaMap paramap):NeuroParam(paramap){
+        aqif_param(ParaMap paramap)
+            :   NeuroParam(paramap)
+        {
             if ((static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif) &&\
                 (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif2) ){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
@@ -91,7 +93,7 @@ class aqif_param : public NeuroParam {
 class izhikevich_neuron : public Neuron {
     public:
         izhikevich_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
+        void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
 };
 
@@ -103,7 +105,9 @@ class izhikevich_neuron : public Neuron {
 class izhikevich_param : public NeuroParam {
     public:
         float a,b,d;
-        izhikevich_param(const ParaMap & paramap): NeuroParam(paramap){
+        izhikevich_param(const ParaMap & paramap)
+            :   NeuroParam(paramap)
+        {
             if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::izhikevich){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
@@ -137,7 +141,7 @@ class izhikevich_param : public NeuroParam {
 class aeif_neuron : public Neuron {
     public:
         aeif_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
+        void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
 };
 
@@ -156,8 +160,9 @@ class aeif_param : public NeuroParam{
         float ada_tau_w;        //!< timescale parameter of the recovery variable [ms]
         float G_L;              //!< Membrane leak conductance [nS]
 
-        aeif_param (const ParaMap & paramap):
-        NeuroParam(paramap){
+        aeif_param (const ParaMap & paramap)
+            :   NeuroParam(paramap)
+        {
             if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aeif){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
@@ -180,14 +185,16 @@ class aeif_param : public NeuroParam{
 class aqif2_neuron : public Neuron{
     public:
         aqif2_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
+        void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
         void on_spike(EvolutionContext * evo) override;
 };
 
 class aqif2_param : public aqif_param {
     public:
         float V_b;
-        aqif2_param(const ParaMap & paramap) : aqif_param(paramap){
+        aqif2_param(const ParaMap & paramap) 
+            :   aqif_param(paramap)
+        {
             this->neur_type = neuron_type::aqif2;
             try{
                 V_b = paramap.get("V_b");

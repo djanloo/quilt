@@ -108,10 +108,16 @@ class HierarchicalID{
 class EvolutionContext{
     public:
         double dt, now; // time in millis
+
+        vector<double> times;
         unsigned int n_steps_done;
 
         EvolutionContext(double dt);
         void do_step();
+
+        // Get index and deviation of a time value
+        int     index_of(double time);
+        double  deviation_of(double time);
 };
 
 typedef vector<double> dynamical_state;
