@@ -110,7 +110,7 @@ void test_spiking()
     
     sn.run(&evo, 5, 1);
 
-    for (auto val : sn.population_spike_monitors[0]->get_history()){
+    for (auto val : sn.population_monitors[0]->get_history()){
         cout << val << " "; 
     }
 }

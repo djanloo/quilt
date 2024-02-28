@@ -32,17 +32,18 @@ void EvolutionContext::do_step(){
 
 int EvolutionContext::index_of(double time)
 {
-    if (time < 0) throw runtime_error("Requested index of a negative time");
+    if (time < 0) throw runtime_error("Requested index of a negative time: " + std::to_string(time) );
     return static_cast<int>(time/dt);
 }
 double EvolutionContext::deviation_of(double time)
 {
     double deviation = time/dt - index_of(time);
+
     // Deviation is by definition positive
     deviation = (deviation < 0) ? 0.0 : deviation;
+    
     return deviation;
 }
-
 
 ParaMap::ParaMap(){}
 

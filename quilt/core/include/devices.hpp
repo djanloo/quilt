@@ -3,28 +3,60 @@
 #include <fstream>
 #include <variant>
 #include <vector>
+#include <exception>
+
+using std::vector;
+using std::cout;
+using std::endl;
 
 typedef std::vector<double> dynamical_state;
 class Population;
 class EvolutionContext;
 
-
+/**
+ * @brief Base class for population monitors
+*/
 class PopulationMonitor{
     public:
         PopulationMonitor(Population * population)
             :   monitored_population(population){}
 
         // The gather function that defines the type of monitor
-        virtual void gather();
+        virtual void gather()
+        {
+            throw std::runtime_error("Used virtual `gather()` method of PopulationMonitor");
+        }
+
+        void set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+        }
+
+        virtual ~PopulationMonitor(){};
+
     protected:
         Population * monitored_population;
-        vector<double> history;
+        EvolutionContext * evo;
 };
 
-class PopulationRateMonitor : public PopulationMonitor{
+template <typename T>
+class HistoryPopulationMonitor: public PopulationMonitor {
+    public:
+        HistoryPopulationMonitor(Population * pop)
+            :   PopulationMonitor(pop){}
+
+        vector<T> get_history()
+        {
+            return history;
+        }
+    protected:
+        vector<T> history;
+};
+
+class PopulationRateMonitor : public HistoryPopulationMonitor<float>{
     public:
         PopulationRateMonitor(Population * population)
-            :   PopulationMonitor(population){}
+            :   HistoryPopulationMonitor(population){}
 
         void gather();
 };
@@ -33,46 +65,26 @@ class PopulationRateMonitor : public PopulationMonitor{
  * @class PopulationSpikeMonitor
  * @brief Monitor for the variable `Population::n_spikes_last_step`
 */
-class PopulationSpikeMonitor{
+class PopulationSpikeMonitor : public HistoryPopulationMonitor<int>{
     public:
 
         PopulationSpikeMonitor(Population * pop)
-        {
-            this->monitored_pop = pop;
-        };
+            :   HistoryPopulationMonitor(pop){}
 
         void gather();
-
-        std::vector<int> get_history()
-        {
-            return this->history;
-        }
-    private:
-        Population * monitored_pop;
-        std::vector<int> history;
 };
 
 /**
  * @class PopulationSpikeMonitor
  * @brief Monitor for the variables `Population::neurons::state`
 */
-class PopulationStateMonitor{
+class PopulationStateMonitor : public HistoryPopulationMonitor<vector<dynamical_state>>{
     public:
 
         PopulationStateMonitor(Population * pop)
-        {
-            this->monitored_pop = pop;
-        };
+            :   HistoryPopulationMonitor(pop){}
 
         void gather();
-
-        std::vector<std::vector<dynamical_state>> get_history()
-        {
-            return this->history;
-        }
-    private:
-        Population * monitored_pop;
-        std::vector<std::vector<dynamical_state>> history;
 };
 
 /**

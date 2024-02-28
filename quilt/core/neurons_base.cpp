@@ -59,7 +59,7 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
 }
 
 
-void Neuron::handle_incoming_spikes(EvolutionContext * evo){
+void Neuron::handle_incoming_spikes(){
 
     while (!(incoming_spikes.empty())){ // This loop will be broken later
 
@@ -103,9 +103,9 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 }
 
 
-void Neuron::evolve(EvolutionContext * evo){
+void Neuron::evolve(){
     if (spike_flag){
-        on_spike(evo);
+        on_spike();
         spike_flag = false;
     }
 
@@ -122,7 +122,7 @@ void Neuron::evolve(EvolutionContext * evo){
     // because EXACTLY at time t the spikes are not arrived yet
     // The other way of doing this is to evaluate at the beginning of the evolution the spikes
     // that arrived from t-dt and t
-    handle_incoming_spikes(evo);
+    handle_incoming_spikes();
 
     // THIS CHECKS NANS
     // auto before_step = state;
@@ -140,7 +140,7 @@ void Neuron::evolve(EvolutionContext * evo){
     // }
 }
 
-void Neuron::emit_spike(EvolutionContext * evo){
+void Neuron::emit_spike(){
     for (auto synapse : this->efferent_synapses){ synapse.fire(evo); }
 
     this -> last_spike_time = evo -> now;
@@ -152,7 +152,7 @@ void Neuron::emit_spike(EvolutionContext * evo){
     // this-> on_spike(evo);
 }
 
-void Neuron::on_spike(EvolutionContext * /*evo*/){
+void Neuron::on_spike(){
     this->state[0] = this->population->neuroparam->V_reset;
 }
 

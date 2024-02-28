@@ -82,9 +82,7 @@ class Synapse{
                 weight(weight), 
                 delay(delay)
         {
-            if (this->delay < min_delay){
-                min_delay = this->delay;
-            }
+            min_delay = (delay < min_delay) ? delay : min_delay;
         }
             
         void fire(EvolutionContext * evo);
@@ -119,12 +117,6 @@ class Synapse{
  * of `handle_incoming_spikes()`.
 */
 class Neuron{
-    protected:
-        dynamical_state state;
-
-        // Spike flag is introduced to record the threshold value
-        // so that on_spike() is called the timestep after the spike
-        bool spike_flag; 
     public:
         // Base properties
         neuron_type nt = neuron_type::base_neuron;
@@ -141,33 +133,46 @@ class Neuron{
         virtual ~Neuron() = default;
 
         /**The evolution function*/
-        void evolve(EvolutionContext * evo);
+        void evolve();
 
         /** Connection function. Adds an efferent synapse to the synapse list.*/        
         void connect(Neuron * neuron, double weight, double delay);
 
         /** Manages the incoming spikes. */
-        void handle_incoming_spikes(EvolutionContext * evo);
+        void handle_incoming_spikes();
 
         /** Makes the neuron's efferent synapses fire */
-        void emit_spike(EvolutionContext * evo);
+        void emit_spike();
 
         double getV()
         {
             return state[0];
         }
 
+        void set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+        }
+
         // These must be implemented for each specific neuron
 
         /** The actions to take when the model has a spike*/
-        virtual void on_spike(EvolutionContext * evo);
+        virtual void on_spike();
 
         /** The differential equations of the neuron*/
         virtual void evolve_state(const dynamical_state & /*x*/ , dynamical_state & /*dxdt*/ , const double /*t*/ )
         {
                 std::cout << "WARNING: using virtual evolve_state of <Neuron>";
         };
+    protected:
+        dynamical_state state;
+
+        // Spike flag is introduced to record the threshold value
+        // so that on_spike() is called the timestep after the spike
+        bool spike_flag;
+        EvolutionContext * evo;
 };
+
 
 /** The container of neuron parameters. Each specific model has its own.*/
 class NeuroParam{ 
