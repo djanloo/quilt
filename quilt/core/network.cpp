@@ -35,12 +35,12 @@ Projection::Projection(vector<vector<float>> weights, vector<vector<float>> dela
         }
     }
 }
+
 void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispatch,
                                     unsigned int sector_nconn, 
                                     unsigned int start_index_1, unsigned int end_index_1, 
-                                    unsigned int start_index_2, unsigned int end_index_2){
-    
-
+                                    unsigned int start_index_2, unsigned int end_index_2)
+{
     if (start_index_1 > end_index_1) throw std::runtime_error("SparseProjection::build : End index is before start index (efferent)");
     if (start_index_2 > end_index_2) throw std::runtime_error("SparseProjection::build : End index is before start index (afferent)");
 
@@ -72,7 +72,8 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
     rng_dispatch->free();
 }
 
-void SparseProjection::build_multithreaded(){
+void SparseProjection::build_multithreaded()
+{
     const int n_threads = 8; 
 
     weights_delays = std::vector<sparse_t>(n_threads);
@@ -94,7 +95,8 @@ void SparseProjection::build_multithreaded(){
     }
 }
 
-const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng, int /*i*/, unsigned int /*j*/){
+const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng, int /*i*/, unsigned int /*j*/)
+{
     double u;
     float new_weight, new_delay;
 
@@ -128,17 +130,18 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
 SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
                                 unsigned int start_dimension, unsigned int end_dimension,
                                 float weight, float weight_delta,
-                                float delay, float delay_delta):
-                                SparseProjection(connectivity, type, start_dimension, end_dimension){
+                                float delay, float delay_delta)
+    :   SparseProjection(connectivity, type, start_dimension, end_dimension)
+{
        
-                                    weight_sigma = std::sqrt(std::log( (weight_delta*weight_delta)/(weight*weight)  + 1.0));
-                                    delay_sigma  = std::sqrt(std::log( (delay_delta*delay_delta)/(delay*delay)      + 1.0));
+    weight_sigma = std::sqrt(std::log( (weight_delta*weight_delta)/(weight*weight)  + 1.0));
+    delay_sigma  = std::sqrt(std::log( (delay_delta*delay_delta)/(delay*delay)      + 1.0));
 
-                                    weight_mu   = std::log(weight) - 0.5 * weight_sigma * weight_sigma;
-                                    delay_mu    = std::log(delay)  - 0.5 * delay_sigma * delay_sigma;
-                                    
-                                    build_multithreaded();
-                                }
+    weight_mu   = std::log(weight) - 0.5 * weight_sigma * weight_sigma;
+    delay_mu    = std::log(delay)  - 0.5 * delay_sigma * delay_sigma;
+    
+    build_multithreaded();
+}
 
 
 Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network)
@@ -186,7 +189,8 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     }
 }
 
-void Population::project(const Projection * projection, Population * efferent_population){
+void Population::project(const Projection * projection, Population * efferent_population)
+{
     int connections = 0;
     for (unsigned int i = 0; i < projection->start_dimension; i++){
         for (unsigned int j = 0; j < projection->end_dimension; j++){
@@ -198,7 +202,8 @@ void Population::project(const Projection * projection, Population * efferent_po
     }
 }
 
-void Population::project(const SparseProjection * projection, Population * efferent_population ){
+void Population::project(const SparseProjection * projection, Population * efferent_population )
+{
     for (auto sector : projection->weights_delays){
         for (auto connection : sector){
             neurons[connection.first.first]->connect(efferent_population->neurons[connection.first.second], connection.second.first, connection.second.second);
@@ -206,7 +211,8 @@ void Population::project(const SparseProjection * projection, Population * effer
     }
 }
 
-void Population::evolve(EvolutionContext * evo){
+void Population::evolve()
+{
     auto start = std::chrono::high_resolution_clock::now();
 
     // Splits the work in equal parts using Nthreads threads
@@ -218,16 +224,16 @@ void Population::evolve(EvolutionContext * evo){
     else if (n_neurons < MAX_N_4_THREADS)   n_threads = 4;
     else                                    n_threads = std::thread::hardware_concurrency();
 
-    auto evolve_bunch = [this](EvolutionContext * evo, unsigned int from, unsigned int to){
+    auto evolve_bunch = [this](unsigned int from, unsigned int to){
                             for (unsigned int i = from; i< to; i++){
-                                this->neurons[i]->evolve(evo);
+                                this->neurons[i]->evolve();
                             }
                         };
 
     // In case few neurons are present, do not use multithreading
     // to avoid overhead
     if (n_threads == 0){
-        evolve_bunch(evo, 0, n_neurons);
+        evolve_bunch(0, n_neurons);
     }
     else{// multithreading case begin
 
@@ -246,7 +252,7 @@ void Population::evolve(EvolutionContext * evo){
         // it is a non-negligible overhead
         std::vector<std::thread> evolver_threads(n_threads);
         for (unsigned int i = 0; i < n_threads; i++){
-            evolver_threads[i] = std::thread(evolve_bunch, evo, bunch_starts[i], bunch_ends[i] );
+            evolver_threads[i] = std::thread(evolve_bunch, bunch_starts[i], bunch_ends[i] );
         }
 
         // Waits the threads
@@ -265,14 +271,15 @@ void Population::evolve(EvolutionContext * evo){
     this->n_spikes_last_step = 0;
     
     for (auto neuron : this->neurons){
-        if ((neuron->getV()) >= neuroparam->V_peak){neuron->emit_spike(evo);}
+        if ((neuron->getV()) >= neuroparam->V_peak){neuron->emit_spike();}
     }
 
     end = std::chrono::high_resolution_clock::now();
     timestats_spike_emission += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 }
 
-void Population::print_info(){
+void Population::print_info()
+{
     cout << "Population "<< this->id.get_id() << " infos:"<< endl;
     cout << "\tN:" << this->n_neurons << endl;
     cout << "\tparams:" << endl;
@@ -281,33 +288,35 @@ void Population::print_info(){
     }
  }
 
-Population::~Population(){
+Population::~Population()
+{
     delete neuroparam;
     for (Neuron * neur : neurons){
         delete neur;
     }
 }
 
-SpikingNetwork::SpikingNetwork(){
+SpikingNetwork::SpikingNetwork()
+{
     id = HierarchicalID();
 }
 
 PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population)
 {
     PopulationSpikeMonitor * new_monitor = new PopulationSpikeMonitor(population);
-    this->population_spike_monitors.push_back(new_monitor);
+    this->population_monitors.push_back(new_monitor);
     return new_monitor;
 };
 
 PopulationStateMonitor * SpikingNetwork::add_state_monitor(Population * population)
 {
     PopulationStateMonitor * new_monitor = new PopulationStateMonitor(population);
-    this->population_state_monitors.push_back(new_monitor);
+    this->population_monitors.push_back(new_monitor);
     return new_monitor;
 };
 
-void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity){  
-
+void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
+{  
     auto start = std::chrono::high_resolution_clock::now();
     int n_steps_done  = 0;
     int n_steps_total = static_cast<int>(time / evo->dt) ;
@@ -340,20 +349,21 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity){
     if (verbosity > 0){
         std::cout << "Running network consisting of " << n_neurons_total << " neurons for " << n_steps_total <<" timesteps"<<std::endl;
     }    
+
+    // Synchronize evolution of each nested object
+    set_evolution_context(evo);
+
     // Evolve
     progress bar(n_steps_total, verbosity);
 
     while (evo -> now < time){
 
-        // Gathering of spikes
+        // Gathering from populations
         auto start_gather = std::chrono::high_resolution_clock::now();
-        for (const auto& population_monitor : this->population_spike_monitors){
+        for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
         }
-        // Gathering of states
-        for (const auto& population_monitor : this->population_state_monitors){
-            population_monitor->gather();
-        }
+
         auto end_gather = std::chrono::high_resolution_clock::now();
         gather_time += std::chrono::duration_cast<std::chrono::microseconds>(end_gather-start_gather).count();
 
@@ -366,8 +376,9 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity){
         inject_time += std::chrono::duration_cast<std::chrono::microseconds>(end_inject-start_inject).count();
 
         // Evolution of each population
-        for (auto population : this -> populations){
-            population -> evolve(evo);
+        for (auto population : this -> populations)
+        {
+            population -> evolve();
         }
         evo -> do_step();
 
@@ -396,10 +407,7 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity){
 
 SpikingNetwork::~SpikingNetwork(){
     
-    for (auto monitor : population_spike_monitors){
-        delete monitor;
-    }
-    for (auto monitor : population_state_monitors){
+    for (auto monitor : population_monitors){
         delete monitor;
     }
 }

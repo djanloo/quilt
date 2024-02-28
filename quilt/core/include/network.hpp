@@ -1,5 +1,7 @@
 #pragma once
 #include "base.hpp"
+#include "devices.hpp"
+#include "neurons_base.hpp"
 
 #include <unordered_map>
 #include <chrono>
@@ -23,6 +25,7 @@ class Projection;
 class Population;
 class SpikingNetwork;
 
+class PopulationMonitor;
 class PopulationSpikeMonitor;
 class PopulationStateMonitor;
 class PopInjector;
@@ -143,7 +146,7 @@ class Population{
         void project(const Projection * projection, Population * efferent_population);
         void project(const SparseProjection * projection, Population * efferent_population);
 
-        void evolve(EvolutionContext * evo);
+        void evolve();
 
         // Bureaucracy
         HierarchicalID id;
@@ -151,6 +154,16 @@ class Population{
         double timestats_evo;
         double timestats_spike_emission;
         void print_info();
+        void set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+            for (auto neuron : neurons)
+            {
+                neuron->set_evolution_context(evo);
+            }
+        }
+    private:
+        EvolutionContext * evo;
 
 };
 
@@ -179,13 +192,27 @@ class SpikingNetwork{
             this->injectors.push_back(injector);
         }
 
+        void set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+            for (auto population : populations)
+            {
+                population->set_evolution_context(evo);
+            }
+            for (auto monitor : population_monitors)
+            {
+                monitor->set_evolution_context(evo);
+            }
+        }
+
         // Monitors (outputs)
-        std::vector<PopulationSpikeMonitor*> population_spike_monitors;
-        std::vector<PopulationStateMonitor*> population_state_monitors;
+        std::vector<PopulationMonitor*> population_monitors;
 
         PopulationSpikeMonitor * add_spike_monitor(Population * population);
         PopulationStateMonitor * add_state_monitor(Population * population);
 
         // Evolution stuff
         void run(EvolutionContext * evo, double time, int verbosity);
+    private:
+        EvolutionContext * evo;
 };

@@ -40,7 +40,7 @@ class aqif_neuron : public Neuron {
     public:
         aqif_neuron(Population * population);
         void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
+        void on_spike() override;
 };
 
 /**
@@ -94,7 +94,7 @@ class izhikevich_neuron : public Neuron {
     public:
         izhikevich_neuron(Population * population);
         void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
+        void on_spike() override;
 };
 
 
@@ -142,7 +142,7 @@ class aeif_neuron : public Neuron {
     public:
         aeif_neuron(Population * population);
         void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
+        void on_spike() override;
 };
 
 /**
@@ -186,7 +186,7 @@ class aqif2_neuron : public Neuron{
     public:
         aqif2_neuron(Population * population);
         void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
+        void on_spike() override;
 };
 
 class aqif2_param : public aqif_param {
