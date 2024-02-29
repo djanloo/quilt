@@ -1,4 +1,5 @@
 from libcpp.vector cimport vector
+import warnings
 
 import numpy as np
 cimport numpy as np
@@ -24,17 +25,24 @@ cdef class OscillatorNetwork:
 
     def build_connections(self, base.Projection proj):
         cdef int i,j
+        some_delay_is_zero = False
         if proj.start_dimension != proj.end_dimension:
             raise ValueError("Dimension mismatch in oscillator projection")
         for i in range(proj.start_dimension):
             for j in range(proj.end_dimension):
-                self._oscillator_network.oscillators[i].connect(self._oscillator_network.oscillators[j], 
-                                                                proj.weights[i,j], proj.delays[i,j])
+                if proj.weights[i, j] != 0 :
+                    if proj.delays[i, j] == 0:
+                        some_delay_is_zero = True
+                    self._oscillator_network.oscillators[i].connect(self._oscillator_network.oscillators[j], 
+                                                                    proj.weights[i,j], proj.delays[i,j])
 
-    def run(self, dt=0.1, time=1):
+        if some_delay_is_zero:
+            warnings.warn("Some delay in the network is zero. This can lead to undefinite behaviours (for now)")
+    
+    def run(self, time=1):
         self._oscillator_network.run(self._evo, time, VERBOSITY)
     
-    def init(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt=1.0,):
+    def init(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt=1.0):
         self._evo = new cinter.EvolutionContext(dt)
 
         n_oscillators = states.shape[0]
