@@ -32,8 +32,17 @@ class Link{
         DESTINATION * destination;
         float weight, delay;
 
-        Link(SOURCE * source, DESTINATION * destination,float weight, float delay):
-        source(source), destination(destination), weight(weight), delay(delay){}
+        Link(SOURCE * source, DESTINATION * destination,float weight, float delay)
+            :   source(source), 
+                destination(destination), 
+                weight(weight), 
+                delay(delay)
+        {
+            if (weight == 0.0)
+            {
+                throw runtime_error("Initialized a zero-weighted link between two oscillators");
+            }
+        }
 
         double get(int axis, double now);
 

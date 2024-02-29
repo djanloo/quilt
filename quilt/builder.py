@@ -449,7 +449,7 @@ class OscillatorNetwork:
     def run(self, dt=0.2, time=1):
         if not self.is_built:
             self.build()
-        self._interface.run(dt, time)
+        self._interface.run(time=time)
     
     def build(self):
         self._interface = oscill.OscillatorNetwork()
