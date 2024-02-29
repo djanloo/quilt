@@ -15,6 +15,7 @@ cdef extern from "../core/include/base.hpp":
         void update(ParaMap * new_values) except +
         void add(string key, float value) except +
         float get(string key) const
+        float get(string key, float deafaul_value) const
 
 cdef extern from "../core/include/devices.hpp":
     cdef cppclass PopulationSpikeMonitor:

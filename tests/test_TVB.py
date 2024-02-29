@@ -5,15 +5,29 @@ from quilt.builder import EEGcap
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
 
-gcs = 0.005
-net = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', {'oscillator_type':'jansen-rit'}, global_weight=gcs, conduction_speed=1.0)
+global_coupling = 0.01
+conduction_speed = 1.0
+net = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+                                             {'oscillator_type':'jansen-rit'}, 
+                                             global_weight=global_coupling, 
+                                             conduction_speed=conduction_speed)
 net.build()
 
-T = 2000
+
+# fig, ax = plt.subplots()
+# plt.matshow(net.features['connectivity']['delays'])
+# plt.colorbar()
+# fig,ax = plt.subplots()
+# plt.matshow(net.features['connectivity']['weights'])
+# plt.colorbar()
+# plt.show()
+# fig, ax = plt.subplots()
+
+T = 5000
 np.random.seed(1998)
-states = np.random.uniform(0, 0.005, size=6*net.n_oscillators).reshape(net.n_oscillators, 6)
+states = np.random.uniform(0, 0.05, size=6*net.n_oscillators).reshape(net.n_oscillators, 6)
 net.init(states, dt=1)
-net.run(time=T, dt=1)
+net.run(time=T)
 
 fig,axes = plt.subplots(3,2)
 for name, number in zip(net.oscillators.keys(), range(2)):
@@ -22,7 +36,7 @@ for name, number in zip(net.oscillators.keys(), range(2)):
 
 plt.xlabel("t [ms]")
 plt.legend()
-plt.suptitle(f"Global coupling strength = {gcs:.2f}")
+plt.suptitle(f"Global coupling strength = {global_coupling:.2f}")
 
 plt.figure(2)
 cap = EEGcap("brain_data/regionMapping_16k_76.txt", "brain_data/projection_eeg_65_surface_16k.npy")
@@ -30,7 +44,7 @@ plt.matshow(cap.weights)
 plt.colorbar()
 
 # plt.imshow(cap.eeg_gain)
-N = 5
+N = 20
 fig, axes = plt.subplots(N,1, sharex=True)
 eeg = cap.eeg(net, filter_signal=True)
 for i in range(N):

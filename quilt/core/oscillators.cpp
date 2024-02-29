@@ -10,6 +10,7 @@
 template <>
 double Link<Oscillator,Oscillator>::get(int axis, double now)
 {
+    // cout << "Getting past at time "<< now << " with delay "<< delay <<endl; 
     double past_state = source->get_past(axis, now - delay);
 
     // Here do whatever the funk you want with the state variable
@@ -44,9 +45,10 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
             if (l.delay > max_tau) max_tau = l.delay;
         }
     }
+    cout << "Max delay is " << max_tau << endl;
     // ~brutal search of maximum delay
     
-    int n_init_pts = static_cast<int>(max_tau/evo->dt) + 1;
+    int n_init_pts = static_cast<int>(std::ceil(max_tau/evo->dt) + 1);
 
     for (unsigned int i = 0; i < init_conds.size(); i++ ){
         vector<dynamical_state> new_K(4, vector<double>(oscillators[i]->space_dimension));
@@ -75,6 +77,7 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
         evo->do_step();
     }
 
+    cout << "Network initialized (t = "<< evo->now << ")"<< endl;
     is_initialized = true;
 }
 
@@ -170,7 +173,7 @@ jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, Oscillato
 {
     space_dimension = 6;
 
-    // Parameters default from references for now
+    // Parameters default from references
     A = paramap->get("A", 3.25);
     B = paramap->get("B", 22.0);
     a = paramap->get("a", 100.0/1000.0);   // ms^(-1)
@@ -180,10 +183,12 @@ jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, Oscillato
     C = paramap->get("C", 135.0);
     r = paramap->get("r", 0.56);
 
-    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t){
-
+    // The system of ODEs implementing the evolution equation 
+    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
+    {
         double external_currents = 0;
-        for (auto input : incoming_osc){
+        for (auto input : incoming_osc)
+        {
             external_currents += input.get(0, t);
         }
         double external_inputs = 130.0/1000.0 + external_currents;
@@ -195,7 +200,6 @@ jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, Oscillato
         dxdt[3] = A*a*sigm( x[1] - x[2], vmax, v0, r) - 2*a*x[3] - a*a*x[0];
         dxdt[4] = A*a*(  external_inputs + 0.8*C*sigm(C*x[0], vmax, v0, r) ) - 2*a*x[4] - a*a*x[1];
         dxdt[5] = B*b*0.25*C*sigm(0.25*C*x[0], vmax, v0, r) - 2*b*x[5] - b*b*x[2];
-
     };
 
     // Sets the stuff of the CRK
