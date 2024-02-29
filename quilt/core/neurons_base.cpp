@@ -180,10 +180,10 @@ NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
     E_ex = paramap.get("E_ex");
     E_in = paramap.get("E_in");
     
-    // External inputs
-    I_e = paramap.get("I_e");
-    I_osc = paramap.get("I_osc");
-    omega_I = paramap.get("omega_I");
+    // External inputs (default is zero)
+    I_e = paramap.get("I_e", 0.0);
+    I_osc = paramap.get("I_osc", 0.0);
+    omega_I = paramap.get("omega_I", 0.0);
 }
 
 void NeuroParam::add(const std::string & key, float value){paramap.add(key, value);}
