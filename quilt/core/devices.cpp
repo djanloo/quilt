@@ -5,8 +5,13 @@
 
 #include <stdexcept>
 #include <limits>
+/**
+ * Disclaimer: this section is cumbersome due to the redundancy of the 'get_history()' methods.
+ * For now this is somewhat a patch, in future I will make it more clean 
+ * (for the procrastination demon: today is feb 29 - 2024 )
+*/
 
-
+// ***************************************** MONITORS ***********************************************
 void PopulationRateMonitor::gather()
 {
     double rate = monitored_population->n_spikes_last_step;
@@ -14,10 +19,18 @@ void PopulationRateMonitor::gather()
     rate /= monitored_population->n_neurons;
     history.push_back(rate);
 }
+vector<float> PopulationRateMonitor::get_history()
+{
+    return history;
+}
 
 void PopulationSpikeMonitor::gather()
 {
     this->history.push_back(this->monitored_population->n_spikes_last_step);
+}
+vector<int> PopulationSpikeMonitor::get_history()
+{
+    return history;
 }
 
 void PopulationStateMonitor::gather()
@@ -29,19 +42,21 @@ void PopulationStateMonitor::gather()
     }
     this->history.push_back(current_state);
 }  
-
+vector<vector<dynamical_state>> PopulationStateMonitor::get_history()
+{
+    return history;
+}
+/***************************************** INJECTORS *******************************************/
 void PopCurrentInjector::inject(EvolutionContext * evo)
 {
     if (!activated & (evo->now > t_min)){
         pop->neuroparam->I_e = I;
         activated = true;
-        // std::cout << "ACTIVATED CURRENT" << std::endl;
     }
 
     if (!deactivated & (evo->now >= t_max)){
         pop->neuroparam->I_e = 0.0;
         deactivated = true;
-        // std::cout << "DEACTIVATED CURRENT" << std::endl;
     }
 }
 

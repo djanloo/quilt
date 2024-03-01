@@ -39,52 +39,47 @@ class PopulationMonitor{
         EvolutionContext * evo;
 };
 
-template <typename T>
-class HistoryPopulationMonitor: public PopulationMonitor {
-    public:
-        HistoryPopulationMonitor(Population * pop)
-            :   PopulationMonitor(pop){}
-
-        vector<T> get_history()
-        {
-            return history;
-        }
-    protected:
-        vector<T> history;
-};
-
-class PopulationRateMonitor : public HistoryPopulationMonitor<float>{
+class PopulationRateMonitor : public PopulationMonitor{
     public:
         PopulationRateMonitor(Population * population)
-            :   HistoryPopulationMonitor(population){}
+            :   PopulationMonitor(population){}
 
-        void gather();
+        void gather() override;
+        vector<float> get_history();
+    protected:
+        vector<float> history;
 };
 
 /**
  * @class PopulationSpikeMonitor
  * @brief Monitor for the variable `Population::n_spikes_last_step`
 */
-class PopulationSpikeMonitor : public HistoryPopulationMonitor<int>{
+class PopulationSpikeMonitor : public PopulationMonitor{
     public:
 
         PopulationSpikeMonitor(Population * pop)
-            :   HistoryPopulationMonitor(pop){}
+            :   PopulationMonitor(pop){}
 
         void gather();
+        vector<int> get_history();
+    protected:
+        vector<int> history;
 };
 
 /**
  * @class PopulationSpikeMonitor
  * @brief Monitor for the variables `Population::neurons::state`
 */
-class PopulationStateMonitor : public HistoryPopulationMonitor<vector<dynamical_state>>{
+class PopulationStateMonitor : public PopulationMonitor{
     public:
 
         PopulationStateMonitor(Population * pop)
-            :   HistoryPopulationMonitor(pop){}
+            :   PopulationMonitor(pop){}
 
         void gather();
+        vector<vector<dynamical_state>> get_history();
+    protected:
+        vector<vector<dynamical_state>> history;
 };
 
 /**
