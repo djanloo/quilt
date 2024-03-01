@@ -7,12 +7,12 @@
 #include <stdexcept>
 #include <limits>
 
-const map<std::string, int> OSCILLATOR_CODES = {    {"harmonic", 0}, 
-                                                    {"test", 1}, 
-                                                    {"jansen-rit", 2}, 
-                                                    {"leon-jansen-rit", 3}
-                                                };
-
+const map<std::string, int> OSCILLATOR_CODES = {
+    {"harmonic", 0}, 
+    {"test", 1}, 
+    {"jansen-rit", 2}, 
+    {"leon-jansen-rit", 3}
+};
 
 template <>
 double Link<Oscillator,Oscillator>::get(int axis, double now)
