@@ -7,10 +7,17 @@
 #include <stdexcept>
 #include <limits>
 
+const map<std::string, int> OSCILLATOR_CODES = {    {"harmonic", 0}, 
+                                                    {"test", 1}, 
+                                                    {"jansen-rit", 2}, 
+                                                    {"leon-jansen-rit", 3}
+                                                };
+
+
 template <>
 double Link<Oscillator,Oscillator>::get(int axis, double now)
 {
-    // cout << "Getting past at time "<< now << " with delay "<< delay <<endl; 
+    cout << "Link<O,O>: Getting past at time "<< now << " with delay "<< delay <<endl; 
     double past_state = source->get_past(axis, now - delay);
 
     // Here do whatever the funk you want with the state variable
@@ -24,13 +31,8 @@ Oscillator::Oscillator(OscillatorNetwork * oscnet)
         memory_integrator()
 {
     id = HierarchicalID(oscnet->id);
-    oscnet->oscillators.push_back(this); 
+    oscnet->oscillators.push_back(make_shared(this)); 
     evolve_state = [](const dynamical_state & /*x*/, dynamical_state & /*dxdt*/, double /*t*/){cout << "Warning: using virtual evolve_state of Oscillator" << endl;};
-}
-
-void Oscillator::connect(Oscillator * osc, float weight, float delay)
-{
-    osc->incoming_osc.push_back(Link<Oscillator, Oscillator>(this, osc, weight, delay));
 }
 
 void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds)
@@ -42,7 +44,7 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     float max_tau = 0.0;
     for (auto osc : oscillators){
         for (auto l : osc->incoming_osc){
-            if (l.delay > max_tau) max_tau = l.delay;
+            if (l->delay > max_tau) max_tau = l->delay;
         }
     }
     cout << "Max delay is " << max_tau << endl;
@@ -130,7 +132,7 @@ harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap, OscillatorNetw
         dxdt[0] = x[1];
 
         for (auto input : incoming_osc){
-            dxdt[1] += x[0] - k*input.get(0, t) ;
+            dxdt[1] += x[0] - k*input->get(0, t) ;
         }  
     };
 
@@ -189,7 +191,7 @@ jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, Oscillato
         double external_currents = 0;
         for (auto input : incoming_osc)
         {
-            external_currents += input.get(0, t);
+            external_currents += input->get(0, t);
         }
         double external_inputs = 130.0/1000.0 + external_currents;
 
@@ -205,4 +207,152 @@ jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, Oscillato
     // Sets the stuff of the CRK
     memory_integrator.set_dimension(space_dimension);
     memory_integrator.set_evolution_equation(evolve_state);
+}
+
+
+/************************ LEON JANSEN RIT *************************************/
+
+// Auxiliary for Leon-Jansen-Rit
+// I know it's the same function I'm not dumb
+// I just want blindly secure compatibility with parameter values
+double leon_jansen_rit_oscillator::sigm(double v)
+{
+    return 2*e0 / (1.0 + std::exp(rho1*(rho2-v)));
+}
+
+float leon_jansen_rit_oscillator::He = 3.25;
+float leon_jansen_rit_oscillator::Hi = 22.0;
+float leon_jansen_rit_oscillator::ke = 0.1;
+float leon_jansen_rit_oscillator::ki = 0.05;
+
+// Internal coupling parameters
+float leon_jansen_rit_oscillator::gamma_1 = 135;
+float leon_jansen_rit_oscillator::gamma_2 = 108;
+float leon_jansen_rit_oscillator::gamma_3 = 33.75;
+float leon_jansen_rit_oscillator::gamma_4 = 33.75;
+float leon_jansen_rit_oscillator::gamma_5 = 15;
+
+// External coupling parameters
+float leon_jansen_rit_oscillator::gamma_1T = 1;
+float leon_jansen_rit_oscillator::gamma_2T = 1;
+float leon_jansen_rit_oscillator::gamma_3T = 1;
+
+// Sigmoid parameters
+float leon_jansen_rit_oscillator::e0 =    0.0025;
+float leon_jansen_rit_oscillator::rho1 =  6;
+float leon_jansen_rit_oscillator::rho2 =  0.56;
+
+// Bifurcation parameters
+float leon_jansen_rit_oscillator::U = 0.12;
+float leon_jansen_rit_oscillator::P = 0.12;
+float leon_jansen_rit_oscillator::Q = 0.12;
+
+leon_jansen_rit_oscillator::leon_jansen_rit_oscillator( const ParaMap * paramap, OscillatorNetwork * oscnet) 
+    :   Oscillator(oscnet)
+{
+    cout << "Creating LJR oscillator" << endl;
+    // Referencing (Leon, 2015) for this system of equations
+    // The variable of interest for the EEG is v2-v3
+    space_dimension = 12;
+
+    // Parameters default from references
+
+    // Delay box parameters
+    He = paramap->get("He", 3.25);
+    Hi = paramap->get("Hi", 22.0);
+    ke = paramap->get("ke", 0.1);
+    ki = paramap->get("ki", 0.05);
+
+    // Internal coupling parameters
+    gamma_1 = paramap->get("gamma_1", 135);
+    gamma_2 = paramap->get("gamma_2", 108);
+    gamma_3 = paramap->get("gamma_3", 33.75);
+    gamma_4 = paramap->get("gamma_4", 33.75);
+    gamma_5 = paramap->get("gamma_5", 15);
+
+    // External coupling parameters
+    gamma_1T = paramap->get("gamma_1T", 1);
+    gamma_2T = paramap->get("gamma_2T", 1);
+    gamma_3T = paramap->get("gamma_3T", 1);
+
+    // Sigmoid parameters
+    e0 = paramap->get("e0", 0.0025);
+    rho1 = paramap->get("rho1", 6);
+    rho2 = paramap->get("rho2", 0.56);
+
+    // Bifurcation parameters
+    U = paramap->get("U", 0.12);
+    P = paramap->get("P", 0.12);
+    Q = paramap->get("Q", 0.12);
+
+    // The system of ODEs implementing the evolution equation 
+    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
+    {
+        cout << "Called evolve state" << endl;
+        // x[0] is v1
+        // x[1] is v2
+        // x[2] is v3
+        // x[3] is v4
+        // x[4] is v5
+        // x[5] is v6
+        // x[6] is v7
+        // -----------
+        // x[7] is y1
+        // x[8] is y2
+        // x[9] is y3
+        // x[10] is y4
+        // x[11] is y5
+        // The output is thus x[5]
+
+        double external_currents = 0;
+        for (auto input : incoming_osc)
+        {
+            external_currents += input->get(5, t);
+        }
+
+        // Vs
+        dxdt[0] = x[7];
+        dxdt[1] = x[8];
+        dxdt[2] = x[9];
+        dxdt[3] = x[10];
+        dxdt[4] = x[11];
+
+        // Auxiliary Vs
+        dxdt[5] = x[8] - x[9]; 
+        dxdt[6] = x[10] - x[11];
+
+        // Ys
+        dxdt[7] = He*ke*(gamma_1 * sigm(x[5]) + gamma_1T * (U + external_currents ));
+        dxdt[7] -= 2*ke*x[7];
+        dxdt[7] += ke*ke*x[0];
+
+        dxdt[8] = He*ke*(gamma_2 * sigm(x[0]) + gamma_2T * (P + external_currents ));
+        dxdt[8] -= ke*x[8];
+        dxdt[8] += ke*ke*x[1];
+
+        dxdt[9] = Hi*ki*(gamma_4 * sigm(x[6]));
+        dxdt[9] -= 2*ki*x[9];
+        dxdt[9] += ki*ki*x[2];
+
+        dxdt[10] = He*ke*(gamma_3 * sigm(x[5]) + gamma_3T * (Q + external_currents ));
+        dxdt[10] -= 2*ke*x[10];
+        dxdt[10] += ke*ke*x[3];
+
+        dxdt[11] = Hi*ki * (gamma_5 * sigm(x[6]));
+        dxdt[11] -= 2*ki*x[11];
+        dxdt[11] += ki*ki*x[4];
+    };
+
+    // Sets the stuff of the CRK
+    memory_integrator.set_dimension(space_dimension);
+    memory_integrator.set_evolution_equation(evolve_state);
+}
+
+template <>
+double Link<leon_jansen_rit_oscillator,leon_jansen_rit_oscillator>::get(int axis, double now)
+{
+    cout << "Link<ljr, ljr>: getting from link axis:" << axis << " now: "<< now << endl; 
+    if (axis != 5) throw runtime_error("Leon-Jansen-Rit links can only request axis=5");
+    double past_state = source->get_past(axis, now - delay);
+    return weight*leon_jansen_rit_oscillator::sigm(past_state);
 }

@@ -12,6 +12,16 @@
 #include <string>
 #include <boost/numeric/odeint.hpp>
 
+const std::map<std::string, int> NEURON_CODES = {
+    {"aqif", 1}, 
+    {"aqif2", 2}, 
+    {"izhikevich", 3}, 
+    {"aeif", 4}
+};
+
+enum class neuron_type : unsigned int {base_neuron, aqif, aqif2, izhikevich, aeif};
+
+
 // *********************************** AQIF **************************************************//
 
 aqif_neuron::aqif_neuron(Population * population): Neuron(population){
