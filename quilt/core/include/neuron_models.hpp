@@ -12,6 +12,10 @@ class Synapse;
 class Population;
 class Projection;
 
+
+extern const std::map<std::string, int> NEURON_CODES;
+
+
 /**
  * @brief The adaptive quadratic integrate-and-fire neuron
  *

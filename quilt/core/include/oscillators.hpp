@@ -9,14 +9,69 @@
 #include "base.hpp"
 #include "network.hpp"
 
+#include <typeinfo>
+#include <memory>
+
 class EvolutionContext;
 class Population;
 
 using std::vector;
 using std::cout;
 using std::endl;
+using std::shared_ptr;
+using std::make_shared;
+using std::runtime_error;
 
 class OscillatorNetwork;
+class Oscillator;
+
+extern const std::map<std::string, int> OSCILLATOR_CODE;
+
+// NOTE: the linking strategy is still 'not elegant' (pronounced 'notto ereganto' with the voice of Housemaster Henry Henderson from Spy x Family)
+// 
+// My intent was finding a strategy to template & polymorph stuff
+// in order to reduce to the minimum value the number of templates in cython code.
+
+// Clearly, the ideal minimum is 0.
+// I will consider myself satisfied only when this minimum is reached, i.e. 
+// when the code will deduce the right link function when just:
+// 
+// osc1.connect(osc2)
+// 
+// is called.
+
+/**
+ * @brief Base class of links
+ * 
+ * Necessary to implement a brutal form of polymorphism with templates
+ * Please don't judge me I'm in a hurry
+*/
+class LinkBase{
+    public:
+    float weight, delay;
+        LinkBase(float weight, float delay)
+            :   weight(weight),
+                delay(delay)
+        {
+            if (weight == 0.0)
+            {
+                throw runtime_error("Initialized a zero-weighted link between two oscillators");
+            }
+        }
+        ~LinkBase(){}
+        
+        virtual double get(int axis, double now) // Note: it needs `now` for the innner steps of RK 
+        {
+            throw runtime_error("Using virtual `get()` of LinkBase");
+        };
+        
+        void set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+        };
+    protected:
+        EvolutionContext * evo;
+};
 
 /**
  * @class Link
@@ -25,33 +80,42 @@ class OscillatorNetwork;
  * The main method is `get(axis, time)`, that returns the specified state variable of `dynamical_state` of `source` at \f$t = t_{now}-\tau_{i,j} \f$.
  * 
 */
-template <class SOURCE, class DESTINATION>
-class Link{
+template <class SOURCE, class TARGET>
+class Link : public LinkBase{
     public:
         SOURCE * source;
-        DESTINATION * destination;
-        float weight, delay;
+        TARGET * target;
 
-        Link(SOURCE * source, DESTINATION * destination,float weight, float delay)
-            :   source(source), 
-                destination(destination), 
-                weight(weight), 
-                delay(delay)
+        Link(SOURCE * source, TARGET * target, float weight, float delay)
+            :   LinkBase(weight, delay),
+                source(source), 
+                target(target)
         {
-            if (weight == 0.0)
-            {
-                throw runtime_error("Initialized a zero-weighted link between two oscillators");
-            }
+            cout << "Creating a Link "<< typeid(*source).name() << " -- " << typeid(*target).name() <<endl;
         }
 
         double get(int axis, double now);
 
-        void set_evolution_context(EvolutionContext * evo)
-        {
-            this->evo = evo;
-        };
     private:
         EvolutionContext * evo;
+};
+
+// Factory method
+template <class A, class B>
+static LinkBase * make_link(A * source, B * target, float weight, float delay)
+{
+    return new Link<A,B>(source, target, weight, delay);
+}
+
+
+class Connector{
+    public:
+        Connector(){}
+        template <class A, class B>
+        void make_link(A * source, B * target, float weight, float delay)
+        {
+            target->incoming_osc.push_back(new Link<A,B>(source, target, weight, delay));
+        }
 };
 
 
@@ -68,10 +132,9 @@ class Oscillator{
         OscillatorNetwork * oscnet;
         ContinuousRK memory_integrator;
 
-        std::vector< Link<Oscillator, Oscillator>> incoming_osc;
+        vector<LinkBase*> incoming_osc;
 
         Oscillator(OscillatorNetwork * oscnet);
-        void connect(Oscillator * osc, float weight, float delay);
 
         vector<dynamical_state> get_history()
         {
@@ -83,15 +146,17 @@ class Oscillator{
             return memory_integrator.get_past(axis, t);
         }
 
-        // The (virtual) evolution function
+        // The (virtual) evolution function is implemented as a lambda
+        // so it's easier to pass it to the ContinuousRK
         std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> evolve_state;
         
         void set_evolution_context(EvolutionContext * evo)
         {
             this->evo = evo;
             memory_integrator.set_evolution_context(evo);
-            for (auto & incoming_link : incoming_osc){
-                incoming_link.set_evolution_context(evo);
+            for (auto & incoming_link : incoming_osc)
+            {
+                incoming_link->set_evolution_context(evo);
             }
         };
     private:
@@ -118,6 +183,19 @@ class jansen_rit_oscillator : public Oscillator{
         static double sigm(double v, float nu_max, float v0, float r);
 };
 
+class leon_jansen_rit_oscillator : public Oscillator{
+    public:
+        static float He, Hi, ke, ki;
+        static float gamma_1, gamma_2, gamma_3, gamma_4, gamma_5;
+        static float gamma_1T, gamma_2T, gamma_3T;
+        static float e0, rho1, rho2;
+        static float U, P, Q;
+        leon_jansen_rit_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
+        static double sigm(double v);
+};
+
+
+/******************************************** NETWORK ***********************************************/
 /**
  * @class OscillatorNetwork
  * @brief A network of oscillators
@@ -128,8 +206,11 @@ class OscillatorNetwork{
     public:
         HierarchicalID id;
         OscillatorNetwork():id(){};
+
+        // The homogeneous constructor
+        OscillatorNetwork(int N, ParaMap * params);
         
-        std::vector<Oscillator*> oscillators;
+        vector<shared_ptr<Oscillator>> oscillators;
         
         void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
         void run(EvolutionContext * evo, double time, int verbosity);
