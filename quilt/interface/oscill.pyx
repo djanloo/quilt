@@ -7,7 +7,10 @@ cimport numpy as np
 cimport quilt.interface.cinterface as cinter
 cimport quilt.interface.base as base
 
-get_class = {"harmonic": harmonic_oscillator, "jansen-rit": jansen_rit_oscillator} 
+get_class = {   "harmonic":         harmonic_oscillator, 
+                "jansen-rit":       jansen_rit_oscillator,
+                "leon-jansen-rit":  leon_jansen_rit_oscillator
+            } 
 
 VERBOSITY = 1
 
@@ -19,12 +22,15 @@ cdef class OscillatorNetwork:
 
     cdef cinter.OscillatorNetwork * _oscillator_network
     cdef cinter.EvolutionContext * _evo
+    cdef cinter.Connector * _connector
 
     def __cinit__(self):
         self._oscillator_network = new cinter.OscillatorNetwork()
 
     def build_connections(self, base.Projection proj):
         cdef int i,j
+
+        self._connector = new cinter.Connector()
         some_delay_is_zero = False
         if proj.start_dimension != proj.end_dimension:
             raise ValueError("Dimension mismatch in oscillator projection")
@@ -33,8 +39,14 @@ cdef class OscillatorNetwork:
                 if proj.weights[i, j] != 0 :
                     if proj.delays[i, j] == 0:
                         some_delay_is_zero = True
-                    self._oscillator_network.oscillators[i].connect(self._oscillator_network.oscillators[j], 
-                                                                    proj.weights[i,j], proj.delays[i,j])
+                    source = self._oscillator_network.oscillators[i]
+                    target = self._oscillator_network.oscillators[j]
+                    
+                    self._connector.make_link(  self._oscillator_network.oscillators[i], 
+                                                self._oscillator_network.oscillators[j],
+                                                proj.weights[i,j],
+                                                proj.delays[i,j]
+                                            )
 
         if some_delay_is_zero:
             warnings.warn("Some delay in the network is zero. This can lead to undefinite behaviours (for now)")
@@ -75,6 +87,9 @@ cdef class harmonic_oscillator:
     @property
     def history(self):
         return np.array(self._oscillator.get_history())
+
+    def __dealloc__(self):
+        del self._oscillator
     
 
 cdef class jansen_rit_oscillator:
@@ -91,3 +106,32 @@ cdef class jansen_rit_oscillator:
     @property
     def history(self):
         return np.array(self._oscillator.get_history())
+    
+    def __dealloc__(self):
+        del self._oscillator
+
+
+cdef class leon_jansen_rit_oscillator:
+    cdef:
+        cinter.leon_jansen_rit_oscillator * _oscillator
+        OscillatorNetwork osc_net
+        base.ParaMap paramap
+
+    def __cinit__(self, dict params, OscillatorNetwork oscillator_network):
+        params['oscillator_type'] = 'leon-jansen-rit'
+        self.paramap = base.ParaMap(params)
+        self._oscillator = <cinter.leon_jansen_rit_oscillator *> new cinter.leon_jansen_rit_oscillator(self.paramap._paramap, oscillator_network._oscillator_network)
+        
+    @property
+    def history(self):
+        return np.array(self._oscillator.get_history())
+    
+    @property
+    def eeg(self):
+        history = np.array(self._oscillator.get_history())
+
+        return history[:, 1] - history[:, 2]
+
+    def __dealloc__(self):
+        del self._oscillator
+

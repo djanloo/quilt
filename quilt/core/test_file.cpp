@@ -110,9 +110,12 @@ void test_spiking()
     
     sn.run(&evo, 5, 1);
 
-    for (auto val : sn.population_monitors[0]->get_history()){
-        cout << val << " "; 
-    }
+    // if ( PopulationSpikeMonitor * psm = dynamic_cast<C*>(instance)) {
+    //         derivedC->get_history();  // Chiamata a get_history() se l'istanza è di tipo C
+    // }
+    // for (auto val : sn.population_monitors[0]->get_history()){
+    //     cout << val << " "; 
+    // }
 }
 
 void test_poisson(){
@@ -215,8 +218,8 @@ void test_oscill(){
 
         init_cond.push_back(initstate);
     }    
-    osc_net.oscillators[1]-> connect(osc_net.oscillators[0], 1, 100);
-    osc_net.oscillators[0]-> connect(osc_net.oscillators[1], 1, 100);
+    // Oscillator::connect(osc_net.oscillators[1], osc_net.oscillators[0], 1, 100);
+    // Oscillator::connect(osc_net.oscillators[0], osc_net.oscillators[1], 1, 100);
 
     osc_net.initialize(&evo, init_cond);
 
