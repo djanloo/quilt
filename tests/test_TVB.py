@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 global_coupling = 0.01
 conduction_speed = 1.0
 net = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
-                                             {'oscillator_type':'jansen-rit'}, 
+                                             {'oscillator_type':'leon-jansen-rit'}, 
                                              global_weight=global_coupling, 
                                              conduction_speed=conduction_speed)
 net.build()

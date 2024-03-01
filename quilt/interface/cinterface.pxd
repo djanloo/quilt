@@ -1,5 +1,6 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
+from libcpp.map cimport map
 
 cdef extern from "../core/include/base.hpp":
     cdef cppclass EvolutionContext:
@@ -20,14 +21,16 @@ cdef extern from "../core/include/base.hpp":
 cdef extern from "../core/include/devices.hpp":
     cdef cppclass PopulationSpikeMonitor:
         PopulationMonitor(Population * pop)
-        void gather()
         vector[int] get_history()
     
     cdef cppclass PopulationStateMonitor:
-        PopulationMonitor(Population * pop)
-        void gather()
+        PopulationMonitor(Population *)
         vector[vector[vector[double]]] get_history()
     
+    cdef cppclass PopulationRateMonitor:
+        PopulationRateMonitor(Population *)
+        vector[float] get_history()
+
     cdef cppclass PopCurrentInjector:
         PopCurrentInjector(Population * pop, double I, double t_min, double t_max)
         # void inject(EvolutionContext * evo)
@@ -50,6 +53,9 @@ cdef extern from "../core/include/neurons_base.hpp" namespace "neuron_type":
     cdef neuron_type aqif
     cdef neuron_type izhikevich
     cdef neuron_type aeif
+
+cdef extern from "../core/include/neuron_models.hpp":
+    cdef map[string, int] NEURON_CODES
 
 cdef extern from "../core/include/network.hpp":
     cdef cppclass Projection:
@@ -96,17 +102,16 @@ cdef extern from "../core/include/network.hpp":
 #---------------------- OSCILLATORS ------------------ #
 
 cdef extern from "../core/include/oscillators.hpp":
-    cdef cppclass oscillator_type:
-        pass
+    cdef map[string, int] OSCILLATOR_CODES
 
-cdef extern from "../core/include/oscillators.hpp" namespace "osc_type":
-    cdef oscillator_type harmonic
+    cdef cppclass Connector:
+        void make_link[A, B](A * source, B * target, float weight, float delay)
 
-cdef extern from "../core/include/oscillators.hpp":
     cdef cppclass Oscillator:
         vector[double] state
         vector[vector[double]] get_history()
-        void connect(Oscillator *, float, float)
+
+        void connect(Oscillator*, float, float)
 
     cdef cppclass OscillatorNetwork:
         vector [Oscillator *] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
@@ -120,4 +125,8 @@ cdef extern from "../core/include/oscillators.hpp":
     
     cdef cppclass jansen_rit_oscillator:
         jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
+        vector[vector[double]] get_history()
+    
+    cdef cppclass leon_jansen_rit_oscillator:
+        leon_jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
         vector[vector[double]] get_history()
