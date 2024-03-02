@@ -172,41 +172,37 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 2;
+    int N = 80;
     vector<vector<float>> weights, delays;
 
 
     // cout << "making weights" << endl;
-    // weights = get_rand_proj_mat(N,N, 0,0);
-    // delays = get_rand_proj_mat(N,N, 0,0);
+    weights = get_rand_proj_mat(N,N, 0,0);
+    delays = get_rand_proj_mat(N,N, 0,0);
 
-    // for (int i = 0; i< N;i++){
-    //     for (int j=0; j< N; j++){
-    //         weights[i][j] = 0.5;
-    //         delays[i][j] = 1;
-    //     }
-    // }
+    for (int i = 0; i< N;i++){
+        for (int j=0; j< N; j++){
+            weights[i][j] = 0.5;
+            delays[i][j] = 1;
+        }
+    }
 
-    // for (int i =0; i< N; i++){
-    //     weights[i][i] = 0.0;
-    // }
-    // cout << "making projection" << endl;
-    // Projection proj = Projection(weights, delays);
+    for (int i = 0; i< N; i++){
+        weights[i][i] = 0.0;
+    }
+    cout << "Making projection" << endl;
+    Projection * proj = new Projection(weights, delays);
 
-    cout << "Preparing params" << endl;
-    vector<ParaMap*> params(N);
-
-    params[0] = new ParaMap();
-    params[1] = new ParaMap();
-
-    cout << "params done "<< endl;
+    
     EvolutionContext evo = EvolutionContext(1);
 
-    OscillatorNetwork osc_net = OscillatorNetwork();
+    ParaMap * params = new ParaMap();
+    params->add("oscillator_type", OSCILLATOR_CODES["jansen-rit"]);
+
+    OscillatorNetwork osc_net = OscillatorNetwork(N, params);
 
     vector<dynamical_state> init_cond;
     for (int i=0; i< N; i++){
-        new jansen_rit_oscillator(params[i], &osc_net);
         vector<double> initstate(6, 0);
 
         initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
@@ -220,7 +216,7 @@ void test_oscill(){
     }    
     // Oscillator::connect(osc_net.oscillators[1], osc_net.oscillators[0], 1, 100);
     // Oscillator::connect(osc_net.oscillators[0], osc_net.oscillators[1], 1, 100);
-
+    osc_net.build_connections(proj);
     osc_net.initialize(&evo, init_cond);
 
     ofstream file("output.txt");
