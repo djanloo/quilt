@@ -6,33 +6,88 @@
 #include <cmath>
 #include <stdexcept>
 #include <limits>
+#include <string>
 
-const map<std::string, int> OSCILLATOR_CODES = {
+
+map<std::string, int> OSCILLATOR_CODES = {
     {"harmonic", 0}, 
     {"test", 1}, 
     {"jansen-rit", 2}, 
     {"leon-jansen-rit", 3}
 };
 
-template <>
-double Link<Oscillator,Oscillator>::get(int axis, double now)
+map<int, std::string> OSCILLATOR_NAMES = {
+    {0, "harmonic"}, 
+    {1, "test"}, 
+    {2, "jansen-rit"}, 
+    {3, "leon-jansen-rit"}
+};
+/******************************************* LINK BASE ****************************************/
+// Singleton method to return a unique instance of LinkFactory
+LinkFactory& get_link_factory(){
+    static LinkFactory link_factory;
+    return link_factory;
+}
+LinkFactory::LinkFactory()
 {
-    cout << "Link<O,O>: Getting past at time "<< now << " with delay "<< delay <<endl; 
-    double past_state = source->get_past(axis, now - delay);
-
-    // Here do whatever the funk you want with the state variable
-    // It depends on which types of oscillators you are linking
-
-    return weight*past_state;
+    // Here I place the builders of each type of link
+    add_linker(std::make_pair("base", "base"), link_maker<Link>);
+    add_linker(std::make_pair("jansen-rit", "jansen-rit"), link_maker<JRJRLink>);
+    add_linker(std::make_pair("leon-jansen-rit", "leon-jansen-rit"), link_maker<LJRLJRLink>);
 }
 
-Oscillator::Oscillator(OscillatorNetwork * oscnet)
-    :   oscnet(oscnet), 
+Link * LinkFactory::get_link(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay)
+        {
+            
+            std::pair<string, string> key = std::make_pair(source->oscillator_type, target->oscillator_type);
+            cout << "Link factory: making link (" + key.first + "-->" + key.second <<")"<< endl;
+            auto it = _linker_map.find(key);
+            if (it == _linker_map.end()) { throw runtime_error("No linker was found for the couple (" + key.first + " "+ key.second + ")"); }
+            return (it->second)(source, target, weight, delay);
+};
+
+
+/******************************************* OSCILLATORS BASE **********************************/
+Oscillator::Oscillator(const ParaMap * params, OscillatorNetwork * oscnet)
+    :   oscnet(oscnet),
+        params(params),
         memory_integrator()
 {
     id = HierarchicalID(oscnet->id);
-    oscnet->oscillators.push_back(make_shared(this)); 
     evolve_state = [](const dynamical_state & /*x*/, dynamical_state & /*dxdt*/, double /*t*/){cout << "Warning: using virtual evolve_state of Oscillator" << endl;};
+}
+
+// Homogeneous network builder
+OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
+{
+    // Bureaucracy
+    id = HierarchicalID();
+
+    string oscillator_type = OSCILLATOR_NAMES.at(static_cast<int>(params->get("oscillator_type")));
+
+    for (int i = 0; i < N; i++){
+        oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params, this));
+        cout << "OscillatorNetwork: newly added oscillator has type " << oscillators.back()->oscillator_type << endl;
+    }
+}
+
+void OscillatorNetwork::build_connections(Projection * proj)
+{
+    if (proj->start_dimension != proj->end_dimension)
+    {
+        throw runtime_error("Projection matrix of OscillatorNetwork must be a square matrix");
+    }
+    cout << "Building connections" << endl;
+    for (int i =0; i < proj->start_dimension; i++)
+    {
+        for (int j = 0; j < proj->end_dimension; j++)
+        {
+            if (proj->weights[i][j] != 0)
+            {                   
+                oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(oscillators[i],oscillators[i],proj->weights[i][j], proj->delays[i][j]));
+            }
+        }
+    }
 }
 
 void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds)
@@ -53,7 +108,7 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     int n_init_pts = static_cast<int>(std::ceil(max_tau/evo->dt) + 1);
 
     for (unsigned int i = 0; i < init_conds.size(); i++ ){
-        vector<dynamical_state> new_K(4, vector<double>(oscillators[i]->space_dimension));
+        vector<dynamical_state> new_K(4, vector<double>(oscillators[i]->get_space_dimension()));
 
         // Computes the value of X and K for the past values
         for (int n = 0; n < n_init_pts; n++){
@@ -63,7 +118,7 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
 
             // Computes the values of K for each intermediate step
             for (int nu = 0; nu < 4; nu++){
-                for (unsigned int dim = 0; dim < oscillators[i]->space_dimension; dim++){
+                for (unsigned int dim = 0; dim < oscillators[i]->get_space_dimension(); dim++){
                     new_K[nu][dim] = 0.0;
                 }
             }
@@ -120,13 +175,35 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
     cout << "( " << static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count())/n_steps_total<< " ms/step)" << endl;
 }
 
+/****************************************** OSCILLATOR FACTORY ******************************************/
+// Singleton method to return a unique instance of OscillatorFactory
+OscillatorFactory& get_oscillator_factory(){
+    static OscillatorFactory osc_factory;
+    return osc_factory;
+}
+shared_ptr<Oscillator> OscillatorFactory::get_oscillator(string const& oscillator_type, ParaMap * params, OscillatorNetwork * osc_net)
+        {
+            cout << "Oscillator Factory : building oscillator " << oscillator_type << endl;
+            auto it = _constructor_map.find(oscillator_type);
+            if (it == _constructor_map.end()) { throw runtime_error("No constructor was found for oscillator " + oscillator_type); }
+            return (it->second)(params, osc_net);
+        };
 
-// **************************************** Models ***************************************** //
+OscillatorFactory::OscillatorFactory(){
+    // Here I place the builders of each type of oscillator
+    add_constructor("base", oscillator_maker<Oscillator>);
+    add_constructor("harmonic", oscillator_maker<harmonic_oscillator>);
+    add_constructor("test", oscillator_maker<test_oscillator>);
+    add_constructor("jansen-rit", oscillator_maker<jansen_rit_oscillator>);
+    add_constructor("leon-jansen-rit", oscillator_maker<leon_jansen_rit_oscillator>);
+}
+
+// **************************************** OSCILLATOR MODELS ***************************************** //
 harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap, OscillatorNetwork * oscnet)    
-    :   Oscillator(oscnet)
+    :   Oscillator(params, oscnet)
 {
     k = paramap->get("k");
-
+    oscillator_type = "harmonic";
 
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t){
         dxdt[0] = x[1];
@@ -139,14 +216,13 @@ harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap, OscillatorNetw
     // Sets the stuff of the CRK
     memory_integrator.set_dimension(space_dimension);
     memory_integrator.set_evolution_equation(evolve_state);
-
+    cout << "test oscillator created" << oscillator_type<<endl;
 }
 
-test_oscillator::test_oscillator(const ParaMap * /*paramap*/, OscillatorNetwork * oscnet)
-    :   Oscillator(oscnet)
+test_oscillator::test_oscillator(const ParaMap * paramap, OscillatorNetwork * oscnet)
+    :   Oscillator(paramap, oscnet)
 {
-    space_dimension = 6;
-
+    oscillator_type = "test";
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t){
 
         dxdt[0] = x[1];
@@ -162,6 +238,7 @@ test_oscillator::test_oscillator(const ParaMap * /*paramap*/, OscillatorNetwork 
     // Sets the stuff of the CRK
     memory_integrator.set_dimension(space_dimension);
     memory_integrator.set_evolution_equation(evolve_state);
+    cout << "test oscillator created"<< oscillator_type<<endl;
 }
 
 // Auxiliary for Jansen-Rit
@@ -171,10 +248,9 @@ double jansen_rit_oscillator::sigm(double v, float nu_max, float v0, float r)
 }
 
 jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, OscillatorNetwork * oscnet) 
-    :   Oscillator(oscnet)
+    :   Oscillator(params, oscnet)
 {
-    space_dimension = 6;
-
+    oscillator_type = "jansen-rit";
     // Parameters default from references
     A = paramap->get("A", 3.25);
     B = paramap->get("B", 22.0);
@@ -207,6 +283,7 @@ jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, Oscillato
     // Sets the stuff of the CRK
     memory_integrator.set_dimension(space_dimension);
     memory_integrator.set_evolution_equation(evolve_state);
+    cout << "jr oscillator created"<< oscillator_type<<endl;
 }
 
 
@@ -248,13 +325,11 @@ float leon_jansen_rit_oscillator::P = 0.12;
 float leon_jansen_rit_oscillator::Q = 0.12;
 
 leon_jansen_rit_oscillator::leon_jansen_rit_oscillator( const ParaMap * paramap, OscillatorNetwork * oscnet) 
-    :   Oscillator(oscnet)
+    :   Oscillator(params, oscnet)
 {
-    cout << "Creating LJR oscillator" << endl;
     // Referencing (Leon, 2015) for this system of equations
     // The variable of interest for the EEG is v2-v3
-    space_dimension = 12;
-
+    oscillator_type = "leon-jansen-rit";
     // Parameters default from references
 
     // Delay box parameters
@@ -346,13 +421,16 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator( const ParaMap * paramap,
     // Sets the stuff of the CRK
     memory_integrator.set_dimension(space_dimension);
     memory_integrator.set_evolution_equation(evolve_state);
+    cout << "LJR oscillator created "<< oscillator_type <<endl;
 }
 
-template <>
-double Link<leon_jansen_rit_oscillator,leon_jansen_rit_oscillator>::get(int axis, double now)
-{
-    cout << "Link<ljr, ljr>: getting from link axis:" << axis << " now: "<< now << endl; 
-    if (axis != 5) throw runtime_error("Leon-Jansen-Rit links can only request axis=5");
-    double past_state = source->get_past(axis, now - delay);
-    return weight*leon_jansen_rit_oscillator::sigm(past_state);
+/************************************************* LINK MODELS ************************************************8*/
+double JRJRLink::get(int axis, double now){
+    // cout << "Getting past from JRJR link" << endl;
+    return source->get_past(axis, now - delay);
+}
+
+double LJRLJRLink::get(int axis, double now){
+    // cout << "Getting past from LJRLJR link" << endl;
+    return source->get_past(axis, now - delay);
 }

@@ -19,8 +19,6 @@ const std::map<std::string, int> NEURON_CODES = {
     {"aeif", 4}
 };
 
-enum class neuron_type : unsigned int {base_neuron, aqif, aqif2, izhikevich, aeif};
-
 
 // *********************************** AQIF **************************************************//
 
