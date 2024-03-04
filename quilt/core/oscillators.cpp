@@ -178,7 +178,7 @@ OscillatorFactory::OscillatorFactory(){
 }
 
 // **************************************** OSCILLATOR MODELS ***************************************** //
-harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap, OscillatorNetwork * oscnet)    
+harmonic_oscillator::harmonic_oscillator(ParaMap * paramap, OscillatorNetwork * oscnet)    
     :   Oscillator(params, oscnet)
 {
     k = paramap->get("k");
@@ -198,7 +198,7 @@ harmonic_oscillator::harmonic_oscillator(const ParaMap * paramap, OscillatorNetw
     memory_integrator.set_evolution_equation(evolve_state);
 }
 
-test_oscillator::test_oscillator(const ParaMap * paramap, OscillatorNetwork * oscnet)
+test_oscillator::test_oscillator(ParaMap * paramap, OscillatorNetwork * oscnet)
     :   Oscillator(paramap, oscnet)
 {
     oscillator_type = "test";
@@ -227,7 +227,7 @@ double jansen_rit_oscillator::sigm(double v, float nu_max, float v0, float r)
     return nu_max / (1.0 + std::exp(r*(v0-v)));
 }
 
-jansen_rit_oscillator::jansen_rit_oscillator( const ParaMap * paramap, OscillatorNetwork * oscnet) 
+jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * paramap, OscillatorNetwork * oscnet) 
     :   Oscillator(params, oscnet)
 {
     oscillator_type = "jansen-rit";
@@ -305,7 +305,7 @@ float leon_jansen_rit_oscillator::U = 0.12;
 float leon_jansen_rit_oscillator::P = 0.12;
 float leon_jansen_rit_oscillator::Q = 0.12;
 
-leon_jansen_rit_oscillator::leon_jansen_rit_oscillator( const ParaMap * paramap, OscillatorNetwork * oscnet) 
+leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * paramap, OscillatorNetwork * oscnet) 
     :   Oscillator(params, oscnet)
 {
     // Referencing (Leon, 2015) for this system of equations
@@ -318,8 +318,8 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator( const ParaMap * paramap,
     // Delay box parameters
     He = paramap->get("He", 3.25);
     Hi = paramap->get("Hi", 22.0);
-    ke = paramap->get("ke", 0.1);
-    ki = paramap->get("ki", 0.05);
+    ke = paramap->get("ke", 0.1);   // ms^(-1)
+    ki = paramap->get("ki", 0.05);  // ms^(-1)
 
     // Internal coupling parameters
     gamma_1 = paramap->get("gamma_1", 135);
@@ -334,14 +334,14 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator( const ParaMap * paramap,
     gamma_3T = paramap->get("gamma_3T", 1);
 
     // Sigmoid parameters
-    e0 = paramap->get("e0", 0.0025);
+    e0 = paramap->get("e0", 0.0025); // ms^(-1)
     rho1 = paramap->get("rho1", 6);
     rho2 = paramap->get("rho2", 0.56);
 
     // Bifurcation parameters
-    U = paramap->get("U", 0.12);
-    P = paramap->get("P", 0.12);
-    Q = paramap->get("Q", 0.12);
+    U = paramap->get("U", 0.12); // ms^(-1)
+    P = paramap->get("P", 0.12); // ms^(-1)
+    Q = paramap->get("Q", 0.12); // ms^(-1)
 
     // The system of ODEs implementing the evolution equation 
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)

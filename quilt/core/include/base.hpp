@@ -206,7 +206,7 @@ class ParaMap{
         void update(const ParaMap & new_values);
         void add(const string & key, float value);
         float get(const string & key) const ;
-        float get(const string & key, float default_value) const;
+        float get(const string & key, float default_value);
 };
 
 /**

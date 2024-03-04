@@ -103,19 +103,19 @@ OscillatorFactory& get_oscillator_factory();
 class harmonic_oscillator : public Oscillator{
     public:
         float k;
-        harmonic_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
+        harmonic_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
 };
 
 class test_oscillator : public Oscillator{
     public:
         float k;
-        test_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
+        test_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
 };
 
 class jansen_rit_oscillator : public Oscillator{
     public:
         float a, b, A, B, v0, C, r, vmax;
-        jansen_rit_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
+        jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
         static double sigm(double v, float nu_max, float v0, float r);
 };
 
@@ -126,7 +126,7 @@ class leon_jansen_rit_oscillator : public Oscillator{
         static float gamma_1T, gamma_2T, gamma_3T;
         static float e0, rho1, rho2;
         static float U, P, Q;
-        leon_jansen_rit_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
+        leon_jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
         static double sigm(double v);
 };
 
@@ -141,7 +141,6 @@ class leon_jansen_rit_oscillator : public Oscillator{
 class OscillatorNetwork{
     public:
         HierarchicalID id;
-        // OscillatorNetwork():id(){};
 
         // The homogeneous constructor
         OscillatorNetwork(int N, ParaMap * params);
