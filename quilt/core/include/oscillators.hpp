@@ -7,6 +7,7 @@
 */
 #pragma once
 #include "base.hpp"
+#include "links.hpp"
 #include "network.hpp"
 
 #include <typeinfo>
@@ -14,6 +15,7 @@
 
 class EvolutionContext;
 class Population;
+class Link;
 
 using std::vector;
 using std::cout;
@@ -28,97 +30,6 @@ class Oscillator;
 extern map<std::string, int> OSCILLATOR_CODES;
 extern map<int, std::string> OSCILLATOR_NAMES;
 
-/*************************************************** LINK BASE ************************************************/
-
-// NOTE: the linking strategy is still 'not elegant' (pronounced 'notto ereganto' with the voice of Housemaster Henry Henderson from Spy x Family)
-// 
-// My intent was finding a strategy to template & polymorph stuff
-// in order to reduce to the minimum value the number of templates in cython code.
-
-// Clearly, the ideal minimum is 0.
-// I will consider myself satisfied only when this minimum is reached, i.e. 
-// when the code will deduce the right link function when just:
-// 
-// osc1.connect(osc2)
-// 
-// is called.
-
-/**
- * @brief Base class of links
- * 
-*/
-class Link{
-    public:
-        shared_ptr<Oscillator> source;
-        shared_ptr<Oscillator> target;
-        float weight, delay;
-        Link(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay)
-            :   source(source),
-                target(target),
-                weight(weight),
-                delay(delay)
-        {
-            if (weight == 0.0)
-            {
-                // No link-making procedure must arrive at this point
-                // zero-valued links must be treated upstream
-                throw runtime_error("Initialized a zero-weighted link between two oscillators");
-            }
-        }
-        ~Link(){}
-        
-        virtual double get(int axis, double now) // Note: it needs `now` for the innner steps of RK 
-        {
-            throw runtime_error("Using virtual `get()` of LinkBase");
-        };
-        
-        void set_evolution_context(EvolutionContext * evo)
-        {
-            this->evo = evo;
-        };
-    protected:
-        EvolutionContext * evo;
-};
-
-/*************************************** LINK FACTORY *************************************/
-// Builder method for Link-derived objects
-template <typename DERIVED>
-Link * link_maker(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay)
-{
-    return new DERIVED(source, target, weight, delay);
-}
-
-class LinkFactory{
-    typedef std::function<Link*(shared_ptr<Oscillator>, shared_ptr<Oscillator>, float, float)> linker;
-    public:
-        LinkFactory();
-        bool add_linker(std::pair<string, string> const& key, linker const& lker) {
-            return _linker_map.insert(std::make_pair(key, lker)).second;
-        }
-
-        Link * get_link(shared_ptr<Oscillator> source,shared_ptr<Oscillator> target, float weight, float delay);
-
-    private:
-        map<std::pair<string, string>, linker> _linker_map;
-};
-
-// Singleton method to return a unique instance of LinkFactory
-LinkFactory& get_link_factory();
-
-/****************************************************** LINK MODELS ****************************************************/
-class JRJRLink : public Link{
-    public:
-        JRJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay)
-            :   Link(source, target, weight, delay){cout << "Making JRJR link" << endl;}
-        double get(int axis, double now) override;
-};
-
-class LJRLJRLink : public Link{
-    public:
-        LJRLJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay)
-            :   Link(source, target, weight, delay){cout << "Making LJRLJR link" << endl;}
-        double get(int axis, double now) override;
-};
 
 /************************************************** OSCILLATOR BASE ***************************************************/
 /**
@@ -133,6 +44,7 @@ class Oscillator{
         OscillatorNetwork * oscnet;
         ContinuousRK memory_integrator;
         string oscillator_type = "base";
+        unsigned int space_dimension = 2;
 
         vector<Link*> incoming_osc;
         const ParaMap * params;
@@ -158,18 +70,9 @@ class Oscillator{
         }
 
         // Setter methods
-        void set_evolution_context(EvolutionContext * evo)
-        {
-            this->evo = evo;
-            memory_integrator.set_evolution_context(evo);
-            for (auto & incoming_link : incoming_osc)
-            {
-                incoming_link->set_evolution_context(evo);
-            }
-        };
+        void set_evolution_context(EvolutionContext * evo);
 
     private:
-        const unsigned int space_dimension = 2;
         EvolutionContext * evo;
 };
 
@@ -201,17 +104,12 @@ class harmonic_oscillator : public Oscillator{
     public:
         float k;
         harmonic_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
-    private:
-        
-        const unsigned int space_dimension = 2;
 };
 
 class test_oscillator : public Oscillator{
     public:
         float k;
         test_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
-    private:
-        const unsigned int space_dimension = 6;
 };
 
 class jansen_rit_oscillator : public Oscillator{
@@ -219,8 +117,6 @@ class jansen_rit_oscillator : public Oscillator{
         float a, b, A, B, v0, C, r, vmax;
         jansen_rit_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
         static double sigm(double v, float nu_max, float v0, float r);
-    private:
-        const unsigned int space_dimension = 6;
 };
 
 class leon_jansen_rit_oscillator : public Oscillator{
@@ -232,8 +128,6 @@ class leon_jansen_rit_oscillator : public Oscillator{
         static float U, P, Q;
         leon_jansen_rit_oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
         static double sigm(double v);
-    private:
-        const unsigned int space_dimension = 12;
 };
 
 
