@@ -15,7 +15,7 @@ map<int, std::string> OSCILLATOR_NAMES = {
 };
 
 /******************************************* OSCILLATORS BASE **********************************/
-Oscillator::Oscillator(const ParaMap * params, OscillatorNetwork * oscnet)
+Oscillator::Oscillator(ParaMap * params, OscillatorNetwork * oscnet)
     :   oscnet(oscnet),
         params(params),
         memory_integrator()
@@ -44,6 +44,8 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
 
     for (int i = 0; i < N; i++){
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params, this));
+        cout << "Parameters of new oscillator:" <<endl;
+        cout << *(oscillators.back()->params);
     }
 }
 
@@ -178,10 +180,10 @@ OscillatorFactory::OscillatorFactory(){
 }
 
 // **************************************** OSCILLATOR MODELS ***************************************** //
-harmonic_oscillator::harmonic_oscillator(ParaMap * paramap, OscillatorNetwork * oscnet)    
+harmonic_oscillator::harmonic_oscillator(ParaMap * params, OscillatorNetwork * oscnet)    
     :   Oscillator(params, oscnet)
 {
-    k = paramap->get("k");
+    k = params->get("k");
     oscillator_type = "harmonic";
     space_dimension = 2;
 
@@ -198,8 +200,8 @@ harmonic_oscillator::harmonic_oscillator(ParaMap * paramap, OscillatorNetwork * 
     memory_integrator.set_evolution_equation(evolve_state);
 }
 
-test_oscillator::test_oscillator(ParaMap * paramap, OscillatorNetwork * oscnet)
-    :   Oscillator(paramap, oscnet)
+test_oscillator::test_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
+    :   Oscillator(params, oscnet)
 {
     oscillator_type = "test";
     space_dimension = 6;
@@ -227,21 +229,21 @@ double jansen_rit_oscillator::sigm(double v, float nu_max, float v0, float r)
     return nu_max / (1.0 + std::exp(r*(v0-v)));
 }
 
-jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * paramap, OscillatorNetwork * oscnet) 
+jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet) 
     :   Oscillator(params, oscnet)
 {
     oscillator_type = "jansen-rit";
     space_dimension = 6;
 
     // Parameters default from references
-    A = paramap->get("A", 3.25);
-    B = paramap->get("B", 22.0);
-    a = paramap->get("a", 100.0/1000.0);   // ms^(-1)
-    b = paramap->get("b", 50.0/1000.0);    // ms^(-1)
-    vmax = paramap->get("vmax", 5.0/1000.0); // ms^(-1)
-    v0 = paramap->get("v0", 6.0);
-    C = paramap->get("C", 135.0);
-    r = paramap->get("r", 0.56);
+    A = params->get("A", 3.25);
+    B = params->get("B", 22.0);
+    a = params->get("a", 100.0/1000.0);   // ms^(-1)
+    b = params->get("b", 50.0/1000.0);    // ms^(-1)
+    vmax = params->get("vmax", 5.0/1000.0); // ms^(-1)
+    v0 = params->get("v0", 6.0);
+    C = params->get("C", 135.0);
+    r = params->get("r", 0.56);
 
     // The system of ODEs implementing the evolution equation 
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
@@ -305,7 +307,7 @@ float leon_jansen_rit_oscillator::U = 0.12;
 float leon_jansen_rit_oscillator::P = 0.12;
 float leon_jansen_rit_oscillator::Q = 0.12;
 
-leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * paramap, OscillatorNetwork * oscnet) 
+leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet) 
     :   Oscillator(params, oscnet)
 {
     // Referencing (Leon, 2015) for this system of equations
@@ -316,32 +318,32 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * paramap, Oscill
     // Parameters default from references
 
     // Delay box parameters
-    He = paramap->get("He", 3.25);
-    Hi = paramap->get("Hi", 22.0);
-    ke = paramap->get("ke", 0.1);   // ms^(-1)
-    ki = paramap->get("ki", 0.05);  // ms^(-1)
+    He = params->get("He", 3.25);
+    Hi = params->get("Hi", 22.0);
+    ke = params->get("ke", 0.1);   // ms^(-1)
+    ki = params->get("ki", 0.05);  // ms^(-1)
 
     // Internal coupling parameters
-    gamma_1 = paramap->get("gamma_1", 135);
-    gamma_2 = paramap->get("gamma_2", 108);
-    gamma_3 = paramap->get("gamma_3", 33.75);
-    gamma_4 = paramap->get("gamma_4", 33.75);
-    gamma_5 = paramap->get("gamma_5", 15);
+    gamma_1 = params->get("gamma_1", 135);
+    gamma_2 = params->get("gamma_2", 108);
+    gamma_3 = params->get("gamma_3", 33.75);
+    gamma_4 = params->get("gamma_4", 33.75);
+    gamma_5 = params->get("gamma_5", 15);
 
     // External coupling parameters
-    gamma_1T = paramap->get("gamma_1T", 1);
-    gamma_2T = paramap->get("gamma_2T", 1);
-    gamma_3T = paramap->get("gamma_3T", 1);
+    gamma_1T = params->get("gamma_1T", 1);
+    gamma_2T = params->get("gamma_2T", 1);
+    gamma_3T = params->get("gamma_3T", 1);
 
     // Sigmoid parameters
-    e0 = paramap->get("e0", 0.0025); // ms^(-1)
-    rho1 = paramap->get("rho1", 6);
-    rho2 = paramap->get("rho2", 0.56);
+    e0 = params->get("e0", 0.0025); // ms^(-1)
+    rho1 = params->get("rho1", 6);
+    rho2 = params->get("rho2", 0.56);
 
     // Bifurcation parameters
-    U = paramap->get("U", 0.12); // ms^(-1)
-    P = paramap->get("P", 0.12); // ms^(-1)
-    Q = paramap->get("Q", 0.12); // ms^(-1)
+    U = params->get("U", 0.12); // ms^(-1)
+    P = params->get("P", 0.12); // ms^(-1)
+    Q = params->get("Q", 0.12); // ms^(-1)
 
     // The system of ODEs implementing the evolution equation 
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
@@ -362,10 +364,10 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * paramap, Oscill
         // The output is thus x[5]
 
         double external_currents = 0;
-        for (auto input : incoming_osc)
-        {
-            external_currents += input->get(5, t);
-        }
+        // for (auto input : incoming_osc)
+        // {
+        //     external_currents += input->get(5, t);
+        // }
 
         // Vs
         dxdt[0] = x[7];
@@ -381,23 +383,31 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * paramap, Oscill
         // Ys
         dxdt[7] = He*ke*(gamma_1 * sigm(x[5]) + gamma_1T * (U + external_currents ));
         dxdt[7] -= 2*ke*x[7];
-        dxdt[7] += ke*ke*x[0];
+        dxdt[7] -= ke*ke*x[0];
+
+        cout << "S[v6] ---> " << sigm(x[5]) << endl;
 
         dxdt[8] = He*ke*(gamma_2 * sigm(x[0]) + gamma_2T * (P + external_currents ));
-        dxdt[8] -= ke*x[8];
-        dxdt[8] += ke*ke*x[1];
+        dxdt[8] -= 2*ke*x[8];
+        dxdt[8] -= ke*ke*x[1];
+
+        cout << "S[v1] ---> " << sigm(x[0]) << endl;
+
 
         dxdt[9] = Hi*ki*(gamma_4 * sigm(x[6]));
         dxdt[9] -= 2*ki*x[9];
-        dxdt[9] += ki*ki*x[2];
+        dxdt[9] -= ki*ki*x[2];
+
+        cout << "S[v7] ---> " << sigm(x[6]) << endl;
+  
 
         dxdt[10] = He*ke*(gamma_3 * sigm(x[5]) + gamma_3T * (Q + external_currents ));
         dxdt[10] -= 2*ke*x[10];
-        dxdt[10] += ke*ke*x[3];
+        dxdt[10] -= ke*ke*x[3];
 
         dxdt[11] = Hi*ki * (gamma_5 * sigm(x[6]));
         dxdt[11] -= 2*ki*x[11];
-        dxdt[11] += ki*ki*x[4];
+        dxdt[11] -= ki*ki*x[4];
     };
 
     // Sets the stuff of the CRK
