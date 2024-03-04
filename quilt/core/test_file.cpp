@@ -172,7 +172,7 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 80;
+    int N = 8;
     vector<vector<float>> weights, delays;
 
 
@@ -197,13 +197,14 @@ void test_oscill(){
     EvolutionContext evo = EvolutionContext(1);
 
     ParaMap * params = new ParaMap();
-    params->add("oscillator_type", OSCILLATOR_CODES["jansen-rit"]);
+    params->add("k", 1);
+    params->add("oscillator_type", OSCILLATOR_CODES["leon-jansen-rit"]);
 
     OscillatorNetwork osc_net = OscillatorNetwork(N, params);
 
     vector<dynamical_state> init_cond;
     for (int i=0; i< N; i++){
-        vector<double> initstate(6, 0);
+        vector<double> initstate(12, 0);
 
         initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
         initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
@@ -214,8 +215,7 @@ void test_oscill(){
 
         init_cond.push_back(initstate);
     }    
-    // Oscillator::connect(osc_net.oscillators[1], osc_net.oscillators[0], 1, 100);
-    // Oscillator::connect(osc_net.oscillators[0], osc_net.oscillators[1], 1, 100);
+
     osc_net.build_connections(proj);
     osc_net.initialize(&evo, init_cond);
 
