@@ -65,12 +65,13 @@ float ParaMap::get(const std::string& key) const
     return return_value;
     }
 
-float ParaMap::get(const std::string& key, float default_value) const 
+float ParaMap::get(const std::string& key, float default_value) 
 {
     float return_value = 0.0;
     try{
         return_value = value_map.at(key);
     }catch (const std::out_of_range & e){
+        add(key, default_value);
         return default_value;
     }
     return return_value;
