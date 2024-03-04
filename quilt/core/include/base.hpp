@@ -144,8 +144,14 @@ class ContinuousRK{
         dynamical_state proposed_state;
         vector<dynamical_state> proposed_evaluation;
 
-        void set_dimension(unsigned int dimension){space_dimension = dimension;}
-        void set_evolution_equation(std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> F){evolve_state = F;};
+        void set_dimension(unsigned int dimension)
+        {
+            space_dimension = dimension;
+        }
+        void set_evolution_equation(std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> F)
+        {
+            evolve_state = F;
+        };
 
         /**
          * The continuous parameters of the NCE. See "Natural Continuous extensions of Runge-Kutta methods", M. Zennaro, 1986.

@@ -100,7 +100,11 @@ double ContinuousRK::get_past(int axis, double abs_time){
 
     if (bin_id == static_cast<int>(state_history.size())) bin_id -= 1;
 
-    if (bin_id<0) throw runtime_error("Requested past state that lays before initialization");
+    if (bin_id < 0) 
+        throw runtime_error("Requested past state that lays before initialization");
+    
+    else if (bin_id > static_cast<int>(state_history.size() - 1))
+        throw runtime_error("Requested past state was not computed yet");
 
     // Get the values and the interpolation weights related to that moment in time
     double y = state_history[bin_id][axis];
