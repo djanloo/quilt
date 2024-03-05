@@ -260,7 +260,7 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
         dxdt[2] = x[5];
 
         dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
-        dxdt[4] = He*ke*(  external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] -  ki*ki*x[1];
+        dxdt[4] = He*ke*( external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] -  ke*ke*x[1];
         dxdt[5] = Hi*ki*0.25*C*sigm(0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
     };
 
