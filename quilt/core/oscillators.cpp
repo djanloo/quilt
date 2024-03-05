@@ -224,9 +224,9 @@ test_oscillator::test_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
 }
 
 // Auxiliary for Jansen-Rit
-double jansen_rit_oscillator::sigm(double v, float nu_max, float v0, float r)
+double jansen_rit_oscillator::sigm(double v)
 {
-    return nu_max / (1.0 + std::exp(r*(v0-v)));
+    return rmax / (1.0 + std::exp(s*(v0-v)));
 }
 
 jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet) 
@@ -236,14 +236,14 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
     space_dimension = 6;
 
     // Parameters default from references
-    A = params->get("A", 3.25);
-    B = params->get("B", 22.0);
-    a = params->get("a", 100.0/1000.0);   // ms^(-1)
-    b = params->get("b", 50.0/1000.0);    // ms^(-1)
-    vmax = params->get("vmax", 5.0/1000.0); // ms^(-1)
+    He = params->get("He", 3.25);
+    Hi = params->get("Hi", 22.0);
+    ke = params->get("ke", 100.0/1000.0);   // ms^(-1)
+    ki = params->get("ki", 50.0/1000.0);    // ms^(-1)
+    rmax = params->get("rmax", 5.0/1000.0); // ms^(-1)
     v0 = params->get("v0", 6.0);
     C = params->get("C", 135.0);
-    r = params->get("r", 0.56);
+    s = params->get("s", 0.56);
 
     // The system of ODEs implementing the evolution equation 
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
@@ -253,15 +253,15 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
         {
             external_currents += input->get(0, t);
         }
-        double external_inputs = 130.0/1000.0 + external_currents;
+        double external_inputs = 0.12 + external_currents;
 
         dxdt[0] = x[3];
         dxdt[1] = x[4];
         dxdt[2] = x[5];
 
-        dxdt[3] = A*a*sigm( x[1] - x[2], vmax, v0, r) - 2*a*x[3] - a*a*x[0];
-        dxdt[4] = A*a*(  external_inputs + 0.8*C*sigm(C*x[0], vmax, v0, r) ) - 2*a*x[4] - a*a*x[1];
-        dxdt[5] = B*b*0.25*C*sigm(0.25*C*x[0], vmax, v0, r) - 2*b*x[5] - b*b*x[2];
+        dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
+        dxdt[4] = He*ke*(  external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] -  ki*ki*x[1];
+        dxdt[5] = Hi*ki*0.25*C*sigm(0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
     };
 
     // Sets the stuff of the CRK
@@ -361,17 +361,17 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * params, Oscilla
         // x[9] is y3
         // x[10] is y4
         // x[11] is y5
-        // The output is thus x[5]
 
         double external_currents = 0;
-        // for (auto input : incoming_osc)
-        // {
-        //     external_currents += input->get(5, t);
-        // }
+
+        for (auto input : incoming_osc)
+        {
+            external_currents += input->get(5, t);
+        }
 
         // Vs
         dxdt[0] = x[7];
-        dxdt[1] = x[8];
+        dxdt[1] = x[8]; 
         dxdt[2] = x[9];
         dxdt[3] = x[10];
         dxdt[4] = x[11];

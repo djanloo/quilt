@@ -207,6 +207,19 @@ class ParaMap{
         void add(const string & key, float value);
         float get(const string & key) const ;
         float get(const string & key, float default_value);
+
+        friend std::ostream& operator<<(std::ostream& os, const ParaMap& obj)
+        {
+            os << "<ParaMap>" << endl;
+            for (const auto & couple : obj.value_map)
+            {
+                string key = couple.first;
+                float value = couple.second;
+                os << "\t" << key << ": " << value << endl;
+            }
+            os << "</ParaMap>" << endl;
+            return os;
+        }
 };
 
 /**

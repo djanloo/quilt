@@ -11,31 +11,31 @@
 #include <boost/numeric/odeint.hpp>
 
 
-namespace utilities{
+// namespace utilities{
 
-    void nan_check(double value, const std::string& str){
-        if (std::isnan(value)){
-            throw std::runtime_error(str);
-        }
-    }
+//     void nan_check(double value, const std::string& str){
+//         if (std::isnan(value)){
+//             throw std::runtime_error(str);
+//         }
+//     }
 
-    // This one costs a lot of time
-    void nan_check_vect(const std::vector<double>& vect, const std::string& str){
-        std::vector<bool> are_nan;
-        bool somebody_is_nan = false;
+//     // This one costs a lot of time
+//     void nan_check_vect(const std::vector<double>& vect, const std::string& str){
+//         std::vector<bool> are_nan;
+//         bool somebody_is_nan = false;
 
-        for (auto value : vect){
-            somebody_is_nan = somebody_is_nan || std::isnan(value) || std::isinf(value);
-            are_nan.push_back( std::isnan(value) || std::isinf(value));
-        }
-        if (somebody_is_nan){
-            std::cerr << "vector is nan: [" ;
-            for (auto val : are_nan) {std::cerr << val <<" ";} std::cerr << " ]" << std::endl;
+//         for (auto value : vect){
+//             somebody_is_nan = somebody_is_nan || std::isnan(value) || std::isinf(value);
+//             are_nan.push_back( std::isnan(value) || std::isinf(value));
+//         }
+//         if (somebody_is_nan){
+//             std::cerr << "vector is nan: [" ;
+//             for (auto val : are_nan) {std::cerr << val <<" ";} std::cerr << " ]" << std::endl;
             
-            throw std::runtime_error(str);
-        }
-    }
-}
+//             throw std::runtime_error(str);
+//         }
+//     }
+// }
 
 // Synapse::min_delay is used to check if the timestep is small enough
 // Sets the minimim delay to infinity, take smaller values when building the network
@@ -162,7 +162,7 @@ NeuroParam::NeuroParam(){
     this->paramap = ParaMap(defaults);
     }
 
-NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
+NeuroParam::NeuroParam(ParaMap & paramap) : NeuroParam(){
 
     this->paramap.update(paramap);
     neur_type = static_cast<neuron_type>(paramap.get("neuron_type"));
