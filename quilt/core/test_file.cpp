@@ -172,18 +172,18 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 8;
+    int N = 3;
     vector<vector<float>> weights, delays;
 
 
     // cout << "making weights" << endl;
     weights = get_rand_proj_mat(N,N, 0,0);
-    delays = get_rand_proj_mat(N,N, 0,0);
+    delays = get_rand_proj_mat(N,N, 80, 200);
 
     for (int i = 0; i< N;i++){
         for (int j=0; j< N; j++){
             weights[i][j] = 0.5;
-            delays[i][j] = 1;
+            // delays[i][j] = 100;
         }
     }
 
@@ -197,14 +197,24 @@ void test_oscill(){
     EvolutionContext evo = EvolutionContext(1);
 
     ParaMap * params = new ParaMap();
-    params->add("k", 1);
-    params->add("oscillator_type", OSCILLATOR_CODES["leon-jansen-rit"]);
+    // params->add("Q", 0);
+    // params->add("P", 0);
+    // params->add("U", 0);
+    // params->add("Hi", 0.5);
+    // params->add("He", 0.5);
+    // params->add("gamma1_T", 0);
+    // params->add("gamma2_T", 0);
+    // params->add("gamma3_T", 0);
+    // params->add("gamma4_T", 0);
+
+
+    params->add("oscillator_type", OSCILLATOR_CODES["jansen-rit"]);
 
     OscillatorNetwork osc_net = OscillatorNetwork(N, params);
 
     vector<dynamical_state> init_cond;
     for (int i=0; i< N; i++){
-        vector<double> initstate(12, 0);
+        vector<double> initstate(6, 10.0);
 
         initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
         initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
@@ -220,7 +230,7 @@ void test_oscill(){
     osc_net.initialize(&evo, init_cond);
 
     ofstream file("output.txt");
-    osc_net.run(&evo, 10000, 1);
+    osc_net.run(&evo, 1000, 1);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){
