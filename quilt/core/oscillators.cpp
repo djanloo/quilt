@@ -62,7 +62,7 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
         {
             if (proj->weights[i][j] != 0)
             {                   
-                oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(oscillators[i], oscillators[i], link_params));
+                oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(oscillators[i], oscillators[j], proj->weights[i][j], proj->delays[i][j], link_params));
             }
         }
     }
