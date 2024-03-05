@@ -47,9 +47,9 @@ class Oscillator{
         unsigned int space_dimension = 2;
 
         vector<Link*> incoming_osc;
-        const ParaMap * params;
+        ParaMap * params;
 
-        Oscillator(const ParaMap * params, OscillatorNetwork * oscnet);
+        Oscillator(ParaMap * params, OscillatorNetwork * oscnet);
 
         // The (virtual) evolution function is implemented as a lambda
         // so it's easier to pass it to the ContinuousRK
@@ -114,9 +114,9 @@ class test_oscillator : public Oscillator{
 
 class jansen_rit_oscillator : public Oscillator{
     public:
-        float a, b, A, B, v0, C, r, vmax;
+        float ke, ki, He, Hi, v0, C, s, rmax;
         jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
-        static double sigm(double v, float nu_max, float v0, float r);
+        double sigm(double v);
 };
 
 class leon_jansen_rit_oscillator : public Oscillator{
