@@ -12,7 +12,7 @@
 #include <mutex>
 #include <functional>
 
-#include <any>
+#include <variant>
 
 using std::cout;
 using std::endl;
@@ -191,84 +191,185 @@ class ContinuousRK{
 };
 
 
-/**
- * 
- * @class ParaMap
- * @brief a dictionary class
- * 
- * It's just a bridge between python and C++
- * 
-*/
-class ParaMap {
-public:
-    ParaMap() = default;
-    ParaMap(map<string, float> init_values){
-        for (auto & pair : init_values){
-            add(pair.first, pair.second);
-        }
-    }
+class ParaMap{
+    public:
+        typedef std::variant<int, float, string> param_t;
+        map<string, param_t> value_map;
 
-    template <typename T>
-    void add(const std::string& key, const T& value) {
-        value_map[key] = value;
-    }
+        ParaMap():value_map(){};
 
-    template <typename T>
-    T get(const std::string& key) const {
-        auto it = value_map.find(key);
-        if (it == value_map.end()) {
-            throw std::out_of_range("Key not found in Paramap");
-        }
-        const auto& val = it->second;
-        if (!val.has_value() || val.type() != typeid(T)) {
-            throw std::runtime_error("Value type mismatch in Paramap for key " + it->first+": should be of type <" + typeid(T).name() + "> but is of type <" + val.type().name()+ ">");
-        }
-        return std::any_cast<const T&>(val);
-    }
-    
-    template <typename T>
-    T get(const std::string& key, const T& default_value) const {
-        auto it = value_map.find(key);
-        if (it == value_map.end()) {
-            return default_value;
-        }
-        const auto& val = it->second;
-        if (!val.has_value() || val.type() != typeid(T)) {
-            throw std::runtime_error("Value type mismatch in Paramap");
-        }
-        return std::any_cast<const T&>(val);
-    }
-
-    bool has(const std::string& key) const {
-        return value_map.find(key) != value_map.end();
-    }
-
-    void remove(const std::string& key) {
-        value_map.erase(key);
-    }
-
-    void update(const ParaMap& other) {
-        for (const auto& entry : other.value_map) {
-            value_map[entry.first] = entry.second;
-        }
-    }
-
-    friend std::ostream& operator<<(std::ostream& os, const ParaMap& paramap) {
-        for (const auto& entry : paramap.value_map) {
-            os << entry.first << ": ";
-            try {
-                os << std::any_cast<double>(entry.second);
-            } catch (const std::bad_any_cast&) {
-                os << "type=" << entry.second.type().name();
+        ParaMap(map<string, param_t> values){
+            for (auto pair : values){
+                add(pair.first, pair.second);
             }
-            os << std::endl;
         }
-        return os;
-    }
 
-private:
-    std::map<std::string, std::any> value_map;
+        template <typename T>
+        T get(string key){
+            auto it = value_map.find(key);
+            cout << "Getting " << key << endl;
+            return std::get<T>(it->second);
+        }
+
+        float get(string key, float default_value) {
+            auto it = value_map.find(key);
+            if (it == value_map.end()){
+                return default_value;
+            }
+            else{
+                return std::get<float>(it->second);
+            }
+        }
+
+        template <typename T>
+        void add(string key, T value){
+            value_map[key] = value;
+            // cout <<"Inserted" << value_map[key] << endl; 
+        }
+
+        void update(ParaMap other) {
+            for (auto entry : other.value_map) {
+                value_map[entry.first] = entry.second;
+            }
+        }
+        friend std::ostream& operator<<(std::ostream& os, const ParaMap& paramap) {
+            os << "ALbert printed a paramap"<< endl;
+            return os;
+        }
 };
+
+// /**
+//  * @class ParaMap
+//  * @brief A class representing a parameter map with key-value pairs.
+//  * 
+//  * The ParaMap class allows storing and retrieving values of various types associated with string keys.
+//  * It provides methods for adding, getting, checking existence, removing, and updating key-value pairs.
+//  * Additionally, it supports ostream output for easy debugging and visualization of the parameter map.
+//  */
+// class ParaMap {
+// public:
+//     /**
+//      * @brief Default constructor for ParaMap.
+//      */
+//     ParaMap() = default;
+
+//     /**
+//      * @brief Constructor for ParaMap with initial values.
+//      * @param init_values Initial key-value pairs to populate the ParaMap.
+//      */
+//     ParaMap(map<string, float> init_values) {
+//         for (auto& pair : init_values) {
+//             add(pair.first, pair.second);
+//         }
+//     }
+
+//     /**
+//      * @brief Template method to add a key-value pair to the ParaMap.
+//      * @tparam T Type of the value.
+//      * @param key Key for the parameter.
+//      * @param value Value associated with the key.
+//      */
+//     template <typename T>
+//     void add(const std::string& key, const T& value) {
+//         value_map[key] = value;
+//     }
+
+//     /**
+//      * @brief Template method to get the value associated with a key.
+//      * @tparam T Type of the expected value.
+//      * @param key Key for the parameter.
+//      * @return The value associated with the key.
+//      * @throws std::out_of_range if the key is not found.
+//      * @throws std::runtime_error if the stored value type mismatches the expected type.
+//      */
+//     template <typename T>
+//     T get(const std::string& key) {
+//         auto it = value_map.find(key);
+//         if (it == value_map.end()) {
+//             throw std::out_of_range("Key not found in Paramap");
+//         }
+//         // const auto& val = it->second;
+//         // if (!val.has_value() || val.type() != typeid(T)) {
+//         //     throw std::runtime_error("Value type mismatch in Paramap for key " + it->first +
+//         //                              ": should be of type <" + typeid(T).name() +
+//         //                              "> but is of type <" + val.type().name() + ">");
+//         // }
+//         // return std::any_cast<const T&>(val);
+//         return std::get<T>(it->second);
+//     }
+
+//     /**
+//      * @brief Template method to get the value associated with a key or a default value if the key is not found.
+//      * @tparam T Type of the expected value.
+//      * @param key Key for the parameter.
+//      * @param default_value Default value to return if the key is not found.
+//      * @return The value associated with the key or the default value if the key is not found.
+//      * @throws std::runtime_error if the stored value type mismatches the expected type.
+//      */
+//     float get(string key, float default_value) {
+//         auto it = value_map.find(key);
+//         if (it == value_map.end()) {
+//             this->add(key, default_value);
+//             return default_value;
+//         }
+//         // const auto& val = it->second;
+//         // if (!val.has_value() || val.type() != typeid(T)) {
+//         //     throw std::runtime_error("Value type mismatch in Paramap for key " + key);
+//         // }
+//         return std::get<float>(it->second);
+//     }
+
+//     /**
+//      * @brief Checks if a key exists in the ParaMap.
+//      * @param key Key to check.
+//      * @return True if the key exists, false otherwise.
+//      */
+//     bool has(const std::string& key) const {
+//         return value_map.find(key) != value_map.end();
+//     }
+
+//     /**
+//      * @brief Removes a key-value pair from the ParaMap.
+//      * @param key Key to remove.
+//      */
+//     void remove(const std::string& key) {
+//         value_map.erase(key);
+//     }
+
+//     /**
+//      * @brief Updates the ParaMap with key-value pairs from another ParaMap.
+//      * @param other Another ParaMap from which to update key-value pairs.
+//      */
+//     void update(const ParaMap& other) {
+//         for (const auto& entry : other.value_map) {
+//             value_map[entry.first] = entry.second;
+//         }
+//     }
+
+//     /**
+//      * @brief Friend function to output the ParaMap to an ostream.
+//      * @param os Output stream.
+//      * @param paramap ParaMap to output.
+//      * @return Reference to the output stream.
+//      */
+//     friend std::ostream& operator<<(std::ostream& os, const ParaMap& paramap) {
+//         for (const auto& entry : paramap.value_map) {
+//             os << entry.first << ": ";
+//             if (std::holds_alternative<int>(entry.second))
+//                 os <<std::get<int>(entry.second);
+//             if (std::holds_alternative<float>(entry.second))
+//                 os <<std::get<float>(entry.second);
+//             if (std::holds_alternative<string>(entry.second))
+//                 os << std::get<string>(entry.second);
+//             os << endl;
+//         }
+
+//         return os;
+//     }
+
+// private:
+//     map<string, std::variant<int, float, double>> value_map;  /**< Map to store key-value pairs. */
+// };
 
 
 /**

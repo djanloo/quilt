@@ -45,22 +45,22 @@ void test_spiking()
     SpikingNetwork sn = SpikingNetwork();
 
 
-    map<string, float> map_of_params = {{"neuron_type", (float)neuron_type::aeif},
-                                        {"C_m", 40.1},
-                                        {"G_L",2.0},
-                                        {"E_l", -70.0},
-                                        {"V_reset", -55.0},
-                                        {"V_peak",0.1},
-                                        {"tau_refrac",0.0},
-                                        {"delta_T",1.7},
-                                        {"V_th", -40.0},
-                                        {"ada_a", 0.0},
-                                        {"ada_b",5.0},
-                                        {"ada_tau_w",100.0},
-                                        {"tau_ex", 10.},
-                                        {"tau_in", 5.5},
-                                        {"E_ex", 0.0},
-                                        {"E_in",-65}
+    map<string, ParaMap::param_t> map_of_params{{"neuron_type", (float)neuron_type::aeif},
+                                        {"C_m", 40.1f},
+                                        {"G_L",2.0f},
+                                        {"E_l", -70.0f},
+                                        {"V_reset", -55.0f},
+                                        {"V_peak",0.1f},
+                                        {"tau_refrac",0.0f},
+                                        {"delta_T",1.7f},
+                                        {"V_th", -40.0f},
+                                        {"ada_a", 0.0f},
+                                        {"ada_b",5.0f},
+                                        {"ada_tau_w",100.0f},
+                                        {"tau_ex", 10.0f},
+                                        {"tau_in", 5.5f},
+                                        {"E_ex", 0.0f},
+                                        {"E_in",-65.0f}
                                         };
 
     ParaMap paramap = ParaMap(map_of_params);
@@ -125,22 +125,22 @@ void test_poisson(){
     SpikingNetwork sn = SpikingNetwork();
 
 
-    map<string, float> map_of_params = {{"neuron_type", (float)neuron_type::aeif},
-                                        {"C_m", 40.1},
-                                        {"G_L",2.0},
-                                        {"E_l", -70.0},
-                                        {"V_reset", -55.0},
-                                        {"V_peak",0.1},
-                                        {"tau_refrac",0.0},
-                                        {"delta_T",1.7},
-                                        {"V_th", -40.0},
-                                        {"ada_a", 0.0},
-                                        {"ada_b",5.0},
-                                        {"ada_tau_w",100.0},
-                                        {"tau_ex", 10.},
-                                        {"tau_in", 5.5},
-                                        {"E_ex", 0.0},
-                                        {"E_in",-65}
+    map<string, ParaMap::param_t> map_of_params = {{"neuron_type", (float)neuron_type::aeif},
+                                        {"C_m", 40.1f},
+                                        {"G_L",2.0f},
+                                        {"E_l", -70.0f},
+                                        {"V_reset", -55.0f},
+                                        {"V_peak",0.1f},
+                                        {"tau_refrac",0.0f},
+                                        {"delta_T",1.7f},
+                                        {"V_th", -40.0f},
+                                        {"ada_a", 0.0f},
+                                        {"ada_b",5.0f},
+                                        {"ada_tau_w",100.0f},
+                                        {"tau_ex", 10.0f},
+                                        {"tau_in", 5.5f},
+                                        {"E_ex", 0.0f},
+                                        {"E_in",-65.0f}
                                         };
 
     ParaMap paramap = ParaMap(map_of_params);
@@ -172,19 +172,19 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 6;
+    int N = 1;
     vector<vector<float>> weights, delays;
 
 
-    weights = get_rand_proj_mat(N,N, 0,0);
+    weights = get_rand_proj_mat(N,N, 1.5,10);
     delays = get_rand_proj_mat(N,N, 80, 200);
 
-    for (int i = 0; i< N;i++){
-        for (int j=0; j< N; j++){
-            weights[i][j] = 0.5;
-            // delays[i][j] = 100;
-        }
-    }
+    // for (int i = 0; i< N;i++){
+    //     for (int j=0; j< N; j++){
+    //         weights[i][j] = 12;
+    //         // delays[i][j] = 100;
+    //     }
+    // }
 
     for (int i = 0; i< N; i++){
         weights[i][i] = 0.0;
@@ -197,8 +197,6 @@ void test_oscill(){
     ParaMap * params = new ParaMap();
     ParaMap * link_params = new ParaMap();
 
-    link_params->add("weight", 0.5f);
-    link_params->add("delay", 0.5f);
     // params->add("Q", 0);
     // params->add("P", 0);
     // params->add("U", 0);
@@ -210,29 +208,33 @@ void test_oscill(){
     // params->add("gamma4_T", 0);
 
 
-    params->add("oscillator_type", OSCILLATOR_CODES["jansen-rit"]);
+    params->add("oscillator_type", "leon-jansen-rit");
+    params->add("P", 0.0f);
+    params->add("Q", 0.0f);
+    params->add("U", 0.0f);
 
     OscillatorNetwork osc_net = OscillatorNetwork(N, params);
 
     vector<dynamical_state> init_cond;
     for (int i=0; i< N; i++){
-        vector<double> initstate(6, 10.0);
+        vector<double> initstate(12, 0.0);
 
-        initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
 
         init_cond.push_back(initstate);
+        cout << *(osc_net.oscillators[i]->params);
     }    
 
     osc_net.build_connections(proj, link_params);
     osc_net.initialize(&evo, init_cond);
 
     ofstream file("output.txt");
-    osc_net.run(&evo, 5000, 1);
+    osc_net.run(&evo, 500, 1);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){
@@ -252,22 +254,22 @@ void test_sparse(){
     SpikingNetwork sn = SpikingNetwork();
 
 
-    map<string, float> map_of_params = {{"neuron_type", (float)neuron_type::aeif},
-                                        {"C_m", 40.1},
-                                        {"G_L",2.0},
-                                        {"E_l", -70.0},
-                                        {"V_reset", -55.0},
-                                        {"V_peak",0.1},
-                                        {"tau_refrac",0.0},
-                                        {"delta_T",1.7},
-                                        {"V_th", -40.0},
-                                        {"ada_a", 0.0},
-                                        {"ada_b",5.0},
-                                        {"ada_tau_w",100.0},
-                                        {"tau_ex", 10.},
-                                        {"tau_in", 5.5},
-                                        {"E_ex", 0.0},
-                                        {"E_in",-65}
+    map<string, ParaMap::param_t> map_of_params{{"neuron_type", (float)neuron_type::aeif},
+                                        {"C_m", 40.1f},
+                                        {"G_L",2.0f},
+                                        {"E_l", -70.0f},
+                                        {"V_reset", -55.0f},
+                                        {"V_peak",0.1f},
+                                        {"tau_refrac",0.0f},
+                                        {"delta_T",1.7f},
+                                        {"V_th", -40.0f},
+                                        {"ada_a", 0.0f},
+                                        {"ada_b",5.0f},
+                                        {"ada_tau_w",100.0f},
+                                        {"tau_ex", 10.0f},
+                                        {"tau_in", 5.5f},
+                                        {"E_ex", 0.0f},
+                                        {"E_in",-65.0f}
                                         };
 
     ParaMap paramap = ParaMap(map_of_params);

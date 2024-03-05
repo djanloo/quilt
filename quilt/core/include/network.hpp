@@ -8,8 +8,7 @@
 #include <mutex>
 #include <variant>
 
-
-#define WEIGHT_EPS 0.00001
+#define WEIGHT_EPS 0.00001 //!< Weight threshold of synapses to be considered as zeroed out.
 
 using std::vector;
 
@@ -33,12 +32,10 @@ class PopInjector;
 
 /**
  * @class Projection
- * @brief Implements a projection between two populations
+ * @brief Implements a dense weight-delay projection between objects.
  * 
  * @param[in] weights, delays
  * @param[in] start_dimension, end_dimension
- * 
- * This class is not really useful anymore and will be deprecated.
  * 
 */
 class Projection{
