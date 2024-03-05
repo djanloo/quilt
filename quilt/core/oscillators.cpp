@@ -44,8 +44,8 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
 
     for (int i = 0; i < N; i++){
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params, this));
-        cout << "Parameters of new oscillator:" <<endl;
-        cout << *(oscillators.back()->params);
+        // cout << "Parameters of new oscillator:" <<endl;
+        // cout << *(oscillators.back()->params);
     }
 }
 
@@ -164,7 +164,6 @@ OscillatorFactory& get_oscillator_factory(){
 }
 shared_ptr<Oscillator> OscillatorFactory::get_oscillator(string const& oscillator_type, ParaMap * params, OscillatorNetwork * osc_net)
         {
-            cout << "Oscillator Factory : building oscillator " << oscillator_type << endl;
             auto it = _constructor_map.find(oscillator_type);
             if (it == _constructor_map.end()) { throw runtime_error("No constructor was found for oscillator " + oscillator_type); }
             return (it->second)(params, osc_net);
