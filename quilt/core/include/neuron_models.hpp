@@ -15,7 +15,6 @@ class Projection;
 
 extern const std::map<std::string, int> NEURON_CODES;
 
-
 /**
  * @brief The adaptive quadratic integrate-and-fire neuron
  *
@@ -60,7 +59,7 @@ class aqif_param : public NeuroParam {
         float ada_b;    //!< Adaptive variable jump term
         float ada_tau_w;//!< Adaptive variable decay time
 
-        aqif_param(ParaMap paramap)
+        aqif_param(ParaMap & paramap)
             :   NeuroParam(paramap)
         {
             if ((static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif) &&\
@@ -109,7 +108,7 @@ class izhikevich_neuron : public Neuron {
 class izhikevich_param : public NeuroParam {
     public:
         float a,b,d;
-        izhikevich_param(const ParaMap & paramap)
+        izhikevich_param(ParaMap & paramap)
             :   NeuroParam(paramap)
         {
             if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::izhikevich){
@@ -164,7 +163,7 @@ class aeif_param : public NeuroParam{
         float ada_tau_w;        //!< timescale parameter of the recovery variable [ms]
         float G_L;              //!< Membrane leak conductance [nS]
 
-        aeif_param (const ParaMap & paramap)
+        aeif_param (ParaMap & paramap)
             :   NeuroParam(paramap)
         {
             if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aeif){
@@ -196,7 +195,7 @@ class aqif2_neuron : public Neuron{
 class aqif2_param : public aqif_param {
     public:
         float V_b;
-        aqif2_param(const ParaMap & paramap) 
+        aqif2_param(ParaMap & paramap) 
             :   aqif_param(paramap)
         {
             this->neur_type = neuron_type::aqif2;

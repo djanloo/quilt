@@ -203,7 +203,7 @@ class NeuroParam{
         NeuroParam();
 
         /**Constructor of `NeuroParam` given a `ParaMap`*/
-        NeuroParam(const ParaMap & paramap);
+        NeuroParam(ParaMap & paramap);
 
         neuron_type get_neuron_type(){return neur_type;}
         void add(const std::string & key, float value);
