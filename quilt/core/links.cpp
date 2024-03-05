@@ -14,13 +14,13 @@ LinkFactory::LinkFactory()
     add_linker(std::make_pair("leon-jansen-rit", "leon-jansen-rit"), link_maker<LJRLJRLink>);
 }
 
-Link * LinkFactory::get_link(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, ParaMap * params)
+Link * LinkFactory::get_link(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay,  ParaMap * params)
 {
     std::pair<string, string> key = std::make_pair(source->oscillator_type, target->oscillator_type);
     // cout << "Link factory: making link (" + key.first + "-->" + key.second <<")"<< endl;
     auto it = _linker_map.find(key);
     if (it == _linker_map.end()) { throw runtime_error("No linker was found for the couple (" + key.first + " "+ key.second + ")"); }
-    return (it->second)(source, target, params);
+    return (it->second)(source, target, weight, delay, params);
 };
 
 /************************************************* LINK MODELS ************************************************8*/
