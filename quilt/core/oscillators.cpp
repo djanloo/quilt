@@ -31,7 +31,7 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     for (int i = 0; i < N; i++){
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params, this));
         // cout << "Parameters of new oscillator:" <<endl;
-        // cout << *(oscillators.back()->params);
+        cout << *(oscillators.back()->params);
     }
 }
 
@@ -353,7 +353,7 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * params, Oscilla
         {
             external_currents += input->get(6, t);
         }
-
+        // cout << "External rates "<< external_currents << endl;
         // Vs
         dxdt[0] = x[7];
         dxdt[1] = x[8]; 
