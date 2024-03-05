@@ -208,16 +208,16 @@ void test_oscill(){
     // params->add("gamma4_T", 0);
 
 
-    params->add("oscillator_type", "leon-jansen-rit");
-    params->add("P", 0.0f);
-    params->add("Q", 0.0f);
-    params->add("U", 0.0f);
+    params->add("oscillator_type", "jansen-rit");
+    // params->add("P", -0.0f);
+    // params->add("Q", -0.0f);
+    // params->add("U", -0.0f);
 
     OscillatorNetwork osc_net = OscillatorNetwork(N, params);
 
     vector<dynamical_state> init_cond;
     for (int i=0; i< N; i++){
-        vector<double> initstate(12, 0.0);
+        vector<double> initstate(12, 2);
 
         // initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
         // initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);

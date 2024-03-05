@@ -243,6 +243,7 @@ class ParaMap{
         float get(const string& key, float default_value) {
             auto it = value_map.find(key);
             if (it == value_map.end()){
+                value_map[key] = default_value;
                 return default_value;
             }
             else{
@@ -277,17 +278,25 @@ class ParaMap{
          * @param paramap The ParaMap to print.
          * @return The modified output stream.
          */
-        friend std::ostream& operator<<(std::ostream& os, const ParaMap& paramap) {
+        friend std::ostream& operator<<(std::ostream& os, const ParaMap& paramap){
+            os << "<ParaMap>" << endl;
             for (const auto& entry : paramap.value_map) {
-                os << entry.first << ": ";
-                if (std::holds_alternative<int>(entry.second))
+                os << "\t" <<entry.first << ": ";
+                if (std::holds_alternative<int>(entry.second)){
                     os <<std::get<int>(entry.second);
-                if (std::holds_alternative<float>(entry.second))
+                    os << " (int)";
+                }
+                if (std::holds_alternative<float>(entry.second)){
                     os <<std::get<float>(entry.second);
-                if (std::holds_alternative<string>(entry.second))
+                    os << " (float)";
+                }
+                if (std::holds_alternative<string>(entry.second)){
                     os << std::get<string>(entry.second);
+                    os << " (string)";
+                }
                 os << endl;
             }
+            os << "</ParaMap>" << endl;
 
             return os;
         }
