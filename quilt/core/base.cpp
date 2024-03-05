@@ -45,14 +45,16 @@ double EvolutionContext::deviation_of(double time)
     return deviation;
 }
 
+/*************************************** PARAMAP **************************************************/
 ParaMap::ParaMap(){}
 
 ParaMap::ParaMap(const std::map<std::string, float> & value_map)
     :   value_map(value_map){}
 
-void ParaMap::add(const std::string& key, float value){
-        value_map[key] = value;
-        }
+void ParaMap::add(const std::string& key, float value)
+{
+    value_map[key] = value;
+}
 
 float ParaMap::get(const std::string& key) const 
 {
@@ -77,13 +79,15 @@ float ParaMap::get(const std::string& key, float default_value)
     return return_value;
 }
 
-void ParaMap::update(const ParaMap & new_values){
+void ParaMap::update(const ParaMap & new_values)
+{
     for (const auto & couple: new_values.value_map){
         this->value_map[couple.first] = couple.second;
     }
 }
-
-vector<double> ContinuousRK::b_functions(double theta){
+/*********************************** CONTINUOUS RK **********************************************/
+vector<double> ContinuousRK::b_functions(double theta)
+{
     vector<double> result(4);
 
     result[0] = 2*(1-4*b[0])*std::pow(theta, 3) + 3*(3*b[0] - 1)*theta*theta + theta;
