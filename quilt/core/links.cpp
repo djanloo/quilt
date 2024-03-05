@@ -25,12 +25,16 @@ Link * LinkFactory::get_link(shared_ptr<Oscillator> source, shared_ptr<Oscillato
 
 /************************************************* LINK MODELS ************************************************8*/
 double JRJRLink::get(int axis, double now){
+    double result = weight * std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
     if (axis != 0) throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
     // cout << "Getting past from JRJR link" << endl;
-    return std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
+    cout << "JRJR got "<<result<< endl;
+    return result;
 }
 
 double LJRLJRLink::get(int axis, double now){
     // cout << "Getting past from LJRLJR link" << endl;
+    if (axis != 6) throw runtime_error("Jansen-Rit model can only ask for axis 6 (differential activity)");
+    double result = weight * std::static_pointer_cast<leon_jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
     return source->get_past(axis, now - delay);
 }

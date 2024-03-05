@@ -158,7 +158,7 @@ void Neuron::on_spike(){
 
 NeuroParam::NeuroParam(){
     this->neur_type = neuron_type::base_neuron;
-    std::map<std::string, float> defaults = {{"I_e", 0.0}, {"I_osc", 0.0}, {"omega_I", 0.0}};
+    std::map<std::string, ParaMap::param_t> defaults{{"I_e", 0.0f}, {"I_osc", 0.0f}, {"omega_I", 0.0f}};
     this->paramap = ParaMap(defaults);
     }
 

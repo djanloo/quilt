@@ -95,6 +95,13 @@ private:
     std::map<std::pair<std::string, std::string>, linker> _linker_map; ///< Map of oscillator type pairs to linker functions.
 };
 
+// Builder method for Link-derived objects
+template <typename DERIVED>
+Link * link_maker(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap * params)
+{
+    return new DERIVED(source, target, weight, delay, params);
+}
+
 /**
  * @brief Get a reference to the singleton instance of LinkFactory.
  * @return Reference to the LinkFactory instance.
