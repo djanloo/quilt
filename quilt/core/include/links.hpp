@@ -34,19 +34,29 @@ class Link{
     public:
         shared_ptr<Oscillator> source;
         shared_ptr<Oscillator> target;
+        ParaMap * params;
         float weight, delay;
-        Link(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay)
+
+        Link(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, ParaMap * params)
             :   source(source),
                 target(target),
-                weight(weight),
-                delay(delay)
+                params(params)
         {
-            if (weight == 0.0)
+            // Must have at least the delay and the weight
+            // throw an error otherwise
+            if (!params->has("delay") || !params->has("weight"))
+                throw std::invalid_argument("Link must contain 'delay' and 'weight' parameters");
+            
+            if (params->get("weight") == 0.0)
             {
                 // No link-making procedure must arrive at this point
                 // zero-valued links must be treated upstream
-                throw runtime_error("Initialized a zero-weighted link between two oscillators");
+                throw std::invalid_argument("Initialized a zero-weighted link between two oscillators");
             }
+
+            // Assign as class attributes for faster access
+            weight = params->get("weight");
+            delay = params->get("delay");
         }
         ~Link(){}
         
@@ -91,14 +101,14 @@ LinkFactory& get_link_factory();
 /****************************************************** LINK MODELS ****************************************************/
 class JRJRLink : public Link{
     public:
-        JRJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay)
-            :   Link(source, target, weight, delay){}
+        JRJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, ParaMap * params)
+            :   Link(source, target, params){}
         double get(int axis, double now) override;
 };
 
 class LJRLJRLink : public Link{
     public:
-        LJRLJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay)
-            :   Link(source, target, weight, delay){}
+        LJRLJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, ParaMap * params)
+            :   Link(source, target, params){}
         double get(int axis, double now) override;
 };

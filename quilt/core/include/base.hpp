@@ -207,7 +207,10 @@ class ParaMap{
         void add(const string & key, float value);
         float get(const string & key) const ;
         float get(const string & key, float default_value);
-
+        float has(const string & key){
+            return value_map.find(key) != value_map.end();
+        }
+        
         friend std::ostream& operator<<(std::ostream& os, const ParaMap& obj)
         {
             os << "<ParaMap>" << endl;
