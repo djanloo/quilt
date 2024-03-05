@@ -172,11 +172,10 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 3;
+    int N = 6;
     vector<vector<float>> weights, delays;
 
 
-    // cout << "making weights" << endl;
     weights = get_rand_proj_mat(N,N, 0,0);
     delays = get_rand_proj_mat(N,N, 80, 200);
 
@@ -230,7 +229,7 @@ void test_oscill(){
     osc_net.initialize(&evo, init_cond);
 
     ofstream file("output.txt");
-    osc_net.run(&evo, 1000, 1);
+    osc_net.run(&evo, 5000, 1);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){
@@ -298,11 +297,6 @@ void test_sparse(){
             out_file << pair.first.first <<" "<< pair.first.second <<" "<< pair.second.first <<" "<<pair.second.second<<endl;
         }
     }
-}
-void test_erf_overflow(){
-    // float u = 1.0;
-    // float val = std::exp(-2.0 + 1.0 * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
-
 }
 
 int main(){
