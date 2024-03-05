@@ -40,7 +40,7 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     // Bureaucracy
     id = HierarchicalID();
 
-    string oscillator_type = OSCILLATOR_NAMES.at(static_cast<int>(params->get("oscillator_type")));
+    string oscillator_type = OSCILLATOR_NAMES.at(static_cast<int>(params->get<int>("oscillator_type")));
 
     for (int i = 0; i < N; i++){
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params, this));
@@ -49,7 +49,7 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     }
 }
 
-void OscillatorNetwork::build_connections(Projection * proj)
+void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_params)
 {
     if (proj->start_dimension != proj->end_dimension)
     {
@@ -62,7 +62,7 @@ void OscillatorNetwork::build_connections(Projection * proj)
         {
             if (proj->weights[i][j] != 0)
             {                   
-                oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(oscillators[i],oscillators[i],proj->weights[i][j], proj->delays[i][j]));
+                oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(oscillators[i], oscillators[i], link_params));
             }
         }
     }
@@ -182,7 +182,7 @@ OscillatorFactory::OscillatorFactory(){
 harmonic_oscillator::harmonic_oscillator(ParaMap * params, OscillatorNetwork * oscnet)    
     :   Oscillator(params, oscnet)
 {
-    k = params->get("k");
+    k = params->get<float>("k");
     oscillator_type = "harmonic";
     space_dimension = 2;
 

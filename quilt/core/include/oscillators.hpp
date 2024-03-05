@@ -147,7 +147,7 @@ class OscillatorNetwork{
         
         vector<shared_ptr<Oscillator>> oscillators;
         
-        void build_connections(Projection * proj);
+        void build_connections(Projection * proj, ParaMap * link_params);
         void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
         void run(EvolutionContext * evo, double time, int verbosity);
 

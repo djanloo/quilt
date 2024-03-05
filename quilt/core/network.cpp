@@ -158,18 +158,18 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     (spiking_network->populations).push_back(this);
 
     try{ 
-        params->get("neuron_type");
+        params->get<int>("neuron_type");
     }catch (const std::out_of_range & e) {
         throw( std::out_of_range("Neuron params must have field neuron_type"));
     }
     
-    switch(static_cast<neuron_type> (static_cast<int>(params->get("neuron_type")))){
+    switch(static_cast<neuron_type> (static_cast<int>(params->get<int>("neuron_type")))){
         case neuron_type::aqif:         this->neuroparam = new aqif_param(*params);         break;
         case neuron_type::aqif2:        this->neuroparam = new aqif2_param(*params);        break;
         case neuron_type::izhikevich:   this->neuroparam = new izhikevich_param(*params);   break;
         case neuron_type::aeif:         this->neuroparam = new aeif_param(*params);         break;
         default:
-            throw std::runtime_error("Invalid neuron type when building population:" + std::to_string(static_cast<int>(params->get("neuron_type"))));
+            throw std::runtime_error("Invalid neuron type when building population:" + std::to_string(static_cast<int>(params->get<int>("neuron_type"))));
             break;
     };
 
@@ -283,9 +283,7 @@ void Population::print_info()
     cout << "Population "<< this->id.get_id() << " infos:"<< endl;
     cout << "\tN:" << this->n_neurons << endl;
     cout << "\tparams:" << endl;
-    for (auto couple : this->neuroparam->paramap.value_map){
-        cout << "\t\t" << couple.first << "\t" << couple.second << endl;
-    }
+    cout << neuroparam ->paramap;
  }
 
 Population::~Population()

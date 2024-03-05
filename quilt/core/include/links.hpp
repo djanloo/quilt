@@ -47,7 +47,7 @@ class Link{
             if (!params->has("delay") || !params->has("weight"))
                 throw std::invalid_argument("Link must contain 'delay' and 'weight' parameters");
             
-            if (params->get("weight") == 0.0)
+            if (params->get<float>("weight") == 0.0)
             {
                 // No link-making procedure must arrive at this point
                 // zero-valued links must be treated upstream
@@ -55,8 +55,8 @@ class Link{
             }
 
             // Assign as class attributes for faster access
-            weight = params->get("weight");
-            delay = params->get("delay");
+            weight = params->get<float>("weight");
+            delay = params->get<float>("delay");
         }
         ~Link(){}
         
@@ -76,20 +76,20 @@ class Link{
 /*************************************** LINK FACTORY *************************************/
 // Builder method for Link-derived objects
 template <typename DERIVED>
-Link * link_maker(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay)
+Link * link_maker(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, ParaMap * params)
 {
-    return new DERIVED(source, target, weight, delay);
+    return new DERIVED(source, target, params);
 }
 
 class LinkFactory{
-    typedef std::function<Link*(shared_ptr<Oscillator>, shared_ptr<Oscillator>, float, float)> linker;
+    typedef std::function<Link*(shared_ptr<Oscillator>, shared_ptr<Oscillator>, ParaMap *)> linker;
     public:
         LinkFactory();
         bool add_linker(std::pair<string, string> const& key, linker const& lker) {
             return _linker_map.insert(std::make_pair(key, lker)).second;
         }
 
-        Link * get_link(shared_ptr<Oscillator> source,shared_ptr<Oscillator> target, float weight, float delay);
+        Link * get_link(shared_ptr<Oscillator> source,shared_ptr<Oscillator> target, ParaMap * params);
 
     private:
         map<std::pair<string, string>, linker> _linker_map;
