@@ -23,6 +23,8 @@ cleanall: clean
 	@rm -R -f quilt/__pycache__
 	@rm -R -f quilt/interface/__pycache__
 	@rm -R -f quilt/interface/*.so
+	@rm -R -f quilt/core/*.d
+	@rm -R -f quilt/core/*.o
 	@echo "Cleaned."
 
 $(EXECUTABLE): quilt/core/test_file.o $(OBJECTS)
