@@ -192,10 +192,13 @@ void test_oscill(){
     cout << "Making projection" << endl;
     Projection * proj = new Projection(weights, delays);
 
-    
     EvolutionContext evo = EvolutionContext(1);
 
     ParaMap * params = new ParaMap();
+    ParaMap * link_params = new ParaMap();
+
+    link_params->add("weight", 0.5f);
+    link_params->add("delay", 0.5f);
     // params->add("Q", 0);
     // params->add("P", 0);
     // params->add("U", 0);
@@ -225,7 +228,7 @@ void test_oscill(){
         init_cond.push_back(initstate);
     }    
 
-    osc_net.build_connections(proj);
+    osc_net.build_connections(proj, link_params);
     osc_net.initialize(&evo, init_cond);
 
     ofstream file("output.txt");

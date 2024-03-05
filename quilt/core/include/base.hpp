@@ -12,6 +12,8 @@
 #include <mutex>
 #include <functional>
 
+#include <any>
+
 using std::cout;
 using std::endl;
 using std::runtime_error;
@@ -197,33 +199,77 @@ class ContinuousRK{
  * It's just a bridge between python and C++
  * 
 */
-class ParaMap{
-    public:
-        map<string, float> value_map;
-        ParaMap();
-        ParaMap(const map<string, float> & value_map);
+class ParaMap {
+public:
+    ParaMap() = default;
+    ParaMap(map<string, float> init_values){
+        for (auto & pair : init_values){
+            add(pair.first, pair.second);
+        }
+    }
 
-        void update(const ParaMap & new_values);
-        void add(const string & key, float value);
-        float get(const string & key) const ;
-        float get(const string & key, float default_value);
-        float has(const string & key){
-            return value_map.find(key) != value_map.end();
+    template <typename T>
+    void add(const std::string& key, const T& value) {
+        value_map[key] = value;
+    }
+
+    template <typename T>
+    T get(const std::string& key) const {
+        auto it = value_map.find(key);
+        if (it == value_map.end()) {
+            throw std::out_of_range("Key not found in Paramap");
         }
-        
-        friend std::ostream& operator<<(std::ostream& os, const ParaMap& obj)
-        {
-            os << "<ParaMap>" << endl;
-            for (const auto & couple : obj.value_map)
-            {
-                string key = couple.first;
-                float value = couple.second;
-                os << "\t" << key << ": " << value << endl;
+        const auto& val = it->second;
+        if (!val.has_value() || val.type() != typeid(T)) {
+            throw std::runtime_error("Value type mismatch in Paramap for key " + it->first+": should be of type <" + typeid(T).name() + "> but is of type <" + val.type().name()+ ">");
+        }
+        return std::any_cast<const T&>(val);
+    }
+    
+    template <typename T>
+    T get(const std::string& key, const T& default_value) const {
+        auto it = value_map.find(key);
+        if (it == value_map.end()) {
+            return default_value;
+        }
+        const auto& val = it->second;
+        if (!val.has_value() || val.type() != typeid(T)) {
+            throw std::runtime_error("Value type mismatch in Paramap");
+        }
+        return std::any_cast<const T&>(val);
+    }
+
+    bool has(const std::string& key) const {
+        return value_map.find(key) != value_map.end();
+    }
+
+    void remove(const std::string& key) {
+        value_map.erase(key);
+    }
+
+    void update(const ParaMap& other) {
+        for (const auto& entry : other.value_map) {
+            value_map[entry.first] = entry.second;
+        }
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const ParaMap& paramap) {
+        for (const auto& entry : paramap.value_map) {
+            os << entry.first << ": ";
+            try {
+                os << std::any_cast<double>(entry.second);
+            } catch (const std::bad_any_cast&) {
+                os << "type=" << entry.second.type().name();
             }
-            os << "</ParaMap>" << endl;
-            return os;
+            os << std::endl;
         }
+        return os;
+    }
+
+private:
+    std::map<std::string, std::any> value_map;
 };
+
 
 /**
  * @class progress
