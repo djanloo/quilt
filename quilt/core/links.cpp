@@ -9,7 +9,6 @@ LinkFactory& get_link_factory(){
 
 LinkFactory::LinkFactory()
 {
-    // Here I place the builders of each type of link
     add_linker(std::make_pair("base", "base"), link_maker<Link>);
     add_linker(std::make_pair("jansen-rit", "jansen-rit"), link_maker<JRJRLink>);
     add_linker(std::make_pair("leon-jansen-rit", "leon-jansen-rit"), link_maker<LJRLJRLink>);
