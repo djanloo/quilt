@@ -6,16 +6,17 @@ def sigm(v, nu_max,v0,r):
     return result
 
 u = np.loadtxt("output.txt")
-conversion = np.array([1,1,1, 1e3, 1e3, 1e3, 1,1,1, 1e3,1e3,1e3])
-conversion = np.ones(12)
-print(f"shape  {u.shape}" )
 tt = np.arange(0, len(u))
-for i, uu in enumerate(u.T):
-    plt.plot(tt, uu, label=i)
+
+M = 6
+
+for i in range(u.shape[1]//M):
+    plt.plot(tt, u[:,M*i + 1] - u[:, M*i + 2], label=f"osc{i}")
+
 plt.legend()
 
 
-plt.figure(2)
-plt.plot(u[:, 2] - u[:, 3])
+# plt.figure(2)
+# plt.plot(u[:, 2] - u[:, 3])
 
 plt.show()

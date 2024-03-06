@@ -172,11 +172,11 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 1;
+    int N = 5;
     vector<vector<float>> weights, delays;
 
 
-    weights = get_rand_proj_mat(N,N, 1.5,10);
+    weights = get_rand_proj_mat(N,N, 0.1, 0.2);
     delays = get_rand_proj_mat(N,N, 80, 200);
 
     // for (int i = 0; i< N;i++){
@@ -209,6 +209,7 @@ void test_oscill(){
 
 
     params->add("oscillator_type", "jansen-rit");
+    // params->add("C", 1.0f);
     // params->add("P", -0.0f);
     // params->add("Q", -0.0f);
     // params->add("U", -0.0f);
@@ -217,7 +218,7 @@ void test_oscill(){
 
     vector<dynamical_state> init_cond;
     for (int i=0; i< N; i++){
-        vector<double> initstate(12, 2);
+        vector<double> initstate(6, 2);
 
         // initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
         // initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
@@ -234,7 +235,7 @@ void test_oscill(){
     osc_net.initialize(&evo, init_cond);
 
     ofstream file("output.txt");
-    osc_net.run(&evo, 500, 1);
+    osc_net.run(&evo, 2000, 1);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){

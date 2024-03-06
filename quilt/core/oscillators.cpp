@@ -238,8 +238,8 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
         {
             external_currents += input->get(0, t);
         }
-        double external_inputs = 0.12 + external_currents;
-
+        double external_inputs = 0.13 + external_currents + 0.19*static_cast<double>(rand())/RAND_MAX;
+        // cout << external_currents;
         dxdt[0] = x[3];
         dxdt[1] = x[4];
         dxdt[2] = x[5];
