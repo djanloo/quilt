@@ -157,7 +157,7 @@ void Neuron::on_spike(){
 }
 
 NeuroParam::NeuroParam(){
-    this->neur_type = neuron_type::base_neuron;
+    this->neur_type = "base_neuron";
     std::map<std::string, ParaMap::param_t> defaults{{"I_e", 0.0f}, {"I_osc", 0.0f}, {"omega_I", 0.0f}};
     this->paramap = ParaMap(defaults);
     }
@@ -165,7 +165,7 @@ NeuroParam::NeuroParam(){
 NeuroParam::NeuroParam(ParaMap & paramap) : NeuroParam(){
 
     this->paramap.update(paramap);
-    neur_type = static_cast<neuron_type>(paramap.get<int>("neuron_type"));
+    neur_type = paramap.get<string>("neuron_type");
 
     // Soma
     E_l = paramap.get<float>("E_l");

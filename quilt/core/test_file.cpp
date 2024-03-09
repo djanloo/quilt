@@ -45,7 +45,7 @@ void test_spiking()
     SpikingNetwork sn = SpikingNetwork();
 
 
-    map<string, ParaMap::param_t> map_of_params{{"neuron_type", (float)neuron_type::aeif},
+    map<string, ParaMap::param_t> map_of_params{{"neuron_type", "aeif"},
                                         {"C_m", 40.1f},
                                         {"G_L",2.0f},
                                         {"E_l", -70.0f},
@@ -125,7 +125,7 @@ void test_poisson(){
     SpikingNetwork sn = SpikingNetwork();
 
 
-    map<string, ParaMap::param_t> map_of_params = {{"neuron_type", (float)neuron_type::aeif},
+    map<string, ParaMap::param_t> map_of_params = {{"neuron_type", "aeif"},
                                         {"C_m", 40.1f},
                                         {"G_L",2.0f},
                                         {"E_l", -70.0f},
@@ -248,7 +248,7 @@ void test_sparse(){
     SpikingNetwork sn = SpikingNetwork();
 
 
-    map<string, ParaMap::param_t> map_of_params{{"neuron_type", (float)neuron_type::aeif},
+    map<string, ParaMap::param_t> map_of_params{{"neuron_type", "aeif"},
                                         {"C_m", 40.1f},
                                         {"G_L",2.0f},
                                         {"E_l", -70.0f},
@@ -299,8 +299,9 @@ void test_sparse(){
 }
 
 int main(){
+    test_spiking();
     // test_sparse();
     // test_poisson();
-    test_oscill();
+    // test_oscill();
 }
 

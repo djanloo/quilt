@@ -12,9 +12,6 @@ class Synapse;
 class Population;
 class Projection;
 
-
-extern const std::map<std::string, int> NEURON_CODES;
-
 /**
  * @brief The adaptive quadratic integrate-and-fire neuron
  *
@@ -62,8 +59,8 @@ class aqif_param : public NeuroParam {
         aqif_param(ParaMap & paramap)
             :   NeuroParam(paramap)
         {
-            if ((static_cast<neuron_type>(paramap.get<int>("neuron_type")) != neuron_type::aqif) &&\
-                (static_cast<neuron_type>(paramap.get<int>("neuron_type")) != neuron_type::aqif2) ){
+            if ( (paramap.get<string>("neuron_type") != "aqif") &&\
+                 (paramap.get<string>("neuron_type") != "aqif2") ){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
             try {
@@ -111,7 +108,7 @@ class izhikevich_param : public NeuroParam {
         izhikevich_param(ParaMap & paramap)
             :   NeuroParam(paramap)
         {
-            if (static_cast<neuron_type>(paramap.get<float>("neuron_type")) != neuron_type::izhikevich){
+            if (paramap.get<string>("neuron_type") != "izhikevich"){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
             try{
@@ -166,7 +163,7 @@ class aeif_param : public NeuroParam{
         aeif_param (ParaMap & paramap)
             :   NeuroParam(paramap)
         {
-            if (static_cast<neuron_type>(paramap.get<float>("neuron_type")) != neuron_type::aeif){
+            if (paramap.get<string>("neuron_type") != "aeif"){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
             try{
@@ -198,7 +195,7 @@ class aqif2_param : public aqif_param {
         aqif2_param(ParaMap & paramap) 
             :   aqif_param(paramap)
         {
-            this->neur_type = neuron_type::aqif2;
+            this->neur_type = "aqif2";
             try{
                 V_b = paramap.get<float>("V_b");
             }
@@ -231,3 +228,63 @@ class aqif2_param : public aqif_param {
 //         float rate; //!< The rate of each neuron
 //         poisson_param ()
 // };
+
+
+class NeuroFactory{
+    
+    public:
+        typedef std::function<Neuron* ( Population *)> neuron_constructor;
+        typedef std::function<NeuroParam* (ParaMap)> neuroparam_constructor;
+
+        void add_neuron(string neuron_model, neuron_constructor nc, neuroparam_constructor npc){
+            neuro_constructors_[neuron_model] = nc;
+            neuroparam_constructors_[neuron_model] = npc;
+        }
+        NeuroParam * get_neuroparam(string neuron_model, ParaMap & params){\
+            NeuroParam * neuroparam;
+            try{
+                neuroparam = neuroparam_constructors_[neuron_model](params);
+            }catch (std::out_of_range & e){
+                throw std::invalid_argument("Neuron model <" + neuron_model + "> does not exixt.");
+            }
+            return neuroparam;
+        }
+        Neuron * get_neuron(string neuron_model, Population * pop){
+            Neuron * neuron;
+            try{
+                neuron = neuro_constructors_[neuron_model](pop);
+            }catch (std::out_of_range & e){
+                throw std::invalid_argument("Neuron model <" + neuron_model + "> does not exixt.");
+            }
+            return neuron;
+        }
+
+        static NeuroFactory * get_neuro_factory(){
+            if (instance == nullptr){
+                return new NeuroFactory();
+            }
+        return instance;
+        }
+
+    private:
+        static NeuroFactory * instance;
+        NeuroFactory(){
+            add_neuron("aeif", neuron_maker<aeif_neuron>, neuroparam_maker<aeif_param>);
+            add_neuron("aqif", neuron_maker<aqif_neuron>, neuroparam_maker<aqif_param>);
+            add_neuron("aqif2", neuron_maker<aqif2_neuron>, neuroparam_maker<aqif2_param>);
+            add_neuron("izhikevich", neuron_maker<izhikevich_neuron>, neuroparam_maker<izhikevich_param>);
+        }
+        map<string, neuron_constructor> neuro_constructors_;
+        map<string, neuroparam_constructor> neuroparam_constructors_;
+
+        template <class N>
+        static Neuron * neuron_maker(Population * pop){
+            return new N(pop);
+        }
+
+        template <class NP>
+        static NeuroParam * neuroparam_maker(ParaMap params){
+            return new NP(params);
+        }
+        
+};
