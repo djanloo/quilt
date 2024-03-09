@@ -172,19 +172,12 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 5;
+    int N = 50;
     vector<vector<float>> weights, delays;
 
 
-    weights = get_rand_proj_mat(N,N, 0.1, 0.2);
+    weights = get_rand_proj_mat(N,N, 2.0, 5.0);
     delays = get_rand_proj_mat(N,N, 80, 200);
-
-    // for (int i = 0; i< N;i++){
-    //     for (int j=0; j< N; j++){
-    //         weights[i][j] = 12;
-    //         // delays[i][j] = 100;
-    //     }
-    // }
 
     for (int i = 0; i< N; i++){
         weights[i][i] = 0.0;
