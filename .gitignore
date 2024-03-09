@@ -4,6 +4,9 @@
 # venv
 venv/
 
+# outputs
+output.txt
+
 # Docs
 docs/doxyoutput
 docs/_build
