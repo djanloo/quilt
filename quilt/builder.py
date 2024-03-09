@@ -409,6 +409,15 @@ class NeuronCatalogue:
         with open(catalogue.yaml_file, "r") as f:
             catalogue.neurons_dict = yaml.safe_load(f)
 
+        # Conversion to float of each parameter except neuron type
+        for neuron_name in catalogue.neurons_dict.keys():
+            for feature in catalogue.neurons_dict[neuron_name]:
+                try:
+                    catalogue.neurons_dict[neuron_name][feature] = float(catalogue.neurons_dict[neuron_name][feature])
+                except ValueError:
+                    # print(f"Could not convert to float: {feature}->{catalogue.neurons_dict[neuron_name][feature]}")
+                    pass
+
         for neuron_name in catalogue.neurons_dict.keys():
             catalogue.paramaps[neuron_name] = base.ParaMap(catalogue.neurons_dict[neuron_name])
             catalogue.neuron_names += [neuron_name]
