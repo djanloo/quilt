@@ -10,9 +10,12 @@ from libcpp cimport vector
 # TODO: solve relative import from quilt.interface import cinterface
 from quilt.interface.cinterface cimport ParaMap as cParaMap
 
-# TODO: import these as extern from C++ file
-NEURON_TYPES = {"base_neuron":0, "aqif":1,"aqif2":2 ,"izhikevich":3, "aeif":4}
-OSCILLATOR_TYPES = {"base_oscillator":0, "harmonic": 1, 'jansen-rit': 2}
+
+# TODO: is it necessary? Oscillatros are not implemented like neurons
+# For neurons the instance creation is managed by C++
+# For oscillators thi instance creation is done 'directly' from cython
+# so ther is no need to encode the oscillator type to pass it to c++
+OSCILLATOR_TYPES = {"base_oscillator":0, "harmonic": 1, 'jansen-rit': 2, 'leon-jansen-rit': 3}
 
 cdef class ParaMap:
 
@@ -27,7 +30,7 @@ cdef class ParaMap:
         if (not self.is_neuron_paramap) and (not self.is_oscillator_paramap):
             message = "ParaMap must have a 'neuron_type' or 'oscillator_type' field\n"
             message += f"Possible values are:\n"
-            message += f"\tneuron_type: {list(NEURON_TYPES.keys())}"
+            message += f"\tneuron_type: {list(dict(cinter.NEURON_CODES).keys())}"
             message += rf"\oscillator_type: {list(OSCILLATOR_TYPES.keys())}"
 
             raise KeyError(message)
@@ -37,7 +40,7 @@ cdef class ParaMap:
 
         # Converts to unsigned int
         if "neuron_type" in self.params_dict.keys():
-            self.converted_params_dict['neuron_type'] = NEURON_TYPES[self.params_dict['neuron_type']]
+            self.converted_params_dict['neuron_type'] = cinter.NEURON_CODES[self.params_dict['neuron_type']]
             
         # Converts to unsigned int
         if "oscillator_type" in self.params_dict.keys():

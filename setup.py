@@ -36,8 +36,8 @@ extension_kwargs = dict(
         libraries=["m"],                      
         extra_compile_args=[#"-fopenmp", 
                             "-O3", 
-                            "-std=c++11"],
-        # extra_link_args=["-fopenmp"],
+                            "-std=c++17"],
+        extra_link_args=["-std=c++17"],
         define_macros= [('NPY_NO_DEPRECATED_API','NPY_1_7_API_VERSION')] #Silences npy deprecated warn
         )
 

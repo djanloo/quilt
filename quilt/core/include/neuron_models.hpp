@@ -12,6 +12,9 @@ class Synapse;
 class Population;
 class Projection;
 
+
+extern const std::map<std::string, int> NEURON_CODES;
+
 /**
  * @brief The adaptive quadratic integrate-and-fire neuron
  *
@@ -39,8 +42,8 @@ class Projection;
 class aqif_neuron : public Neuron {
     public:
         aqif_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
+        void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
+        void on_spike() override;
 };
 
 /**
@@ -56,17 +59,19 @@ class aqif_param : public NeuroParam {
         float ada_b;    //!< Adaptive variable jump term
         float ada_tau_w;//!< Adaptive variable decay time
 
-        aqif_param(ParaMap paramap):NeuroParam(paramap){
-            if ((static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif) &&\
-                (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aqif2) ){
+        aqif_param(ParaMap & paramap)
+            :   NeuroParam(paramap)
+        {
+            if ((static_cast<neuron_type>(paramap.get<int>("neuron_type")) != neuron_type::aqif) &&\
+                (static_cast<neuron_type>(paramap.get<int>("neuron_type")) != neuron_type::aqif2) ){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
             try {
-                k = paramap.get("k");
-                V_th = paramap.get("V_th");
-                ada_a = paramap.get("ada_a");
-                ada_b = paramap.get("ada_b");
-                ada_tau_w = paramap.get("ada_tau_w");
+                k = paramap.get<float>("k");
+                V_th = paramap.get<float>("V_th");
+                ada_a = paramap.get<float>("ada_a");
+                ada_b = paramap.get<float>("ada_b");
+                ada_tau_w = paramap.get<float>("ada_tau_w");
             }catch (const std::out_of_range & e){
                 std::string error_message = "Error in aqif neuron: ";
                 error_message += e.what();
@@ -91,8 +96,8 @@ class aqif_param : public NeuroParam {
 class izhikevich_neuron : public Neuron {
     public:
         izhikevich_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
+        void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
+        void on_spike() override;
 };
 
 
@@ -103,14 +108,16 @@ class izhikevich_neuron : public Neuron {
 class izhikevich_param : public NeuroParam {
     public:
         float a,b,d;
-        izhikevich_param(const ParaMap & paramap): NeuroParam(paramap){
-            if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::izhikevich){
+        izhikevich_param(ParaMap & paramap)
+            :   NeuroParam(paramap)
+        {
+            if (static_cast<neuron_type>(paramap.get<float>("neuron_type")) != neuron_type::izhikevich){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
             try{
-                a = paramap.get("a");
-                b = paramap.get("b");
-                d = paramap.get("d");
+                a = paramap.get<float>("a");
+                b = paramap.get<float>("b");
+                d = paramap.get<float>("d");
             } catch (const std::out_of_range & e){
                 std::string error_message = "Error in izhikevich neuron: ";
                 error_message += e.what();
@@ -137,8 +144,8 @@ class izhikevich_param : public NeuroParam {
 class aeif_neuron : public Neuron {
     public:
         aeif_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
+        void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
+        void on_spike() override;
 };
 
 /**
@@ -156,18 +163,19 @@ class aeif_param : public NeuroParam{
         float ada_tau_w;        //!< timescale parameter of the recovery variable [ms]
         float G_L;              //!< Membrane leak conductance [nS]
 
-        aeif_param (const ParaMap & paramap):
-        NeuroParam(paramap){
-            if (static_cast<neuron_type>(paramap.get("neuron_type")) != neuron_type::aeif){
+        aeif_param (ParaMap & paramap)
+            :   NeuroParam(paramap)
+        {
+            if (static_cast<neuron_type>(paramap.get<float>("neuron_type")) != neuron_type::aeif){
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
             try{
-                G_L = paramap.get("G_L");
-                delta_T = paramap.get("delta_T");
-                V_th = paramap.get("V_th");
-                ada_a = paramap.get("ada_a");
-                ada_b = paramap.get("ada_b");
-                ada_tau_w = paramap.get("ada_tau_w");
+                G_L = paramap.get<float>("G_L");
+                delta_T = paramap.get<float>("delta_T");
+                V_th = paramap.get<float>("V_th");
+                ada_a = paramap.get<float>("ada_a");
+                ada_b = paramap.get<float>("ada_b");
+                ada_tau_w = paramap.get<float>("ada_tau_w");
             } catch (const std::out_of_range & e){
                 std::string error_message = "Error in aeif neuron: ";
                 error_message += e.what();
@@ -180,17 +188,19 @@ class aeif_param : public NeuroParam{
 class aqif2_neuron : public Neuron{
     public:
         aqif2_neuron(Population * population);
-        void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
-        void on_spike(EvolutionContext * evo) override;
+        void evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ) override;
+        void on_spike() override;
 };
 
 class aqif2_param : public aqif_param {
     public:
         float V_b;
-        aqif2_param(const ParaMap & paramap) : aqif_param(paramap){
+        aqif2_param(ParaMap & paramap) 
+            :   aqif_param(paramap)
+        {
             this->neur_type = neuron_type::aqif2;
             try{
-                V_b = paramap.get("V_b");
+                V_b = paramap.get<float>("V_b");
             }
             catch (const std::out_of_range & e){
                 std::string error_message = "Error in aqif2 neuron: ";

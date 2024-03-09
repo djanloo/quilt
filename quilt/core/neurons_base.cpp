@@ -11,31 +11,31 @@
 #include <boost/numeric/odeint.hpp>
 
 
-namespace utilities{
+// namespace utilities{
 
-    void nan_check(double value, const std::string& str){
-        if (std::isnan(value)){
-            throw std::runtime_error(str);
-        }
-    }
+//     void nan_check(double value, const std::string& str){
+//         if (std::isnan(value)){
+//             throw std::runtime_error(str);
+//         }
+//     }
 
-    // This one costs a lot of time
-    void nan_check_vect(const std::vector<double>& vect, const std::string& str){
-        std::vector<bool> are_nan;
-        bool somebody_is_nan = false;
+//     // This one costs a lot of time
+//     void nan_check_vect(const std::vector<double>& vect, const std::string& str){
+//         std::vector<bool> are_nan;
+//         bool somebody_is_nan = false;
 
-        for (auto value : vect){
-            somebody_is_nan = somebody_is_nan || std::isnan(value) || std::isinf(value);
-            are_nan.push_back( std::isnan(value) || std::isinf(value));
-        }
-        if (somebody_is_nan){
-            std::cerr << "vector is nan: [" ;
-            for (auto val : are_nan) {std::cerr << val <<" ";} std::cerr << " ]" << std::endl;
+//         for (auto value : vect){
+//             somebody_is_nan = somebody_is_nan || std::isnan(value) || std::isinf(value);
+//             are_nan.push_back( std::isnan(value) || std::isinf(value));
+//         }
+//         if (somebody_is_nan){
+//             std::cerr << "vector is nan: [" ;
+//             for (auto val : are_nan) {std::cerr << val <<" ";} std::cerr << " ]" << std::endl;
             
-            throw std::runtime_error(str);
-        }
-    }
-}
+//             throw std::runtime_error(str);
+//         }
+//     }
+// }
 
 // Synapse::min_delay is used to check if the timestep is small enough
 // Sets the minimim delay to infinity, take smaller values when building the network
@@ -49,7 +49,7 @@ void Synapse::fire(EvolutionContext * evo){
 
 Neuron::Neuron(Population * population):population(population){
     id = HierarchicalID(population->id);
-    state = neuron_state { population->neuroparam->E_l + ((double)rand())/RAND_MAX, 0.0, 0.0};
+    state = dynamical_state { population->neuroparam->E_l + ((double)rand())/RAND_MAX, 0.0, 0.0};
     last_spike_time = - std::numeric_limits<float>::infinity();
     population -> neurons.push_back(this);        
 };
@@ -59,7 +59,7 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
 }
 
 
-void Neuron::handle_incoming_spikes(EvolutionContext * evo){
+void Neuron::handle_incoming_spikes(){
 
     while (!(incoming_spikes.empty())){ // This loop will be broken later
 
@@ -103,15 +103,15 @@ void Neuron::handle_incoming_spikes(EvolutionContext * evo){
 }
 
 
-void Neuron::evolve(EvolutionContext * evo){
+void Neuron::evolve(){
     if (spike_flag){
-        on_spike(evo);
+        on_spike();
         spike_flag = false;
     }
 
     // Evolve
-    boost::numeric::odeint::runge_kutta4<neuron_state> stepper;
-    auto lambda = [this](const neuron_state & state, neuron_state & dxdt, double t) {
+    boost::numeric::odeint::runge_kutta4<dynamical_state> stepper;
+    auto lambda = [this](const dynamical_state & state, dynamical_state & dxdt, double t) {
                                     this->evolve_state(state, dxdt, t);
                                 };
 
@@ -122,7 +122,7 @@ void Neuron::evolve(EvolutionContext * evo){
     // because EXACTLY at time t the spikes are not arrived yet
     // The other way of doing this is to evaluate at the beginning of the evolution the spikes
     // that arrived from t-dt and t
-    handle_incoming_spikes(evo);
+    handle_incoming_spikes();
 
     // THIS CHECKS NANS
     // auto before_step = state;
@@ -140,7 +140,7 @@ void Neuron::evolve(EvolutionContext * evo){
     // }
 }
 
-void Neuron::emit_spike(EvolutionContext * evo){
+void Neuron::emit_spike(){
     for (auto synapse : this->efferent_synapses){ synapse.fire(evo); }
 
     this -> last_spike_time = evo -> now;
@@ -152,53 +152,38 @@ void Neuron::emit_spike(EvolutionContext * evo){
     // this-> on_spike(evo);
 }
 
-void Neuron::on_spike(EvolutionContext * /*evo*/){
+void Neuron::on_spike(){
     this->state[0] = this->population->neuroparam->V_reset;
 }
 
 NeuroParam::NeuroParam(){
     this->neur_type = neuron_type::base_neuron;
-    std::map<std::string, float> defaults = {{"I_e", 0.0}, {"I_osc", 0.0}, {"omega_I", 0.0}};
+    std::map<std::string, ParaMap::param_t> defaults{{"I_e", 0.0f}, {"I_osc", 0.0f}, {"omega_I", 0.0f}};
     this->paramap = ParaMap(defaults);
     }
 
-NeuroParam::NeuroParam(const ParaMap & paramap):NeuroParam(){
+NeuroParam::NeuroParam(ParaMap & paramap) : NeuroParam(){
 
     this->paramap.update(paramap);
-    this->neur_type = static_cast<neuron_type>(this->paramap.get("neuron_type"));
+    neur_type = static_cast<neuron_type>(paramap.get<int>("neuron_type"));
 
-    std::string last = "";
-    try{
-        last = "E_l";
-        this->E_l = this->paramap.get(last);
-        last = "V_reset";
-        this->V_reset = this->paramap.get(last);
-        last = "V_peak";
-        this->V_peak = this->paramap.get(last);
+    // Soma
+    E_l = paramap.get<float>("E_l");
+    C_m = paramap.get<float>("C_m");
+    V_reset = paramap.get<float>("V_reset");
+    V_peak = paramap.get<float>("V_peak");
+    tau_refrac = paramap.get<float>("tau_refrac");
 
-        last = "C_m";
-        this->C_m = this->paramap.get(last);
-
-        last = "tau_ex";
-        this->tau_ex = this->paramap.get(last);
-        last = "tau_in";
-        this->tau_in = this->paramap.get(last);
-        last = "E_ex";
-        this->E_ex = this->paramap.get(last);
-        last = "E_in";
-        this->E_in = this->paramap.get(last);
-        
-        last = "tau_refrac";
-        this->tau_refrac = this->paramap.get(last);
-        last = "I_e";
-        this->I_e = this->paramap.get(last);
-        last = "I_osc";
-        this->I_osc = this->paramap.get(last);
-        last = "omega_I";
-        this->omega_I = this->paramap.get(last);
-    } catch (const std::out_of_range & e){
-        throw std::out_of_range("Missing parameter for NeuroParam: " + last);
-    }
+    // Synapses
+    tau_ex = paramap.get<float>("tau_ex");
+    tau_in = paramap.get<float>("tau_in");
+    E_ex = paramap.get<float>("E_ex");
+    E_in = paramap.get<float>("E_in");
+    
+    // External inputs (default is zero)
+    I_e = paramap.get("I_e", 0.0);
+    I_osc = paramap.get("I_osc", 0.0);
+    omega_I = paramap.get("omega_I", 0.0);
 }
 
 void NeuroParam::add(const std::string & key, float value){paramap.add(key, value);}

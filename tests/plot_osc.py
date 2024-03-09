@@ -6,25 +6,17 @@ def sigm(v, nu_max,v0,r):
     return result
 
 u = np.loadtxt("output.txt")
-conversion = np.array([1,1,1, 1e3, 1e3, 1e3, 1,1,1, 1e3,1e3,1e3])
-print(f"shape  {u.shape}" )
 tt = np.arange(0, len(u))
-for uu, fact in zip(u.T, conversion):
-    
-    plt.plot(tt, fact*uu)
 
-# u = np.diff(u)/np.diff(tt)
-# tt = tt[:-1]
-# plt.plot(tt, u)
+M = 6
 
-# u = np.diff(u)/np.diff(tt)
-# tt = tt[:-1]
-# plt.plot(tt, u)
+for i in range(u.shape[1]//M):
+    plt.plot(tt, u[:,M*i + 1] - u[:, M*i + 2], label=f"osc{i}")
 
-# u = np.diff(u)/np.diff(tt)
-# tt = tt[:-1]
-# plt.plot(tt, u)
+plt.legend()
 
-# plt.yscale('log')
-# plt.xscale('log')
+
+# plt.figure(2)
+# plt.plot(u[:, 2] - u[:, 3])
+
 plt.show()

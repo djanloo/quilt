@@ -12,6 +12,8 @@
 #include <mutex>
 #include <functional>
 
+#include <variant>
+
 using std::cout;
 using std::endl;
 using std::runtime_error;
@@ -108,10 +110,16 @@ class HierarchicalID{
 class EvolutionContext{
     public:
         double dt, now; // time in millis
+
+        vector<double> times;
         unsigned int n_steps_done;
 
         EvolutionContext(double dt);
         void do_step();
+
+        // Get index and deviation of a time value
+        int     index_of(double time);
+        double  deviation_of(double time);
 };
 
 typedef vector<double> dynamical_state;
@@ -138,8 +146,14 @@ class ContinuousRK{
         dynamical_state proposed_state;
         vector<dynamical_state> proposed_evaluation;
 
-        void set_dimension(unsigned int dimension){space_dimension = dimension;}
-        void set_evolution_equation(std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> F){evolve_state = F;};
+        void set_dimension(unsigned int dimension)
+        {
+            space_dimension = dimension;
+        }
+        void set_evolution_equation(std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> F)
+        {
+            evolve_state = F;
+        };
 
         /**
          * The continuous parameters of the NCE. See "Natural Continuous extensions of Runge-Kutta methods", M. Zennaro, 1986.
@@ -176,25 +190,116 @@ class ContinuousRK{
         std::function<void(const dynamical_state & x, dynamical_state & dxdt, double t)> evolve_state;
 };
 
-
 /**
+ * @brief A class representing a parameter map with keys and associated variant values.
  * 
- * @class ParaMap
- * @brief a dictionary class
- * 
- * It's just a bridge between python and C++
- * 
-*/
+ * Possible types are int, float and string.
+ */
 class ParaMap{
     public:
-        map<string, float> value_map;
-        ParaMap();
-        ParaMap(const map<string, float> & value_map);
+        typedef std::variant<int, float, string> param_t;
+        map<string, param_t> value_map;
 
-        void update(const ParaMap & new_values);
-        void add(const string & key, float value);
-        float get(const string & key) const ;
-        float get(const string & key, float default_value) const;
+        /** 
+         * @brief Default constructor for ParaMap.
+         */
+        ParaMap():value_map(){};
+
+        /**
+         * @brief Constructor for ParaMap with initial values.
+         * @param values A map containing initial key-value pairs.
+         */
+        ParaMap(map<string, param_t> values){
+            for (auto pair : values){
+                add(pair.first, pair.second);
+            }
+        }
+
+        /**
+         * @brief Template function to retrieve the value associated with a key.
+         * @tparam T The type of the value to retrieve.
+         * @param key The key to look up in the map.
+         * @return The value associated with the key.
+         * @throw std::out_of_range if the key is not found.
+         */
+        template <typename T>
+        T get(const string& key){
+            auto it = value_map.find(key);
+            if (it == value_map.end()){
+                throw std::out_of_range("Attribute " + key +" not found in ParaMap");
+            }
+            // cout << "Getting " << key << endl;
+            return std::get<T>(it->second);
+        }
+        /**
+         * @brief Function to retrieve the value associated with a key with a default value.
+         * @param key The key to look up in the map.
+         * @param default_value The default value to return if the key is not found.
+         * @return The value associated with the key or the default value.
+         * 
+         * Note: in case the value is not found it is assigned to `default_value`. 
+         * Future requests will return this value.
+         */
+        float get(const string& key, float default_value) {
+            auto it = value_map.find(key);
+            if (it == value_map.end()){
+                value_map[key] = default_value;
+                return default_value;
+            }
+            else{
+                return std::get<float>(it->second);
+            }
+        }
+
+        /**
+         * @brief Template function to add a key-value pair to the map.
+         * @tparam T The type of the value to add.
+         * @param key The key to add.
+         * @param value The value to associate with the key.
+         */
+        template <typename T>
+        void add(const string& key, const T& value){
+            value_map[key] = value;
+        }
+
+        /**
+         * @brief Function to update the map with key-value pairs from another ParaMap.
+         * @param other Another ParaMap to merge with the current one.
+         */
+        void update(const ParaMap& other) {
+            for (auto entry : other.value_map) {
+                value_map[entry.first] = entry.second;
+            }
+        }
+
+        /**
+         * @brief Overloaded output stream operator to print the contents of the ParaMap.
+         * @param os The output stream.
+         * @param paramap The ParaMap to print.
+         * @return The modified output stream.
+         */
+        friend std::ostream& operator<<(std::ostream& os, const ParaMap& paramap){
+            os << "<ParaMap>" << endl;
+            for (const auto& entry : paramap.value_map) {
+                os << "\t" <<entry.first << ": ";
+                if (std::holds_alternative<int>(entry.second)){
+                    os <<std::get<int>(entry.second);
+                    os << " (int)";
+                }
+                if (std::holds_alternative<float>(entry.second)){
+                    os <<std::get<float>(entry.second);
+                    os << " (float)";
+                }
+                if (std::holds_alternative<string>(entry.second)){
+                    os << std::get<string>(entry.second);
+                    os << " (string)";
+                }
+                os << endl;
+            }
+            os << "</ParaMap>" << endl;
+
+            return os;
+        }
 };
 
 /**
