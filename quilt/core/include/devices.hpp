@@ -3,45 +3,83 @@
 #include <fstream>
 #include <variant>
 #include <vector>
+#include <exception>
 
-typedef std::vector<double> neuron_state;
+using std::vector;
+using std::cout;
+using std::endl;
+
+typedef std::vector<double> dynamical_state;
 class Population;
 class EvolutionContext;
+
+/**
+ * @brief Base class for population monitors
+*/
+class PopulationMonitor{
+    public:
+        PopulationMonitor(Population * population)
+            :   monitored_population(population){}
+
+        // The gather function that defines the type of monitor
+        virtual void gather()
+        {
+            throw std::runtime_error("Used virtual `gather()` method of PopulationMonitor");
+        }
+
+        void set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+        }
+
+        virtual ~PopulationMonitor(){};
+
+    protected:
+        Population * monitored_population;
+        EvolutionContext * evo;
+};
+
+class PopulationRateMonitor : public PopulationMonitor{
+    public:
+        PopulationRateMonitor(Population * population)
+            :   PopulationMonitor(population){}
+
+        void gather() override;
+        vector<float> get_history();
+    protected:
+        vector<float> history;
+};
 
 /**
  * @class PopulationSpikeMonitor
  * @brief Monitor for the variable `Population::n_spikes_last_step`
 */
-class PopulationSpikeMonitor{
+class PopulationSpikeMonitor : public PopulationMonitor{
     public:
 
-        PopulationSpikeMonitor(Population * pop){this->monitored_pop = pop;};
-        void gather();
+        PopulationSpikeMonitor(Population * pop)
+            :   PopulationMonitor(pop){}
 
-        std::vector<int> get_history(){
-            return this->history;
-        }
-    private:
-        Population * monitored_pop;
-        std::vector<int> history;
+        void gather();
+        vector<int> get_history();
+    protected:
+        vector<int> history;
 };
 
 /**
  * @class PopulationSpikeMonitor
  * @brief Monitor for the variables `Population::neurons::state`
 */
-class PopulationStateMonitor{
+class PopulationStateMonitor : public PopulationMonitor{
     public:
 
-        PopulationStateMonitor(Population * pop){this->monitored_pop = pop;};
-        void gather();
+        PopulationStateMonitor(Population * pop)
+            :   PopulationMonitor(pop){}
 
-        std::vector<std::vector<neuron_state>> get_history(){
-            return this->history;
-        }
-    private:
-        Population * monitored_pop;
-        std::vector<std::vector<neuron_state>> history;
+        void gather();
+        vector<vector<dynamical_state>> get_history();
+    protected:
+        vector<vector<dynamical_state>> history;
 };
 
 /**
@@ -49,9 +87,14 @@ class PopulationStateMonitor{
 */
 class PopInjector{
     public:
-        PopInjector(Population * pop):pop(pop){}
+        PopInjector(Population * pop)
+            :   pop(pop){}
+
         virtual ~PopInjector() = default;
-        virtual void inject(EvolutionContext * /*evo*/){std::cout <<"WARNING: using virtual PopInjector::inject()" << std::endl;}
+        virtual void inject(EvolutionContext * /*evo*/)
+        {
+            std::cout <<"WARNING: using virtual PopInjector::inject()" << std::endl;
+        }
         Population * pop;
 };
 
@@ -61,8 +104,12 @@ class PopInjector{
 */
 class PopCurrentInjector: public PopInjector{
     public:
-        PopCurrentInjector(Population * pop, float I, float t_min, float t_max): 
-            PopInjector(pop), I(I), t_min(t_min), t_max(t_max), activated(false), deactivated(false){}
+        PopCurrentInjector(Population * pop, float I, float t_min, float t_max)
+            :   PopInjector(pop), 
+                I(I), t_min(t_min), 
+                t_max(t_max), 
+                activated(false), 
+                deactivated(false){}
 
         void inject(EvolutionContext * evo) override;
         
@@ -80,7 +127,7 @@ class PopCurrentInjector: public PopInjector{
 class PoissonSpikeSource: public PopInjector{
     public:
         PoissonSpikeSource( Population * pop,
-                            float rate, float weight,float weight_delta,
+                            float rate, float weight, float weight_delta,
                             double t_min, double t_max);
         /**
          * Generates spikes until a spike is generated in another time bin to prevent the spike queue from being uselessly too much long.

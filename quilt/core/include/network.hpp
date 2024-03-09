@@ -1,16 +1,14 @@
 #pragma once
 #include "base.hpp"
+#include "devices.hpp"
+#include "neurons_base.hpp"
 
-// #include <iostream>
-// #include <vector>
-// #include <map>
 #include <unordered_map>
 #include <chrono>
 #include <mutex>
 #include <variant>
 
-
-#define WEIGHT_EPS 0.00001
+#define WEIGHT_EPS 0.00001 //!< Weight threshold of synapses to be considered as zeroed out.
 
 using std::vector;
 
@@ -26,6 +24,7 @@ class Projection;
 class Population;
 class SpikingNetwork;
 
+class PopulationMonitor;
 class PopulationSpikeMonitor;
 class PopulationStateMonitor;
 class PopInjector;
@@ -33,12 +32,10 @@ class PopInjector;
 
 /**
  * @class Projection
- * @brief Implements a projection between two populations
+ * @brief Implements a dense weight-delay projection between objects.
  * 
  * @param[in] weights, delays
  * @param[in] start_dimension, end_dimension
- * 
- * This class is not really useful anymore and will be deprecated.
  * 
 */
 class Projection{
@@ -53,13 +50,15 @@ class Projection{
 };
 
 struct SparseIntHash {
-    size_t operator()(const std::pair<int, int>& k) const {
+    size_t operator()(const std::pair<int, int>& k) const 
+    {
         return std::hash<int>()(k.first) ^ std::hash<int>()(k.second);
     }
 };
 
 struct SparseEqual {
-    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) const {
+    bool operator()(const std::pair<int, int>& lhs, const std::pair<int, int>& rhs) const 
+    {
         return lhs.first == rhs.first && lhs.second == rhs.second;
     }
 };
@@ -68,7 +67,7 @@ typedef std::unordered_map<std::pair<int, int>, std::pair<float, float>, SparseI
 
 
 /**
- * @class SparseLognormProjection
+ * @class SparseProjection
  * @brief Implements a sparse random projection between two populations
  * 
 */
@@ -84,15 +83,20 @@ class SparseProjection{
 
         std::vector<sparse_t> weights_delays;
 
-        SparseProjection(double connectivity,  int type, unsigned int start_dimension, unsigned int end_dimension):
-                    connectivity(connectivity), type(type), start_dimension(start_dimension), end_dimension(end_dimension){
-                        n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
-                    }  
+        SparseProjection(double connectivity,  int type, unsigned int start_dimension, unsigned int end_dimension)
+            :   connectivity(connectivity), 
+                type(type), 
+                start_dimension(start_dimension), 
+                end_dimension(end_dimension)
+        {
+            n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
+        }  
         virtual ~SparseProjection() = default;
         void build_sector(sparse_t *, RNGDispatcher *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
         void build_multithreaded();
 
-        virtual const std::pair<float, float> get_weight_delay(RNG* /*rng*/, int /*i*/, unsigned int /*j*/){
+        virtual const std::pair<float, float> get_weight_delay(RNG* /*rng*/, int /*i*/, unsigned int /*j*/)
+        {
             throw std::runtime_error("Using virtual get_weight_delay of sparse projection");
         }
 };
@@ -139,13 +143,24 @@ class Population{
         void project(const Projection * projection, Population * efferent_population);
         void project(const SparseProjection * projection, Population * efferent_population);
 
-        void evolve(EvolutionContext * evo);
+        void evolve();
 
         // Bureaucracy
         HierarchicalID id;
+        SpikingNetwork * spiking_network;
         double timestats_evo;
         double timestats_spike_emission;
         void print_info();
+        void set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+            for (auto neuron : neurons)
+            {
+                neuron->set_evolution_context(evo);
+            }
+        }
+    private:
+        EvolutionContext * evo;
 
 };
 
@@ -163,21 +178,38 @@ class SpikingNetwork{
     public:
         std::vector<Population*> populations;
         HierarchicalID id;
-        unsigned int verbosity;
+
         SpikingNetwork();
         ~SpikingNetwork();
 
         // Injectors (inputs)
         std::vector<PopInjector*> injectors;
-        void add_injector(PopInjector * injector){this->injectors.push_back(injector);}
+        void add_injector(PopInjector * injector)
+        {
+            this->injectors.push_back(injector);
+        }
+
+        void set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+            for (auto population : populations)
+            {
+                population->set_evolution_context(evo);
+            }
+            for (auto monitor : population_monitors)
+            {
+                monitor->set_evolution_context(evo);
+            }
+        }
 
         // Monitors (outputs)
-        std::vector<PopulationSpikeMonitor*> population_spike_monitors;
-        std::vector<PopulationStateMonitor*> population_state_monitors;
+        std::vector<PopulationMonitor*> population_monitors;
 
         PopulationSpikeMonitor * add_spike_monitor(Population * population);
         PopulationStateMonitor * add_state_monitor(Population * population);
 
         // Evolution stuff
-        void run(EvolutionContext * evo, double time);
+        void run(EvolutionContext * evo, double time, int verbosity);
+    private:
+        EvolutionContext * evo;
 };

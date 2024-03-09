@@ -21,7 +21,7 @@
 */
 enum class neuron_type : unsigned int {base_neuron, aqif, aqif2, izhikevich, aeif};
 
-typedef std::vector<double> neuron_state;
+typedef std::vector<double> dynamical_state;
 
 // The menu:
 class EvolutionContext;
@@ -47,8 +47,10 @@ class Spike{
         float arrival_time;     //!< The (absolute) time of arrival 
         bool processed;         //!< Flag to check missed spikes
 
-        Spike(float weight, double arrival_time):
-        weight(weight), arrival_time(arrival_time), processed(false){}
+        Spike(float weight, double arrival_time)
+            :   weight(weight), 
+                arrival_time(arrival_time), 
+                processed(false){}
 
         /**
          * 
@@ -58,7 +60,11 @@ class Spike{
          * This operator is called when inserting spikes in spike queues.
          * 
         */
-        bool operator<(const Spike& other) const { return this->arrival_time > other.arrival_time; }
+        // ssmoooth operatoooor    
+        bool operator<(const Spike& other) const 
+        {
+            return this->arrival_time > other.arrival_time;
+        }
 };
 
 /**
@@ -70,17 +76,18 @@ class Spike{
 */
 class Synapse{
     public:
-        Synapse(Neuron * presynaptic, Neuron * postsynaptic, float weight, float delay):
-            presynaptic(presynaptic),postsynaptic(postsynaptic),
-            weight(weight), delay(delay){
-                if (this->delay < min_delay){
-                    min_delay = this->delay;
-                }
-            }
+        Synapse(Neuron * presynaptic, Neuron * postsynaptic, float weight, float delay)
+            :   presynaptic(presynaptic),
+                postsynaptic(postsynaptic),
+                weight(weight), 
+                delay(delay)
+        {
+            min_delay = (delay < min_delay) ? delay : min_delay;
+        }
             
         void fire(EvolutionContext * evo);
         static float min_delay; //!< Smallest synaptic delay of the model. Used to check timestep.
-        void set_delay(float new_delay){delay = new_delay;}
+        void  set_delay(float new_delay){delay = new_delay;}
         float get_delay(){return delay;}
     private:
         Neuron * presynaptic;   //!< Pointer to the postsynaptic neuron
@@ -110,18 +117,12 @@ class Synapse{
  * of `handle_incoming_spikes()`.
 */
 class Neuron{
-    protected:
-        neuron_state state;
-
-        // Spike flag is introduced to record the threshold value
-        // so that on_spike() is called the timestep after the spike
-        bool spike_flag; 
     public:
         // Base properties
         neuron_type nt = neuron_type::base_neuron;
         HierarchicalID id;
         Population * population;
-        neuron_state get_state(){return state;}
+        dynamical_state get_state(){return state;}
 
         // Spike stuff
         std::vector<Synapse> efferent_synapses;
@@ -132,28 +133,46 @@ class Neuron{
         virtual ~Neuron() = default;
 
         /**The evolution function*/
-        void evolve(EvolutionContext * evo);
+        void evolve();
 
         /** Connection function. Adds an efferent synapse to the synapse list.*/        
         void connect(Neuron * neuron, double weight, double delay);
 
         /** Manages the incoming spikes. */
-        void handle_incoming_spikes(EvolutionContext * evo);
+        void handle_incoming_spikes();
 
         /** Makes the neuron's efferent synapses fire */
-        void emit_spike(EvolutionContext * evo);
+        void emit_spike();
 
-        double getV(){return state[0];}
+        double getV()
+        {
+            return state[0];
+        }
+
+        void set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+        }
 
         // These must be implemented for each specific neuron
 
         /** The actions to take when the model has a spike*/
-        virtual void on_spike(EvolutionContext * evo);
+        virtual void on_spike();
+
         /** The differential equations of the neuron*/
-        virtual void evolve_state(const neuron_state & /*x*/ , neuron_state & /*dxdt*/ , const double /*t*/ ){
+        virtual void evolve_state(const dynamical_state & /*x*/ , dynamical_state & /*dxdt*/ , const double /*t*/ )
+        {
                 std::cout << "WARNING: using virtual evolve_state of <Neuron>";
         };
+    protected:
+        dynamical_state state;
+
+        // Spike flag is introduced to record the threshold value
+        // so that on_spike() is called the timestep after the spike
+        bool spike_flag;
+        EvolutionContext * evo;
 };
+
 
 /** The container of neuron parameters. Each specific model has its own.*/
 class NeuroParam{ 
@@ -182,8 +201,9 @@ class NeuroParam{
         
         /**Builds the default neuroparam. External currents are set to zero.*/
         NeuroParam();
+
         /**Constructor of `NeuroParam` given a `ParaMap`*/
-        NeuroParam(const ParaMap & paramap);
+        NeuroParam(ParaMap & paramap);
 
         neuron_type get_neuron_type(){return neur_type;}
         void add(const std::string & key, float value);

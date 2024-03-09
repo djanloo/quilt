@@ -10,7 +10,7 @@ import yaml
 import numpy as np
 from rich import print
 from rich.progress import track
-
+from scipy.signal import butter, sosfiltfilt
 
 import quilt.interface.base as base
 import quilt.interface.spiking as spiking
@@ -449,7 +449,7 @@ class OscillatorNetwork:
     def run(self, dt=0.2, time=1):
         if not self.is_built:
             self.build()
-        self._interface.run(dt, time)
+        self._interface.run(time=time)
     
     def build(self):
         self._interface = oscill.OscillatorNetwork()
@@ -470,8 +470,7 @@ class OscillatorNetwork:
             raise KeyError(f"Missing parameter while building OscillatorNetwork connectivity: {e}")
 
         self.is_built = True
-
-
+    
     @classmethod 
     def homogeneous(cls, oscillator_parameters, weights, delays, names=None):
         n_oscillators = len(weights)
@@ -491,11 +490,12 @@ class OscillatorNetwork:
         return net
     
     @classmethod
-    def homogeneous_from_TVB(cls, connectivity_file, oscillator_parameters):
+    def homogeneous_from_TVB(cls, connectivity_file, oscillator_parameters, global_weight=1.0, conduction_speed=1.0):
 
         net = cls()
         net.features['oscillators'] = dict()
         net.features['connectivity'] = dict()
+        net.features['centers'] = dict()
     
         with zipfile.ZipFile(connectivity_file, 'r') as zip_ref:
 
@@ -503,8 +503,9 @@ class OscillatorNetwork:
             if "centres.txt" in zip_ref.namelist():
                 centres = zip_ref.read("centres.txt")
                 for line in centres.decode('utf-8').splitlines():
-                    name, x,y,z, _ = line.split()
+                    name, x,y,z = line.split()
                     net.features['oscillators'][name] = oscillator_parameters
+                    net.features['centers'][name] = np.array([float(v) for v in [x,y,z]])
             else:
                 print(f"centres.txt not in connectivity.")
             
@@ -513,18 +514,68 @@ class OscillatorNetwork:
             # Load tract lengths
             if "tract_lengths.txt" in zip_ref.namelist():
                 tracts = zip_ref.read("tract_lengths.txt").decode('utf-8')
-                net.features['connectivity']['delays'] = np.loadtxt(tracts.splitlines())
+                net.features['connectivity']['delays'] = conduction_speed * np.loadtxt(tracts.splitlines())
             else:
                 print(f"tract_lengths.txt not in connectivity.")
             
             # Load weights
             if "weights.txt" in zip_ref.namelist():
                 tracts = zip_ref.read("weights.txt").decode('utf-8')
-                net.features['connectivity']['weights'] = np.loadtxt(tracts.splitlines())
+                net.features['connectivity']['weights'] = global_weight * np.loadtxt(tracts.splitlines())
             else:
                 print(f"weights.txt not in connectivity.")
             
 
         return net
 
+class EEGcap:
+    def __init__(self, region_mapping_file, eeg_gain_file):
+        self.regions = np.loadtxt(region_mapping_file)
+        self.eeg_gain = np.load(eeg_gain_file)
 
+        self.n_regions = len(np.unique(self.regions))
+        self.n_electrodes = self.eeg_gain.shape[0]
+
+        self.weights = np.zeros((self.n_electrodes, self.n_regions))
+
+        for j in range(self.n_electrodes):
+            for k in range(self.n_regions):
+                node_is_in_region = (self.regions == k)
+                self.weights[j, k] = np.sum(self.eeg_gain[j, node_is_in_region])
+    
+    def eeg(self, network,
+            bandpass_edges=[0.5, 140], 
+            sampling_frequency=1e3,
+            filter_signal=True
+            ):
+
+        T = len(network.oscillators[list(network.oscillators.keys())[0]].history)
+        signal = np.zeros((self.n_electrodes, T))
+        sos = butter(5, bandpass_edges, 'bandpass', fs=sampling_frequency, output='sos')
+
+        # Takes the timeseries once to avoid overhead due to data request
+        time_series = np.zeros((self.n_regions, T))
+
+        for k, oscillator_name in enumerate(network.oscillators):
+            time_series[k] = network.oscillators[oscillator_name].history[:,0]
+
+        for j in range(self.n_electrodes):
+            for k in range(self.n_regions):
+                signal[j] += self.weights[j, k] * time_series[k] 
+            if filter_signal:
+                signal[j] = sosfiltfilt(sos, signal[j])
+        return signal
+
+
+class MultiscaleNetwork:
+
+    def __init__(self, networks, interscale_connectome):
+        self.features = dict()
+        for network in networks:
+            if isinstance(network, SpikingNetwork):
+                self.features
+                pass
+            elif isinstance(network, OscillatorNetwork):
+                pass
+            else:
+                raise TypeError("Multiscale components must be a SpikingNetwork or an OscillatorNetwork")

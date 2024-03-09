@@ -2,8 +2,8 @@
 
 CXX := g++
 PYTHON := python3
-CXXFLAGS := -std=c++11 -Wall -Wextra -ggdb
-SOURCES := quilt/core/oscillators.cpp quilt/core/network.cpp quilt/core/neuron_models.cpp quilt/core/neurons_base.cpp quilt/core/devices.cpp quilt/core/base.cpp
+CXXFLAGS := -std=c++17 -Wall -Wextra -ggdb
+SOURCES := quilt/core/oscillators.cpp quilt/core/links.cpp quilt/core/network.cpp quilt/core/neuron_models.cpp quilt/core/neurons_base.cpp quilt/core/devices.cpp quilt/core/base.cpp
 
 OBJECTS := $(patsubst %.cpp, %.o, $(SOURCES))
 DEPENDS := $(patsubst %.cpp,%.d, $(SOURCES))
@@ -23,6 +23,8 @@ cleanall: clean
 	@rm -R -f quilt/__pycache__
 	@rm -R -f quilt/interface/__pycache__
 	@rm -R -f quilt/interface/*.so
+	@rm -R -f quilt/core/*.d
+	@rm -R -f quilt/core/*.o
 	@echo "Cleaned."
 
 $(EXECUTABLE): quilt/core/test_file.o $(OBJECTS)
