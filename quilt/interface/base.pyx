@@ -1,54 +1,30 @@
 # distutils: language = c++
 import numpy as np
 cimport numpy as np
-import ctypes
 
-
-# from libc import free, malloc
-from libcpp cimport vector
+from libcpp.vector cimport vector
 
 # TODO: solve relative import from quilt.interface import cinterface
 from quilt.interface.cinterface cimport ParaMap as cParaMap
 
 
-# TODO: is it necessary? Oscillatros are not implemented like neurons
-# For neurons the instance creation is managed by C++
-# For oscillators thi instance creation is done 'directly' from cython
-# so ther is no need to encode the oscillator type to pass it to c++
-OSCILLATOR_TYPES = {"base_oscillator":0, "harmonic": 1, 'jansen-rit': 2, 'leon-jansen-rit': 3}
-
 cdef class ParaMap:
 
     def __cinit__(self, dict params):
         self.params_dict = params.copy()
-        self.converted_params_dict = self.params_dict.copy()
         self._paramap = new cParaMap()
 
-        self.is_neuron_paramap = ("neuron_type" in self.params_dict.keys())
-        self.is_oscillator_paramap = ("oscillator_type" in self.params_dict.keys())
-
-        if (not self.is_neuron_paramap) and (not self.is_oscillator_paramap):
-            message = "ParaMap must have a 'neuron_type' or 'oscillator_type' field\n"
-            message += f"Possible values are:\n"
-            message += f"\tneuron_type: {list(dict(cinter.NEURON_CODES).keys())}"
-            message += rf"\oscillator_type: {list(OSCILLATOR_TYPES.keys())}"
-
-            raise KeyError(message)
-        
-        if self.is_neuron_paramap and self.is_oscillator_paramap:
-            raise ValueError("ParaMap cannot belong to neuron and oscillator")
-
-        # Converts to unsigned int
-        if "neuron_type" in self.params_dict.keys():
-            self.converted_params_dict['neuron_type'] = cinter.NEURON_CODES[self.params_dict['neuron_type']]
-            
-        # Converts to unsigned int
-        if "oscillator_type" in self.params_dict.keys():
-            self.converted_params_dict['oscillator_type'] = OSCILLATOR_TYPES[self.params_dict['oscillator_type']]
-    
-        for key in self.converted_params_dict.keys():
+        for key in self.params_dict.keys():
             key_bytes = key.encode('utf-8') if isinstance(key, str) else key
-            self._paramap.add(key_bytes, self.converted_params_dict[key])
+            if isinstance(self.params_dict[key], int):
+                self._paramap.add_float(key_bytes, float(self.params_dict[key]))
+            elif isinstance(self.params_dict[key], float):
+                self._paramap.add_float(key_bytes, <float>self.params_dict[key])
+            elif isinstance(self.params_dict[key], str):
+                self._paramap.add_string(key_bytes, self.params_dict[key].encode('utf-8'))
+            else:
+                raise ValueError(f"Value not accepted in ParaMap construction: {key}->{self.params_dict[key]}")
+
     
     def __dealloc__(self):
         if self._paramap != NULL:

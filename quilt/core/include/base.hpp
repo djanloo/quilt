@@ -193,11 +193,11 @@ class ContinuousRK{
 /**
  * @brief A class representing a parameter map with keys and associated variant values.
  * 
- * Possible types are int, float and string.
+ * Possible types are float and string.
  */
 class ParaMap{
     public:
-        typedef std::variant<int, float, string> param_t;
+        typedef std::variant<float, string> param_t;
         map<string, param_t> value_map;
 
         /** 
@@ -282,10 +282,10 @@ class ParaMap{
             os << "<ParaMap>" << endl;
             for (const auto& entry : paramap.value_map) {
                 os << "\t" <<entry.first << ": ";
-                if (std::holds_alternative<int>(entry.second)){
-                    os <<std::get<int>(entry.second);
-                    os << " (int)";
-                }
+                // if (std::holds_alternative<int>(entry.second)){
+                //     os <<std::get<int>(entry.second);
+                //     os << " (int)";
+                // }
                 if (std::holds_alternative<float>(entry.second)){
                     os <<std::get<float>(entry.second);
                     os << " (float)";
@@ -300,6 +300,19 @@ class ParaMap{
 
             return os;
         }
+
+
+        /**
+         * WRAPPABLE FUNCTIONS
+         * 
+         * Cython has an awful C++17 support, expecially for <variant>. The next functions will be used only
+         * inside the cython interface.
+         * 
+        */
+        void add_string(const string& key, const string& value){ value_map[key] = value;}
+        void add_float(const string& key, const float& value){ value_map[key] = value;}
+        // void add_int(const string& key, const int& value){ value_map[key] = value;}
+
 };
 
 /**

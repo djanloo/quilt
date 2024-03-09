@@ -181,9 +181,11 @@ NeuroParam::NeuroParam(ParaMap & paramap) : NeuroParam(){
     E_in = paramap.get<float>("E_in");
     
     // External inputs (default is zero)
-    I_e = paramap.get("I_e", 0.0);
-    I_osc = paramap.get("I_osc", 0.0);
-    omega_I = paramap.get("omega_I", 0.0);
+    // Note: omitting the float 'f' will cause runtime errors
+    I_e = paramap.get("I_e", 0.0f);
+    I_osc = paramap.get("I_osc", 0.0f);
+    omega_I = paramap.get("omega_I", 0.0f);
+
 }
 
 void NeuroParam::add(const std::string & key, float value){paramap.add(key, value);}
