@@ -28,6 +28,7 @@ oscill:
   sources:
     - interface/oscill.pyx
     - core/oscillators.cpp
+    - core/links.cpp
     - core/base.cpp
   include_dirs:
     - core/include

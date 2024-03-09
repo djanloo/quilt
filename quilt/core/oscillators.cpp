@@ -42,9 +42,9 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
         throw runtime_error("Projection matrix of OscillatorNetwork must be a square matrix");
     }
     cout << "Building connections" << endl;
-    for (int i =0; i < proj->start_dimension; i++)
+    for (unsigned int i =0; i < proj->start_dimension; i++)
     {
-        for (int j = 0; j < proj->end_dimension; j++)
+        for (unsigned int j = 0; j < proj->end_dimension; j++)
         {
             if (proj->weights[i][j] != 0)
             {                   
