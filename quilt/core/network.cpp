@@ -151,8 +151,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         timestats_evo(0), 
         timestats_spike_emission(0)
 {
-    cout << "Making population with"<<endl;
-    cout << *params << endl;
+
     // Adds itself to the hierarchical structure
     id = HierarchicalID(&(spiking_network->id));
 
@@ -167,21 +166,18 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     }catch (const std::runtime_error & e){
         throw std::runtime_error("Could not get parameter `neuron_type`");
     }
-    cout << "catch block done: " << neuron_type << endl;
 
     NeuroFactory * neurofactory = NeuroFactory::get_neuro_factory();
 
     // Asks the neurofactory to generate the correct neuroparam
     neuroparam = neurofactory->get_neuroparam(params->get<string>("neuron_type"), *params);
-    cout << "Neuroparam done" << endl; 
     
     // Generates the neurons
     // TODO: neuron add themselves to the population vector.
-    // This is unlegit and must be corrected
+    // This is not legit and must be corrected
     for ( int i = 0; i < n_neurons; i++){
         neurofactory->get_neuron( params->get<string>("neuron_type"), this);
     }
-    cout << "Population done"<< endl;
 }
 
 void Population::project(const Projection * projection, Population * efferent_population)
