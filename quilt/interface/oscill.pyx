@@ -7,11 +7,6 @@ cimport numpy as np
 cimport quilt.interface.cinterface as cinter
 cimport quilt.interface.base as base
 
-get_class = {   "harmonic":         harmonic_oscillator, 
-                "jansen-rit":       jansen_rit_oscillator,
-                "leon-jansen-rit":  leon_jansen_rit_oscillator
-            } 
-
 VERBOSITY = 1
 
 def set_verbosity(v):
@@ -22,116 +17,21 @@ cdef class OscillatorNetwork:
 
     cdef cinter.OscillatorNetwork * _oscillator_network
     cdef cinter.EvolutionContext * _evo
-    cdef cinter.Connector * _connector
 
-    def __cinit__(self):
-        self._oscillator_network = new cinter.OscillatorNetwork()
+    def __cinit__(self, N, base.ParaMap params):
+        self._oscillator_network = new cinter.OscillatorNetwork(N, params._paramap)
 
-    def build_connections(self, base.Projection proj):
-        cdef int i,j
+    def build_connections(self, base.Projection proj, base.ParaMap params):
+        self._oscillator_network.build_connections(proj._projection , params._paramap)
 
-        self._connector = new cinter.Connector()
-        some_delay_is_zero = False
-        if proj.start_dimension != proj.end_dimension:
-            raise ValueError("Dimension mismatch in oscillator projection")
-        for i in range(proj.start_dimension):
-            for j in range(proj.end_dimension):
-                if proj.weights[i, j] != 0 :
-                    if proj.delays[i, j] == 0:
-                        some_delay_is_zero = True
-                    source = self._oscillator_network.oscillators[i]
-                    target = self._oscillator_network.oscillators[j]
-                    
-                    self._connector.make_link(  self._oscillator_network.oscillators[i], 
-                                                self._oscillator_network.oscillators[j],
-                                                proj.weights[i,j],
-                                                proj.delays[i,j]
-                                            )
-
-        if some_delay_is_zero:
-            warnings.warn("Some delay in the network is zero. This can lead to undefinite behaviours (for now)")
-    
     def run(self, time=1):
         self._oscillator_network.run(self._evo, time, VERBOSITY)
     
     def init(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt=1.0):
         self._evo = new cinter.EvolutionContext(dt)
-
-        n_oscillators = states.shape[0]
-        space_dimension = states.shape[1]
-
-        cdef vector[vector[double]] _states
-        _states = vector[vector[double]](n_oscillators)
-
-        for i in range(n_oscillators):
-            row = vector[double](space_dimension)
-            for j in range(space_dimension):
-                row[j] = states[i,j]
-
-            _states[i] = row
-        
-        self._oscillator_network.initialize(self._evo, _states)
-
-
-cdef class harmonic_oscillator:
-    cdef:
-        cinter.harmonic_oscillator * _oscillator
-        OscillatorNetwork osc_net
-        base.ParaMap paramap
-
-    def __cinit__(self, dict params, OscillatorNetwork oscillator_network):
-        params['oscillator_type'] = 'harmonic'
-        self.paramap = base.ParaMap(params)
-        self._oscillator = <cinter.harmonic_oscillator *> new cinter.harmonic_oscillator(self.paramap._paramap, oscillator_network._oscillator_network)
-        
-    @property
-    def history(self):
-        return np.array(self._oscillator.get_history())
+        self._oscillator_network.initialize(self._evo, states)
 
     def __dealloc__(self):
-        del self._oscillator
-    
-
-cdef class jansen_rit_oscillator:
-    cdef:
-        cinter.jansen_rit_oscillator * _oscillator
-        OscillatorNetwork osc_net
-        base.ParaMap paramap
-
-    def __cinit__(self, dict params, OscillatorNetwork oscillator_network):
-        params['oscillator_type'] = 'jansen-rit'
-        self.paramap = base.ParaMap(params)
-        self._oscillator = <cinter.jansen_rit_oscillator *> new cinter.jansen_rit_oscillator(self.paramap._paramap, oscillator_network._oscillator_network)
-        
-    @property
-    def history(self):
-        return np.array(self._oscillator.get_history())
-    
-    def __dealloc__(self):
-        del self._oscillator
-
-
-cdef class leon_jansen_rit_oscillator:
-    cdef:
-        cinter.leon_jansen_rit_oscillator * _oscillator
-        OscillatorNetwork osc_net
-        base.ParaMap paramap
-
-    def __cinit__(self, dict params, OscillatorNetwork oscillator_network):
-        params['oscillator_type'] = 'leon-jansen-rit'
-        self.paramap = base.ParaMap(params)
-        self._oscillator = <cinter.leon_jansen_rit_oscillator *> new cinter.leon_jansen_rit_oscillator(self.paramap._paramap, oscillator_network._oscillator_network)
-        
-    @property
-    def history(self):
-        return np.array(self._oscillator.get_history())
-    
-    @property
-    def eeg(self):
-        history = np.array(self._oscillator.get_history())
-
-        return history[:, 1] - history[:, 2]
-
-    def __dealloc__(self):
-        del self._oscillator
+        if self._oscillator_network != NULL:
+            del self._oscillator_network
 
