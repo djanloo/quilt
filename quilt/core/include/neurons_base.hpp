@@ -15,12 +15,6 @@
 #define OSCILLATORY_AMPLITUDE_MIN  0.01 //!< Minimal value for an oscillatory input to be considered valid [pA]
 // #define MAX_SPIKE_QUEUE_LENGTH 10000 //!< Not in use: spike queue lenght before warning
 
-/**
- * @enum neuron_type
- * @brief the currently available neuron models
-*/
-enum class neuron_type : unsigned int {base_neuron, aqif, aqif2, izhikevich, aeif};
-
 typedef std::vector<double> dynamical_state;
 
 // The menu:
@@ -119,7 +113,7 @@ class Synapse{
 class Neuron{
     public:
         // Base properties
-        neuron_type nt = neuron_type::base_neuron;
+        string nt = "base_neuron";
         HierarchicalID id;
         Population * population;
         dynamical_state get_state(){return state;}
@@ -178,7 +172,7 @@ class Neuron{
 class NeuroParam{ 
 
     protected:
-        neuron_type neur_type;
+        string neur_type;
 
     public:
         ParaMap paramap;
@@ -205,6 +199,9 @@ class NeuroParam{
         /**Constructor of `NeuroParam` given a `ParaMap`*/
         NeuroParam(ParaMap & paramap);
 
-        neuron_type get_neuron_type(){return neur_type;}
+        string get_neuron_type(){return neur_type;}
         void add(const std::string & key, float value);
 };
+
+
+

@@ -158,34 +158,21 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     (spiking_network->populations).push_back(this);
 
     try{ 
-        params->get<int>("neuron_type");
+        params->get<string>("neuron_type");
     }catch (const std::out_of_range & e) {
         throw( std::out_of_range("Neuron params must have field neuron_type"));
     }
     
-    switch(static_cast<neuron_type> (static_cast<int>(params->get<int>("neuron_type")))){
-        case neuron_type::aqif:         this->neuroparam = new aqif_param(*params);         break;
-        case neuron_type::aqif2:        this->neuroparam = new aqif2_param(*params);        break;
-        case neuron_type::izhikevich:   this->neuroparam = new izhikevich_param(*params);   break;
-        case neuron_type::aeif:         this->neuroparam = new aeif_param(*params);         break;
-        default:
-            throw std::runtime_error("Invalid neuron type when building population:" + std::to_string(static_cast<int>(params->get<int>("neuron_type"))));
-            break;
-    };
+    NeuroFactory * neurofactory = NeuroFactory::get_neuro_factory();
 
-    neuron_type neur_type = neuroparam->get_neuron_type();
+    // Asks the neurofactory to generate the correct neuroparam
+    neuroparam = neurofactory->get_neuroparam(params->get<string>("neuron_type"), *params);
 
+    // Generates the neurons
+    // TODO: neuron add themselves to the population vector.
+    // This is unlegit and must be corrected
     for ( int i = 0; i < n_neurons; i++){
-        // This can be avoided, probably using <variant>
-        switch(neur_type){
-        case neuron_type::base_neuron:  new Neuron(this);           break;   // remember not to push_back here
-        case neuron_type::aqif:         new aqif_neuron(this);      break;   // calling the constructor is enough
-        case neuron_type::izhikevich:   new izhikevich_neuron(this);break;
-        case neuron_type::aeif:         new aeif_neuron(this);      break;
-        case neuron_type::aqif2:        new aqif2_neuron(this);     break;
-        default:
-            throw std::runtime_error("Invalid neuron type");
-        };
+        neurofactory->get_neuron( params->get<string>("neuron_type"), this);
     }
 }
 

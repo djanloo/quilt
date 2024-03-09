@@ -12,18 +12,11 @@
 #include <string>
 #include <boost/numeric/odeint.hpp>
 
-const std::map<std::string, int> NEURON_CODES = {
-    {"aqif", 1}, 
-    {"aqif2", 2}, 
-    {"izhikevich", 3}, 
-    {"aeif", 4}
-};
-
 
 // *********************************** AQIF **************************************************//
 
 aqif_neuron::aqif_neuron(Population * population): Neuron(population){
-    nt = neuron_type::aqif;
+    nt = "aqif";
     aqif_param * p = static_cast<aqif_param*>(population->neuroparam);
     state = dynamical_state {p->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ) ,0.,0.,0.};
 }
@@ -56,7 +49,7 @@ void aqif_neuron::on_spike(){
 
 
 izhikevich_neuron::izhikevich_neuron(Population * population): Neuron(population){
-    nt = neuron_type::izhikevich;
+    nt = "izhikevich";
     izhikevich_param * p = static_cast<izhikevich_param*>(population->neuroparam);
 
     state = dynamical_state { 
@@ -130,7 +123,7 @@ void aeif_neuron::on_spike(){
 // *********************************** AQIF2 **************************************************//
 
 aqif2_neuron::aqif2_neuron(Population * population): Neuron(population){
-    nt = neuron_type::aqif2;
+    nt = "aqif2";
     aqif2_param * p = static_cast<aqif2_param*>(population->neuroparam);
     state = dynamical_state {p->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ) ,0.,0.,0.};
 }
@@ -151,7 +144,10 @@ void aqif2_neuron::evolve_state(const dynamical_state &x , dynamical_state &dxdt
 }
 
 void aqif2_neuron::on_spike(){
-    aeif_param * p = static_cast<aeif_param*>(population->neuroparam);
+    aqif2_param * p = static_cast<aqif2_param*>(population->neuroparam);
     state[0]  = p->V_reset;
     state[3] += p->ada_b;
 }
+
+
+NeuroFactory * NeuroFactory::instance = nullptr;
