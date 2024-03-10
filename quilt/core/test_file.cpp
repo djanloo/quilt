@@ -299,9 +299,9 @@ void test_sparse(){
 }
 
 int main(){
-    test_spiking();
+    // test_spiking();
     // test_sparse();
     // test_poisson();
-    // test_oscill();
+    test_oscill();
 }
 

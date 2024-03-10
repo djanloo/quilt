@@ -445,12 +445,24 @@ class OscillatorNetwork:
     def __init__(self):
         self.is_built = False
         self._interface = None
+
+        self.n_oscillators = None
         self.connectivity = None
         self.oscillators = dict()
 
         # Here is stored the information about network structure
         # without having to build it
         self.features = dict()
+
+        # This is the parameter dict
+        # used in case the network is homogeneous
+        self.homogeneous_dict = None
+
+        # This is the list of dicts
+        # used in case the nerwork is inhomogeneous
+        self.inhomogeneous_list_of_dicts = None
+
+        self.oscillators = dict()
     
     def init(self, states, dt=0.1):
         self._interface.init(states, dt=dt)
@@ -461,42 +473,14 @@ class OscillatorNetwork:
         self._interface.run(time=time)
     
     def build(self):
-        self._interface = oscill.OscillatorNetwork()
-        self.oscillators = dict()
 
-        for oscillator_name in self.features['oscillators']:
-            osctype = self.features['oscillators'][oscillator_name]['oscillator_type']
-            params = self.features['oscillators'][oscillator_name]
-            self.oscillators[oscillator_name] = oscill.get_class[osctype](params, self._interface)
+        if self.homogeneous_dict is not None:
+            self._interface = oscill.OscillatorNetwork.homogeneous(self.n_oscillators,  base.ParaMap(self.homogeneous_dict))
         
-        try:
-            weights = np.array(self.features['connectivity']['weights']).astype(np.float32)
-            delays = np.array(self.features['connectivity']['delays']).astype(np.float32)
-            proj = base.Projection(weights, delays)
-
-            self._interface.build_connections(proj)
-        except KeyError as e:
-            raise KeyError(f"Missing parameter while building OscillatorNetwork connectivity: {e}")
-
+        # Links the oscillators
+        self.oscillators = {n:o for n,o in zip(self.features["oscillators"], self._interface.oscillators)}
+        
         self.is_built = True
-    
-    @classmethod 
-    def homogeneous(cls, oscillator_parameters, weights, delays, names=None):
-        n_oscillators = len(weights)
-        names = [f"osc_{i}" for i in range(n_oscillators)] if names is None else names
-        if len(names) != n_oscillators:
-            raise ValueError("List of oscillator names must have len() equal to n_oscillators")
-        net = cls()
-
-        net.features['oscillators'] = dict()
-        for name in names:
-            net.features['oscillators'][name] = oscillator_parameters
-
-        net.features['connectivity'] = dict()
-        net.features['connectivity']['weights'] = weights
-        net.features['connectivity']['delays'] = delays
-
-        return net
     
     @classmethod
     def homogeneous_from_TVB(cls, connectivity_file, oscillator_parameters, global_weight=1.0, conduction_speed=1.0):
@@ -512,8 +496,8 @@ class OscillatorNetwork:
             if "centres.txt" in zip_ref.namelist():
                 centres = zip_ref.read("centres.txt")
                 for line in centres.decode('utf-8').splitlines():
-                    name, x,y,z = line.split()
-                    net.features['oscillators'][name] = oscillator_parameters
+                    name, x, y, z = line.split()
+                    net.features['oscillators'][name] = oscillator_parameters # Stores duplicates of the parameter for a-posteriori inhomogeneity
                     net.features['centers'][name] = np.array([float(v) for v in [x,y,z]])
             else:
                 print(f"centres.txt not in connectivity.")
@@ -533,8 +517,8 @@ class OscillatorNetwork:
                 net.features['connectivity']['weights'] = global_weight * np.loadtxt(tracts.splitlines())
             else:
                 print(f"weights.txt not in connectivity.")
-            
-
+        net.n_oscillators = len(net.features['oscillators'])
+        net.homogeneous_dict = oscillator_parameters
         return net
 
 class EEGcap:

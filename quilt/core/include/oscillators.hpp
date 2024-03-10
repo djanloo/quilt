@@ -52,6 +52,12 @@ public:
     */
     std::function<void(const dynamical_state& x, dynamical_state& dxdt, double t)> evolve_state;
 
+    /**
+     * @brief Virtual function representing the variable of interest for EEG of the oscillator
+     * 
+    */
+    std::function<double(const dynamical_state &x)> eeg_voi;
+
     // Getter methods
     string get_type() { return oscillator_type; }
 
@@ -62,10 +68,20 @@ public:
         return memory_integrator.state_history;
     }
 
+    // This returns the interpolated past using the continuous Runge-Kutta method
     double get_past(unsigned int axis, double t)
     {
         return memory_integrator.get_past(axis, t);
     }
+
+    vector<double> get_eeg(){
+            unsigned int T = memory_integrator.state_history.size();
+            vector<double> eeg_history(T, 0);
+            for (unsigned int i = 0; i < T; i++){
+                eeg_history[i] = eeg_voi(memory_integrator.state_history[i]);
+            }
+            return eeg_history;
+        }
 
     // Setter methods
     void set_evolution_context(EvolutionContext* evo);
@@ -191,6 +207,9 @@ class OscillatorNetwork{
         };
 
     private:
+        // Control variables for the building steps
+        bool has_oscillators = false;
+        bool has_links = false;
         bool is_initialized = false;
         EvolutionContext * evo;
 };

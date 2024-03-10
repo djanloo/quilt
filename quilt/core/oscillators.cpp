@@ -23,6 +23,8 @@ void Oscillator::set_evolution_context(EvolutionContext * evo)
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
 {
+    cout << "Oscillator network homogeneous constructor" << endl;
+
     // Bureaucracy
     id = HierarchicalID();
 
@@ -30,14 +32,15 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
 
     for (int i = 0; i < N; i++){
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params, this));
-        // cout << "Parameters of new oscillator:" <<endl;
-        // cout << *(oscillators.back()->params);
     }
+    has_oscillators = true;
+    cout << "Done Oscillator network homogeneous constructor" << endl;
 }
 
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
-{
+{   
+    cout << "Oscillator network inhomogeneous constructor" << endl;
     // Bureaucracy
     id = HierarchicalID();
     string oscillator_type;
@@ -46,14 +49,26 @@ OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
         oscillator_type = params[i]->get<string>("oscillator_type");
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params[i], this));
     }
+    has_oscillators = true;
+    cout << "Done Oscillator network inhomogeneous constructor" << endl;
 }
 
 void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_params)
 {
+    cout << "Oscillator network build_connections" << endl;
+
+    if (!has_oscillators){
+        throw runtime_error("Could not link oscillators since the network does not have oscillators yet.");
+    }
+
     if (proj->start_dimension != proj->end_dimension)
     {
         throw std::invalid_argument("Projection matrix of OscillatorNetwork must be a square matrix");
     }
+
+    cout << "Test 0" << endl;
+    cout << oscillators.size() << endl;
+    cout << "Done Test 0"<< endl;
 
     if (proj->start_dimension != oscillators.size())
     {
@@ -63,7 +78,7 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
         );
     }
 
-    // cout << "Building connections" << endl;
+    cout << "Oscillator network build_connections (A)" << endl;
     for (unsigned int i =0; i < proj->start_dimension; i++)
     {
         for (unsigned int j = 0; j < proj->end_dimension; j++)
@@ -74,8 +89,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
             }
         }
     }
-    // cout << "Connections done" <<endl;
-
+    has_links = true;
+    cout << "Done Oscillator network build_connections" << endl;
 }
 
 void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds)
@@ -204,6 +219,9 @@ harmonic_oscillator::harmonic_oscillator(ParaMap * params, OscillatorNetwork * o
         }  
     };
 
+    // Sets a (dymmy) variable of interest for the EEG
+    eeg_voi = [](const dynamical_state & x){return x[0];};
+
     // Sets the stuff of the CRK
     memory_integrator.set_dimension(space_dimension);
     memory_integrator.set_evolution_equation(evolve_state);
@@ -226,6 +244,9 @@ test_oscillator::test_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
         dxdt[4] = x[5];
         dxdt[5] = -x[4];
     };
+
+    // Sets a (dymmy) variable of interest for the EEG
+    eeg_voi = [](const dynamical_state & x){return x[0];};
 
     // Sets the stuff of the CRK
     memory_integrator.set_dimension(space_dimension);
@@ -263,7 +284,7 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
             external_currents += input->get(0, t);
         }
         double external_inputs = 0.13 + external_currents + 0.19*static_cast<double>(rand())/RAND_MAX;
-        // cout << external_currents;
+
         dxdt[0] = x[3];
         dxdt[1] = x[4];
         dxdt[2] = x[5];
@@ -272,6 +293,10 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
         dxdt[4] = He*ke*( external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] -  ke*ke*x[1];
         dxdt[5] = Hi*ki*0.25*C*sigm(0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
     };
+
+    // Sets the variable of interest for the EEG
+    // In this case it corresponds to the pyramidal cells lumped potential
+    eeg_voi = [](const dynamical_state & x){return x[1] - x[2];};
 
     // Sets the stuff of the CRK
     memory_integrator.set_dimension(space_dimension);
@@ -377,7 +402,7 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * params, Oscilla
         {
             external_currents += input->get(6, t);
         }
-        // cout << "External rates "<< external_currents << endl;
+
         // Vs
         dxdt[0] = x[7];
         dxdt[1] = x[8]; 
@@ -394,21 +419,13 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * params, Oscilla
         dxdt[7] -= 2*ke*x[7];
         dxdt[7] -= ke*ke*x[0];
 
-        // cout << "S[v6] ---> " << sigm(x[5]) << endl;
-
         dxdt[8] = He*ke*(gamma_2 * sigm(x[0]) + gamma_2T * (P + external_currents ));
         dxdt[8] -= 2*ke*x[8];
         dxdt[8] -= ke*ke*x[1];
 
-        // cout << "S[v1] ---> " << sigm(x[0]) << endl;
-
-
         dxdt[9] = Hi*ki*(gamma_4 * sigm(x[6]));
         dxdt[9] -= 2*ki*x[9];
-        dxdt[9] -= ki*ki*x[2];
-
-        // cout << "S[v7] ---> " << sigm(x[6]) << endl;
-  
+        dxdt[9] -= ki*ki*x[2];  
 
         dxdt[10] = He*ke*(gamma_3 * sigm(x[5]) + gamma_3T * (Q + external_currents ));
         dxdt[10] -= 2*ke*x[10];
@@ -418,6 +435,9 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * params, Oscilla
         dxdt[11] -= 2*ki*x[11];
         dxdt[11] -= ki*ki*x[4];
     };
+
+    // This is still unclear
+    eeg_voi = [](const dynamical_state & x){return x[5];};
 
     // Sets the stuff of the CRK
     memory_integrator.set_dimension(space_dimension);
