@@ -1,6 +1,7 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.map cimport map
+from libcpp.memory cimport shared_ptr
 
 cdef extern from "../core/include/base.hpp":
     cdef cppclass EvolutionContext:
@@ -101,10 +102,12 @@ cdef extern from "../core/include/network.hpp":
 cdef extern from "../core/include/oscillators.hpp":
     cdef cppclass Oscillator:
         vector[vector[double]] get_history()
-
-    cdef cppclass OscillatorNetwork:
-        vector [Oscillator *] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
+        vector[double] get_eeg()
         
+    cdef cppclass OscillatorNetwork:
+        vector [shared_ptr[Oscillator]] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
+        # int n_oscillators
+
         # Homogeneous constructor: only one type of oscillator
         OscillatorNetwork(int, ParaMap *)
         OscillatorNetwork(vector[ParaMap *])
