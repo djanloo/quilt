@@ -34,9 +34,44 @@ cdef class ParaMap:
         return (self.__class__, (self.params_dict,))
 
 
+cdef class ParaMapList:
+
+    def __cinit__(self):
+        pass
+    
+    def add(self, dict params_dict):
+        cdef cinter.ParaMap * new_paramap = new cinter.ParaMap()
+
+        for key in self.params_dict.keys():
+            key_bytes = key.encode('utf-8') if isinstance(key, str) else key
+            if isinstance(self.params_dict[key], int):
+                self._paramap.add_float(key_bytes, float(self.params_dict[key]))
+            elif isinstance(self.params_dict[key], float):
+                self._paramap.add_float(key_bytes, <float>self.params_dict[key])
+            elif isinstance(self.params_dict[key], str):
+                self._paramap.add_string(key_bytes, self.params_dict[key].encode('utf-8'))
+            else:
+                raise ValueError(f"Value not accepted in ParaMap construction: {key}->{self.params_dict[key]}")
+
+        self.paramap_vector.push_back(new_paramap)
+    
+    def load_list(self, list parameters):
+        for par in parameters:
+            self.add(par)
+
+    def __dealloc__(self):
+        for i in range(self.paramap_vector.size()):
+            if self.paramap_vector[i] != NULL:
+                del self.paramap_vector[i]
+        
+    def __reduce__(self):
+        return (self.__class__, (self.params_dict,))
+
+
+
 cdef class Projection:
     def __cinit__(self,  np.ndarray[np.float32_t, ndim=2,mode='c'] weights, np.ndarray[np.float32_t,ndim=2,mode='c'] delays):
-
+        print("Making projection")
         self.weights = weights
         self.delays = delays
 
@@ -62,6 +97,9 @@ cdef class Projection:
 
             self._weights[i] = weights_row
             self._delays[i] = delays_row
+        
+        self._projection = new cinter.Projection(self._weights, self._delays)
+        print("Projection done")
         
 
     @property
