@@ -31,7 +31,20 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     for (int i = 0; i < N; i++){
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params, this));
         // cout << "Parameters of new oscillator:" <<endl;
-        cout << *(oscillators.back()->params);
+        // cout << *(oscillators.back()->params);
+    }
+}
+
+// Homogeneous network builder
+OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
+{
+    // Bureaucracy
+    id = HierarchicalID();
+    string oscillator_type;
+
+    for (unsigned int i = 0; i < params.size() ; i++){
+        oscillator_type = params[i]->get<string>("oscillator_type");
+        oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params[i], this));
     }
 }
 
@@ -39,9 +52,18 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
 {
     if (proj->start_dimension != proj->end_dimension)
     {
-        throw runtime_error("Projection matrix of OscillatorNetwork must be a square matrix");
+        throw std::invalid_argument("Projection matrix of OscillatorNetwork must be a square matrix");
     }
-    cout << "Building connections" << endl;
+
+    if (proj->start_dimension != oscillators.size())
+    {
+        throw std::invalid_argument("Shape mismatch in projection matrix: size is "\
+                    + std::to_string(proj->end_dimension) + "x" + std::to_string(proj->end_dimension) \
+                    + " but network has n_oscillators = " + std::to_string(oscillators.size())
+        );
+    }
+
+    // cout << "Building connections" << endl;
     for (unsigned int i =0; i < proj->start_dimension; i++)
     {
         for (unsigned int j = 0; j < proj->end_dimension; j++)
@@ -52,6 +74,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
             }
         }
     }
+    // cout << "Connections done" <<endl;
+
 }
 
 void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds)
@@ -66,7 +90,7 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
             if (l->delay > max_tau) max_tau = l->delay;
         }
     }
-    cout << "Max delay is " << max_tau << endl;
+    // cout << "Max delay is " << max_tau << endl;
     // ~brutal search of maximum delay
     
     int n_init_pts = static_cast<int>(std::ceil(max_tau/evo->dt) + 1);
@@ -101,7 +125,7 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
         evo->do_step();
     }
 
-    cout << "Network initialized (t = "<< evo->now << ")"<< endl;
+    // cout << "Network initialized (t = "<< evo->now << ")"<< endl;
     is_initialized = true;
 }
 

@@ -161,13 +161,25 @@ class leon_jansen_rit_oscillator : public Oscillator{
 class OscillatorNetwork{
     public:
         HierarchicalID id;
-
-        // The homogeneous constructor
-        OscillatorNetwork(int N, ParaMap * params);
-        
         vector<shared_ptr<Oscillator>> oscillators;
+
+        // Homogeneous constructor: 
+        // each oscillator has the same parameters
+        OscillatorNetwork(int N, ParaMap * params);
+
+        // The inhomogeneous constructor:
+        // each oscillator has it own parameters
+        OscillatorNetwork(vector<ParaMap*> params);
+
         
+        // Homogenous link builder:
+        // each link has the same parameters
         void build_connections(Projection * proj, ParaMap * link_params);
+
+        //  Inhomogenous link builder
+        void build_connections(Projection * proj, vector<ParaMap*> links_params);
+
+
         void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
         void run(EvolutionContext * evo, double time, int verbosity);
 
