@@ -26,6 +26,10 @@ cdef extern from "../core/include/base.hpp":
         # Defaulted get: sets the value in the map if not found
         float get(string key, float default_value)
 
+    cdef cppclass Projection:
+        int start_dimension, end_dimension
+        Projection(vector[vector[float]] weights, vector[vector[float]] delays)
+
 cdef extern from "../core/include/devices.hpp":
     cdef cppclass PopulationSpikeMonitor:
         PopulationMonitor(Population * pop)
@@ -55,10 +59,6 @@ cdef extern from "../core/include/neurons_base.hpp":
         NeuroParam(const ParaMap &)
 
 cdef extern from "../core/include/network.hpp":
-    cdef cppclass Projection:
-        int start_dimension, end_dimension
-        Projection(float ** weights, float ** delays, int start_dimension, int end_dimension)
-
     cdef cppclass SparseProjection:
         pass
 
@@ -107,6 +107,8 @@ cdef extern from "../core/include/oscillators.hpp":
         
         # Homogeneous constructor: only one type of oscillator
         OscillatorNetwork(int, ParaMap *)
+        OscillatorNetwork(vector[ParaMap *])
+
         # Homogeneous connections: only one type of link
         void build_connections(Projection *, ParaMap *)
 

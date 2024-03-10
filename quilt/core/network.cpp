@@ -18,24 +18,6 @@ using std::cerr;
 using std::endl;
 using std::vector;
 
-Projection::Projection(vector<vector<float>> weights, vector<vector<float>> delays):
-    weights(weights), delays(delays){
-    
-    start_dimension = weights.size();
-    if (start_dimension == 0) throw std::runtime_error("start dimension of projection is zero");
-    
-    end_dimension = weights[0].size();
-    if (end_dimension == 0) throw std::runtime_error("end dimension of projection is zero");
-
-    for (unsigned int i = 0; i < start_dimension; i++){
-        for (unsigned int j =0 ; j< end_dimension; j++){
-            if (std::abs(weights[i][j]) >= WEIGHT_EPS){ 
-                n_links ++;
-            }
-        }
-    }
-}
-
 void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispatch,
                                     unsigned int sector_nconn, 
                                     unsigned int start_index_1, unsigned int end_index_1, 
