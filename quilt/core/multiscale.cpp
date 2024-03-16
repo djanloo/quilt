@@ -1,26 +1,5 @@
 #include "include/multiscale.hpp"
 
-template <>
-double Link<Transducer, Oscillator>::get(int axis, double now){
-
-    double past_state = source->get_past(axis, now - delay);
-
-    // Here do whatever the funk you want with the state variable
-    // It depends on which types of oscillators you are linking
-
-    return weight*past_state;
-}
-
-template <>
-double Link<Oscillator, Transducer>::get(int axis, double now){
-
-    double past_state = source->memory_integrator.get_past(axis, now - delay);
-
-    // Here do whatever the funk you want with the state variable
-    // It depends on which types of oscillators you are linking
-
-    return weight*past_state;
-}
 
 
 Transducer::Transducer(Population * population, const ParaMap * params)
