@@ -550,7 +550,7 @@ class EEGcap:
         time_series = np.zeros((self.n_regions, T))
 
         for k, oscillator_name in enumerate(network.oscillators):
-            time_series[k] = network.oscillators[oscillator_name].history[:,0]
+            time_series[k] = network.oscillators[oscillator_name].eeg # Uses the eeg method of oscillator that gives the right VOI
 
         for j in range(self.n_electrodes):
             for k in range(self.n_regions):
