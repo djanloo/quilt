@@ -214,9 +214,71 @@ class SpikingNetwork:
 class ParametricSpikingNetwork(SpikingNetwork):
 
     @classmethod
-    def from_yaml(cls, network_file,  
-                        neuron_file,
-                        susceptibility_files):
+    def from_dict(cls, susceptibility_dict, network=None, network_file=None, neuron_file=None):
+
+        if network is not None:
+            net = network
+        elif network_file is not None and neuron_file is not None:
+            net = super().from_yaml(network_file, neuron_file)
+    
+        # Backups for parametrization
+        net.original_features = copy.deepcopy(net.features)
+        net.original_neuron_catalogue = copy.deepcopy(net.neuron_catalogue)
+
+        net.susceptibility_dict = susceptibility_dict
+        try:
+            net.susceptibility_dict['parameters']
+        except KeyError as e:
+            raise KeyError(f"Susceptibility dict must have a 'parameters' field")
+        
+        try:
+            net.susceptibility_dict['parametric']
+        except KeyError as e:
+            raise KeyError(f"Susceptibility dict must have a 'parametric' field")
+        
+        net.params_value = dict()
+        net.params_range = dict()
+        net.params_shift = dict()
+        # Initializes all possible parameters to default (shift) value so the have no 'driving force'
+        for param_name in net.susceptibility_dict['parameters']:
+
+            net.params_value[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0)
+            net.params_shift[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0)
+            net.params_range[param_name] = [net.susceptibility_dict['parameters'][param_name].get('min',0),
+                                            net.susceptibility_dict['parameters'][param_name].get('max',1)]
+        return net
+
+    @classmethod
+    def from_yaml(cls, network_file, neuron_file, susceptibility_files):
+
+        # In case is a single file
+        if isinstance(susceptibility_files, str):
+            susceptibility_files = [susceptibility_files]
+
+        # Loads parameters
+        susceptibility_dict = dict(parameters=dict(), parametric=dict())
+        for susceptibility_file in susceptibility_files:
+            if not os.path.exists(susceptibility_file):
+                raise FileNotFoundError(f"YAML file '{susceptibility_file}' not found")
+            
+            with open(susceptibility_file, "r") as f:
+                chi_dict = yaml.safe_load(f)            
+            try:
+                chi_dict['parameters']
+            except KeyError as e:
+                raise KeyError(f"Susceptibility file {susceptibility_file} must have a 'parameters' field")
+            
+            try:
+                chi_dict['parametric']
+            except KeyError as e:
+                raise KeyError(f"Susceptibility file {susceptibility_file} must have a 'parametric' field")
+
+            # Adds to parameters
+            susceptibility_dict['parameters'].update(chi_dict['parameters'])
+            susceptibility_dict['parametric'].update(chi_dict['parametric'])
+        
+        return ParametricSpikingNetwork.from_dict(susceptibility_dict, network_file=network_file, neuron_file=neuron_file)
+        ######################3
         net = super().from_yaml(network_file, neuron_file)
 
         # Backups for parametrization
