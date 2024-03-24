@@ -61,7 +61,9 @@ void SparseProjection::build_multithreaded()
     weights_delays = std::vector<sparse_t>(n_threads);
     std::vector<std::thread> threads;
 
-    RNGDispatcher rng_dispatcher(n_threads, 1997);
+    // NOTE: seeding is disabled for now, use random source
+    // TODO: add a global management of seed
+    RNGDispatcher rng_dispatcher(n_threads);
 
     for (int i=0; i < n_threads; i++){
         weights_delays[i].reserve(n_connections/n_threads);
