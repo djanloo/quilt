@@ -1,0 +1,51 @@
+populations:
+  A:
+    size: 3
+    neuron_model: neuron1
+  B:
+    size: 3
+    neuron_model: neuron1
+
+projections:
+  A->A:
+    connectivity: 0.95
+    delay: 0.5
+    weight: 0.2
+    type: inh
+  B->B:
+    connectivity: 0.95
+    delay: 0.5
+    weight: 0.2
+    type: inh
+  A->B:
+    connectivity: 0.95
+    delay: 0.5
+    weight: 1.0
+    type: inh
+  B->A:
+    connectivity: 0.95
+    delay: 0.5
+    weight: 1.0
+    type: inh
+
+# # Note: devices must be in the pop_population_description format
+# devices:
+#   pop_A_spikesource:
+#     type: poisson_spike_source
+#     weight: 0.45
+#     weight_delta: 0.1
+#     rate: 200
+#   pop_B_spikesource:
+#     type: poisson_spike_source
+#     weight: 0.45
+#     weight_delta: 0.1
+#     rate: 200
+    
+#   # pop_A_starter:
+#   #   type: poisson_spike_source
+#   #   weight: 0.4
+  #   weight_delta: 0.1
+  #   rate: 200
+
+  #   t_min: 3000
+  #   t_max: 3100
