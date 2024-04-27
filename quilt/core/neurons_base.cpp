@@ -54,6 +54,7 @@ Neuron::Neuron(Population * population):population(population){
     id = HierarchicalID(population->id);
     state = dynamical_state { population->neuroparam->E_l + ((double)rand())/RAND_MAX, 0.0, 0.0};
     last_spike_time = - std::numeric_limits<float>::infinity();
+    spike_flag = false;
     population -> neurons.push_back(this);        
 };
 
@@ -108,6 +109,7 @@ void Neuron::handle_incoming_spikes(){
 
 void Neuron::evolve(){
     if (spike_flag){
+        // cout << "Spike flag was True at t: "<< evo->now <<endl;
         on_spike();
         spike_flag = false;
     }

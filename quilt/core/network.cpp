@@ -302,7 +302,11 @@ void Population::evolve()
     this->n_spikes_last_step = 0;
     
     for (auto neuron : this->neurons){
-        if ((neuron->getV()) >= neuroparam->V_peak){neuron->emit_spike();}
+        if ((neuron->getV()) >= neuroparam->V_peak){
+            neuron->emit_spike();
+            cout << "V over threshold neuron: spiked at t: "<< evo->now << endl;
+        }
+        
     }
 
     end = std::chrono::high_resolution_clock::now();
