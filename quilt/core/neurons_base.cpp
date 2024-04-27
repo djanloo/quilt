@@ -47,6 +47,9 @@ void Synapse::fire(EvolutionContext * evo){
     this->postsynaptic->incoming_spikes.emplace(weight, evo->now + delay);
 }
 
+int Synapse::get_efferent_pop_id(){ return postsynaptic->population->id.get_id();}
+
+
 Neuron::Neuron(Population * population):population(population){
     id = HierarchicalID(population->id);
     state = dynamical_state { population->neuroparam->E_l + ((double)rand())/RAND_MAX, 0.0, 0.0};

@@ -83,6 +83,10 @@ class Synapse{
         static float min_delay; //!< Smallest synaptic delay of the model. Used to check timestep.
         void  set_delay(float new_delay){delay = new_delay;}
         float get_delay(){return delay;}
+
+        // This is bureaucracy
+        int get_efferent_pop_id();
+        
     private:
         Neuron * presynaptic;   //!< Pointer to the postsynaptic neuron
         Neuron * postsynaptic;  //!< Pointer to the presynaptic neuron

@@ -68,9 +68,10 @@ class SparseProjection{
                 end_dimension(end_dimension)
         {
             n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
+            cout << "In projection " <<n_connections << " connections must be made"<<endl;
         }  
         virtual ~SparseProjection() = default;
-        void build_sector(sparse_t *, RNGDispatcher *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+        void build_sector(sparse_t *, RNGDispatcher *, float, unsigned int, unsigned int, unsigned int, unsigned int);
         void build_multithreaded();
 
         virtual const std::pair<float, float> get_weight_delay(RNG* /*rng*/, int /*i*/, unsigned int /*j*/)
@@ -188,6 +189,7 @@ class SpikingNetwork{
 
         // Evolution stuff
         void run(EvolutionContext * evo, double time, int verbosity);
+
     private:
         EvolutionContext * evo;
 };
