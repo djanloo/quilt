@@ -62,7 +62,7 @@ cdef class SparseProjector:
                 if self.connectivity < 0:
                     raise ValueError("Connectivity must always be > 0")
                 if self.connectivity > 1:
-                    raise ValueError("Connectivity must always be < 1")
+                    raise ValueError("Connectivity must always be <= 1")
             
     
     def get_projection(self, Population efferent,  Population afferent):
@@ -100,6 +100,7 @@ cdef class Population:
     #     self._population.project(proj._projection, efferent_pop._population)
     
     def project(self, SparseProjector proj, Population efferent_pop):
+        # print("from cython: projecting population")
         self._population.project(proj._projection, efferent_pop._population)
 
     def add_const_curr_injector(self, I, t_min, t_max):

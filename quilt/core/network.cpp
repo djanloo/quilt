@@ -13,20 +13,34 @@
 #define MAX_N_3_THREADS 600
 #define MAX_N_4_THREADS 1000
 
+#define N_THREADS_BUILD 8
+
 using std::cout;
 using std::cerr;
 using std::endl;
 using std::vector;
 
 void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispatch,
-                                    unsigned int sector_nconn, 
+                                    float connectivity, 
                                     unsigned int start_index_1, unsigned int end_index_1, 
                                     unsigned int start_index_2, unsigned int end_index_2)
 {
+    // NOTE: indices of sector are extrema included [start, end]
+
     if (start_index_1 > end_index_1) throw std::runtime_error("SparseProjection::build : End index is before start index (efferent)");
     if (start_index_2 > end_index_2) throw std::runtime_error("SparseProjection::build : End index is before start index (afferent)");
+    // cout << "Started building projection sector with connectivity:"<<connectivity << endl; 
 
+    // Maximum number of connection in a rectangular sector:
+    // prevents from looping over a full matrix
+    // This should not be actually used unless the connectivity is 1
+    const int sector_max_connections = (end_index_1 - start_index_1 + 1)*(end_index_2 - start_index_2 + 1);
+    // cout << "\tSector indexes are  " << start_index_1 << "," << end_index_1<<"-"<<start_index_2<< "," <<end_index_2<<endl;
+    // cout << "\tMax connection is " << sector_max_connections <<endl;
     // auto start = std::chrono::high_resolution_clock::now();
+
+    unsigned int sector_nconn = static_cast<unsigned int>(sector_max_connections*connectivity);
+    // cout << "\tconnections to be made: "<<sector_nconn<<endl;
     
     RNG * rng = rng_dispatch->get_rng();
 
@@ -37,18 +51,26 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
     bool is_empty;
 
     while ((*sector).size() < sector_nconn){
+        if ((*sector).size() == sector_max_connections){
+            cerr << "Sparse sturture was used to perform a all-to-all connection" << endl;
+            break;
+        }
         // Finds an empty slot in the sparse matrix
         is_empty = false;
         do{
             checks++;
-            i = start_index_1 + rng->get_int() % (end_index_1 - start_index_1);
-            j = start_index_2 + rng->get_int() % (end_index_2 - start_index_2);
+            i = start_index_1 + rng->get_int() % (end_index_1 - start_index_1 + 1);
+            j = start_index_2 + rng->get_int() % (end_index_2 - start_index_2 + 1);
             coordinates = std::make_pair(i,j);
             is_empty = ((*sector)[coordinates].first == 0)&&((*sector)[coordinates].second == 0);
+            // if (is_empty) cout << "coordinates "<<i <<"-"<< j << " are empty"<<endl;
+            // else cout << "coordinates "<< i <<"-"<< j << " are NOT empty"<<endl;
         } while (!is_empty);
 
         // Insert weight and delay
+        // (This increases the length of sector map)
         (*sector)[coordinates] = this->get_weight_delay(rng, i, j);
+        // cout << "\tAdded a link!!"<<endl;
     }
     // auto end = std::chrono::high_resolution_clock::now();
     rng_dispatch->free();
@@ -56,7 +78,14 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
 
 void SparseProjection::build_multithreaded()
 {
-    const int n_threads = 8; 
+    // cout << "Building multithreaded" << endl;
+
+    // If the population is really small 
+    // start one thread per neuron
+    int n_threads = N_THREADS_BUILD;
+    if (start_dimension < 50){
+        n_threads = 1;
+    }
 
     weights_delays = std::vector<sparse_t>(n_threads);
     std::vector<std::thread> threads;
@@ -65,22 +94,36 @@ void SparseProjection::build_multithreaded()
     // TODO: add a global management of seed
     RNGDispatcher rng_dispatcher(n_threads);
 
+
+    // cout << "Starting threads" << endl;
+
     for (int i=0; i < n_threads; i++){
+        // cout << "\tstarting thread " << i << endl;
+        // cout << "\tthis thread does "<< "("<<i*start_dimension/n_threads<<","<< (i+1)*start_dimension/n_threads-1<<")";
+        // cout << "("<<0 <<","<< end_dimension-1<<")"<<endl;
         weights_delays[i].reserve(n_connections/n_threads);
         threads.emplace_back(&SparseProjection::build_sector, this , 
                                     &(weights_delays[i]), &rng_dispatcher,
-                                    n_connections/n_threads,
-                                    i*start_dimension/n_threads, (i+1)*start_dimension/n_threads,
+                                    connectivity,
+                                    i*start_dimension/n_threads, (i+1)*start_dimension/n_threads-1,
                                     0, end_dimension-1);
     }
-    
+
     for (auto& thread : threads) {
         thread.join();
     }
+
+    // cout << "Done building multithreaded:"<< endl;
+    // for (auto sector : weights_delays){
+    //     for (auto conn : sector){
+    //         cout << "[ " << conn.first.first << "->" << conn.first.second << ",  w=" << conn.second.first << " d=" << conn.second.second  << "]" << endl;
+    //     }
+    // }
 }
 
 const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng, int /*i*/, unsigned int /*j*/)
 {
+    // DO NOT USE 'delay' and 'weight' as variables, dumbass
     double u;
     float new_weight, new_delay;
 
@@ -94,6 +137,7 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
         cerr << "weight sigma:"<< weight_sigma <<endl;
         throw(e);
     }
+
     try{
         u = rng->get_uniform();
         new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
@@ -106,6 +150,15 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
     }
     // Inhibitory 
     if (type == 1) new_weight *=  -1;
+
+    // Zero-delay
+    if ((delay_mu == 0.0)&&(delay_sigma ==0.0)){
+        new_delay = 0.0;
+    }
+
+
+    if (std::isnan(new_weight) ) throw runtime_error("Nan in weight generation");
+    if (std::isnan(new_delay) ) throw runtime_error("Nan in delay generation");
 
     return std::make_pair(new_weight, new_delay);
 }
@@ -179,11 +232,14 @@ void Population::project(const Projection * projection, Population * efferent_po
 
 void Population::project(const SparseProjection * projection, Population * efferent_population )
 {
+    int connections = 0;
     for (auto sector : projection->weights_delays){
         for (auto connection : sector){
+            connections ++;
             neurons[connection.first.first]->connect(efferent_population->neurons[connection.first.second], connection.second.first, connection.second.second);
         }
     }
+    cout << "Performed " << connections << " connections between pop:"<< this->id.get_id() << " and pop:"<< efferent_population->id.get_id() << endl; 
 }
 
 void Population::evolve()
@@ -255,10 +311,25 @@ void Population::evolve()
 
 void Population::print_info()
 {
-    cout << "Population "<< this->id.get_id() << " infos:"<< endl;
+    cout << "Population "<< this->id.get_id() << " (over " << this->spiking_network->populations.size() << ")" << " infos:"<< endl;
     cout << "\tN:" << this->n_neurons << endl;
     cout << "\tparams:" << endl;
     cout << neuroparam ->paramap;
+    
+    // Counts the avg connection with each population
+    vector <int> connection_counts(this->spiking_network->populations.size(), 0);
+
+    for (auto neuron : neurons){
+        for (auto syn : neuron->efferent_synapses){
+            connection_counts[syn.get_efferent_pop_id()]++;
+        }
+    }
+
+    cout << "Each neuron is connected (on average) with:"<<endl;
+    for (int i = 0; i < connection_counts.size(); i++){
+        cout << "\t" << static_cast<float>(connection_counts[i])/this->n_neurons << " neurons of population " << i << endl;
+    }
+
  }
 
 Population::~Population()
