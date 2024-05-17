@@ -68,7 +68,7 @@ class SparseProjection{
                 end_dimension(end_dimension)
         {
             n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
-            cout << "In projection " <<n_connections << " connections must be made"<<endl;
+            // cout << "In projection " <<n_connections << " connections must be made"<<endl;
         }  
         virtual ~SparseProjection() = default;
         void build_sector(sparse_t *, RNGDispatcher *, float, unsigned int, unsigned int, unsigned int, unsigned int);
@@ -86,6 +86,8 @@ class SparseLognormProjection : public SparseProjection{
         float weight_sigma;     //!< Weight std
         float delay_mu;         //!< Average delay
         float delay_sigma;      //!< Delay std
+
+        float _weight, _delay;
 
         SparseLognormProjection(double connectivity, int type,
                                 unsigned int start_dimension, unsigned int end_dimension,

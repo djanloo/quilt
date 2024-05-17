@@ -54,6 +54,9 @@ cdef class SparseProjector:
                 else:
                     self.delay_delta = delay_delta
 
+                if self.weight == 0.0 and self.delay_delta == 0.0:
+                    raise ValueError("Instantaneous synapses not supported")
+
                 if self.weight < 0:
                     raise ValueError("Synaptic weight must always be positive")
                 if self.delay < 0:
@@ -66,7 +69,11 @@ cdef class SparseProjector:
             
     
     def get_projection(self, Population efferent,  Population afferent):
-        self._projection = new cinter.SparseLognormProjection(self.connectivity, <int>self.type, efferent.n_neurons, afferent.n_neurons, self.weight, self.weight_delta, self.delay, self.delay_delta)
+        # print(f"Spiking.py: delay is {self.delay}+-{self.delay_delta}")
+        self._projection = new cinter.SparseLognormProjection(self.connectivity, <int>self.type, efferent.n_neurons, afferent.n_neurons, 
+                            self.weight, self.weight_delta, 
+                            self.delay, self.delay_delta
+                            )
         return self
 
     def __dealloc__(self):
