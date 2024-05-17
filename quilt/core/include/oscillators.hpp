@@ -1,10 +1,3 @@
-/**
- * Stuff for oscillators. First I try a sparse version.
- * I'm really aware that a dense "matrix" version of this would 
- * probably be better, but let's see.
- * 
- * Numerical methods for delay differential equations Bellen Zennaro
-*/
 #pragma once
 #include "base.hpp"
 #include "links.hpp"
@@ -35,14 +28,14 @@ class Oscillator;
 */
 class Oscillator {
 public:
-    HierarchicalID id;  /**< Unique identifier for the oscillator. */
-    OscillatorNetwork* oscnet;  /**< Pointer to the oscillator network to which the oscillator belongs. */
-    ContinuousRK memory_integrator;  /**< Continuous Runge-Kutta integrator for storing state history. */
-    string oscillator_type = "base";  /**< Type of the oscillator. Default is "base". */
-    unsigned int space_dimension = 2;  /**< Dimension of the oscillator's state space. Default is 2. */
+    HierarchicalID id;                  /**< Unique identifier for the oscillator. */
+    OscillatorNetwork* oscnet;          /**< Pointer to the oscillator network to which the oscillator belongs. */
+    ContinuousRK memory_integrator;     /**< Continuous Runge-Kutta integrator for storing state history. */
+    string oscillator_type = "base";    /**< Type of the oscillator. Default is "base". */
+    unsigned int space_dimension = 2;   /**< Dimension of the oscillator's state space. Default is 2. */
 
-    vector<Link*> incoming_osc;  /**< Vector of incoming links to the oscillator. */
-    ParaMap* params;  /**< Pointer to parameter map for the oscillator. */
+    vector<Link*> incoming_osc;         /**< Vector of incoming links to the oscillator. */
+    ParaMap* params;                    /**< Pointer to parameter map for the oscillator. */
 
     /**
      * @brief Constructor for the Oscillator class.
@@ -59,18 +52,36 @@ public:
     */
     std::function<void(const dynamical_state& x, dynamical_state& dxdt, double t)> evolve_state;
 
+    /**
+     * @brief Virtual function representing the variable of interest for EEG of the oscillator
+     * 
+    */
+    std::function<double(const dynamical_state &x)> eeg_voi;
+
     // Getter methods
     string get_type() { return oscillator_type; }
+
     unsigned int get_space_dimension() { return space_dimension; }
+
     vector<dynamical_state> get_history()
     {
         return memory_integrator.state_history;
     }
 
+    // This returns the interpolated past using the continuous Runge-Kutta method
     double get_past(unsigned int axis, double t)
     {
         return memory_integrator.get_past(axis, t);
     }
+
+    vector<double> get_eeg(){
+            unsigned int T = memory_integrator.state_history.size();
+            vector<double> eeg_history(T, 0);
+            for (unsigned int i = 0; i < T; i++){
+                eeg_history[i] = eeg_voi(memory_integrator.state_history[i]);
+            }
+            return eeg_history;
+        }
 
     // Setter methods
     void set_evolution_context(EvolutionContext* evo);
@@ -166,13 +177,25 @@ class leon_jansen_rit_oscillator : public Oscillator{
 class OscillatorNetwork{
     public:
         HierarchicalID id;
-
-        // The homogeneous constructor
-        OscillatorNetwork(int N, ParaMap * params);
-        
         vector<shared_ptr<Oscillator>> oscillators;
+
+        // Homogeneous constructor: 
+        // each oscillator has the same parameters
+        OscillatorNetwork(int N, ParaMap * params);
+
+        // The inhomogeneous constructor:
+        // each oscillator has it own parameters
+        OscillatorNetwork(vector<ParaMap*> params);
+
         
+        // Homogenous link builder:
+        // each link has the same parameters
         void build_connections(Projection * proj, ParaMap * link_params);
+
+        //  Inhomogenous link builder
+        void build_connections(Projection * proj, vector<ParaMap*> links_params);
+
+
         void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
         void run(EvolutionContext * evo, double time, int verbosity);
 
@@ -184,6 +207,9 @@ class OscillatorNetwork{
         };
 
     private:
+        // Control variables for the building steps
+        bool has_oscillators = false;
+        bool has_links = false;
         bool is_initialized = false;
         EvolutionContext * evo;
 };

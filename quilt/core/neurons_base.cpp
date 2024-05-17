@@ -47,10 +47,14 @@ void Synapse::fire(EvolutionContext * evo){
     this->postsynaptic->incoming_spikes.emplace(weight, evo->now + delay);
 }
 
+int Synapse::get_efferent_pop_id(){ return postsynaptic->population->id.get_id();}
+
+
 Neuron::Neuron(Population * population):population(population){
     id = HierarchicalID(population->id);
     state = dynamical_state { population->neuroparam->E_l + ((double)rand())/RAND_MAX, 0.0, 0.0};
     last_spike_time = - std::numeric_limits<float>::infinity();
+    spike_flag = false;
     population -> neurons.push_back(this);        
 };
 
@@ -105,6 +109,7 @@ void Neuron::handle_incoming_spikes(){
 
 void Neuron::evolve(){
     if (spike_flag){
+        // cout << "Spike flag was True at t: "<< evo->now <<endl;
         on_spike();
         spike_flag = false;
     }
@@ -157,7 +162,7 @@ void Neuron::on_spike(){
 }
 
 NeuroParam::NeuroParam(){
-    this->neur_type = neuron_type::base_neuron;
+    this->neur_type = "base_neuron";
     std::map<std::string, ParaMap::param_t> defaults{{"I_e", 0.0f}, {"I_osc", 0.0f}, {"omega_I", 0.0f}};
     this->paramap = ParaMap(defaults);
     }
@@ -165,7 +170,7 @@ NeuroParam::NeuroParam(){
 NeuroParam::NeuroParam(ParaMap & paramap) : NeuroParam(){
 
     this->paramap.update(paramap);
-    neur_type = static_cast<neuron_type>(paramap.get<int>("neuron_type"));
+    neur_type = paramap.get<string>("neuron_type");
 
     // Soma
     E_l = paramap.get<float>("E_l");
@@ -181,9 +186,11 @@ NeuroParam::NeuroParam(ParaMap & paramap) : NeuroParam(){
     E_in = paramap.get<float>("E_in");
     
     // External inputs (default is zero)
-    I_e = paramap.get("I_e", 0.0);
-    I_osc = paramap.get("I_osc", 0.0);
-    omega_I = paramap.get("omega_I", 0.0);
+    // Note: omitting the float 'f' will cause runtime errors
+    I_e = paramap.get("I_e", 0.0f);
+    I_osc = paramap.get("I_osc", 0.0f);
+    omega_I = paramap.get("omega_I", 0.0f);
+
 }
 
 void NeuroParam::add(const std::string & key, float value){paramap.add(key, value);}

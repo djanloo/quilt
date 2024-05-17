@@ -1,6 +1,7 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.map cimport map
+from libcpp.memory cimport shared_ptr
 
 cdef extern from "../core/include/base.hpp":
     cdef cppclass EvolutionContext:
@@ -14,9 +15,21 @@ cdef extern from "../core/include/base.hpp":
     cdef cppclass ParaMap:
         ParaMap()
         void update(ParaMap * new_values) except +
-        void add(string key, float value) except +
-        float get(string key) const
-        float get(string key, float deafaul_value) const
+
+        # The ridiculous trio
+        void add_string(string key, string value) except +
+        void add_float(string key, float value) except +
+        # void add_int(string key, int value) except +
+
+        # Get: raises an error if key not found
+        float get(string key) except +
+
+        # Defaulted get: sets the value in the map if not found
+        float get(string key, float default_value)
+
+    cdef cppclass Projection:
+        int start_dimension, end_dimension
+        Projection(vector[vector[float]] weights, vector[vector[float]] delays)
 
 cdef extern from "../core/include/devices.hpp":
     cdef cppclass PopulationSpikeMonitor:
@@ -42,26 +55,11 @@ cdef extern from "../core/include/devices.hpp":
                             )
 
 cdef extern from "../core/include/neurons_base.hpp":
-    cdef cppclass neuron_type:
-        pass
 
     cdef cppclass NeuroParam:
-        NeuroParam(const ParaMap &, neuron_type)
-
-cdef extern from "../core/include/neurons_base.hpp" namespace "neuron_type":
-    cdef neuron_type base_neuron
-    cdef neuron_type aqif
-    cdef neuron_type izhikevich
-    cdef neuron_type aeif
-
-cdef extern from "../core/include/neuron_models.hpp":
-    cdef map[string, int] NEURON_CODES
+        NeuroParam(const ParaMap &)
 
 cdef extern from "../core/include/network.hpp":
-    cdef cppclass Projection:
-        int start_dimension, end_dimension
-        Projection(float ** weights, float ** delays, int start_dimension, int end_dimension)
-
     cdef cppclass SparseProjection:
         pass
 
@@ -102,31 +100,21 @@ cdef extern from "../core/include/network.hpp":
 #---------------------- OSCILLATORS ------------------ #
 
 cdef extern from "../core/include/oscillators.hpp":
-    cdef map[string, int] OSCILLATOR_CODES
-
-    cdef cppclass Connector:
-        void make_link[A, B](A * source, B * target, float weight, float delay)
-
     cdef cppclass Oscillator:
-        vector[double] state
         vector[vector[double]] get_history()
-
-        void connect(Oscillator*, float, float)
-
+        vector[double] get_eeg()
+        
     cdef cppclass OscillatorNetwork:
-        vector [Oscillator *] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
-        OscillatorNetwork()
+        vector [shared_ptr[Oscillator]] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
+        # int n_oscillators
+
+        # Homogeneous constructor: only one type of oscillator
+        OscillatorNetwork(int, ParaMap *)
+        OscillatorNetwork(vector[ParaMap *])
+
+        # Homogeneous connections: only one type of link
+        void build_connections(Projection *, ParaMap *)
+
+        # Evolutions methods
         void run(EvolutionContext * evo, double t, int verbosity) except +
         void initialize(EvolutionContext * evo, vector[vector[double]] init_state)
-
-    cdef cppclass harmonic_oscillator:
-        harmonic_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
-        vector[vector[double]] get_history()
-    
-    cdef cppclass jansen_rit_oscillator:
-        jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
-        vector[vector[double]] get_history()
-    
-    cdef cppclass leon_jansen_rit_oscillator:
-        leon_jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
-        vector[vector[double]] get_history()

@@ -6,8 +6,26 @@
 #include <vector>
 
 using std::vector;
+using std::shared_ptr;
 
-class Transducer{
+class T2OLink: public Link{
+    public:
+         T2OLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
+        : Link(source, target, weight, delay, params) {}
+
+        double get(int axis, double now) override;
+};
+
+class O2TLink: public Link{
+    public:
+         O2TLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
+        : Link(source, target, weight, delay, params) {}
+
+        double get(int axis, double now) override;
+};
+
+
+class Transducer: public Oscillator{
     public:
         vector<dynamical_state> state_history;
 
