@@ -304,7 +304,7 @@ void Population::evolve()
     for (auto neuron : this->neurons){
         if ((neuron->getV()) >= neuroparam->V_peak){
             neuron->emit_spike();
-            cout << "V over threshold neuron: spiked at t: "<< evo->now << endl;
+            // cout << "V over threshold neuron: spiked at t: "<< evo->now << endl;
         }
         
     }
