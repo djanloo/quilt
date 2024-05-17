@@ -12,18 +12,11 @@
 #include <string>
 #include <boost/numeric/odeint.hpp>
 
-const std::map<std::string, int> NEURON_CODES = {
-    {"aqif", 1}, 
-    {"aqif2", 2}, 
-    {"izhikevich", 3}, 
-    {"aeif", 4}
-};
-
 
 // *********************************** AQIF **************************************************//
 
 aqif_neuron::aqif_neuron(Population * population): Neuron(population){
-    nt = neuron_type::aqif;
+    nt = "aqif";
     aqif_param * p = static_cast<aqif_param*>(population->neuroparam);
     state = dynamical_state {p->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ) ,0.,0.,0.};
 }
@@ -56,7 +49,7 @@ void aqif_neuron::on_spike(){
 
 
 izhikevich_neuron::izhikevich_neuron(Population * population): Neuron(population){
-    nt = neuron_type::izhikevich;
+    nt = "izhikevich";
     izhikevich_param * p = static_cast<izhikevich_param*>(population->neuroparam);
 
     state = dynamical_state { 
@@ -89,7 +82,7 @@ void izhikevich_neuron::on_spike(){
 // *********************************** AEIF **************************************************//
 
 aeif_neuron::aeif_neuron(Population * population): Neuron(population){
-    state = {population->neuroparam->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ), 0.0, 0.0, 0.0};
+    state = {population->neuroparam->E_l - 20*(static_cast<double>(rand())/RAND_MAX ), 0.0, 0.0, 0.0};
 }
 
 void aeif_neuron::evolve_state(const dynamical_state &x , dynamical_state &dxdt , const double t ){
@@ -103,8 +96,8 @@ void aeif_neuron::evolve_state(const dynamical_state &x , dynamical_state &dxdt 
                     +  p->I_e;
         // Trig functions are expensive
         if (p->I_osc > OSCILLATORY_AMPLITUDE_MIN) dxdt[0] += p->I_osc*std::sin(p->omega_I*t);
+        
         dxdt[0] /= p->C_m;
-
     }else{
         dxdt[0] = 0.0;
     }
@@ -125,12 +118,13 @@ void aeif_neuron::on_spike(){
     aeif_param * p = static_cast<aeif_param*>(population->neuroparam);
     state[0]  = p->V_reset;
     state[3] += p->ada_b;
+    // cout << "AEIF neuron spiked at t: "<<evo->now<<endl;
 }
 
 // *********************************** AQIF2 **************************************************//
 
 aqif2_neuron::aqif2_neuron(Population * population): Neuron(population){
-    nt = neuron_type::aqif2;
+    nt = "aqif2";
     aqif2_param * p = static_cast<aqif2_param*>(population->neuroparam);
     state = dynamical_state {p->E_l + 20*(static_cast<double>(rand())/RAND_MAX - 0.5 ) ,0.,0.,0.};
 }
@@ -151,7 +145,10 @@ void aqif2_neuron::evolve_state(const dynamical_state &x , dynamical_state &dxdt
 }
 
 void aqif2_neuron::on_spike(){
-    aeif_param * p = static_cast<aeif_param*>(population->neuroparam);
+    aqif2_param * p = static_cast<aqif2_param*>(population->neuroparam);
     state[0]  = p->V_reset;
     state[3] += p->ada_b;
 }
+
+
+NeuroFactory * NeuroFactory::instance = nullptr;

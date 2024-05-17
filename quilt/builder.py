@@ -214,9 +214,71 @@ class SpikingNetwork:
 class ParametricSpikingNetwork(SpikingNetwork):
 
     @classmethod
-    def from_yaml(cls, network_file,  
-                        neuron_file,
-                        susceptibility_files):
+    def from_dict(cls, susceptibility_dict, network=None, network_file=None, neuron_file=None):
+
+        if network is not None:
+            net = network
+        elif network_file is not None and neuron_file is not None:
+            net = super().from_yaml(network_file, neuron_file)
+    
+        # Backups for parametrization
+        net.original_features = copy.deepcopy(net.features)
+        net.original_neuron_catalogue = copy.deepcopy(net.neuron_catalogue)
+
+        net.susceptibility_dict = susceptibility_dict
+        try:
+            net.susceptibility_dict['parameters']
+        except KeyError as e:
+            raise KeyError(f"Susceptibility dict must have a 'parameters' field")
+        
+        try:
+            net.susceptibility_dict['parametric']
+        except KeyError as e:
+            raise KeyError(f"Susceptibility dict must have a 'parametric' field")
+        
+        net.params_value = dict()
+        net.params_range = dict()
+        net.params_shift = dict()
+        # Initializes all possible parameters to default (shift) value so the have no 'driving force'
+        for param_name in net.susceptibility_dict['parameters']:
+
+            net.params_value[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0)
+            net.params_shift[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0)
+            net.params_range[param_name] = [net.susceptibility_dict['parameters'][param_name].get('min',0),
+                                            net.susceptibility_dict['parameters'][param_name].get('max',1)]
+        return net
+
+    @classmethod
+    def from_yaml(cls, network_file, neuron_file, susceptibility_files):
+
+        # In case is a single file
+        if isinstance(susceptibility_files, str):
+            susceptibility_files = [susceptibility_files]
+
+        # Loads parameters
+        susceptibility_dict = dict(parameters=dict(), parametric=dict())
+        for susceptibility_file in susceptibility_files:
+            if not os.path.exists(susceptibility_file):
+                raise FileNotFoundError(f"YAML file '{susceptibility_file}' not found")
+            
+            with open(susceptibility_file, "r") as f:
+                chi_dict = yaml.safe_load(f)            
+            try:
+                chi_dict['parameters']
+            except KeyError as e:
+                raise KeyError(f"Susceptibility file {susceptibility_file} must have a 'parameters' field")
+            
+            try:
+                chi_dict['parametric']
+            except KeyError as e:
+                raise KeyError(f"Susceptibility file {susceptibility_file} must have a 'parametric' field")
+
+            # Adds to parameters
+            susceptibility_dict['parameters'].update(chi_dict['parameters'])
+            susceptibility_dict['parametric'].update(chi_dict['parametric'])
+        
+        return ParametricSpikingNetwork.from_dict(susceptibility_dict, network_file=network_file, neuron_file=neuron_file)
+        ######################3
         net = super().from_yaml(network_file, neuron_file)
 
         # Backups for parametrization
@@ -409,6 +471,15 @@ class NeuronCatalogue:
         with open(catalogue.yaml_file, "r") as f:
             catalogue.neurons_dict = yaml.safe_load(f)
 
+        # Conversion to float of each parameter except neuron type
+        for neuron_name in catalogue.neurons_dict.keys():
+            for feature in catalogue.neurons_dict[neuron_name]:
+                try:
+                    catalogue.neurons_dict[neuron_name][feature] = float(catalogue.neurons_dict[neuron_name][feature])
+                except ValueError:
+                    # print(f"Could not convert to float: {feature}->{catalogue.neurons_dict[neuron_name][feature]}")
+                    pass
+
         for neuron_name in catalogue.neurons_dict.keys():
             catalogue.paramaps[neuron_name] = base.ParaMap(catalogue.neurons_dict[neuron_name])
             catalogue.neuron_names += [neuron_name]
@@ -436,12 +507,24 @@ class OscillatorNetwork:
     def __init__(self):
         self.is_built = False
         self._interface = None
+
+        self.n_oscillators = None
         self.connectivity = None
         self.oscillators = dict()
 
         # Here is stored the information about network structure
         # without having to build it
         self.features = dict()
+
+        # This is the parameter dict
+        # used in case the network is homogeneous
+        self.homogeneous_dict = None
+
+        # This is the list of dicts
+        # used in case the nerwork is inhomogeneous
+        self.inhomogeneous_list_of_dicts = None
+
+        self.oscillators = dict()
     
     def init(self, states, dt=0.1):
         self._interface.init(states, dt=dt)
@@ -452,42 +535,14 @@ class OscillatorNetwork:
         self._interface.run(time=time)
     
     def build(self):
-        self._interface = oscill.OscillatorNetwork()
-        self.oscillators = dict()
 
-        for oscillator_name in self.features['oscillators']:
-            osctype = self.features['oscillators'][oscillator_name]['oscillator_type']
-            params = self.features['oscillators'][oscillator_name]
-            self.oscillators[oscillator_name] = oscill.get_class[osctype](params, self._interface)
+        if self.homogeneous_dict is not None:
+            self._interface = oscill.OscillatorNetwork.homogeneous(self.n_oscillators,  base.ParaMap(self.homogeneous_dict))
         
-        try:
-            weights = np.array(self.features['connectivity']['weights']).astype(np.float32)
-            delays = np.array(self.features['connectivity']['delays']).astype(np.float32)
-            proj = base.Projection(weights, delays)
-
-            self._interface.build_connections(proj)
-        except KeyError as e:
-            raise KeyError(f"Missing parameter while building OscillatorNetwork connectivity: {e}")
-
+        # Links the oscillators
+        self.oscillators = {n:o for n,o in zip(self.features["oscillators"], self._interface.oscillators)}
+        
         self.is_built = True
-    
-    @classmethod 
-    def homogeneous(cls, oscillator_parameters, weights, delays, names=None):
-        n_oscillators = len(weights)
-        names = [f"osc_{i}" for i in range(n_oscillators)] if names is None else names
-        if len(names) != n_oscillators:
-            raise ValueError("List of oscillator names must have len() equal to n_oscillators")
-        net = cls()
-
-        net.features['oscillators'] = dict()
-        for name in names:
-            net.features['oscillators'][name] = oscillator_parameters
-
-        net.features['connectivity'] = dict()
-        net.features['connectivity']['weights'] = weights
-        net.features['connectivity']['delays'] = delays
-
-        return net
     
     @classmethod
     def homogeneous_from_TVB(cls, connectivity_file, oscillator_parameters, global_weight=1.0, conduction_speed=1.0):
@@ -503,8 +558,8 @@ class OscillatorNetwork:
             if "centres.txt" in zip_ref.namelist():
                 centres = zip_ref.read("centres.txt")
                 for line in centres.decode('utf-8').splitlines():
-                    name, x,y,z = line.split()
-                    net.features['oscillators'][name] = oscillator_parameters
+                    name, x, y, z = line.split()
+                    net.features['oscillators'][name] = oscillator_parameters # Stores duplicates of the parameter for a-posteriori inhomogeneity
                     net.features['centers'][name] = np.array([float(v) for v in [x,y,z]])
             else:
                 print(f"centres.txt not in connectivity.")
@@ -524,8 +579,8 @@ class OscillatorNetwork:
                 net.features['connectivity']['weights'] = global_weight * np.loadtxt(tracts.splitlines())
             else:
                 print(f"weights.txt not in connectivity.")
-            
-
+        net.n_oscillators = len(net.features['oscillators'])
+        net.homogeneous_dict = oscillator_parameters
         return net
 
 class EEGcap:
@@ -557,7 +612,7 @@ class EEGcap:
         time_series = np.zeros((self.n_regions, T))
 
         for k, oscillator_name in enumerate(network.oscillators):
-            time_series[k] = network.oscillators[oscillator_name].history[:,0]
+            time_series[k] = network.oscillators[oscillator_name].eeg # Uses the eeg method of oscillator that gives the right VOI
 
         for j in range(self.n_electrodes):
             for k in range(self.n_regions):

@@ -8,8 +8,6 @@
 #include <mutex>
 #include <variant>
 
-#define WEIGHT_EPS 0.00001 //!< Weight threshold of synapses to be considered as zeroed out.
-
 using std::vector;
 
 // The menu
@@ -28,26 +26,6 @@ class PopulationMonitor;
 class PopulationSpikeMonitor;
 class PopulationStateMonitor;
 class PopInjector;
-
-
-/**
- * @class Projection
- * @brief Implements a dense weight-delay projection between objects.
- * 
- * @param[in] weights, delays
- * @param[in] start_dimension, end_dimension
- * 
-*/
-class Projection{
-    public:
-        vector<vector<float>>  weights, delays;
-        unsigned int start_dimension, end_dimension;
-
-        Projection(vector<vector<float>> weights, vector<vector<float>> delays);
-    
-    private:
-        int n_links = 0;
-};
 
 struct SparseIntHash {
     size_t operator()(const std::pair<int, int>& k) const 
@@ -90,9 +68,10 @@ class SparseProjection{
                 end_dimension(end_dimension)
         {
             n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
+            cout << "In projection " <<n_connections << " connections must be made"<<endl;
         }  
         virtual ~SparseProjection() = default;
-        void build_sector(sparse_t *, RNGDispatcher *, unsigned int, unsigned int, unsigned int, unsigned int, unsigned int);
+        void build_sector(sparse_t *, RNGDispatcher *, float, unsigned int, unsigned int, unsigned int, unsigned int);
         void build_multithreaded();
 
         virtual const std::pair<float, float> get_weight_delay(RNG* /*rng*/, int /*i*/, unsigned int /*j*/)
@@ -210,6 +189,7 @@ class SpikingNetwork{
 
         // Evolution stuff
         void run(EvolutionContext * evo, double time, int verbosity);
+
     private:
         EvolutionContext * evo;
 };

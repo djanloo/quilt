@@ -14,6 +14,8 @@
 
 #include <variant>
 
+#define WEIGHT_EPS 0.00001 //!< Weight threshold of synapses to be considered as zeroed out.
+
 using std::cout;
 using std::endl;
 using std::runtime_error;
@@ -21,12 +23,25 @@ using std::vector;
 using std::map;
 using std::string;
 
+
 class RNG{
     public:
-        RNG(const uint64_t seed):
-        rng(seed),
-        uniform(std::numeric_limits<double>::epsilon(), 1.0 - std::numeric_limits<double>::epsilon()){
+        // Seeded constructor
+        RNG(const uint64_t seed)
+            :   rng(seed),
+                uniform(std::numeric_limits<double>::epsilon(), 1.0 - std::numeric_limits<double>::epsilon())
+        {
+            // Nothing to do here
         }
+
+        // Random source constructor
+        RNG()
+            :   uniform(std::numeric_limits<double>::epsilon(), 1.0 - std::numeric_limits<double>::epsilon())
+        {
+                pcg_extras::seed_seq_from<std::random_device> seed_source;
+                rng = pcg32(seed_source);
+        }
+
         double get_uniform(){return uniform(rng);}
         int get_int(){return static_cast<int>(rng());}
 
@@ -37,17 +52,28 @@ class RNG{
 
 class RNGDispatcher{
     public:
-        RNGDispatcher(unsigned int n_rngs, const uint64_t seed0):mutex(){
+        // Seeded constructor
+        RNGDispatcher(unsigned int n_rngs, const uint64_t seed0)
+            :   mutex()
+        {
             for (unsigned int i=0; i < n_rngs; i++){
                 rngs.push_back(new RNG(seed0 + static_cast<uint64_t>(i)));
             }
         }
+
+        // Random source constructor
+        RNGDispatcher(unsigned int n_rngs)
+            :   mutex()
+        {
+            for (unsigned int i=0; i < n_rngs; i++){
+                rngs.push_back(new RNG());
+            }
+        }
+
         ~RNGDispatcher(){
             for (RNG * rng : rngs ){
-                // std::cout << "Deleting TLRNG at "<<rng<<std::endl;
                 delete rng;
             }
-            // std::cout << "Deleted all " <<std::endl;
         }
 
         RNG * get_rng(){
@@ -55,7 +81,6 @@ class RNGDispatcher{
 
             for (auto& rng : rngs){
                 if (!is_occupied[rng]){
-                    // std::cout << "Giving TLRNG "<< rng << " to PID " << std::this_thread::get_id()<< std::endl; 
                     pids[std::this_thread::get_id()] = rng;
                     is_occupied[rng] = true;
                     return rng;
@@ -67,7 +92,7 @@ class RNGDispatcher{
         void free(){
             std::lock_guard<std::mutex> lock(mutex);
             RNG * rng = pids[std::this_thread::get_id()];
-            // std::cout << "Freeing " <<  rng << " from PID: "<< std::this_thread::get_id()<<std::endl;
+
             is_occupied[rng] = false;
             pids.erase(std::this_thread::get_id());
         }
@@ -77,7 +102,6 @@ class RNGDispatcher{
         std::vector<RNG*> rngs;
         map<RNG*, bool> is_occupied;
         map<std::thread::id, RNG*> pids;
-
 };
 
 /**
@@ -193,11 +217,11 @@ class ContinuousRK{
 /**
  * @brief A class representing a parameter map with keys and associated variant values.
  * 
- * Possible types are int, float and string.
+ * Possible types are float and string.
  */
 class ParaMap{
     public:
-        typedef std::variant<int, float, string> param_t;
+        typedef std::variant<float, string> param_t;
         map<string, param_t> value_map;
 
         /** 
@@ -282,10 +306,10 @@ class ParaMap{
             os << "<ParaMap>" << endl;
             for (const auto& entry : paramap.value_map) {
                 os << "\t" <<entry.first << ": ";
-                if (std::holds_alternative<int>(entry.second)){
-                    os <<std::get<int>(entry.second);
-                    os << " (int)";
-                }
+                // if (std::holds_alternative<int>(entry.second)){
+                //     os <<std::get<int>(entry.second);
+                //     os << " (int)";
+                // }
                 if (std::holds_alternative<float>(entry.second)){
                     os <<std::get<float>(entry.second);
                     os << " (float)";
@@ -300,7 +324,41 @@ class ParaMap{
 
             return os;
         }
+
+
+        /**
+         * WRAPPABLE FUNCTIONS
+         * 
+         * Cython has an awful C++17 support, expecially for <variant>. The next functions will be used only
+         * inside the cython interface.
+         * 
+        */
+        void add_string(const string& key, const string& value){ value_map[key] = value;}
+        void add_float(const string& key, const float& value){ value_map[key] = value;}
+        // void add_int(const string& key, const int& value){ value_map[key] = value;}
+
 };
+
+/**
+ * @class Projection
+ * @brief Implements a dense weight-delay projection between objects.
+ * 
+ * @param[in] weights, delays
+ * @param[in] start_dimension, end_dimension
+ * 
+*/
+class Projection{
+    public:
+        vector<vector<float>>  weights, delays;
+        unsigned int start_dimension, end_dimension;
+
+        Projection(vector<vector<float>> weights, vector<vector<float>> delays);
+    
+    private:
+        int n_links = 0;
+};
+
+
 
 /**
  * @class progress

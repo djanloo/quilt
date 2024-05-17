@@ -1,0 +1,118 @@
+parameters:
+  dopamine:
+    min: 0
+    max: 1
+    shift: 0.8
+
+parametric:
+
+  dopamine:
+    # Populations
+    - population: FSN
+      attribute:  E_l
+      susceptibility: -0.078
+    - population: GPeTI
+      attribute:  E_l
+      susceptibility: -0.181
+    - population: GPeTA
+      attribute:  E_l
+      susceptibility: -0.181
+    - population: D1
+      attribute:  V_peak
+      susceptibility: 0.0296
+    - population: D1
+      attribute:  ada_b
+      susceptibility: -0.45
+    - population: SNR
+      attribute: E_l
+      susceptibility: -0.0896
+
+    # Projections
+    - projection: FSN->FSN
+      attribute: weight
+      susceptibility: -1.27
+
+    - projection: GPeTA->FSN
+      attribute: weight
+      susceptibility: -0.53
+
+    - projection: GPeTI->FSN
+      attribute: weight
+      susceptibility: -0.53
+
+    - projection: GPeTA->GPeTA
+      attribute: weight
+      susceptibility: -0.83
+
+    - projection: GPeTA->GPeTI
+      attribute: weight
+      susceptibility: -0.83
+    
+    - projection: GPeTI->GPeTI
+      attribute: weight
+      susceptibility: -0.83
+    
+    - projection: GPeTI->GPeTA
+      attribute: weight
+      susceptibility: -0.83
+    
+
+    - projection: D2->GPeTI
+      attribute: weight
+      susceptibility: -0.83
+
+    - projection: STN->GPeTA
+      attribute: weight
+      susceptibility: -0.45
+    - projection: STN->GPeTI
+      attribute: weight
+      susceptibility: -0.45
+
+    - projection: FSN->D2
+      attribute: connectivity
+      susceptibility: -0.9
+
+    - projection: D1->D1
+      attribute: connectivity
+      susceptibility: 0.88
+    
+    - projection: D1->D2
+      attribute: connectivity
+      susceptibility: 0.88
+    
+    - projection: D2->D1
+      attribute: connectivity
+      susceptibility: 0.88
+    
+    - projection: D2->D2
+      attribute: connectivity
+      susceptibility: 0.88
+
+    - projection: D1->D1
+      attribute: weight
+      susceptibility: 0.88
+    
+    - projection: D1->D2
+      attribute: weight
+      susceptibility: 0.88
+    
+    - projection: D2->D1
+      attribute: weight
+      susceptibility: 0.88
+    
+    - projection: D2->D2
+      attribute: weight
+      susceptibility: 0.88
+
+    - projection: GPeTA->D1
+      attribute: weight
+      susceptibility: -1.15
+
+    - projection: D1->SNR
+      attribute: weight
+      susceptibility: 0.56
+
+    - projection: GPeTI->STN
+      attribute: weight
+      susceptibility: -0.24
+

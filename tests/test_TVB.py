@@ -8,20 +8,10 @@ from sklearn.preprocessing import StandardScaler
 global_coupling = 0.01
 conduction_speed = 1.0
 net = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
-                                             {'oscillator_type':'leon-jansen-rit'}, 
+                                             {'oscillator_type':'jansen-rit'}, 
                                              global_weight=global_coupling, 
                                              conduction_speed=conduction_speed)
 net.build()
-
-
-# fig, ax = plt.subplots()
-# plt.matshow(net.features['connectivity']['delays'])
-# plt.colorbar()
-# fig,ax = plt.subplots()
-# plt.matshow(net.features['connectivity']['weights'])
-# plt.colorbar()
-# plt.show()
-# fig, ax = plt.subplots()
 
 T = 5000
 np.random.seed(1998)
