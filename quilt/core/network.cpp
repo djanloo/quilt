@@ -94,9 +94,6 @@ void SparseProjection::build_multithreaded()
     // TODO: add a global management of seed
     RNGDispatcher rng_dispatcher(n_threads);
 
-
-    // cout << "Starting threads" << endl;
-
     for (int i=0; i < n_threads; i++){
         // cout << "\tstarting thread " << i << endl;
         // cout << "\tthis thread does "<< "("<<i*start_dimension/n_threads<<","<< (i+1)*start_dimension/n_threads-1<<")";
@@ -127,38 +124,48 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
     double u;
     float new_weight, new_delay;
 
-    try{
-        u = rng->get_uniform();
-        new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
-    }catch (const boost::wrapexcept<std::overflow_error>& e){
-        cerr << "overflow in erf_inv:" << endl;
-        cerr << "u: " << u <<endl;
-        cerr << "weight mu: " << weight_mu << endl;
-        cerr << "weight sigma:"<< weight_sigma <<endl;
-        throw(e);
+    if (weight_sigma > 0.0){
+        try{
+            u = rng->get_uniform();
+            new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
+        }catch (const boost::wrapexcept<std::overflow_error>& e){
+            cerr << "overflow in erf_inv:" << endl;
+            cerr << "u: " << u <<endl;
+            cerr << "weight mu: " << weight_mu << endl;
+            cerr << "weight sigma:"<< weight_sigma <<endl;
+            throw(e);
+        }
+    }else{
+        new_weight = _weight;
     }
 
-    try{
-        u = rng->get_uniform();
-        new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
-    }catch (const boost::wrapexcept<std::overflow_error>& e){
-        cerr << "overflow:" << endl;
-        cerr << "u: " << u <<endl;
-        cerr << "delay mu: " << delay_mu << endl;
-        cerr << "delay sigma:"<< delay_sigma << endl;
-        throw(e);
+    if (delay_sigma > 0.0){
+        try{
+            u = rng->get_uniform();
+            new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
+        }catch (const boost::wrapexcept<std::overflow_error>& e){
+            cerr << "overflow:" << endl;
+            cerr << "u: " << u <<endl;
+            cerr << "delay mu: " << delay_mu << endl;
+            cerr << "delay sigma:"<< delay_sigma << endl;
+            throw(e);
+        }
+    }else{
+        new_delay = _delay;
     }
+
     // Inhibitory 
     if (type == 1) new_weight *=  -1;
 
-    // Zero-delay
-    if ((delay_mu == 0.0)&&(delay_sigma ==0.0)){
-        new_delay = 0.0;
-    }
+    // // Zero-delay
+    // if ((delay_mu == 0.0)&&(delay_sigma ==0.0)){
+    //     cerr << "SparseLogNormProjection::get_weight_delay -> Delay mu and delay sigma are zero: d_mu="<<delay_mu <<" d_sigma="<<delay_sigma<<endl;
+    //     new_delay = 0.0;
+    // }
 
 
-    if (std::isnan(new_weight) ) throw runtime_error("Nan in weight generation");
-    if (std::isnan(new_delay) ) throw runtime_error("Nan in delay generation");
+    if (std::isnan(new_weight) ) throw runtime_error("Nan in delay generation");
+    if (std::isnan(new_delay) ) throw runtime_error("Nan in weight generation for delay_mu, delay_sigma = " + std::to_string(delay_mu) + ", " + std::to_string(delay_sigma));
 
     return std::make_pair(new_weight, new_delay);
 }
@@ -168,9 +175,14 @@ SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
                                 unsigned int start_dimension, unsigned int end_dimension,
                                 float weight, float weight_delta,
                                 float delay, float delay_delta)
-    :   SparseProjection(connectivity, type, start_dimension, end_dimension)
+    :   SparseProjection(connectivity, type, start_dimension, end_dimension),
+        _weight(weight), 
+        _delay(delay)
 {
-       
+    if (weight == 0.0) throw runtime_error("synaptic weight cannot be zero");
+    if (delay == 0.0) throw runtime_error("synaptic delay cannot be zero");
+
+    // cout << "SparseLogNormProjection::SparseLogNormProjection : delay is "<<delay<<endl;
     weight_sigma = std::sqrt(std::log( (weight_delta*weight_delta)/(weight*weight)  + 1.0));
     delay_sigma  = std::sqrt(std::log( (delay_delta*delay_delta)/(delay*delay)      + 1.0));
 
@@ -239,7 +251,7 @@ void Population::project(const SparseProjection * projection, Population * effer
             neurons[connection.first.first]->connect(efferent_population->neurons[connection.first.second], connection.second.first, connection.second.second);
         }
     }
-    cout << "Performed " << connections << " connections between pop:"<< this->id.get_id() << " and pop:"<< efferent_population->id.get_id() << endl; 
+    // cout << "Performed " << connections << " connections between pop:"<< this->id.get_id() << " and pop:"<< efferent_population->id.get_id() << endl; 
 }
 
 void Population::evolve()

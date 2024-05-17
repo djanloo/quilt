@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#include <boost/timer/progress_display.hpp>
+// #include <boost/timer/progress_display.hpp>
 #include "include/base.hpp"
 
 using std::cout;
