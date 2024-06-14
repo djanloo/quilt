@@ -1,35 +1,29 @@
 #include "include/multiscale.hpp"
 
 
-double T2JRLink::get(int axis, double now){
-    // This function is called by Oscillator objects linked to this transducer
-    // during their evolution function
-
-    // Returns the activity of the spiking population back in the past
-    double result = weight * std::static_pointer_cast<Transducer>(source)->get_past(axis, now - delay); //axis is useless
-    return result;
-}
-
-double JR2TLink::get(int axis, double now){
-    // Returns the rate of the oscillator back in the past
-    double result = weight * std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
-    if (axis != 0) throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
-    // cout << "Getting past from JRJR link" << endl;
-    // cout << "JRJR got "<<result<< endl;
-    return result;
-}
-
 Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetwork * multinet)
     :   Oscillator(params, multinet->oscnet),
         population(population),
         multinet(multinet)
 {
+    oscillator_type = "transducer";
+
     // Adds the monitor
     monitor = population->spiking_network->add_spike_monitor(population);
 
     // Adds the injector
     injector = new PoissonSpikeSource(population, 10, 0.5, 0.2, -1, 0 );
     population->spiking_network->add_injector(injector);
+
+    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
+    {
+        throw runtime_error("Calling 'evolve_state' of a transducer object is not allowed");
+    };
+
+    eeg_voi = [](const dynamical_state & x){ 
+        throw runtime_error("Calling 'eeg_voi' of a transducer object is not allowed");
+        return 0.0;
+    };
 }
 
 /**
@@ -80,10 +74,9 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     return avg_rate;
 }
 
-MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet, unsigned int time_ratio)
+MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
     :   spikenet(spikenet),
-        oscnet(oscnet),
-        time_ratio(time_ratio)
+        oscnet(oscnet)
 {
    n_populations = spikenet->populations.size();
    n_oscillators = oscnet->oscillators.size();

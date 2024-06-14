@@ -331,14 +331,12 @@ void test_multiscale_base(){
     OscillatorNetwork osc_net = OscillatorNetwork(1, oscill_paramap);
     
     // Create a multiscale network
-    MultiscaleNetwork multi_net = MultiscaleNetwork(&spike_net, &osc_net, 0.1);
+    MultiscaleNetwork multi_net = MultiscaleNetwork(&spike_net, &osc_net);
 
     // Create a transducer
     ParaMap * transd_paramap = new ParaMap();
-    Transducer transd = Transducer(&spikepop, transd_paramap, &osc_net);
+    Transducer transd = Transducer(&spikepop, transd_paramap, &multi_net);
     multi_net.transducers.push_back(transd);
-
-    T2OLink t2o = T2OLink(std::make_shared())
 
     // Evolve
     EvolutionContext evo = EvolutionContext(0.1);

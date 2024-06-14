@@ -207,7 +207,7 @@ class OscillatorNetwork{
         };
         
         EvolutionContext * get_evolution_context(){return evo;}
-        
+
     private:
         // Control variables for the building steps
         bool has_oscillators = false;

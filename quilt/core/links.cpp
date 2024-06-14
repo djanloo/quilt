@@ -11,6 +11,10 @@ LinkFactory::LinkFactory()
 {
     add_linker(std::make_pair("base", "base"), link_maker<Link>);
     add_linker(std::make_pair("jansen-rit", "jansen-rit"), link_maker<JRJRLink>);
+    
+    add_linker(std::make_pair("jansen-rit", "transducer"), link_maker<JR2TLink>);
+    add_linker(std::make_pair("transducer", "jansen-rit"), link_maker<T2JRLink>);
+    
     add_linker(std::make_pair("leon-jansen-rit", "leon-jansen-rit"), link_maker<LJRLJRLink>);
 }
 
@@ -36,5 +40,25 @@ double LJRLJRLink::get(int axis, double now){
     // cout << "Getting past from LJRLJR link" << endl;
     if (axis != 6) throw runtime_error("Jansen-Rit model can only ask for axis 6 (differential activity)");
     double result = weight * std::static_pointer_cast<leon_jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
+    return result;
+}
+
+double T2JRLink::get(int axis, double now){
+    // This function is called by Oscillator objects linked to this transducer
+    // during their evolution function
+    cout << "T2JRLink: getting t="<<now-delay<<endl;
+
+    // Returns the activity of the spiking population back in the past
+    double result = weight * std::static_pointer_cast<Transducer>(source)->get_past(axis, now - delay); //axis is useless
+    return result;
+}
+
+double JR2TLink::get(int axis, double now){
+    // Returns the rate of the oscillator back in the past
+    cout << "JR2TLink: getting t="<<now-delay<<endl;
+    double result = weight * std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
+    if (axis != 0) throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
+    // cout << "Getting past from JRJR link" << endl;
+    // cout << "JRJR got "<<result<< endl;
     return result;
 }
