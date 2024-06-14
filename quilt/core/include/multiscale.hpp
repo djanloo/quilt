@@ -1,29 +1,17 @@
+#pragma once
 #include "base.hpp"
+#include "devices.hpp"
+#include "links.hpp"
 #include "network.hpp"
 #include "oscillators.hpp"
-#include "devices.hpp"
 
+#include <memory>
 #include <vector>
 
 using std::vector;
 using std::shared_ptr;
 
-class T2JRLink: public Link{
-    public:
-         T2JRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
-        : Link(source, target, weight, delay, params) {}
-
-        double get(int axis, double now) override;
-};
-
-class JR2TLink: public Link{
-    public:
-         JR2TLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
-        : Link(source, target, weight, delay, params) {}
-
-        double get(int axis, double now) override;
-};
-
+class MultiscaleNetwork;
 
 class Transducer: public Oscillator{
     public:
@@ -64,7 +52,7 @@ class MultiscaleNetwork{
         vector<Transducer> transducers;
         unsigned int time_ratio;
 
-        MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet, unsigned int time_ratio);
+        MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet);
         void run(EvolutionContext * evo, double time, int verbosity);
 
     private:

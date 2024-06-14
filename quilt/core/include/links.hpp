@@ -1,6 +1,7 @@
 #pragma once
 #include "base.hpp"
 #include "oscillators.hpp"
+#include "multiscale.hpp"
 
 #include <stdexcept>
 #include <memory>
@@ -8,7 +9,8 @@
 using std::vector;
 using std::shared_ptr;
 
-class Oscillator;
+// class Oscillator;
+// class Transducer;
 
 /**
  * @brief Base class for links between oscillators.
@@ -157,3 +159,20 @@ public:
      */
     double get(int axis, double now) override;
 };
+
+class T2JRLink: public Link{
+    public:
+         T2JRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
+        : Link(source, target, weight, delay, params) {}
+
+        double get(int axis, double now) override;
+};
+
+class JR2TLink: public Link{
+    public:
+         JR2TLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
+        : Link(source, target, weight, delay, params) {}
+
+        double get(int axis, double now) override;
+};
+
