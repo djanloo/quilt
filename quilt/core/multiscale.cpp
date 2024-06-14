@@ -1,9 +1,28 @@
 #include "include/multiscale.hpp"
 
 
+double T2JRLink::get(int axis, double now){
+    // This function is called by Oscillator objects linked to this transducer
+    // during their evolution function
 
-Transducer::Transducer(Population * population, const ParaMap * params)
-    :   population(population)
+    // Returns the activity of the spiking population back in the past
+    double result = weight * std::static_pointer_cast<Transducer>(source)->get_past(axis, now - delay); //axis is useless
+    return result;
+}
+
+double JR2TLink::get(int axis, double now){
+    // Returns the rate of the oscillator back in the past
+    double result = weight * std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
+    if (axis != 0) throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
+    // cout << "Getting past from JRJR link" << endl;
+    // cout << "JRJR got "<<result<< endl;
+    return result;
+}
+
+Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetwork * multinet)
+    :   Oscillator(params, multinet->oscnet),
+        population(population),
+        multinet(multinet)
 {
     // Adds the monitor
     monitor = population->spiking_network->add_spike_monitor(population);
@@ -13,23 +32,58 @@ Transducer::Transducer(Population * population, const ParaMap * params)
     population->spiking_network->add_injector(injector);
 }
 
+/**
+ * @brief Evolution method of the transducer. Must be called once every big time step.
+*/
 void Transducer::evolve()
 {
-    // Adds to history the mean rate of the population during the last big step
+    // Sets the rate of the PoissonSpikeSource as 
+    // the weighted sum of the rates of the incoming oscillators
+    double rate = 0; 
+    double single_input_rate = 0;
+    for (auto input : incoming_osc){
+        single_input_rate = input->get(0, oscnet->get_evolution_context()->now);
+        rate += single_input_rate;
+        cout << "\tone input is " << single_input_rate << endl;
+    }
+    cout << "\t\tOverall input is " << single_input_rate << endl;
 
+    injector->set_rate(rate);
 }
 
-double Transducer::get_past(unsigned int axis, double time)
+double Transducer::get_past(unsigned int /*axis*/, double time)
 {
-    int time_idx = evo->index_of(time);
-    double theta = evo->deviation_of(time);
 
-    return state_history[time_idx][axis] * (1 - theta) + state_history[time_idx + 1][axis] * theta;
+    // I want to get the avg rate of the pop in [t-T/2, t+T/2]
+    EvolutionContext * oscnet_evo = multinet->oscnet->get_evolution_context();
+    double T = oscnet_evo->dt;
+
+    EvolutionContext * spikenet_evo = multinet->spikenet->get_evolution_context();
+    int time_idx_1 = spikenet_evo->index_of(time - T/2);
+    int time_idx_2 = spikenet_evo->index_of(time + T/2);
+
+    double theta = evo->deviation_of(time); //TODO: make this not useless
+
+    vector<int> activity_history = monitor->get_history();
+    double avg_rate = 0.0;
+    // Compute the average rate
+    for (int i = time_idx_1; i < time_idx_2; i++){
+        avg_rate += activity_history[i];
+    }
+    avg_rate /= (T*population->n_neurons);
+
+    cout << "Transducer::get_past() : returning rate from t="<<time-T/2<<"(index "<<time_idx_1 << ")";
+    cout << "to t=" << time-T/2<<"(index "<<time_idx_1 << ")"; 
+    cout << "\n\tavg_rate is "<< avg_rate;
+    cout << endl;
+    // return monitor->get_history()[time_idx] * (1 - theta) + monitor->get_history()[time_idx + 1]* theta;
+    return avg_rate;
 }
 
-MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
+MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet, unsigned int time_ratio)
     :   spikenet(spikenet),
-        oscnet(oscnet)
+        oscnet(oscnet),
+        time_ratio(time_ratio)
 {
    n_populations = spikenet->populations.size();
    n_oscillators = oscnet->oscillators.size();
@@ -76,3 +130,7 @@ MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwor
 //     }
 
 // }
+
+void MultiscaleNetwork::run(EvolutionContext * evo, double time, int verbosity){
+
+}

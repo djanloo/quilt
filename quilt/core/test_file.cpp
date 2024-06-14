@@ -14,6 +14,8 @@
 #include "include/neuron_models.hpp"
 #include "include/network.hpp"
 #include "include/oscillators.hpp"
+#include "include/multiscale.hpp"
+
 
 using namespace std;
 // ulimit -c unlimited
@@ -298,10 +300,57 @@ void test_sparse(){
     }
 }
 
+void test_multiscale_base(){
+    // Create a spiking network of just one population
+    SpikingNetwork spike_net = SpikingNetwork();
+
+    map<string, ParaMap::param_t> map_of_params = {{"neuron_type", "aeif"},
+                                        {"C_m", 40.1f},
+                                        {"G_L",2.0f},
+                                        {"E_l", -70.0f},
+                                        {"V_reset", -55.0f},
+                                        {"V_peak",0.1f},
+                                        {"tau_refrac",0.0f},
+                                        {"delta_T",1.7f},
+                                        {"V_th", -40.0f},
+                                        {"ada_a", 0.0f},
+                                        {"ada_b",5.0f},
+                                        {"ada_tau_w",100.0f},
+                                        {"tau_ex", 10.0f},
+                                        {"tau_in", 5.5f},
+                                        {"E_ex", 0.0f},
+                                        {"E_in",-65.0f}
+                                        };
+
+    ParaMap spiking_paramap = ParaMap(map_of_params);
+    Population spikepop = Population(10, &spiking_paramap, &spike_net);
+
+    // Create a oscillator network of just one node
+    ParaMap * oscill_paramap = new ParaMap();
+    oscill_paramap->add("oscillator_type", "jansen-rit");
+    OscillatorNetwork osc_net = OscillatorNetwork(1, oscill_paramap);
+    
+    // Create a multiscale network
+    MultiscaleNetwork multi_net = MultiscaleNetwork(&spike_net, &osc_net, 0.1);
+
+    // Create a transducer
+    ParaMap * transd_paramap = new ParaMap();
+    Transducer transd = Transducer(&spikepop, transd_paramap, &osc_net);
+    multi_net.transducers.push_back(transd);
+
+    T2OLink t2o = T2OLink(std::make_shared())
+
+    // Evolve
+    EvolutionContext evo = EvolutionContext(0.1);
+    multi_net.run(&evo, 500, 1);
+}
+
+
 int main(){
     // test_spiking();
     // test_sparse();
     // test_poisson();
-    test_oscill();
+    // test_oscill();
+    test_multiscale_base();
 }
 
