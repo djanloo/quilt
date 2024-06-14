@@ -134,6 +134,10 @@ class PoissonSpikeSource: public PopInjector{
          * 
         */
         void inject(EvolutionContext * evo) override;
+
+        // This method is an approximation, must be removed in future
+        // by building the inhomogeneous poisson spikesource
+        void set_rate(float new_rate){ rate = new_rate; }
     private:
         float rate;
         float weight;

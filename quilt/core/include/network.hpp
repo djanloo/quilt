@@ -183,6 +183,8 @@ class SpikingNetwork{
             }
         }
 
+        EvolutionContext * get_evolution_context(){return evo;}
+
         // Monitors (outputs)
         std::vector<PopulationMonitor*> population_monitors;
 
