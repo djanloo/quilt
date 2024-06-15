@@ -145,6 +145,24 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     is_initialized = true;
 }
 
+void OscillatorNetwork::evolve(){
+    if (!is_initialized) throw runtime_error("The network must be initialized before evolving");
+
+    cout << "Evolving OSCILLATOR network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")" << endl;
+
+    // Gets the new values
+    for (auto oscillator : oscillators){
+        oscillator->memory_integrator.compute_next();
+    }
+
+    // Fixes them
+    for (auto oscillator : oscillators){
+        oscillator->memory_integrator.fix_next();
+    }
+
+    evo->do_step();
+}
+
 void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
 {
     if (!is_initialized) throw runtime_error("The network must be initialized before running");

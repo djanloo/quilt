@@ -16,6 +16,7 @@ class SpikingNetwork;
 class MultiscaleNetwork;
 
 /**
+ * @class Transducer
  * @brief Bridge object between spiking populations and neural mass oscillators
  * 
  * It is composed by a PoissonSpikeSource (in future PoissonInhomogeneousSpikeSource)
@@ -63,12 +64,15 @@ class MultiscaleNetwork{
         SpikingNetwork * spikenet;
         OscillatorNetwork * oscnet;
         vector<Transducer> transducers;
-        unsigned int time_ratio;
-
         MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet);
-        void run(EvolutionContext * evo, double time, int verbosity);
+        void run(double time, int verbosity);
+        void set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long);
 
-    private:
         unsigned int n_populations;
         unsigned int n_oscillators;
+        unsigned int time_ratio;
+    private:
+        bool timescales_initialized;
+        EvolutionContext * evo_short;
+        EvolutionContext * evo_long;
 };

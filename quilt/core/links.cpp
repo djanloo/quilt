@@ -45,6 +45,9 @@ double LJRLJRLink::get(int axis, double now){
     return result;
 }
 
+/******************************************** MULTISCALE LINK MODELS *******************************************8*/
+
+
 double T2JRLink::get(int axis, double now){
     // This function is called by Oscillator objects linked to this transducer
     // during their evolution function

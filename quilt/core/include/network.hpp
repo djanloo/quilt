@@ -164,18 +164,7 @@ class SpikingNetwork{
             this->injectors.push_back(injector);
         }
 
-        void set_evolution_context(EvolutionContext * evo)
-        {
-            this->evo = evo;
-            for (auto population : populations)
-            {
-                population->set_evolution_context(evo);
-            }
-            for (auto monitor : population_monitors)
-            {
-                monitor->set_evolution_context(evo);
-            }
-        }
+        void set_evolution_context(EvolutionContext * evo);
 
         EvolutionContext * get_evolution_context(){return evo;}
 
@@ -186,8 +175,10 @@ class SpikingNetwork{
         PopulationStateMonitor * add_state_monitor(Population * population);
 
         // Evolution stuff
+        void evolve();
         void run(EvolutionContext * evo, double time, int verbosity);
 
     private:
         EvolutionContext * evo;
+        bool evocontext_initialized;
 };

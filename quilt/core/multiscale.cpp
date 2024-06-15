@@ -78,12 +78,30 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
 
 MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
     :   spikenet(spikenet),
-        oscnet(oscnet)
+        oscnet(oscnet),
+        timescales_initialized(false)
 {
    n_populations = spikenet->populations.size();
    n_oscillators = oscnet->oscillators.size();
+   cout << "MultiscaleNetwork has " << n_populations << " populations and " << n_oscillators << " oscillators."<<endl;
 }
 
+void MultiscaleNetwork::set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long){
+    // First approx: integer number of steps
+    time_ratio = static_cast<int> (floor( evo_long->dt/evo_short->dt + 0.5));
+    cout << "Multiscale time ratio is " << time_ratio << endl;
+    if (time_ratio == 0){
+        throw runtime_error("Invalid timescale ratio: short scale must be shorter than the long timescale -- :o");
+    }
+
+    this->evo_short = evo_short;
+    this->evo_long = evo_long;
+
+    spikenet->set_evolution_context(evo_short);
+    oscnet->set_evolution_context(evo_long);
+
+    timescales_initialized = true;
+}
 
 // void MultiscaleNetwork::pop_to_osc(unsigned int i, unsigned int j){
 //     // Makes the population pop an input of oscillator osc
@@ -126,6 +144,31 @@ MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwor
 
 // }
 
-void MultiscaleNetwork::run(EvolutionContext * evo, double time, int verbosity){
+void MultiscaleNetwork::run(double time, int verbosity){
+    if (!timescales_initialized){
+        throw runtime_error("Evolution contextes for the slow and fast timescale must be initialized.");
+    }
+
+    cout << "check timescales "<<endl;
+    cout << "\t" << evo_short->now << "-" << evo_short->dt << endl;
+    cout << "\t" << evo_long ->now << "-" << evo_long->dt <<endl;
+    cout << "done check timescales"<< endl;
+
+
+    int n_steps_total = static_cast<int>(time / evo_long->dt) ;
+    
+    progress bar(n_steps_total, verbosity); 
+    while (evo_long -> now < time){
+
+        // Evolve the short timescale until it catches up with 
+        // the long timescale
+        // cout << "Doing one big step" << endl;
+        while (evo_short->now < evo_long->now){
+            // cout << "Doing one small step"<<endl;
+            spikenet->evolve();
+        }
+        oscnet->evolve();
+        ++bar;
+    }
 
 }

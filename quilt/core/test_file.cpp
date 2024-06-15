@@ -321,26 +321,68 @@ void test_multiscale_base(){
                                         {"E_ex", 0.0f},
                                         {"E_in",-65.0f}
                                         };
+    cout << "creating spiking population" << endl;
 
     ParaMap spiking_paramap = ParaMap(map_of_params);
     Population spikepop = Population(10, &spiking_paramap, &spike_net);
 
-    // Create a oscillator network of just one node
+    cout << "creating oscillator" << endl;
+    vector<vector<float>> weights, delays;
+    EvolutionContext * evo_long  = new EvolutionContext(1.0);
+    weights = get_rand_proj_mat(2,2, 2.0, 5.0);
+    delays = get_rand_proj_mat(2,2, 80, 200);
+
+    for (int i = 0; i< 2; i++){
+        weights[i][i] = 0.0;
+    }
+
+    cout << "Making projection between oscillators" << endl;
+    Projection * proj = new Projection(weights, delays);
     ParaMap * oscill_paramap = new ParaMap();
     oscill_paramap->add("oscillator_type", "jansen-rit");
-    OscillatorNetwork osc_net = OscillatorNetwork(1, oscill_paramap);
+    OscillatorNetwork osc_net = OscillatorNetwork(2, oscill_paramap);
+
+    vector<dynamical_state> init_cond;
+    for (int i=0; i< 2; i++){
+        vector<double> initstate(6, 2);
+
+        // initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        // initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+
+        init_cond.push_back(initstate);
+        cout << *(osc_net.oscillators[i]->params);
+    }    
+
+    // osc_net.build_connections(proj, link_params);
+    osc_net.initialize(evo_long, init_cond);
+
+    cout << "After init the long timescale is " << evo_long->now <<endl;
     
+    cout << "creating multinet" << endl;
     // Create a multiscale network
     MultiscaleNetwork multi_net = MultiscaleNetwork(&spike_net, &osc_net);
+
+    cout << "creating transducer" << endl;
 
     // Create a transducer
     ParaMap * transd_paramap = new ParaMap();
     Transducer transd = Transducer(&spikepop, transd_paramap, &multi_net);
+
+    cout << "adding transducer" << endl;
+
     multi_net.transducers.push_back(transd);
 
+    cout << "running multinet" << endl;
+
     // Evolve
-    EvolutionContext evo = EvolutionContext(0.1);
-    multi_net.run(&evo, 500, 1);
+    EvolutionContext * evo_short = new EvolutionContext(0.1);
+    multi_net.set_evolution_contextes(evo_short, evo_long);
+
+    multi_net.run(50, 1);
 }
 
 

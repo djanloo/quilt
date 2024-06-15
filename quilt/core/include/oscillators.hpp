@@ -194,6 +194,7 @@ class OscillatorNetwork{
 
 
         void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
+        void evolve();
         void run(EvolutionContext * evo, double time, int verbosity);
 
         void set_evolution_context(EvolutionContext * evo){
