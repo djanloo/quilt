@@ -367,6 +367,7 @@ Population::~Population()
 }
 
 SpikingNetwork::SpikingNetwork()
+    :   evocontext_initialized(false)
 {
     id = HierarchicalID();
 }
@@ -384,6 +385,44 @@ PopulationStateMonitor * SpikingNetwork::add_state_monitor(Population * populati
     this->population_monitors.push_back(new_monitor);
     return new_monitor;
 };
+
+void SpikingNetwork::set_evolution_context(EvolutionContext * evo)
+        {
+            this->evo = evo;
+            for (auto population : populations)
+            {
+                population->set_evolution_context(evo);
+            }
+            for (auto monitor : population_monitors)
+            {
+                monitor->set_evolution_context(evo);
+            }
+            evocontext_initialized = true;
+        }
+
+void SpikingNetwork::evolve(){
+
+    if (!evocontext_initialized){
+        throw("Cannot evolve SpikingNetwok until its EvolutionContext is initialized.");
+    }
+
+    cout << "Evolving SPIKING network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")" << endl;
+    for (const auto& population_monitor : this->population_monitors){
+            population_monitor->gather();
+        }
+
+        // Injection of currents
+        for (auto injector : this->injectors){
+            injector->inject(evo);
+        }
+
+        // Evolution of each population
+        for (auto population : this -> populations)
+        {
+            population -> evolve();
+        }
+        evo -> do_step();
+}
 
 void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
 {  
