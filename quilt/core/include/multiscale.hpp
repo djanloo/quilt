@@ -15,12 +15,20 @@ class PopulationSpikeMonitor;
 class SpikingNetwork;
 class MultiscaleNetwork;
 
-
+/**
+ * @brief Bridge object between spiking populations and neural mass oscillators
+ * 
+ * It is composed by a PoissonSpikeSource (in future PoissonInhomogeneousSpikeSource)
+ * and a SpikeMonitor.
+ * 
+ * Implements averaging on the slow timescale (`get_past()` method).
+ * 
+*/
 class Transducer: public Oscillator{
     private:
         Population * population;  
         EvolutionContext * evo;
-        
+
     public:
         PoissonSpikeSource * injector;
         PopulationSpikeMonitor * monitor;
