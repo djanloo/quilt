@@ -26,13 +26,13 @@ class Oscillator;
 class Oscillator {
 public:
     HierarchicalID id;                  /**< Unique identifier for the oscillator. */
+    ParaMap* params;                    /**< Pointer to parameter map for the oscillator. */
     OscillatorNetwork* oscnet;          /**< Pointer to the oscillator network to which the oscillator belongs. */
     ContinuousRK memory_integrator;     /**< Continuous Runge-Kutta integrator for storing state history. */
     string oscillator_type = "base";    /**< Type of the oscillator. Default is "base". */
     unsigned int space_dimension = 2;   /**< Dimension of the oscillator's state space. Default is 2. */
 
     vector<Link*> incoming_osc;         /**< Vector of incoming links to the oscillator. */
-    ParaMap* params;                    /**< Pointer to parameter map for the oscillator. */
 
     /**
      * @brief Constructor for the Oscillator class.

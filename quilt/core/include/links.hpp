@@ -20,9 +20,9 @@ class Link {
 public:
     shared_ptr<Oscillator> source; ///< The source oscillator of the link.
     shared_ptr<Oscillator> target; ///< The target oscillator of the link.
-    ParaMap* params; ///< Parameters associated with the link.
     float weight; ///< Weight of the link.
     float delay; ///< Delay in the link.
+    ParaMap* params; ///< Parameters associated with the link.
 
     /**
      * @brief Constructor for the Link class.
@@ -45,7 +45,7 @@ public:
      * @param now Current time for the inner steps of Runge-Kutta.
      * @return The value of the link.
      */
-    virtual double get(int axis, double now) {
+    virtual double get(int /*axis*/, double /*now*/) {
         throw std::runtime_error("Using virtual `get()` of LinkBase");
     };
 
