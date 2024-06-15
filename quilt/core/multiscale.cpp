@@ -17,12 +17,12 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
     injector = new PoissonSpikeSource(population, 10, 0.5, 0.2, -1, 0 );
     population->spiking_network->add_injector(injector);
 
-    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
+    evolve_state = [this](const dynamical_state & /*x*/, dynamical_state & /*dxdt*/, double /*t*/)
     {
         throw runtime_error("Calling 'evolve_state' of a transducer object is not allowed");
     };
 
-    eeg_voi = [](const dynamical_state & x){ 
+    eeg_voi = [](const dynamical_state & /*x*/){ 
         throw runtime_error("Calling 'eeg_voi' of a transducer object is not allowed");
         return 0.0;
     };
@@ -58,7 +58,7 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     int time_idx_1 = spikenet_evo->index_of(time - T/2);
     int time_idx_2 = spikenet_evo->index_of(time + T/2);
 
-    double theta = evo->deviation_of(time); //TODO: make this not useless
+    // double theta = evo->deviation_of(time); //TODO: make this not useless
 
     vector<int> activity_history = monitor->get_history();
     double avg_rate = 0.0;

@@ -3,8 +3,8 @@
 
 /******************************************* OSCILLATORS BASE **********************************/
 Oscillator::Oscillator(ParaMap * params, OscillatorNetwork * oscnet)
-    :   oscnet(oscnet),
-        params(params),
+    :   params(params),
+        oscnet(oscnet),
         memory_integrator()
 {
     id = HierarchicalID(oscnet->id);
@@ -234,7 +234,7 @@ test_oscillator::test_oscillator(ParaMap * params, OscillatorNetwork * oscnet)
     oscillator_type = "test";
     space_dimension = 6;
 
-    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t){
+    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double /*t*/){
 
         dxdt[0] = x[1];
         dxdt[1] = -x[0];

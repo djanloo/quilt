@@ -51,7 +51,7 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
     bool is_empty;
 
     while ((*sector).size() < sector_nconn){
-        if ((*sector).size() == sector_max_connections){
+        if ((*sector).size() == static_cast<unsigned int>(sector_max_connections)){
             cerr << "Sparse sturture was used to perform a all-to-all connection" << endl;
             break;
         }
@@ -342,7 +342,7 @@ void Population::print_info()
     }
 
     cout << "Each neuron is connected (on average) with:"<<endl;
-    for (int i = 0; i < connection_counts.size(); i++){
+    for (unsigned int i = 0; i < connection_counts.size(); i++){
         cout << "\t" << static_cast<float>(connection_counts[i])/this->n_neurons << " neurons of population " << i << endl;
     }
 

@@ -1,8 +1,5 @@
 #pragma once
 #include "base.hpp"
-// #include "devices.hpp"
-// #include "links.hpp"
-// #include "network.hpp"
 #include "oscillators.hpp"
 
 #include <memory>
@@ -11,16 +8,19 @@
 using std::vector;
 using std::shared_ptr;
 
+// Forward declarations
 class Population;
-
 class PoissonSpikeSource;
 class PopulationSpikeMonitor;
-
 class SpikingNetwork;
 class MultiscaleNetwork;
 
 
 class Transducer: public Oscillator{
+    private:
+        Population * population;  
+        EvolutionContext * evo;
+        
     public:
         PoissonSpikeSource * injector;
         PopulationSpikeMonitor * monitor;
@@ -47,9 +47,7 @@ class Transducer: public Oscillator{
         {
             this->evo = evo;
         }
-    private:
-        Population * population;  
-        EvolutionContext * evo;
+    
 };
 
 class MultiscaleNetwork{
