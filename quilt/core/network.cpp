@@ -130,7 +130,7 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
             new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
         }catch (const boost::wrapexcept<std::overflow_error>& e){
             cerr << "overflow in erf_inv:" << endl;
-            cerr << "u: " << u <<endl;
+            // cerr << "u: " << u <<endl;
             cerr << "weight mu: " << weight_mu << endl;
             cerr << "weight sigma:"<< weight_sigma <<endl;
             throw(e);
@@ -145,7 +145,7 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
             new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
         }catch (const boost::wrapexcept<std::overflow_error>& e){
             cerr << "overflow:" << endl;
-            cerr << "u: " << u <<endl;
+            // cerr << "u: " << u <<endl;
             cerr << "delay mu: " << delay_mu << endl;
             cerr << "delay sigma:"<< delay_sigma << endl;
             throw(e);
@@ -183,8 +183,8 @@ SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
     if (delay == 0.0) throw runtime_error("synaptic delay cannot be zero");
 
     // cout << "SparseLogNormProjection::SparseLogNormProjection : delay is "<<delay<<endl;
-    weight_sigma = std::sqrt(std::log( (weight_delta*weight_delta)/(weight*weight)  + 1.0));
-    delay_sigma  = std::sqrt(std::log( (delay_delta*delay_delta)/(delay*delay)      + 1.0));
+    weight_sigma = std::sqrt(std::log1p( (weight_delta*weight_delta)/(weight*weight)));
+    delay_sigma  = std::sqrt(std::log1p( (delay_delta*delay_delta)/(delay*delay)));
 
     weight_mu   = std::log(weight) - 0.5 * weight_sigma * weight_sigma;
     delay_mu    = std::log(delay)  - 0.5 * delay_sigma * delay_sigma;
@@ -195,14 +195,15 @@ SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
 
 Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network)
     :   n_neurons(n_neurons),
-        n_spikes_last_step(0), 
+        n_spikes_last_step(0),
+        id(&(spiking_network->id)),
         spiking_network(spiking_network),
         timestats_evo(0), 
         timestats_spike_emission(0)
 {
 
-    // Adds itself to the hierarchical structure
-    id = HierarchicalID(&(spiking_network->id));
+    // // Adds itself to the hierarchical structure
+    // id = HierarchicalID(&(spiking_network->id));
 
     // Adds itself to the spiking network populations
     (spiking_network->populations).push_back(this);

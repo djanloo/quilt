@@ -38,6 +38,8 @@ public:
           weight(weight),
           delay(delay),
           params(params) {}
+    // Virtual destructor since it's a base class  
+    virtual ~Link(){};
 
     /**
      * @brief Virtual function to get the value of the link.
