@@ -1,7 +1,7 @@
 #pragma once
 #include "base.hpp"
 #include "devices.hpp"
-#include "neurons_base.hpp"
+// #include "neurons_base.hpp"
 
 #include <unordered_map>
 #include <chrono>
@@ -11,21 +11,21 @@
 using std::vector;
 
 // The menu
-class HierarchicalID;
-class EvolutionContext;
+// class HierarchicalID;
+// class EvolutionContext;
 
 class Neuron;
 class NeuroParam;
 enum class neuron_type : unsigned int;
 
-class Projection;
+// class Projection;
 class Population;
 class SpikingNetwork;
 
-class PopulationMonitor;
-class PopulationSpikeMonitor;
-class PopulationStateMonitor;
-class PopInjector;
+// class PopulationMonitor;
+// class PopulationSpikeMonitor;
+// class PopulationStateMonitor;
+// class PopInjector;
 
 struct SparseIntHash {
     size_t operator()(const std::pair<int, int>& k) const 
@@ -132,14 +132,8 @@ class Population{
         double timestats_evo;
         double timestats_spike_emission;
         void print_info();
-        void set_evolution_context(EvolutionContext * evo)
-        {
-            this->evo = evo;
-            for (auto neuron : neurons)
-            {
-                neuron->set_evolution_context(evo);
-            }
-        }
+        void set_evolution_context(EvolutionContext * evo);
+        
     private:
         EvolutionContext * evo;
 

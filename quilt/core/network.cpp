@@ -348,6 +348,15 @@ void Population::print_info()
 
  }
 
+void Population::set_evolution_context(EvolutionContext * evo)
+    {
+        this->evo = evo;
+        for (auto neuron : neurons)
+        {
+            neuron->set_evolution_context(evo);
+        }
+    }
+
 Population::~Population()
 {
     delete neuroparam;

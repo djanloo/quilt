@@ -1,4 +1,7 @@
 #pragma once
+
+#include "base.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <variant>
@@ -11,7 +14,6 @@ using std::endl;
 
 typedef std::vector<double> dynamical_state;
 class Population;
-class EvolutionContext;
 
 /**
  * @brief Base class for population monitors

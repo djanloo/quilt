@@ -1,7 +1,5 @@
 #pragma once
 #include "base.hpp"
-#include "oscillators.hpp"
-#include "multiscale.hpp"
 
 #include <stdexcept>
 #include <memory>
@@ -9,8 +7,8 @@
 using std::vector;
 using std::shared_ptr;
 
-// class Oscillator;
-// class Transducer;
+// Forward declarations
+class Oscillator;
 
 /**
  * @brief Base class for links between oscillators.

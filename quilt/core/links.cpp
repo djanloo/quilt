@@ -1,3 +1,5 @@
+#include "include/oscillators.hpp"
+#include "include/multiscale.hpp"
 #include "include/links.hpp"
 
 /******************************************* LINK BASE ****************************************/
