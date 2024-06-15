@@ -1,3 +1,4 @@
+#include "include/links.hpp"
 #include "include/oscillators.hpp"
 
 /******************************************* OSCILLATORS BASE **********************************/

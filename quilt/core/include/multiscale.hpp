@@ -1,8 +1,8 @@
 #pragma once
 #include "base.hpp"
-#include "devices.hpp"
-#include "links.hpp"
-#include "network.hpp"
+// #include "devices.hpp"
+// #include "links.hpp"
+// #include "network.hpp"
 #include "oscillators.hpp"
 
 #include <memory>
@@ -11,7 +11,14 @@
 using std::vector;
 using std::shared_ptr;
 
+class Population;
+
+class PoissonSpikeSource;
+class PopulationSpikeMonitor;
+
+class SpikingNetwork;
 class MultiscaleNetwork;
+
 
 class Transducer: public Oscillator{
     public:

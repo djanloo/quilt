@@ -1,13 +1,10 @@
 #pragma once
 #include "base.hpp"
-#include "links.hpp"
-#include "network.hpp"
 
 #include <typeinfo>
 #include <memory>
 
-class EvolutionContext;
-class Population;
+// Forward declarations
 class Link;
 
 using std::vector;

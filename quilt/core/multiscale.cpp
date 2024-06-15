@@ -1,3 +1,5 @@
+#include "include/links.hpp"
+#include "include/network.hpp"
 #include "include/multiscale.hpp"
 
 
