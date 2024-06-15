@@ -51,6 +51,7 @@ double T2JRLink::get(int axis, double now){
     cout << "T2JRLink: getting t="<<now-delay<<endl;
 
     // Returns the activity of the spiking population back in the past
+    // Note that the average on the large time scale is done by Transducer::get_past()
     double result = weight * std::static_pointer_cast<Transducer>(source)->get_past(axis, now - delay); //axis is useless
     return result;
 }

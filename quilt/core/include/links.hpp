@@ -160,14 +160,27 @@ public:
     double get(int axis, double now) override;
 };
 
+/**
+ * @brief Link between a transducer and a Jansen-Rit oscillator
+ * 
+*/
 class T2JRLink: public Link{
     public:
          T2JRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
         : Link(source, target, weight, delay, params) {}
 
+        /**
+         * Returns the firing rate of the population linked to the transducer.
+         * Firign rate is averaged on the long timescale.
+         * 
+         * Note: the averaging is performed by `Transducer::get_past()` method
+        */
         double get(int axis, double now) override;
 };
 
+/**
+ * @brief Link between a Jansen-Rit oscillator and a transducer
+*/
 class JR2TLink: public Link{
     public:
          JR2TLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
