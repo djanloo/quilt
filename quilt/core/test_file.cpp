@@ -324,11 +324,14 @@ void test_multiscale_base(){
     cout << "creating spiking population" << endl;
 
     ParaMap spiking_paramap = ParaMap(map_of_params);
-    Population spikepop = Population(10, &spiking_paramap, &spike_net);
+    Population spikepop = Population(100, &spiking_paramap, &spike_net);
+    spike_net.add_injector(new PoissonSpikeSource(&spikepop, 500, 1, 0.0, 0, -1 ));
 
     cout << "creating oscillator" << endl;
     vector<vector<float>> weights, delays;
     EvolutionContext * evo_long  = new EvolutionContext(1.0);
+    EvolutionContext * evo_short = new EvolutionContext(0.1);
+    
     weights = get_rand_proj_mat(2,2, 2.0, 5.0);
     delays = get_rand_proj_mat(2,2, 80, 200);
 
@@ -358,7 +361,6 @@ void test_multiscale_base(){
     }    
 
     // osc_net.build_connections(proj, link_params);
-    osc_net.initialize(evo_long, init_cond);
 
     cout << "After init the long timescale is " << evo_long->now <<endl;
     
@@ -370,19 +372,34 @@ void test_multiscale_base(){
 
     // Create a transducer
     ParaMap * transd_paramap = new ParaMap();
-    Transducer transd = Transducer(&spikepop, transd_paramap, &multi_net);
+    shared_ptr <Transducer> transd (new Transducer(&spikepop, transd_paramap, &multi_net));
 
     cout << "adding transducer" << endl;
 
     multi_net.transducers.push_back(transd);
 
+    cout << "building connections" <<endl;
+    vector<vector<float>> T2Oweights {{1, 1}}; 
+    vector<vector<float>> T2Odelays {{2.5 , 2.5}}; 
+    vector<vector<float>> O2Tweights {{1}, {1}}; 
+    vector<vector<float>> O2Tdelays {{2.5}, {2.5}}; 
+
+    Projection * T2Oproj = new Projection(T2Oweights, T2Odelays);
+    Projection * O2Tproj = new Projection(O2Tweights, O2Tdelays);
+
+    multi_net.build_OT_projections(T2Oproj, O2Tproj);
+
+    cout << "initializing oscillator network"<<endl;
+    osc_net.initialize(evo_long, init_cond);
+
+    cout << "initializing spiking network" << endl;
+    spike_net.run(evo_short, evo_long->now, 1);
     cout << "running multinet" << endl;
 
     // Evolve
-    EvolutionContext * evo_short = new EvolutionContext(0.1);
     multi_net.set_evolution_contextes(evo_short, evo_long);
 
-    multi_net.run(50, 1);
+    multi_net.run(100, 1);
 }
 
 

@@ -124,7 +124,7 @@ public:
      * @param params Parameters associated with the link.
      */
     JRJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
-        : Link(source, target, weight, delay, params) {}
+        : Link(source, target, weight, delay, params) {cout << "\tCreating a JR to JR link"<<endl;}
 
     /**
      * @brief Get the value of the link for a specific axis at the given time.
@@ -149,7 +149,7 @@ public:
      * @param params Parameters associated with the link.
      */
     LJRLJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
-        : Link(source, target, weight, delay, params) {}
+        : Link(source, target, weight, delay, params) {cout << "\tCreating a LJR to LJR link"<<endl;}
 
     /**
      * @brief Get the value of the link for a specific axis at the given time.
@@ -167,7 +167,7 @@ public:
 class T2JRLink: public Link{
     public:
          T2JRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
-        : Link(source, target, weight, delay, params) {}
+        : Link(source, target, weight, delay, params) {cout << "\tCreating a Transducer to JR link"<<endl;}
 
         /**
          * Returns the firing rate of the population linked to the transducer.
@@ -184,7 +184,7 @@ class T2JRLink: public Link{
 class JR2TLink: public Link{
     public:
          JR2TLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
-        : Link(source, target, weight, delay, params) {}
+        : Link(source, target, weight, delay, params) {cout << "\tCreating a JR to Transducer link"<<endl;}
 
         double get(int axis, double now) override;
 };

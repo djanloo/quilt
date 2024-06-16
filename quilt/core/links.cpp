@@ -66,5 +66,9 @@ double JR2TLink::get(int axis, double now){
     if (axis != 0) throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
     // cout << "Getting past from JRJR link" << endl;
     // cout << "JRJR got "<<result<< endl;
+
+    //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
+    result *= 1000;
+
     return result;
 }
