@@ -14,7 +14,7 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
     monitor = population->spiking_network->add_spike_monitor(population);
 
     // Adds the injector
-    injector = new PoissonSpikeSource(population, 10, 0.5, 0.2, -1, 0 );
+    injector = new PoissonSpikeSource(population, 10, 0.5, 0.2, 0, -1 );
     population->spiking_network->add_injector(injector);
 
     evolve_state = [this](const dynamical_state & /*x*/, dynamical_state & /*dxdt*/, double /*t*/)
@@ -26,6 +26,8 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
         throw runtime_error("Calling 'eeg_voi' of a transducer object is not allowed");
         return 0.0;
     };
+
+    cout << "\ttransducer created"<<endl;
 }
 
 /**
@@ -33,6 +35,7 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
 */
 void Transducer::evolve()
 {
+    cout << "evolving transducer" << endl;
     // Sets the rate of the PoissonSpikeSource as 
     // the weighted sum of the rates of the incoming oscillators
     double rate = 0; 
@@ -42,22 +45,27 @@ void Transducer::evolve()
         rate += single_input_rate;
         cout << "\tone input is " << single_input_rate << endl;
     }
-    cout << "\t\tOverall input is " << single_input_rate << endl;
+    cout << "\t\tOverall input is " << rate << endl;
 
     injector->set_rate(rate);
 }
 
 double Transducer::get_past(unsigned int /*axis*/, double time)
 {
+    cout << "getting past from transducer" << endl;
 
     // I want to get the avg rate of the pop in [t-T/2, t+T/2]
     EvolutionContext * oscnet_evo = multinet->oscnet->get_evolution_context();
     double T = oscnet_evo->dt;
 
+
     EvolutionContext * spikenet_evo = multinet->spikenet->get_evolution_context();
     int time_idx_1 = spikenet_evo->index_of(time - T/2);
     int time_idx_2 = spikenet_evo->index_of(time + T/2);
 
+
+    cout << "\tdt = " << spikenet_evo->dt << ", dT = "<<oscnet_evo->dt<<endl;
+    cout << "time indexes: [" << time_idx_1 << "," << time_idx_2 << "]" << endl;
     // double theta = evo->deviation_of(time); //TODO: make this not useless
 
     vector<int> activity_history = monitor->get_history();
@@ -69,7 +77,7 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     avg_rate /= (T*population->n_neurons);
 
     cout << "Transducer::get_past() : returning rate from t="<<time-T/2<<"(index "<<time_idx_1 << ")";
-    cout << "to t=" << time-T/2<<"(index "<<time_idx_1 << ")"; 
+    cout << "to t=" << time+T/2<<"(index "<<time_idx_2 << ")"; 
     cout << "\n\tavg_rate is "<< avg_rate;
     cout << endl;
     // return monitor->get_history()[time_idx] * (1 - theta) + monitor->get_history()[time_idx + 1]* theta;
@@ -103,11 +111,78 @@ void MultiscaleNetwork::set_evolution_contextes(EvolutionContext * evo_short, Ev
     timescales_initialized = true;
 }
 
-// void MultiscaleNetwork::pop_to_osc(unsigned int i, unsigned int j){
-//     // Makes the population pop an input of oscillator osc
-//     Transducer new_transducer(spikenet->populations[i], params);
-//     oscnet->oscillators[j]->incoming_osc.push_back();
-// }
+/**
+ * Builds projection between oscillators and transducers.
+ * 
+ * 
+*/
+void MultiscaleNetwork::build_OT_projections(Projection * projT2O, Projection * projO2T){
+    
+    // For now: link params is just nothing
+    // In future I have to find a way to express variability in this stuff
+    // Probably I must step onto matrices of ParaMaps
+    ParaMap * link_params = new ParaMap();
+
+    // Dimension check 1
+    if( (projT2O->start_dimension != transducers.size())|((projT2O->end_dimension != n_oscillators))){
+        string msg = "Projection shape mismatch while building T->O projections.\n";
+        msg += "N_transd = " + std::to_string(transducers.size()) +  " N_oscill = " + std::to_string(n_oscillators) + "\n";
+        msg += "Projection shape: (" + std::to_string(projT2O->start_dimension) + "," +std::to_string(projT2O->end_dimension) + ")\n";
+        throw std::invalid_argument(msg);
+    }
+
+    // Dimension check 2
+    if( (projO2T->start_dimension != n_oscillators)|((projO2T->end_dimension != transducers.size()))){
+        string msg = "Projection shape mismatch while building O->T projections.\n";
+        msg += "N_oscill = " + std::to_string(n_oscillators) + " N_transd = " + std::to_string(transducers.size())  +"\n";
+        msg += "Projection shape: (" + std::to_string(projO2T->start_dimension) + "," +std::to_string(projO2T->end_dimension) + ")\n";
+        throw std::invalid_argument(msg);
+    }
+
+    cout << "Connections between:"<<endl;
+    cout << "\tTransducers: " << transducers.size()<<endl;
+    cout << "\tOscillators: " << n_oscillators<<endl;
+
+    // T->O
+    cout << "Building T->O connections" << endl;
+    for (unsigned int i = 0; i < transducers.size(); i++){
+        for (unsigned int j= 0; j < n_oscillators ; j++){
+            cout << "\tT-"<< i << " " <<"\tO-"<< j <<endl;
+            cout << "\t\tweight: "<< projT2O->weights[i][j] <<endl;
+            cout << "\t\tdelay: "<< projT2O->delays[i][j] <<endl;
+
+            if (projT2O->weights[i][j] != 0)
+            {   
+                oscnet->oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(transducers[i], oscnet->oscillators[j], 
+                                                                                            projT2O->weights[i][j], projT2O->delays[i][j], 
+                                                                                            link_params)); // Remember: link params is none here
+            }else{
+                cout << "\t\tweigth is zero"<<endl;
+            }
+        }
+    }
+
+    // O->T
+    cout << "Building O->T connections" << endl;
+    for (unsigned int i = 0; i < n_oscillators; i++){
+        for (unsigned int j= 0; j < transducers.size() ; j++){
+            cout << "\tO-"<< i << " " <<"\tT-"<< j <<endl;
+            cout << "\t\tweight: "<< projO2T->weights[i][j] <<endl;
+            cout << "\t\tdelay: "<< projO2T->delays[i][j] <<endl;
+
+            if (projO2T->weights[i][j] != 0)
+            {   
+                transducers[j]->incoming_osc.push_back(get_link_factory().get_link( oscnet->oscillators[i], transducers[j],
+                                                                                            projO2T->weights[i][j], projO2T->delays[i][j], 
+                                                                                            link_params)); // Remember: link params is none here
+            }else{
+                cout << "\t\tweigth is zero"<<endl;
+            }
+        }
+    }
+    cout << "Done connecting multiscale" << endl;
+    return;
+}
 
 // void MultiscaleNetwork::build_connections(Projection * projection){
 //     // First does a quick check that no intra-scale connections are given
@@ -150,10 +225,9 @@ void MultiscaleNetwork::run(double time, int verbosity){
     }
 
     cout << "check timescales "<<endl;
-    cout << "\t" << evo_short->now << "-" << evo_short->dt << endl;
-    cout << "\t" << evo_long ->now << "-" << evo_long->dt <<endl;
+    cout << "\tshort: " << evo_short->now << "-" << evo_short->dt << endl;
+    cout << "\tlong: " << evo_long ->now << "-" << evo_long->dt <<endl;
     cout << "done check timescales"<< endl;
-
 
     int n_steps_total = static_cast<int>(time / evo_long->dt) ;
     
@@ -167,6 +241,11 @@ void MultiscaleNetwork::run(double time, int verbosity){
             // cout << "Doing one small step"<<endl;
             spikenet->evolve();
         }
+
+        for (auto tsd : transducers){
+            tsd->evolve();
+        }
+
         oscnet->evolve();
         ++bar;
     }

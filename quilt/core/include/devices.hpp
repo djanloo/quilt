@@ -132,7 +132,7 @@ class PoissonSpikeSource: public PopInjector{
                             float rate, float weight, float weight_delta,
                             double t_min, double t_max);
         /**
-         * Generates spikes until a spike is generated in another time bin to prevent the spike queue from being uselessly too much long.
+         * Generates spikes until a spike is generated in another time bin to prevent the spike queue from being uselessly too long.
          * 
         */
         void inject(EvolutionContext * evo) override;
@@ -141,9 +141,9 @@ class PoissonSpikeSource: public PopInjector{
         // by building the inhomogeneous poisson spikesource
         void set_rate(float new_rate){ rate = new_rate; }
     private:
-        float rate;
-        float weight;
-        float weight_delta;
+        float rate;         //!< Rate of the Poisson process [Hz]
+        float weight;       //!< Weight of the spikes
+        float weight_delta; //!< Semidispersion of the weight of the spikes
         double t_min, t_max;
 
         std::vector<float> weights;

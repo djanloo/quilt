@@ -63,14 +63,16 @@ class MultiscaleNetwork{
     public:
         SpikingNetwork * spikenet;
         OscillatorNetwork * oscnet;
-        vector<Transducer> transducers;
+        vector<shared_ptr<Transducer>> transducers;
+
         MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet);
+        void build_OT_projections(Projection * projT2O, Projection * projO2T);
         void run(double time, int verbosity);
         void set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long);
 
-        unsigned int n_populations;
-        unsigned int n_oscillators;
-        unsigned int time_ratio;
+        unsigned int n_populations; //!< Number of populations in the multiscale network. Must not change after init.
+        unsigned int n_oscillators; //!< Number of oscillators in the multiscale network. Must not change after init.
+        unsigned int time_ratio;    //!< Timescale separation. Must be defined by two evolution contextes.
     private:
         bool timescales_initialized;
         EvolutionContext * evo_short;

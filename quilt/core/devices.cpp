@@ -67,6 +67,10 @@ PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weigh
         weight_delta(weight_delta), 
         t_min(t_min)
 {
+    if (t_min < 0){
+        throw std::invalid_argument("t_min was set to negative ( " + std::to_string(t_min) + ") in PoissonSpikeSource");
+    }
+
     next_spike_times = std::vector<double> (pop->n_neurons, t_min);
     
     if (t_max<t_min)
@@ -97,6 +101,12 @@ void PoissonSpikeSource::inject(EvolutionContext * evo)
         return;
     }
 
+    // cout << "Check PoissonSpikeSource next_spike_time. Now is " <<evo->now << endl;
+    // for (int i = 0 ; i < pop->n_neurons; i++){
+    //     cout << next_spike_times[i] << " ";
+    // }
+    // cout << endl;
+
     for (int i = 0; i < pop->n_neurons; i++)
     {
         
@@ -104,8 +114,19 @@ void PoissonSpikeSource::inject(EvolutionContext * evo)
         {
             // TODO: use pcg
             delta = -std::log(static_cast<float>(rand())/RAND_MAX)/this->rate * 1000;
+            if (delta < 0){
+                string msg = "Poisson time increment was < 0.\n";
+                msg += "\tdelta_t = " + std::to_string(delta) + "\n";
+                msg += "\trate = " + std::to_string(rate) + "\n"; 
+
+                throw std::runtime_error("");
+            }
             next_spike_times[i] += delta;
-            if (next_spike_times[i] < evo->now) {throw std::runtime_error("Poisson spike produced in past");}
+            if (next_spike_times[i] < evo->now) {
+                string msg = "Poisson spike produced in past.\n";
+                msg += "Now is " + std::to_string(evo->now) + " while t_next_spike is " + std::to_string(next_spike_times[i]);
+                throw std::runtime_error(msg);
+                }
             pop->neurons[i]->incoming_spikes.emplace(this->weights[i], next_spike_times[i]);
         }
     }
