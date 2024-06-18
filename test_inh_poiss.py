@@ -1,6 +1,8 @@
+"""
+Python snippet for Inhomogeneous Poisson process generator
+"""
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 def rate_of_spikes(spikes, time_bins, N_samples):
 
