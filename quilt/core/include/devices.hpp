@@ -149,6 +149,8 @@ class PoissonSpikeSource: public PopInjector{
         std::vector<float> weights;
         // static std::ofstream outfile;
         std::vector<double> next_spike_times;
+
+        RNG rng;
 }; 
 
 /**
@@ -161,23 +163,27 @@ class InhomPoissonSpikeSource: public PopInjector{
     public:
         /**
          * @param pop The spiking population
-         * @param rate_function The rate function. It must have double(float) signature, given a time returns the rate. 
+         * @param rate_function The rate function. It must have double(double) signature, given a time returns the rate. 
         */
         InhomPoissonSpikeSource( Population * pop,
-                            std::function<double(float)> rate_function, 
-                            float weight, float weight_delta);
+                            std::function<double(double)> rate_function, 
+                            float weight, float weight_delta, 
+                            double generation_window_length);
         /**
-         * Generates spikes until a spike is generated in another time bin to prevent the spike queue from being uselessly too long.
+         * 
+         * Generate one spike for neuron given the current rate
          * 
         */
         void inject(EvolutionContext * evo) override;
 
     private:
-        std::function<double(float)> rate_function;
+        std::function<double(double)> rate_function;
         float weight;       //!< Weight of the spikes
         float weight_delta; //!< Semidispersion of the weight of the spikes
 
         std::vector<float> weights;
-        // static std::ofstream outfile;
+        static std::ofstream outfile;
         std::vector<double> next_spike_times;
+        double generation_window_length; 
+        RNG rng;
 };   
