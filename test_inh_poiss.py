@@ -71,7 +71,7 @@ rho = ampl_f*np.sin(2*np.pi*nu_0 * t_sec)**2 + offset_f  # Hz: rate function
 
 ensamble_spike_times = []
 
-N_samples = 5000
+N_samples = 500
 for i in range(N_samples):
     print(i, end="-", flush=True)
     spike_times = gen_inh_poiss(t, rho)
@@ -86,4 +86,5 @@ plt.step(t[::10][:-1], rate_of_spikes(ensamble_spike_times, t[::10], N_samples)[
 plt.plot(t, rho)
 plt.xlabel("time [ms]")
 plt.ylabel("Rate [Hz]")
+plt.savefig("Inhom_poisson_test.pdf")
 plt.show()
