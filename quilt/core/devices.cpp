@@ -5,6 +5,7 @@
 
 #include <stdexcept>
 #include <limits>
+
 /**
  * Disclaimer: this section is cumbersome due to the redundancy of the 'get_history()' methods.
  * For now this is somewhat a patch, in future I will make it more clean 
@@ -109,6 +110,7 @@ void PoissonSpikeSource::inject(EvolutionContext * evo)
     }
     float delta;
 
+    // Quit if the system is after maximum time
     if (evo->now > this->t_max)
     {
         return;
@@ -144,3 +146,17 @@ void PoissonSpikeSource::inject(EvolutionContext * evo)
         }
     }
 }
+
+
+InhomPoissonSpikeSource::InhomPoissonSpikeSource( Population * pop, 
+                                                std::function<double(float)> rate_function, 
+                                                float weight, float weight_delta)
+    :   PopInjector(pop),
+        rate_function(rate_function),
+        weight(weight), 
+        weight_delta(weight_delta)
+{
+    cout << "Inhomogeneous Poisson SpikeSource initialized"<< endl;                           
+}
+
+void InhomPoissonSpikeSource::inject(EvolutionContext * evo){}
