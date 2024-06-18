@@ -74,11 +74,12 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     for (int i = time_idx_1; i < time_idx_2; i++){
         avg_rate += activity_history[i];
     }
-    avg_rate /= (T*population->n_neurons);
+    avg_rate /= (T*population->n_neurons); // ms^(-1)
+    avg_rate *= 1000; // Hz
 
     cout << "Transducer::get_past() : returning rate from t="<<time-T/2<<"(index "<<time_idx_1 << ")";
     cout << "to t=" << time+T/2<<"(index "<<time_idx_2 << ")"; 
-    cout << "\n\tavg_rate is "<< avg_rate;
+    cout << "\n\tavg_rate is "<< avg_rate << "Hz";
     cout << endl;
     // return monitor->get_history()[time_idx] * (1 - theta) + monitor->get_history()[time_idx + 1]* theta;
     return avg_rate;
