@@ -82,7 +82,7 @@ PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weigh
     {
         this->t_max = t_max;
     }
-    RNG rng(8);
+    RNG rng; // Uses a random device as source
     weights = std::vector<float>(pop->n_neurons, 0);
 
     for (int i = 0; i < pop->n_neurons; i++)
