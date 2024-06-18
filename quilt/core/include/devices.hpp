@@ -149,4 +149,35 @@ class PoissonSpikeSource: public PopInjector{
         std::vector<float> weights;
         // static std::ofstream outfile;
         std::vector<double> next_spike_times;
-};      
+}; 
+
+/**
+ * @class InhomPoissonSpikeSource
+ * @brief Source of poisson-distributed spikes with time-dependent rate
+ * 
+ * For now only one-to-one connection is implemented
+*/
+class InhomPoissonSpikeSource: public PopInjector{
+    public:
+        /**
+         * @param pop The spiking population
+         * @param rate_function The rate function. It must have double(float) signature, given a time returns the rate. 
+        */
+        InhomPoissonSpikeSource( Population * pop,
+                            std::function<double(float)> rate_function, 
+                            float weight, float weight_delta);
+        /**
+         * Generates spikes until a spike is generated in another time bin to prevent the spike queue from being uselessly too long.
+         * 
+        */
+        void inject(EvolutionContext * evo) override;
+
+    private:
+        std::function<double(float)> rate_function;
+        float weight;       //!< Weight of the spikes
+        float weight_delta; //!< Semidispersion of the weight of the spikes
+
+        std::vector<float> weights;
+        // static std::ofstream outfile;
+        std::vector<double> next_spike_times;
+};   
