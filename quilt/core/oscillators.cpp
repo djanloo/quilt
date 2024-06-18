@@ -101,9 +101,11 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     
     // brutal search of maximum delay
     float max_tau = 0.0;
+    cout << "\tchecking taus:"<<endl;
     for (auto osc : oscillators){
         for (auto l : osc->incoming_osc){
             if (l->delay > max_tau) max_tau = l->delay;
+            cout << "\t\t" << l->delay<<endl;
         }
     }
     // cout << "Max delay is " << max_tau << endl;

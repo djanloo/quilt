@@ -324,7 +324,7 @@ void test_multiscale_base(){
     cout << "creating spiking population" << endl;
 
     ParaMap spiking_paramap = ParaMap(map_of_params);
-    Population spikepop = Population(100, &spiking_paramap, &spike_net);
+    Population spikepop = Population(500, &spiking_paramap, &spike_net);
     spike_net.add_injector(new PoissonSpikeSource(&spikepop, 500, 1, 0.0, 0, -1 ));
 
     cout << "creating oscillator" << endl;
@@ -349,13 +349,14 @@ void test_multiscale_base(){
     for (int i=0; i< 2; i++){
         vector<double> initstate(6, 2);
 
-        // initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
 
+        
         init_cond.push_back(initstate);
         cout << *(osc_net.oscillators[i]->params);
     }    
@@ -380,9 +381,9 @@ void test_multiscale_base(){
 
     cout << "building connections" <<endl;
     vector<vector<float>> T2Oweights {{1, 1}}; 
-    vector<vector<float>> T2Odelays {{2.5 , 2.5}}; 
+    vector<vector<float>> T2Odelays {{5 , 5}}; 
     vector<vector<float>> O2Tweights {{1}, {1}}; 
-    vector<vector<float>> O2Tdelays {{2.5}, {2.5}}; 
+    vector<vector<float>> O2Tdelays {{5}, {5}}; 
 
     Projection * T2Oproj = new Projection(T2Oweights, T2Odelays);
     Projection * O2Tproj = new Projection(O2Tweights, O2Tdelays);
@@ -399,7 +400,25 @@ void test_multiscale_base(){
     // Evolve
     multi_net.set_evolution_contextes(evo_short, evo_long);
 
-    multi_net.run(100, 1);
+    multi_net.run(10, 1);
+
+    ofstream SpikeFile("spiking_history.txt");
+    for (auto a : static_cast<PopulationSpikeMonitor*>(spike_net.population_monitors[0])->get_history()){
+        SpikeFile << a << endl;
+    }
+
+    ofstream OscFile("osc_history.txt");
+
+    int TT = osc_net.oscillators[0]->get_history().size();
+
+    for (int i=0; i < TT; i++ ){
+        for (auto oscill : osc_net.oscillators){
+            OscFile << oscill->get_history()[i][0] << " ";
+        }
+        OscFile << endl;
+    }
+
+
 }
 
 

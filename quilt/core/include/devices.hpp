@@ -139,7 +139,7 @@ class PoissonSpikeSource: public PopInjector{
 
         // This method is an approximation, must be removed in future
         // by building the inhomogeneous poisson spikesource
-        void set_rate(float new_rate){ rate = new_rate; }
+        void set_rate(float new_rate);
     private:
         float rate;         //!< Rate of the Poisson process [Hz]
         float weight;       //!< Weight of the spikes

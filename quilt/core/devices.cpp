@@ -92,8 +92,21 @@ PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weigh
 
 };
 
+void PoissonSpikeSource::set_rate(float new_rate){ 
+    if (new_rate < 0){
+        throw std::invalid_argument("Setting a negative rate of a PoissonSpikeSource");
+    }
+    rate = new_rate; 
+}
+
+
 void PoissonSpikeSource::inject(EvolutionContext * evo)
 {
+    if (evo->dt * rate >= 1.0){
+        string msg = "Error in PoissonSpikeSource. Poisson assumptions failed: rate * dt >= 1.\n";
+        msg += "\trate = " + std::to_string(rate) + "\n\tdt = " + std::to_string(evo->dt) + "\n";
+        throw std::runtime_error(msg);
+    }
     float delta;
 
     if (evo->now > this->t_max)
