@@ -24,6 +24,56 @@ using std::map;
 using std::string;
 
 
+//*********************************** LOGGER *****************************************//
+#include <ctime> 
+#include <fstream> 
+#include <sstream> 
+using namespace std; 
+  
+enum LogLevel { DEBUG, INFO, WARNING, ERROR, CRITICAL }; 
+/**
+    Logger logger("logfile.txt"); 
+
+    logger.log(INFO, "Program started."); 
+    logger.log(DEBUG, "Debugging information."); 
+    logger.log(ERROR, "An error occurred."); 
+*/
+class Logger { 
+    public: 
+        Logger(const string& filename);
+        ~Logger();
+
+        void log(LogLevel level, const string& message); 
+    
+    private: 
+        ofstream logFile;
+        string levelToString(LogLevel level) 
+        { 
+            switch (level) { 
+            case DEBUG: 
+                return "DEBUG"; 
+            case INFO: 
+                return "INFO"; 
+            case WARNING: 
+                return "WARNING"; 
+            case ERROR: 
+                return "ERROR"; 
+            case CRITICAL: 
+                return "CRITICAL"; 
+            default: 
+                return "UNKNOWN"; 
+            } 
+        } 
+}; 
+
+/**
+ * @brief Get a reference to the singleton instance of Logger.
+ * @return Reference to the Logger instance.
+ */
+Logger& get_global_logger();
+
+//****************************** RANDOM NUMBER GENERATION *************************//
+
 class RNG{
     public:
         // Seeded constructor
@@ -103,6 +153,9 @@ class RNGDispatcher{
         map<RNG*, bool> is_occupied;
         map<std::thread::id, RNG*> pids;
 };
+
+
+//******************************** UTILS FOR DYNAMICAL SYSTEMS *****************************//
 
 /**
  * @class HierarchicalID
