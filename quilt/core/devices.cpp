@@ -181,8 +181,8 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
 
     int last_spike_time_index, timestep_passed;
 
-    bool abort_generation = false;
-
+    bool abort_neuron = false;
+    get_global_logger().log(INFO, "Generating inhomogeneous spikes for " + std::to_string(pop->n_neurons) + " neurons for " + std::to_string(generation_window_length*1e-3) + " seconds");
     for (int i = 0; i < pop->n_neurons; i++)
     {
         cout << "InhomPoiss: generating spikes for neuron "<< i << endl;
@@ -190,59 +190,85 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
         last_spike_time_index = evo->index_of(next_spike_times[i]);
         cout << "index of the last spike time is "<< last_spike_time_index << endl;
 
+        // Resets the abort flag
+        abort_neuron = false;
+
         while (next_spike_times[i] < evo->now + generation_window_length)
         {
             y = -std::log(rng.get_uniform());
             Y = 0; 
             timestep_passed = 0;
+
             cout << "-------------------------"<<endl;
             cout << "\tneuron "<< i <<endl;
-            cout << "\tlast spike time = "<<next_spike_times[i]<<endl; 
+            cout << "\tlast spike time = " << next_spike_times[i] << endl; 
             cout << "\ty = "<< y << endl;
-            cout << "\tY = ";
+            // cout << "\tY = ";
 
-            while (true){ // This cycle continues until Y reaches y
+            while (Y <= y){
+                
                 // Cumulative integral of the rate function
                 // adds int_{now}^{now+dt} to the sum
                 // using trapezoidal rule
-                avg_rate_in_timestep = 0.5*(rate_function(evo->now + (last_spike_time_index + timestep_passed)*evo->dt) + \
-                                        rate_function(evo->now + (last_spike_time_index + timestep_passed + 1)*evo->dt)\
-                                        );
+                avg_rate_in_timestep = 0.5*(
+                                            rate_function(evo->now + (last_spike_time_index + timestep_passed)*evo->dt) + \
+                                            rate_function(evo->now + (last_spike_time_index + timestep_passed + 1)*evo->dt)\
+                                           );
 
+                // A negative rate clearly does not make any sense.... Or does it? (vsauce reference)
                 if (avg_rate_in_timestep < 0.0){
                     string msg = "Negative rate in InhomogeneousPoissonSpikeSource.\n";
                     msg += "\tt = " +std::to_string( evo->now) + "\n";
                     throw runtime_error(msg);
                 }
-                // cout << "avg_rate is "<< avg_rate_in_timestep << "Hz (";
+
+                // Does a check on the values of the average instantaneous rate
+                // A typical interval of rates should be [10, 2000] Hz
+                if ( (avg_rate_in_timestep < 10)|(avg_rate_in_timestep > 2000) ){
+                    string msg = "Unusual value for instanteneous rate in InhomogeneousPoissonSpikeSource::inject\n";
+                    msg += "\trate = " + std::to_string(avg_rate_in_timestep)  + "Hz\n";
+                    get_global_logger().log(WARNING, msg);
+                }
+
                 // Conversion to ms^(-1)
                 avg_rate_in_timestep /= 1e3;
-                // cout << avg_rate_in_timestep << " ms-1)" <<endl;
+
+                // get_global_logger().log(INFO, "avg_rate is " + std::to_string(avg_rate_in_timestep) + "ms-1");
                 Y += avg_rate_in_timestep * evo->dt; // Trapezoidal rule                
 
                 timestep_passed ++;
-                cout << Y << " -> ";
-                // If the cumulative integral overcomes the y-value, a spike is generated ad that time
-                if (Y >= y) break;
+                // cout << Y << " -> ";
+
                 if ( (last_spike_time_index + timestep_passed)*evo->dt > generation_window_length){
-                    abort_generation = true;
-                    cout << "Aborting generation"<<endl;
+                    abort_neuron = true;
+                    string msg = "Neuron " + std::to_string(i) + " is over the generation window.\n";
+                    msg += "last spike time: " +  std::to_string(last_spike_time_index) + "\n";
+                    msg += "timestep passed: " +  std::to_string(timestep_passed)+ "\n";
+                    msg += "current seek time: " +  std::to_string((last_spike_time_index + timestep_passed)*evo->dt)+ "\n";
+                    msg += "generation window: " +  std::to_string(generation_window_length)+ "\n";
+                    
+                    get_global_logger().log(INFO, msg);
                     break;
                 }
             }
-            if (!abort_generation){
-                cout << "thr overcomed in " << timestep_passed << " timesteps"<< endl;
 
-                last_spike_time_index += timestep_passed;
+            // When the threshold y is overcomed by Y, a spike is generated
+            cout << "thr overcomed in " << timestep_passed << " timesteps"<< endl;
+            
+            last_spike_time_index += timestep_passed;
 
-                // Adds a spike to the neuron
-                next_spike_times[i] = evo->now + last_spike_time_index * evo->dt;
-                cout << "Adding a spike to neuron "<< i << " at time " << next_spike_times[i]<<endl;
-                outfile << i << " " << next_spike_times[i] << endl;
-                pop->neurons[i]->incoming_spikes.emplace(this->weights[i], next_spike_times[i]);
-            }else{
+            // Adds a spike to the neuron
+            next_spike_times[i] = evo->now + last_spike_time_index * evo->dt;
+            cout << "Adding a spike to neuron "<< i << " at time " << next_spike_times[i]<< endl;
+            outfile << i << " " << next_spike_times[i] << endl;
+            pop->neurons[i]->incoming_spikes.emplace(this->weights[i], next_spike_times[i]);
+                
+            // If the neuron is done, 
+            if (abort_neuron){
+                get_global_logger().log(INFO, "Aborting generation for neuron " + std::to_string(i));
                 break;
             }
+
         }
 
         cout << "Reached generating window end"<<endl;

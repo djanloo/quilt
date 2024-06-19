@@ -422,6 +422,7 @@ void test_multiscale_base(){
 }
 
 void test_inhom_poisson(){
+    get_global_logger().log(INFO, "Passing through inhom poisson");
     // Preamble: create a spiking population
     SpikingNetwork spike_net = SpikingNetwork();
 
@@ -449,16 +450,19 @@ void test_inhom_poisson(){
     std::function<double(float)> ratefunc = [](float now){
         // cout << "Getting rate"<< endl;
         double t_sec = now * 1e-3;
-        double u = sin(6.28 * 10 * t_sec);
-        return 200*u*u + 1000;
+        double u = sin(6.28 * 2.5 * t_sec);
+        return 200*u*u + 100;
     };
 
     InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 1000);
     EvolutionContext evo(0.1);
     ips.inject(&evo);
+    ips.inject(&evo);
+
 }
 
 int main(){
+    get_global_logger().log(INFO, "main started");
     // test_spiking();
     // test_sparse();
     // test_poisson();
