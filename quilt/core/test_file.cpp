@@ -454,10 +454,11 @@ void test_inhom_poisson(){
         return 200*u*u + 100;
     };
 
-    InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 1000);
+    InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 10);
     EvolutionContext evo(0.1);
-    ips.inject(&evo);
-    ips.inject(&evo);
+    // ips.inject(&evo);
+    spike_net.add_injector(&ips);
+    spike_net.run(&evo, 200, 1);
 
 }
 
