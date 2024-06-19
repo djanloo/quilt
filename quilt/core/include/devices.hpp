@@ -185,5 +185,6 @@ class InhomPoissonSpikeSource: public PopInjector{
         static std::ofstream outfile;
         std::vector<double> next_spike_times;
         double generation_window_length; 
+        double currently_generated_time;
         RNG rng;
 };   

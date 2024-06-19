@@ -15,7 +15,7 @@ def rate_of_spikes(spikes, time_bins, N_samples):
 
 n, tsp = np.loadtxt("test_inh_poiss.txt", unpack=True)
 
-time_bins = np.linspace(0, 2000, 100)
+time_bins = np.linspace(0, 300, 100)
 rates = rate_of_spikes(tsp, time_bins, 500)
 
 plt.step(time_bins, rates, where="mid")
