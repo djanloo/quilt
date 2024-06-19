@@ -14,6 +14,49 @@ using std::endl;
 using std::runtime_error;
 using std::vector;
 
+//******************************* LOGGER ***************************//
+Logger::Logger(const string& filename) 
+{ 
+    logFile.open(filename, ios::trunc);  // Set to ios::app if you don't want to delete the old log.txt
+    if (!logFile.is_open()) { 
+        cerr << "Error opening log file." << endl; 
+    } 
+} 
+
+Logger::~Logger() { logFile.close(); } 
+  
+void Logger::log(LogLevel level, const string& message) 
+{ 
+    time_t now = time(0); 
+    tm* timeinfo = localtime(&now); 
+    char timestamp[20]; 
+    strftime(timestamp, sizeof(timestamp), 
+                "%Y-%m-%d %H:%M:%S", timeinfo); 
+
+    ostringstream logEntry; 
+    logEntry << "[" << timestamp << "] "
+                << levelToString(level) << ": " << message 
+                << endl; 
+
+    // Output to console 
+    cout << logEntry.str(); 
+
+    // Output to log file 
+    if (logFile.is_open()) { 
+        logFile << logEntry.str(); 
+        logFile 
+            .flush(); // Ensure immediate write to file 
+    } 
+}
+
+Logger& get_global_logger(){
+    static Logger logger("quilt_log.txt");
+    return logger;
+}
+
+
+//************************* UTILS FOR DYNAMICAL SYSTEMS **********************//
+
 HierarchicalID::HierarchicalID(HierarchicalID * parent): parent(parent),n_subclasses(0){
     local_id = parent->n_subclasses;
     parent->n_subclasses ++;
