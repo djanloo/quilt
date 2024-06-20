@@ -262,9 +262,20 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
         // Resets the abort flag
         abort_neuron = false;
 
-        // This loops goes on until all the window is generated
-        while (true) 
-        {
+        // 
+        /**
+         * This loops goes on until all the window is generated.
+         * 
+         * The first spike outside the generation window is accepted.
+         * This is necessary because of the random nature of the process.
+         * 
+         * Imagine that the window is 50ms and the last valid spike is generated at 45ms.
+         * This function will do nothing until evo->now is over 50ms, and it may happen that
+         * a spike is generated at, say, 48ms while the spiking network is at 50.
+         * 
+         * This will raise a "Spike in past" error. 
+        */
+        do{
             y = -std::log(rng.get_uniform());
             Y = 0; 
             timestep_done = 0;
@@ -310,6 +321,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
             proposed_next_spike_time_index = last_spike_time_index + timestep_done;
             proposed_next_spike_time = proposed_next_spike_time_index * evo->dt;
 
+            // This is real bad
             if (proposed_next_spike_time < evo->now){
                 string msg = "A spike was produced in the past from InhomogeneousPoissonSS.\n";
                 msg+= "now : " + to_string(evo->now) + "\n";
@@ -330,37 +342,8 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
             outfile << i << " " << next_spike_times[i] << endl;
             generated_spikes++; 
 
-            /**
-             * The first spike outside the generation window is accepted
-             * This is necessary because of the random nature of the process
-             * 
-             * Imagine that the window is 50ms and the last valid spike is generated at 45ms.
-             * This function will do nothing until evo->now is over 50ms, and it may happen that
-             * a spike is generated at, say, 48ms while the spiking network is at 50.
-             * 
-             * This will raise a "Spike in past" error. 
-            */
-            if (proposed_next_spike_time > currently_generated_time + generation_window_length){
-                abort_neuron = true;
-            }
-
-            // If the neuron is done, stops and does the next
-            if (abort_neuron){
-
-                // DEBUG                
-                // string produced_spikes_str = "Produced spikes for neuron " + to_string(i) + ": ";
-                // for (auto tt : produced_spikes){
-                //     produced_spikes_str += to_string(tt) +  " - ";
-                // }
-                // inhomlog.log(INFO, produced_spikes_str);
-
-                break;
-            }
-
-        }
-
-        // cout << "Reached generating window end"<<endl;
-    }
+        } while (proposed_next_spike_time < currently_generated_time + generation_window_length);
+    } 
 
     // If the window generation is finished, updates the generated time
     currently_generated_time += generation_window_length;
