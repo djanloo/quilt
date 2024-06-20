@@ -13,8 +13,15 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
     // Adds the monitor
     monitor = population->spiking_network->add_spike_monitor(population);
 
-    // Adds the injector
-    injector = new PoissonSpikeSource(population, 10, 0.5, 0.2, 0, -1 );
+    // Builds the injector
+    std::function<double(double)> bound_rate_function = [this](double now){ return this->incoming_rate(now); };
+    injector = new InhomPoissonSpikeSource(population, bound_rate_function, 10, 0.5, 10 );
+
+    // Sets the rate for negative times (Adds the injectorinitialization)
+    initialization_rate = static_cast<double>(params->get<float>("initialization_rate")); 
+    get_global_logger().log(INFO, "Transducer initialization rate is " + to_string(initialization_rate));
+
+    // Adds the injector to the list of injectors of the spiking network
     population->spiking_network->add_injector(injector);
 
     evolve_state = [this](const dynamical_state & /*x*/, dynamical_state & /*dxdt*/, double /*t*/)
@@ -30,25 +37,31 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
     cout << "\ttransducer created"<<endl;
 }
 
-/**
- * @brief Evolution method of the transducer. Must be called once every big time step.
-*/
-void Transducer::evolve()
-{
-    cout << "evolving transducer" << endl;
-    // Sets the rate of the PoissonSpikeSource as 
-    // the weighted sum of the rates of the incoming oscillators
-    double rate = 0; 
-    double single_input_rate = 0;
-    for (auto input : incoming_osc){
-        single_input_rate = input->get(0, oscnet->get_evolution_context()->now);
-        rate += single_input_rate;
-        cout << "\tone input is " << single_input_rate << endl;
-    }
-    cout << "\t\tOverall input is " << rate << endl;
-
-    injector->set_rate(rate);
+Transducer::~Transducer(){
+    delete injector;
 }
+
+double Transducer::incoming_rate(double now){
+
+    double rate = 0;    // Remember that this is a weighted sum
+    double single_input_rate = 0;
+
+    for (auto input : incoming_osc){
+        try {
+        single_input_rate = input->get(0, now);
+        }
+        catch (runtime_error & e){
+        // If this error is raised the link tried to get a non existing past
+            get_global_logger().log(INFO, "transducer returning burn-in value: " + to_string(initialization_rate));
+            return initialization_rate;
+        }
+        rate += single_input_rate;
+        get_global_logger().log(DEBUG, "single input to transducer is " + to_string(single_input_rate));
+    }
+    get_global_logger().log(DEBUG, "total input to transducer is " + to_string(rate) + " Hz");
+    return rate;
+}
+
 
 double Transducer::get_past(unsigned int /*axis*/, double time)
 {
@@ -58,14 +71,13 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     EvolutionContext * oscnet_evo = multinet->oscnet->get_evolution_context();
     double T = oscnet_evo->dt;
 
-
     EvolutionContext * spikenet_evo = multinet->spikenet->get_evolution_context();
     int time_idx_1 = spikenet_evo->index_of(time - T/2);
     int time_idx_2 = spikenet_evo->index_of(time + T/2);
 
-
     cout << "\tdt = " << spikenet_evo->dt << ", dT = "<<oscnet_evo->dt<<endl;
     cout << "time indexes: [" << time_idx_1 << "," << time_idx_2 << "]" << endl;
+    
     // double theta = evo->deviation_of(time); //TODO: make this not useless
 
     vector<int> activity_history = monitor->get_history();
@@ -241,10 +253,6 @@ void MultiscaleNetwork::run(double time, int verbosity){
         while (evo_short->now < evo_long->now){
             // cout << "Doing one small step"<<endl;
             spikenet->evolve();
-        }
-
-        for (auto tsd : transducers){
-            tsd->evolve();
         }
 
         oscnet->evolve();

@@ -341,6 +341,9 @@ void test_inhom_poisson(){
 }
 
 void test_multiscale_base(){
+    Logger &logger = get_global_logger();
+    logger.set_level(DEBUG);
+
     // Create a spiking network of just one population
     SpikingNetwork spike_net = SpikingNetwork();
 
@@ -361,13 +364,14 @@ void test_multiscale_base(){
                                         {"E_ex", 0.0f},
                                         {"E_in",-65.0f}
                                         };
-    cout << "creating spiking population" << endl;
+    logger.log(INFO, "creating spiking population" );
 
     ParaMap spiking_paramap = ParaMap(map_of_params);
     Population spikepop = Population(500, &spiking_paramap, &spike_net);
     spike_net.add_injector(new PoissonSpikeSource(&spikepop, 500, 1, 0.0, 0, -1 ));
 
-    cout << "creating oscillator" << endl;
+    logger.log(INFO, "creating oscillator" );    
+    
     vector<vector<float>> weights, delays;
     EvolutionContext * evo_long  = new EvolutionContext(1.0);
     EvolutionContext * evo_short = new EvolutionContext(0.1);
@@ -379,7 +383,8 @@ void test_multiscale_base(){
         weights[i][i] = 0.0;
     }
 
-    cout << "Making projection between oscillators" << endl;
+    logger.log(INFO, "making projection between oscillators" );
+
     Projection * proj = new Projection(weights, delays);
     ParaMap * oscill_paramap = new ParaMap();
     oscill_paramap->add("oscillator_type", "jansen-rit");
@@ -401,25 +406,28 @@ void test_multiscale_base(){
         cout << *(osc_net.oscillators[i]->params);
     }    
 
-    // osc_net.build_connections(proj, link_params);
 
-    cout << "After init the long timescale is " << evo_long->now <<endl;
-    
-    cout << "creating multinet" << endl;
+    // cout << "After init the long timescale is " << evo_long->now <<endl;
+
+    logger.log(INFO, "creating multinet" );    
+
     // Create a multiscale network
     MultiscaleNetwork multi_net = MultiscaleNetwork(&spike_net, &osc_net);
 
-    cout << "creating transducer" << endl;
+    logger.log(INFO, "creating transducer" );    
 
     // Create a transducer
     ParaMap * transd_paramap = new ParaMap();
+    transd_paramap->add_float("initialization_rate", 250.0f);
+    // cout <<"AAAAAAAAAAAAAAAAAAAA" << *transd_paramap <<endl;
     shared_ptr <Transducer> transd (new Transducer(&spikepop, transd_paramap, &multi_net));
 
-    cout << "adding transducer" << endl;
+    logger.log(INFO, "adding transducer" );    
 
     multi_net.transducers.push_back(transd);
 
-    cout << "building connections" <<endl;
+    logger.log(INFO, "building connections" );    
+
     vector<vector<float>> T2Oweights {{1, 1}}; 
     vector<vector<float>> T2Odelays {{5 , 5}}; 
     vector<vector<float>> O2Tweights {{1}, {1}}; 
@@ -430,16 +438,18 @@ void test_multiscale_base(){
 
     multi_net.build_OT_projections(T2Oproj, O2Tproj);
 
-    cout << "initializing oscillator network"<<endl;
+    logger.log(INFO, "initializing oscillator network" );    
     osc_net.initialize(evo_long, init_cond);
 
-    cout << "initializing spiking network" << endl;
-    spike_net.run(evo_short, evo_long->now, 1);
-    cout << "running multinet" << endl;
+    logger.log(WARNING, to_string(evo_short->dt));
 
+    logger.log(INFO, "initializing spiking network" );    
+    spike_net.run(evo_short, evo_long->now, 1);
+
+
+    logger.log(INFO, "running multinet" );    
     // Evolve
     multi_net.set_evolution_contextes(evo_short, evo_long);
-
     multi_net.run(10, 1);
 
     ofstream SpikeFile("spiking_history.txt");
@@ -468,7 +478,7 @@ int main(){
     // test_sparse();
     // test_poisson();
     // test_oscill();
-    test_inhom_poisson();
-    // test_multiscale_base();
+    // test_inhom_poisson();
+    test_multiscale_base();
 }
 

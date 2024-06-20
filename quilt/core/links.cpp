@@ -51,7 +51,7 @@ double LJRLJRLink::get(int axis, double now){
 double T2JRLink::get(int axis, double now){
     // This function is called by Oscillator objects linked to this transducer
     // during their evolution function
-    cout << "T2JRLink: getting t="<<now-delay<<endl;
+    get_global_logger().log(DEBUG, "T2JRLink: getting t=" + to_string(now-delay) );
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
@@ -61,7 +61,8 @@ double T2JRLink::get(int axis, double now){
 
 double JR2TLink::get(int axis, double now){
     // Returns the rate of the oscillator back in the past
-    cout << "JR2TLink: getting t="<<now-delay<<endl;
+    get_global_logger().log(DEBUG, "JR2TLink: getting t=" + to_string(now-delay) );
+
     double result = weight * std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
     if (axis != 0) throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
     // cout << "Getting past from JRJR link" << endl;

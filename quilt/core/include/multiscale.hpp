@@ -11,6 +11,7 @@ using std::shared_ptr;
 // Forward declarations
 class Population;
 class PoissonSpikeSource;
+class InhomPoissonSpikeSource;
 class PopulationSpikeMonitor;
 class SpikingNetwork;
 class MultiscaleNetwork;
@@ -30,8 +31,10 @@ class Transducer: public Oscillator{
         Population * population;  
         EvolutionContext * evo;
 
+        double initialization_rate;
+
     public:
-        PoissonSpikeSource * injector;
+        InhomPoissonSpikeSource * injector;
         PopulationSpikeMonitor * monitor;
 
         MultiscaleNetwork * multinet;
@@ -43,12 +46,24 @@ class Transducer: public Oscillator{
          * 
         */
         Transducer(Population * population, ParaMap * params, MultiscaleNetwork * multinet);
+        ~Transducer();
 
-        void evolve();
 
         /**
-         * The get_past method is used by Oscillators to get the input in the DDEs.
-         * It must thus return the rate of the spiking population in the past
+         * O->T
+         * 
+         * the incoming_rate() function collects the rate of all the incoming links
+         * from neural mass oscillators. It's used as a rate function of the InhomogeneousPoissonSpikeSource,
+         * thus must be a double(double) function.
+         * 
+        */
+        double incoming_rate(double now);
+
+        /**
+         * T -> O
+         * 
+         * The get_past() method is used by Oscillators to get the input in the DDEs due to the tranducer activity.
+         * It must thus return the rate of the spiking population in the past.
         */
         double get_past(unsigned int axis, double time);
         
