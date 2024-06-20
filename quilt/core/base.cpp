@@ -65,6 +65,43 @@ Logger& get_global_logger(){
     return logger;
 }
 
+//************************* THREAD SAFE FILE ***************************//
+
+ThreadSafeFile::ThreadSafeFile (const std::string& filename) : filename(filename), file() {
+    open();
+}
+
+ThreadSafeFile::~ThreadSafeFile() {
+    if (file.is_open()) {
+        close();
+    }
+}
+
+void ThreadSafeFile::open() {
+    std::lock_guard<std::mutex> lock(mtx);
+    if (!file.is_open()) {
+        file.open(filename, std::ios::trunc);
+        if (!file.is_open()) {
+            throw std::runtime_error("Caanot open file: " + filename);
+        }
+    }
+}
+
+void ThreadSafeFile::write(const std::string& message) {
+    std::lock_guard<std::mutex> lock(mtx);
+    if (file.is_open()) {
+        file << message << std::endl;
+    } else {
+        throw std::runtime_error("Writinig on a not-yet-open file");
+    }
+}
+
+void ThreadSafeFile::close() {
+    std::lock_guard<std::mutex> lock(mtx);
+    if (file.is_open()) {
+        file.close();
+    }
+}
 
 //************************* UTILS FOR DYNAMICAL SYSTEMS **********************//
 

@@ -74,6 +74,24 @@ class Logger {
  */
 Logger& get_global_logger();
 
+//****************************** THREAD SAFE FILE *********************************//
+class ThreadSafeFile {
+public:
+    ThreadSafeFile(const std::string& filename);
+    ~ThreadSafeFile();
+
+    void open();
+    void write(const std::string& message);
+    void close();
+
+private:
+    std::string filename;
+    std::ofstream file;
+    std::mutex mtx;
+};
+
+
+
 //****************************** RANDOM NUMBER GENERATION *************************//
 
 class RNG{
