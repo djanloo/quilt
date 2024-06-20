@@ -174,7 +174,7 @@ class InhomPoissonSpikeSource: public PopInjector{
          * Generate one spike for neuron given the current rate
          * 
         */
-        void _inject_partition(EvolutionContext * evo, int start_id, int end_id);
+        void _inject_partition(double now, double dt, int start_id, int end_id);
         void inject(EvolutionContext * evo) override;
 
     private:

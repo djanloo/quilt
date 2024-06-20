@@ -14,57 +14,6 @@ using std::endl;
 using std::runtime_error;
 using std::vector;
 
-//******************************* LOGGER ***************************//
-Logger::Logger(const string& filename) 
-{ 
-    logFile.open(filename, ios::trunc);  // Set to ios::app if you don't want to delete the old log.txt
-    if (!logFile.is_open()) { 
-        cerr << "Error opening log file." << endl; 
-    }
-
-    // By default is set to a low verbosity
-    output_level = WARNING;
-}
-Logger::~Logger() { logFile.close(); } 
-
-void Logger::set_level(LogLevel level){
-    output_level = level;
-}
-  
-void Logger::log(LogLevel level, const string& message) 
-{   
-    // Do not print level under the current one
-    if (output_level > level){
-        return;
-    }
-
-    time_t now = time(0); 
-    tm* timeinfo = localtime(&now); 
-    char timestamp[20]; 
-    strftime(timestamp, sizeof(timestamp), 
-                "%Y-%m-%d %H:%M:%S", timeinfo); 
-
-    ostringstream logEntry; 
-    logEntry << "[" << timestamp << "] "
-                << levelToString(level) << ": " << message 
-                << endl; 
-
-    // Output to console 
-    cout << logEntry.str(); 
-
-    // Output to log file 
-    if (logFile.is_open()) { 
-        logFile << logEntry.str(); 
-        logFile 
-            .flush(); // Ensure immediate write to file 
-    } 
-}
-
-Logger& get_global_logger(){
-    static Logger logger("quilt_log.log");
-    return logger;
-}
-
 //************************* THREAD SAFE FILE ***************************//
 
 ThreadSafeFile::ThreadSafeFile (const std::string& filename) : filename(filename), file() {
@@ -91,6 +40,7 @@ void ThreadSafeFile::write(const std::string& message) {
     std::lock_guard<std::mutex> lock(mtx);
     if (file.is_open()) {
         file << message << std::endl;
+        file.flush();
     } else {
         throw std::runtime_error("Writinig on a not-yet-open file");
     }
@@ -102,6 +52,48 @@ void ThreadSafeFile::close() {
         file.close();
     }
 }
+
+
+//******************************* LOGGER ***************************//
+Logger::Logger(const string& filename)
+    :   logFile(filename),
+        output_level(WARNING){}
+
+Logger::~Logger() { logFile.close(); } 
+
+void Logger::set_level(LogLevel level){
+    output_level = level;
+}
+  
+void Logger::log(LogLevel level, const string& message) 
+{   
+    // Do not print level under the current one
+    if (output_level > level){
+        return;
+    }
+
+    time_t now = time(0); 
+    tm* timeinfo = localtime(&now); 
+    char timestamp[20]; 
+    strftime(timestamp, sizeof(timestamp), 
+                "%Y-%m-%d %H:%M:%S", timeinfo); 
+
+    std::ostringstream logEntry; 
+    logEntry << "[" << timestamp << "] "<< "- PID " << std::this_thread::get_id() << " - "
+                << levelToString(level) << ": " << message; 
+
+    // Output to console 
+    cout << logEntry.str() << endl; 
+
+    // Output to log file
+    logFile.write(logEntry.str());
+}
+
+Logger& get_global_logger(){
+    static Logger logger("quilt_log.log");
+    return logger;
+}
+
 
 //************************* UTILS FOR DYNAMICAL SYSTEMS **********************//
 
@@ -123,16 +115,33 @@ void EvolutionContext::do_step(){
 
 int EvolutionContext::index_of(double time)
 {
-    if (time < 0) throw runtime_error("Requested index of a negative time: " + std::to_string(time) );
+    if (time < 0.0){
+        get_global_logger().log(ERROR, "Requested index of a negative time: " + std::to_string(time));
+        throw runtime_error("Requested index of a negative time: " + std::to_string(time) );
+        }
+
+    if (time == 0.0 ){
+        get_global_logger().log(DEBUG, "EvolutionContext: Special case returned 0");
+        return 0;
+    }
+    get_global_logger().log(DEBUG, "EvolutionContext: gotten" + to_string(time/dt));
     return static_cast<int>(time/dt);
 }
+
 double EvolutionContext::deviation_of(double time)
 {
+    get_global_logger().log(DEBUG, "EvolutionContext: getting deviation");
+    get_global_logger().log(DEBUG, "time is " + to_string(time));
+    cout << this->dt <<endl;
+    get_global_logger().log(DEBUG, "dt is " + to_string(this->dt));
+
+    get_global_logger().log(DEBUG, "time/dt is " + to_string(time/this->dt));
+
     double deviation = time/dt - index_of(time);
 
     // Deviation is by definition positive
     deviation = (deviation < 0) ? 0.0 : deviation;
-    
+    get_global_logger().log(DEBUG, "EvolutionContext: GOTTEN deviation");
     return deviation;
 }
 
@@ -168,10 +177,13 @@ vector<double> ContinuousRK::b_functions(double theta)
 }
 
 double ContinuousRK::get_past(int axis, double abs_time){
-
+    get_global_logger().log(DEBUG, "Memory integrator: getting past: " + to_string(abs_time));
     // Split in bin_index + fractionary part
     int bin_id = evo->index_of(abs_time);
     double theta = evo->deviation_of(abs_time);
+    
+    get_global_logger().log(DEBUG, "Memory integrator: getting time index: " + to_string(bin_id));
+    get_global_logger().log(DEBUG, "Memory integrator: history size: " + to_string(state_history.size()));
 
     if (bin_id == static_cast<int>(state_history.size())) bin_id -= 1;
 
@@ -189,6 +201,8 @@ double ContinuousRK::get_past(int axis, double abs_time){
     for (int nu = 0; nu < 4; nu++){
         y += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
     }
+
+    get_global_logger().log(DEBUG, "Memory integrator: past retrieved");
 
     return y;
 }

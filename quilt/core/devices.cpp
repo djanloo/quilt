@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <limits>
 
-#define N_THREADS_INHOM_POISS_INJECT 8
+#define N_THREADS_INHOM_POISS_INJECT 1
 
 /**
  * Disclaimer: this section is cumbersome due to the redundancy of the 'get_history()' methods.
@@ -105,9 +105,9 @@ void PoissonSpikeSource::set_rate(float new_rate){
 
 void PoissonSpikeSource::inject(EvolutionContext * evo)
 {
-    if (evo->dt * rate >= 1.0){
+    if (evo->dt * (rate*1e-3)  >= 1.0){
         string msg = "Error in PoissonSpikeSource. Poisson assumptions failed: rate * dt >= 1.\n";
-        msg += "\trate = " + std::to_string(rate) + "\n\tdt = " + std::to_string(evo->dt) + "\n";
+        msg += "\trate = " + std::to_string(rate*1e-3) + "ms^{-1}\n\tdt = " + std::to_string(evo->dt) + "ms\n";
         throw std::runtime_error(msg);
     }
     float delta;
@@ -216,7 +216,7 @@ Logger inhomlog("ihompoisson.log");
 /**
  * Injects a partition of the target population. For multithreading.
 */
-void InhomPoissonSpikeSource::_inject_partition(EvolutionContext * evo, int start_id, int end_id){
+void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start_id, int end_id){
  // DECOMMENT IF THIS METHOD CREATES TROUBLE
     // inhomlog.set_level(DEBUG);
 
@@ -237,7 +237,7 @@ void InhomPoissonSpikeSource::_inject_partition(EvolutionContext * evo, int star
     {
         // produced_spikes = vector<double>(0); //DEBUG
 
-        last_spike_time_index = evo->index_of(next_spike_times[i]);
+        last_spike_time_index = static_cast<int>(next_spike_times[i]/dt);
         inhomlog.log(INFO, "neuron " + to_string(i) + " started from the last spike at t = " + to_string(next_spike_times[i]));
 
         // If the neuron has a spike OVER this generation window, it must be skipped
@@ -269,7 +269,7 @@ void InhomPoissonSpikeSource::_inject_partition(EvolutionContext * evo, int star
             Y = 0; 
             timestep_done = 0;
 
-            inhomlog.log(DEBUG, "Integration of r(t) started at t = " + to_string((last_spike_time_index + timestep_done)*evo->dt));
+            inhomlog.log(DEBUG, "Integration of r(t) started at t = " + to_string((last_spike_time_index + timestep_done)*dt));
             
             // This loop goes on until the integral of the rate overcomes the exp-distributed random variable y
             while (Y <= y){
@@ -278,14 +278,14 @@ void InhomPoissonSpikeSource::_inject_partition(EvolutionContext * evo, int star
                 // adds int_{now}^{now+dt} rate(t) dt to the sum
                 // using trapezoidal rule
                 avg_rate_in_timestep = 0.5*(
-                                            rate_function( (last_spike_time_index + timestep_done)*evo->dt) + \
-                                            rate_function( (last_spike_time_index + timestep_done + 1)*evo->dt)\
+                                            rate_function( (last_spike_time_index + timestep_done)*dt) + \
+                                            rate_function( (last_spike_time_index + timestep_done + 1)*dt)\
                                            );
 
                 // A negative rate clearly does not make any sense.... Or does it? (vsauce reference)
                 if (avg_rate_in_timestep < 0.0){
                     string msg = "Negative rate in InhomogeneousPoissonSpikeSource.\n";
-                    msg += "\tt = " +std::to_string( evo->now) + "\n";
+                    msg += "\tt = " +std::to_string(now) + "\n";
                     throw runtime_error(msg);
                 }
 
@@ -301,19 +301,19 @@ void InhomPoissonSpikeSource::_inject_partition(EvolutionContext * evo, int star
                 avg_rate_in_timestep /= 1e3;
 
                 // Trapezoidal rule
-                Y += avg_rate_in_timestep * evo->dt;                
+                Y += avg_rate_in_timestep * dt;                
 
                 timestep_done ++;
             }
 
             // At this point Y has overcomed y
             proposed_next_spike_time_index = last_spike_time_index + timestep_done;
-            proposed_next_spike_time = proposed_next_spike_time_index * evo->dt;
+            proposed_next_spike_time = proposed_next_spike_time_index * dt;
 
             // This is real bad
-            if (proposed_next_spike_time < evo->now){
+            if (proposed_next_spike_time < now){
                 string msg = "A spike was produced in the past from InhomogeneousPoissonSS.\n";
-                msg+= "now : " + to_string(evo->now) + "\n";
+                msg+= "now : " + to_string(now) + "\n";
                 msg += "neuron: " + to_string(i) + "\n";
                 msg += "last spike produced: " + to_string(next_spike_times[i]) + "\n";
                 msg += "proposed spike: " + to_string(proposed_next_spike_time) + "\n";
@@ -363,17 +363,19 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // TODO: add a global management of seed
     RNGDispatcher rng_dispatcher(n_threads);
 
-    for (int i=0; i < n_threads; i++){
-        inhomlog.log(INFO, "starting thread " + to_string(i) + " || neurons [" + to_string(i*pop->n_neurons/n_threads) + "," + to_string((i+1)*pop->n_neurons/n_threads-1));
-        threads.emplace_back(&InhomPoissonSpikeSource::_inject_partition, this ,
-                            evo,
-                            i*pop->n_neurons/n_threads, (i+1)*pop->n_neurons/n_threads-1);
-    }
+    // for (int i=0; i < n_threads; i++){
+    //     inhomlog.log(INFO, "starting thread " + to_string(i) + " || neurons [" + to_string(i*pop->n_neurons/n_threads) + "," + to_string((i+1)*pop->n_neurons/n_threads-1));
+    //     threads.emplace_back(&InhomPoissonSpikeSource::_inject_partition, this ,
+    //                         evo->now, evo->dt,
+    //                         i*pop->n_neurons/n_threads, (i+1)*pop->n_neurons/n_threads-1);
+    // }
 
-    for (auto& thread : threads) {
-        thread.join();
-    }
+    // for (auto& thread : threads) {
+    //     thread.join();
+    // }
 
+    _inject_partition(evo->now, evo->dt, 0, pop->n_neurons);
+    
     // If the window generation is finished, updates the generated time
     currently_generated_time += generation_window_length;
     generation++;

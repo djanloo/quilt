@@ -13,6 +13,9 @@
 #include <functional>
 
 #include <variant>
+#include <ctime> 
+#include <fstream> 
+#include <sstream> 
 
 #define WEIGHT_EPS 0.00001 //!< Weight threshold of synapses to be considered as zeroed out.
 
@@ -22,14 +25,27 @@ using std::runtime_error;
 using std::vector;
 using std::map;
 using std::string;
+using std::to_string;
 
+
+//****************************** THREAD SAFE FILE *********************************//
+class ThreadSafeFile {
+public:
+    ThreadSafeFile(const std::string& filename);
+    ~ThreadSafeFile();
+
+    void open();
+    void write(const std::string& message);
+    void close();
+
+private:
+    std::string filename;
+    std::ofstream file;
+    std::mutex mtx;
+};
 
 //*********************************** LOGGER *****************************************//
-#include <ctime> 
-#include <fstream> 
-#include <sstream> 
-using namespace std; 
-  
+
 enum LogLevel { DEBUG, INFO, WARNING, ERROR, CRITICAL }; 
 /**
     Logger logger("logfile.txt"); 
@@ -47,7 +63,7 @@ class Logger {
         void set_level(LogLevel level);
 
     private: 
-        ofstream logFile;
+        ThreadSafeFile logFile;
         LogLevel output_level;
         string levelToString(LogLevel level) 
         { 
@@ -73,23 +89,6 @@ class Logger {
  * @return Reference to the Logger instance.
  */
 Logger& get_global_logger();
-
-//****************************** THREAD SAFE FILE *********************************//
-class ThreadSafeFile {
-public:
-    ThreadSafeFile(const std::string& filename);
-    ~ThreadSafeFile();
-
-    void open();
-    void write(const std::string& message);
-    void close();
-
-private:
-    std::string filename;
-    std::ofstream file;
-    std::mutex mtx;
-};
-
 
 
 //****************************** RANDOM NUMBER GENERATION *************************//

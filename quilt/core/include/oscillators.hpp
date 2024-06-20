@@ -68,6 +68,7 @@ public:
     // This returns the interpolated past using the continuous Runge-Kutta method
     double get_past(unsigned int axis, double t)
     {
+        get_global_logger().log(DEBUG, "Getting past of oscillator: " + to_string(t));
         return memory_integrator.get_past(axis, t);
     }
 
