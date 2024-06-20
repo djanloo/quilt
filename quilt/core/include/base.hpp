@@ -44,9 +44,11 @@ class Logger {
         ~Logger();
 
         void log(LogLevel level, const string& message); 
-    
+        void set_level(LogLevel level);
+
     private: 
         ofstream logFile;
+        LogLevel output_level;
         string levelToString(LogLevel level) 
         { 
             switch (level) { 

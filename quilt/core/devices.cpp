@@ -203,64 +203,74 @@ std::ofstream InhomPoissonSpikeSource::outfile("test_inh_poiss.txt");
  *  - do it again
  * 
 */
+
+// these are for debug 
+static int nullcalls = 0;
+static int generation = 0;
+using std::to_string;
+
+Logger inhomlog("ihompoisson.log");
+
 void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
+
+    // DECOMMENT IF THIS METHOD CREATES TROUBLE
+    // inhomlog.set_level(DEBUG);
     
-
-    Logger &logger = get_global_logger();
-    double avg_last_spike_time = 0;
-
-    // If the spikes have already been generated, does nothing
-    // This can cause discontinuities when time crosses a window
-    // TODO: check how much or set generation_window = dt
+    // If we are in a time window that was already generated, do nothing
     if (evo->now < currently_generated_time){
-        // get_global_logger().log(INFO, "InhomPoisson did not inject  because spikes are already generated up to " + std::to_string(currently_generated_time) + " ms (now is " + std::to_string(evo->now) + " ms");
+        nullcalls ++;
         return;
     }else{
-        logger.log(INFO, "Generating inhomogeneous poisson spikes:");
-        logger.log(INFO, "\tnow:" + std::to_string(evo->now));
-        logger.log(INFO, "\tcurrently_generated_time:" + std::to_string(currently_generated_time));
-        logger.log(INFO, "\tgeneration window:" + std::to_string(generation_window_length));
-
-        for (int i =0 ;i< pop->n_neurons; i++){
-            avg_last_spike_time += next_spike_times[i];
-        }
-        avg_last_spike_time/=pop->n_neurons;
-        
-        logger.log(INFO, "\taverage last spike time generated:" + std::to_string(avg_last_spike_time));
+        inhomlog.log(INFO, "Before this generation, " + std::to_string(nullcalls) + " null calls were performed");
+        inhomlog.log(INFO, "\tnow:" + std::to_string(evo->now));
+        inhomlog.log(INFO, "\tcurrently_generated_time:" + std::to_string(currently_generated_time));
+        inhomlog.log(INFO, "Starting generation " + std::to_string(generation) + " - [ " + to_string(currently_generated_time) + " -> " + to_string(currently_generated_time + generation_window_length) + "]");
     }
-
 
     double y; // The threshold for spike generation
     double Y; // The cumulative variable 
-    double avg_rate_in_timestep = 0;
+    double avg_rate_in_timestep = 0; // This is for the trapezoidal rule and for checks
 
-    int last_spike_time_index, timestep_passed, proposed_next_spike_time_index;
-    double proposed_next_spike_time;
+    int last_spike_time_index;  // Time index of the last produced spike
+    int timestep_done;         // Timesteps of the integration done
+    int proposed_next_spike_time_index; // Time index of the newly proposed spike
+    double proposed_next_spike_time;    // Time of the newly proposed spike
 
-    bool abort_neuron = false;
+    bool abort_neuron = false;  
     int generated_spikes = 0;
-
-    logger.log(INFO, "Generating inhomogeneous spikes for " + std::to_string(pop->n_neurons) + " neurons for " + std::to_string(generation_window_length*1e-3) + " seconds");
     
+    // vector<double> produced_spikes; //DEBUG
+
     for (int i = 0; i < pop->n_neurons; i++)
     {
+        // produced_spikes = vector<double>(0); //DEBUG
+
         last_spike_time_index = evo->index_of(next_spike_times[i]);
+        inhomlog.log(INFO, "neuron " + to_string(i) + " started from the last spike at t = " + to_string(next_spike_times[i]));
+
+        // If the neuron has a spike OVER this generation window, it must be skipped
+        if (next_spike_times[i] > currently_generated_time + generation_window_length){
+            inhomlog.log(INFO, "Neuron " + to_string(i) + " had a spike over the generation window");
+            inhomlog.log(INFO, "\tcurrently_generated_time:" + std::to_string(currently_generated_time));
+            inhomlog.log(INFO, "\tgeneration window:" + std::to_string(generation_window_length));
+            inhomlog.log(INFO, "\tlast spike time:" + std::to_string(next_spike_times[i]));
+
+            // Skip the neuron, the appropriate generation will take care of him
+            continue;
+        }
 
         // Resets the abort flag
         abort_neuron = false;
 
-        if (next_spike_times[i] > currently_generated_time + generation_window_length){
-            logger.log(WARNING, "This warning should not be here. Something is wrong!");
-        }
-
-        while (true) // Adjust this: it's ugly
+        // This loops goes on until all the window is generated
+        while (true) 
         {
             y = -std::log(rng.get_uniform());
             Y = 0; 
-            timestep_passed = 0;
-            // logger.log(INFO, "\tlast_spike_time_index:" + std::to_string(last_spike_time_index) + "\n");
+            timestep_done = 0;
 
-
+            inhomlog.log(INFO, "Integration of r(t) started at t = " + to_string((last_spike_time_index + timestep_done)*evo->dt));
+            
             // This loop goes on until the integral of the rate overcomes the exp-distributed random variable y
             while (Y <= y){
                 
@@ -268,8 +278,8 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
                 // adds int_{now}^{now+dt} rate(t) dt to the sum
                 // using trapezoidal rule
                 avg_rate_in_timestep = 0.5*(
-                                            rate_function(evo->now + (last_spike_time_index + timestep_passed)*evo->dt) + \
-                                            rate_function(evo->now + (last_spike_time_index + timestep_passed + 1)*evo->dt)\
+                                            rate_function( (last_spike_time_index + timestep_done)*evo->dt) + \
+                                            rate_function( (last_spike_time_index + timestep_done + 1)*evo->dt)\
                                            );
 
                 // A negative rate clearly does not make any sense.... Or does it? (vsauce reference)
@@ -284,7 +294,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
                 if ( (avg_rate_in_timestep < 10)|(avg_rate_in_timestep > 2000) ){
                     string msg = "Unusual value for instanteneous rate in InhomogeneousPoissonSpikeSource::inject\n";
                     msg += "\trate = " + std::to_string(avg_rate_in_timestep)  + "Hz\n";
-                    logger.log(WARNING, msg);
+                    get_global_logger().log(WARNING, msg);
                 }
 
                 // Conversion to ms^(-1)
@@ -293,23 +303,32 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
                 // Trapezoidal rule
                 Y += avg_rate_in_timestep * evo->dt;                
 
-                timestep_passed ++;
+                timestep_done ++;
             }
 
             // At this point Y has overcomed y
-            proposed_next_spike_time_index = last_spike_time_index + timestep_passed;
+            proposed_next_spike_time_index = last_spike_time_index + timestep_done;
             proposed_next_spike_time = proposed_next_spike_time_index * evo->dt;
+
+            if (proposed_next_spike_time < evo->now){
+                string msg = "A spike was produced in the past from InhomogeneousPoissonSS.\n";
+                msg+= "now : " + to_string(evo->now) + "\n";
+                msg += "neuron: " + to_string(i) + "\n";
+                msg += "last spike produced: " + to_string(next_spike_times[i]) + "\n";
+                msg += "proposed spike: " + to_string(proposed_next_spike_time) + "\n";
+                inhomlog.log(ERROR, msg);
+                throw runtime_error(msg);
+            }
             
             last_spike_time_index = proposed_next_spike_time_index;
             next_spike_times[i] = proposed_next_spike_time;
 
-            // logger.log(INFO, "\tproposed_next_spike_time_index:" + std::to_string(proposed_next_spike_time_index) + "\n");
+            // produced_spikes.push_back(proposed_next_spike_time); // DEBUG
 
             // Adds a spike to the neuron's queue
             pop->neurons[i]->incoming_spikes.emplace(this->weights[i], next_spike_times[i]);
             outfile << i << " " << next_spike_times[i] << endl;
             generated_spikes++; 
-            // logger.log(INFO, "Generated spike for neuron " + std::to_string(i) + " at t = " + std::to_string(next_spike_times[i]) + " ms");
 
             /**
              * The first spike outside the generation window is accepted
@@ -327,7 +346,14 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
 
             // If the neuron is done, stops and does the next
             if (abort_neuron){
-                // get_global_logger().log(INFO, "Aborting generation for neuron " + std::to_string(i));
+
+                // DEBUG                
+                // string produced_spikes_str = "Produced spikes for neuron " + to_string(i) + ": ";
+                // for (auto tt : produced_spikes){
+                //     produced_spikes_str += to_string(tt) +  " - ";
+                // }
+                // inhomlog.log(INFO, produced_spikes_str);
+
                 break;
             }
 
@@ -338,13 +364,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
 
     // If the window generation is finished, updates the generated time
     currently_generated_time += generation_window_length;
-    logger.log(INFO, "Generated " + std::to_string(generated_spikes) + " spikes");
+    generation++;
 
-    avg_last_spike_time = 0;
-    for (int i =0 ;i< pop->n_neurons; i++){
-            avg_last_spike_time += next_spike_times[i];
-        }
-    avg_last_spike_time/=pop->n_neurons;
-    logger.log(INFO, "Last spike generated is on average at t = " + std::to_string(avg_last_spike_time) + " ms");
-
+    inhomlog.log(INFO, "Generated " + std::to_string(generated_spikes) + " spikes");
 }

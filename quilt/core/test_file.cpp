@@ -444,7 +444,7 @@ void test_inhom_poisson(){
                                         {"E_in",-65.0f}
                                         };
     ParaMap spiking_paramap = ParaMap(map_of_params);
-    Population spikepop = Population(500, &spiking_paramap, &spike_net);
+    Population spikepop = Population(1000, &spiking_paramap, &spike_net);
 
     // Now create a dummy double(void) function that mimicks the Link::get() method
     std::function<double(float)> ratefunc = [](float now){
@@ -458,7 +458,7 @@ void test_inhom_poisson(){
     EvolutionContext evo(0.1);
     // ips.inject(&evo);
     spike_net.add_injector(&ips);
-    spike_net.run(&evo, 200, 1);
+    spike_net.run(&evo, 300, 1);
 
 }
 

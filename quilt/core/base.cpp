@@ -20,13 +20,24 @@ Logger::Logger(const string& filename)
     logFile.open(filename, ios::trunc);  // Set to ios::app if you don't want to delete the old log.txt
     if (!logFile.is_open()) { 
         cerr << "Error opening log file." << endl; 
-    } 
-} 
+    }
 
+    // By default is set to a low verbosity
+    output_level = WARNING;
+}
 Logger::~Logger() { logFile.close(); } 
+
+void Logger::set_level(LogLevel level){
+    output_level = level;
+}
   
 void Logger::log(LogLevel level, const string& message) 
-{ 
+{   
+    // Do not print level under the current one
+    if (output_level > level){
+        return;
+    }
+
     time_t now = time(0); 
     tm* timeinfo = localtime(&now); 
     char timestamp[20]; 
@@ -50,7 +61,7 @@ void Logger::log(LogLevel level, const string& message)
 }
 
 Logger& get_global_logger(){
-    static Logger logger("quilt_log.txt");
+    static Logger logger("quilt_log.log");
     return logger;
 }
 
