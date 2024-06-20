@@ -174,6 +174,7 @@ class InhomPoissonSpikeSource: public PopInjector{
          * Generate one spike for neuron given the current rate
          * 
         */
+        void _inject_partition(EvolutionContext * evo, int start_id, int end_id);
         void inject(EvolutionContext * evo) override;
 
     private:
@@ -182,7 +183,7 @@ class InhomPoissonSpikeSource: public PopInjector{
         float weight_delta; //!< Semidispersion of the weight of the spikes
 
         std::vector<float> weights;
-        static std::ofstream outfile;
+        // static ThreadSafeFile outfile; //DEBUG
         std::vector<double> next_spike_times;
         double generation_window_length; 
         double currently_generated_time;

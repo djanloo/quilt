@@ -300,6 +300,46 @@ void test_sparse(){
     }
 }
 
+void test_inhom_poisson(){
+    // Preamble: create a spiking population
+    SpikingNetwork spike_net = SpikingNetwork();
+
+    map<string, ParaMap::param_t> map_of_params = {{"neuron_type", "aeif"},
+                                        {"C_m", 40.1f},
+                                        {"G_L",2.0f},
+                                        {"E_l", -70.0f},
+                                        {"V_reset", -55.0f},
+                                        {"V_peak",0.1f},
+                                        {"tau_refrac",0.0f},
+                                        {"delta_T",1.7f},
+                                        {"V_th", -40.0f},
+                                        {"ada_a", 0.0f},
+                                        {"ada_b",5.0f},
+                                        {"ada_tau_w",100.0f},
+                                        {"tau_ex", 10.0f},
+                                        {"tau_in", 5.5f},
+                                        {"E_ex", 0.0f},
+                                        {"E_in",-65.0f}
+                                        };
+    ParaMap spiking_paramap = ParaMap(map_of_params);
+    Population spikepop = Population(6000, &spiking_paramap, &spike_net);
+
+    // Now create a dummy double(void) function that mimicks the Link::get() method
+    std::function<double(float)> ratefunc = [](float now){
+        // cout << "Getting rate"<< endl;
+        double t_sec = now * 1e-3;
+        double u = sin(6.28 * 2.5 * t_sec);
+        return 20*u*u + 10;
+    };
+
+    InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 0.5);
+    EvolutionContext evo(0.1);
+    // ips.inject(&evo);
+    spike_net.add_injector(&ips);
+    spike_net.run(&evo, 1000, 1);
+
+}
+
 void test_multiscale_base(){
     // Create a spiking network of just one population
     SpikingNetwork spike_net = SpikingNetwork();
@@ -421,46 +461,6 @@ void test_multiscale_base(){
 
 }
 
-void test_inhom_poisson(){
-    get_global_logger().log(INFO, "Passing through inhom poisson");
-    // Preamble: create a spiking population
-    SpikingNetwork spike_net = SpikingNetwork();
-
-    map<string, ParaMap::param_t> map_of_params = {{"neuron_type", "aeif"},
-                                        {"C_m", 40.1f},
-                                        {"G_L",2.0f},
-                                        {"E_l", -70.0f},
-                                        {"V_reset", -55.0f},
-                                        {"V_peak",0.1f},
-                                        {"tau_refrac",0.0f},
-                                        {"delta_T",1.7f},
-                                        {"V_th", -40.0f},
-                                        {"ada_a", 0.0f},
-                                        {"ada_b",5.0f},
-                                        {"ada_tau_w",100.0f},
-                                        {"tau_ex", 10.0f},
-                                        {"tau_in", 5.5f},
-                                        {"E_ex", 0.0f},
-                                        {"E_in",-65.0f}
-                                        };
-    ParaMap spiking_paramap = ParaMap(map_of_params);
-    Population spikepop = Population(1000, &spiking_paramap, &spike_net);
-
-    // Now create a dummy double(void) function that mimicks the Link::get() method
-    std::function<double(float)> ratefunc = [](float now){
-        // cout << "Getting rate"<< endl;
-        double t_sec = now * 1e-3;
-        double u = sin(6.28 * 2.5 * t_sec);
-        return 200*u*u + 100;
-    };
-
-    InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 10);
-    EvolutionContext evo(0.1);
-    // ips.inject(&evo);
-    spike_net.add_injector(&ips);
-    spike_net.run(&evo, 300, 1);
-
-}
 
 int main(){
     get_global_logger().log(INFO, "main started");
