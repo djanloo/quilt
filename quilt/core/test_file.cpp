@@ -373,8 +373,19 @@ void test_multiscale_base(){
     logger.log(INFO, "creating oscillator" );    
     
     vector<vector<float>> weights, delays;
-    EvolutionContext * evo_long  = new EvolutionContext(1.0);
-    EvolutionContext * evo_short = new EvolutionContext(0.1);
+    EvolutionContext evo_long  =  EvolutionContext(1.0);
+    EvolutionContext evo_short =  EvolutionContext(0.1);
+
+    std::stringstream ss;
+    
+    ss << "in main evo_long pointer:"<< &evo_long;  
+    get_global_logger().log(DEBUG, ss.str());
+
+    ss.str(""); ss.clear();
+
+    ss << "in main evo_short pointer:"<< &evo_short;  
+    get_global_logger().log(DEBUG, ss.str());
+
     
     weights = get_rand_proj_mat(2,2, 2.0, 5.0);
     delays = get_rand_proj_mat(2,2, 80, 200);
@@ -437,19 +448,22 @@ void test_multiscale_base(){
     Projection * O2Tproj = new Projection(O2Tweights, O2Tdelays);
 
     multi_net.build_OT_projections(T2Oproj, O2Tproj);
+    
+    // This must be done before every time dependent operation.
+    // Must add a check on this 
+    multi_net.set_evolution_contextes(&evo_short, &evo_long);
 
     logger.log(INFO, "initializing oscillator network" );    
-    osc_net.initialize(evo_long, init_cond);
+    osc_net.initialize(&evo_long, init_cond);
 
-    logger.log(WARNING, to_string(evo_short->dt));
+    logger.log(WARNING, to_string(evo_short.dt));
 
     logger.log(INFO, "initializing spiking network" );    
-    spike_net.run(evo_short, evo_long->now, 1);
-
+    spike_net.run(&evo_short, evo_long.now, 1);
 
     logger.log(INFO, "running multinet" );    
     // Evolve
-    multi_net.set_evolution_contextes(evo_short, evo_long);
+
     multi_net.run(10, 1);
 
     ofstream SpikeFile("spiking_history.txt");

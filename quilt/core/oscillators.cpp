@@ -13,6 +13,7 @@ Oscillator::Oscillator(ParaMap * params, OscillatorNetwork * oscnet)
 
 void Oscillator::set_evolution_context(EvolutionContext * evo)
 {
+    get_global_logger().log(DEBUG, "set EvolutionContext of Oscillator");
     this->evo = evo;
     memory_integrator.set_evolution_context(evo);
     for (auto & incoming_link : incoming_osc)

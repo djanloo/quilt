@@ -277,6 +277,7 @@ class ContinuousRK{
         void fix_next();
 
         void set_evolution_context(EvolutionContext * evo){
+            get_global_logger().log(DEBUG, "set EvolutionCOntext of continuousRK");
             this->evo = evo;
         }
     private:

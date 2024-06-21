@@ -122,6 +122,7 @@ int EvolutionContext::index_of(double time)
 
     if (time == 0.0 ){
         get_global_logger().log(DEBUG, "EvolutionContext: Special case returned 0");
+        cout << this << endl;
         return 0;
     }
     get_global_logger().log(DEBUG, "EvolutionContext: gotten" + to_string(time/dt));
@@ -131,6 +132,7 @@ int EvolutionContext::index_of(double time)
 double EvolutionContext::deviation_of(double time)
 {
     get_global_logger().log(DEBUG, "EvolutionContext: getting deviation");
+    cout << this << endl;
     get_global_logger().log(DEBUG, "time is " + to_string(time));
     cout << this->dt <<endl;
     get_global_logger().log(DEBUG, "dt is " + to_string(this->dt));
@@ -178,6 +180,11 @@ vector<double> ContinuousRK::b_functions(double theta)
 
 double ContinuousRK::get_past(int axis, double abs_time){
     get_global_logger().log(DEBUG, "Memory integrator: getting past: " + to_string(abs_time));
+
+    std::stringstream ss;
+    ss << "in memory integrator evo pointer is: "<<evo;
+    get_global_logger().log(DEBUG, ss.str());
+
     // Split in bin_index + fractionary part
     int bin_id = evo->index_of(abs_time);
     double theta = evo->deviation_of(abs_time);

@@ -217,6 +217,8 @@ Logger inhomlog("ihompoisson.log");
  * Injects a partition of the target population. For multithreading.
 */
 void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start_id, int end_id){
+
+    
  // DECOMMENT IF THIS METHOD CREATES TROUBLE
     // inhomlog.set_level(DEBUG);
 
@@ -341,6 +343,10 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
 void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // inhomlog.set_level(INFO);
 
+    std::stringstream ss;
+    ss << "in InhomPoissonSpikeSource::inject evo pointer is:"<< evo;  
+    get_global_logger().log(DEBUG, ss.str());
+
     // If we are in a time window that was already generated, do nothing
     if (evo->now < currently_generated_time){
         nullcalls ++;
@@ -375,7 +381,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // }
 
     _inject_partition(evo->now, evo->dt, 0, pop->n_neurons);
-    
+
     // If the window generation is finished, updates the generated time
     currently_generated_time += generation_window_length;
     generation++;

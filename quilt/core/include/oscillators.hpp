@@ -199,6 +199,8 @@ class OscillatorNetwork{
         void run(EvolutionContext * evo, double time, int verbosity);
 
         void set_evolution_context(EvolutionContext * evo){
+            get_global_logger().log(DEBUG, "set EvolutionCOntext of OscillatorNetwork");
+
             this->evo = evo;
             for (auto & oscillator : oscillators){
                 oscillator->set_evolution_context(evo);

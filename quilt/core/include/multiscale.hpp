@@ -29,8 +29,6 @@ class MultiscaleNetwork;
 class Transducer: public Oscillator{
     private:
         Population * population;  
-        EvolutionContext * evo;
-
         double initialization_rate;
 
     public:
@@ -66,12 +64,6 @@ class Transducer: public Oscillator{
          * It must thus return the rate of the spiking population in the past.
         */
         double get_past(unsigned int axis, double time);
-        
-        void set_evolution_context(EvolutionContext * evo)
-        {
-            this->evo = evo;
-        }
-    
 };
 
 class MultiscaleNetwork{
