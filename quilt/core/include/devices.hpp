@@ -9,7 +9,6 @@
 #include <exception>
 
 using std::vector;
-using std::cout;
 using std::endl;
 
 typedef std::vector<double> dynamical_state;
@@ -95,7 +94,7 @@ class PopInjector{
         virtual ~PopInjector() = default;
         virtual void inject(EvolutionContext * /*evo*/)
         {
-            std::cout <<"WARNING: using virtual PopInjector::inject()" << std::endl;
+            get_global_logger().log(WARNING, "using virtual PopInjector::inject()");
         }
         Population * pop;
 };
