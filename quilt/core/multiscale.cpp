@@ -54,7 +54,7 @@ double Transducer::incoming_rate(double now){
         try {
         single_input_rate = input->get(0, now);
         }
-        catch (runtime_error & e){
+        catch (negative_time_exception & e){
         // If this error is raised the link tried to get a non existing past
             get_global_logger().log(DEBUG, "transducer using burn-in value for incoming oscillator rate: " + to_string(initialization_rate) + " Hz");
             return initialization_rate;

@@ -163,7 +163,6 @@ InhomPoissonSpikeSource::InhomPoissonSpikeSource( Population * pop,
         weights[i] = weight + weight_delta * (rng.get_uniform() - 0.5);
         if (weights[i] < 0) throw std::runtime_error("Poisson spikesource weight is < 0");
     }
-
 }
 
 
@@ -218,6 +217,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
     double Y; // The cumulative variable 
     double avg_rate_in_timestep = 0; // This is for the trapezoidal rule and for checks
 
+    int seek_buffer_index;
     int last_spike_time_index;  // Time index of the last produced spike
     int timestep_done;         // Timesteps of the integration done
     int proposed_next_spike_time_index; // Time index of the newly proposed spike
@@ -270,13 +270,29 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
             
             // This loop goes on until the integral of the rate overcomes the exp-distributed random variable y
             while (Y <= y){
-                
-                // Cumulative integral of the rate function
-                // adds int_{now}^{now+dt} rate(t) dt to the sum
-                // using trapezoidal rule
+
+                // Remember that, for each generation, r(t) ~ rate_buffer[<int>((t-currently_generated_time)/dt)]
+                // So the rate when the last spike happened is
+                // r(last_spike_time) = rate_buffer[<int>((last_spike_time - currently_generated_time)/dt )]
+                // so to carry out the integration from last_spike_time you have to request
+                // r(last_spike_time + timesteps_done*dt) = rate_buffer[<int>((last_spike_time - currently_generated_time)/dt ) + timesteps_done]
+                seek_buffer_index = last_spike_time_index + timestep_done - static_cast<int>(currently_generated_time/dt);
+                if (seek_buffer_index >= rate_function_buffer.size()){
+                    stringstream msg;
+                    msg <<"InhomPoisson is integrating outside the rate function buffer: accessing element "
+                        << seek_buffer_index << " while length is " << rate_function_buffer.size();
+                    throw runtime_error(msg.str());
+                }
+                // BEFORE INTRODUCING RATE FUNCTION BUFFER
+                // avg_rate_in_timestep = 0.5*(
+                //                             rate_function( (last_spike_time_index + timestep_done)*dt) + \
+                //                             rate_function( (last_spike_time_index + timestep_done + 1)*dt)\
+                //                            );
+
+                // AFTER INTRODUCING RATE FUNCTION BUFFER
                 avg_rate_in_timestep = 0.5*(
-                                            rate_function( (last_spike_time_index + timestep_done)*dt) + \
-                                            rate_function( (last_spike_time_index + timestep_done + 1)*dt)\
+                                            rate_function_buffer[seek_buffer_index]     +   \
+                                            rate_function_buffer[seek_buffer_index + 1]     \
                                            );
 
                 // A negative rate clearly does not make any sense.... Or does it? (vsauce reference)
@@ -355,6 +371,23 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
         inhomlog.log(INFO, "\tcurrently_generated_time:" + std::to_string(currently_generated_time));
         inhomlog.log(INFO, "Starting generation " + std::to_string(generation) + " - [ " + to_string(currently_generated_time) + " -> " + to_string(currently_generated_time + generation_window_length) + "]");
     }
+
+    // Evaluates the rate function and stores it in the buffer
+    // Since the generation is stopped when a spike is in the next window
+    // the required length of the buffer is surely more than one window
+    // and surely less than 3
+    int rate_func_buf_size = static_cast<int>(2*generation_window_length/evo->dt);
+    rate_function_buffer = vector<double>(rate_func_buf_size, -1.0);
+
+    // Copies the discretised rate function. The interval that will be used is [now, now + 2*generation_window_length]
+    // Since the generation is called just after now > currently_generated_time
+    // the interval is [currently_generated_time, currently_generated_time + 2*generation_window_length].
+    // For each generation, r(t) ~ rate_buf[<int>((t-currently_generated_time)/dt)]
+    for (int i = 0; i < rate_func_buf_size; i++){
+        rate_function_buffer[i] = rate_function(currently_generated_time + i*evo->dt);
+        cout << rate_function_buffer[i] << " ";
+    }
+    cout << endl;
     
     int n_threads = N_THREADS_INHOM_POISS_INJECT;
     if (pop->n_neurons < 50){
