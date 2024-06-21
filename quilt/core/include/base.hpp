@@ -29,6 +29,31 @@ using std::to_string;
 using std::stringstream;
 
 
+class negative_time_exception : public std::exception {
+    private:
+    char * message;
+
+    public:
+    negative_time_exception(string msg) : message(msg.data()) {}
+    char * what () {
+        return message;
+    }
+};
+
+class not_yet_computed_exception : public std::exception {
+    private:
+    char * message;
+
+    public:
+    not_yet_computed_exception(string msg) : message(msg.data()) {}
+    char * what () {
+        return message;
+    }
+};
+
+
+
+
 //****************************** THREAD SAFE FILE *********************************//
 class ThreadSafeFile {
 public:

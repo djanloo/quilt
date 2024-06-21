@@ -31,7 +31,7 @@ void ThreadSafeFile::open() {
     if (!file.is_open()) {
         file.open(filename, std::ios::trunc);
         if (!file.is_open()) {
-            throw std::runtime_error("Caanot open file: " + filename);
+            throw std::runtime_error("Cannot open file: " + filename);
         }
     }
 }
@@ -116,7 +116,7 @@ void EvolutionContext::do_step(){
 int EvolutionContext::index_of(double time)
 {
     if (time < 0.0){
-        throw runtime_error("Requested index of a negative time: " + std::to_string(time) );
+        throw negative_time_exception("Requested index of a negative time: " + std::to_string(time) );
         }
 
     if (time == 0.0 ){
@@ -174,10 +174,10 @@ double ContinuousRK::get_past(int axis, double abs_time){
     if (bin_id == static_cast<int>(state_history.size())) bin_id -= 1;
 
     if (bin_id < 0) 
-        throw runtime_error("Requested past state that lays before initialization");
+        throw negative_time_exception("Requested past state that lays before initialization");
     
     else if (bin_id > static_cast<int>(state_history.size() - 1))
-        throw runtime_error("Requested past state was not computed yet");
+        throw not_yet_computed_exception("Requested past state was not computed yet");
 
     // Get the values and the interpolation weights related to that moment in time
     double y = state_history[bin_id][axis];

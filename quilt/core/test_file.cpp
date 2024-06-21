@@ -432,9 +432,9 @@ void test_multiscale_base(){
     // logger.log(INFO, "building connections" );    
 
     vector<vector<float>> T2Oweights {{1}}; 
-    vector<vector<float>> T2Odelays {{5}}; 
+    vector<vector<float>> T2Odelays {{50}}; 
     vector<vector<float>> O2Tweights {{1}}; 
-    vector<vector<float>> O2Tdelays {{5}}; 
+    vector<vector<float>> O2Tdelays {{50}}; 
 
     Projection * T2Oproj = new Projection(T2Oweights, T2Odelays);
     Projection * O2Tproj = new Projection(O2Tweights, O2Tdelays);

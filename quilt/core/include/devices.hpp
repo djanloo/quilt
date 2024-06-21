@@ -149,13 +149,6 @@ class PoissonSpikeSource: public PopInjector{
         // static std::ofstream outfile;
         std::vector<double> next_spike_times;
 
-        /**
-         * Since the rate function must be evaluated for each neuron
-         * but it's the same for each neuron
-         * this buffer prevents useless calls
-        */
-        std::vector<double> rate_function_buffer;
-
         RNG rng;
 }; 
 
@@ -194,4 +187,11 @@ class InhomPoissonSpikeSource: public PopInjector{
         double generation_window_length; 
         double currently_generated_time;
         RNG rng;
+
+        /**
+         * Since the rate function must be evaluated for each neuron
+         * but it's the same for each neuron
+         * this buffer prevents useless calls
+        */
+        std::vector<double> rate_function_buffer;
 };   
