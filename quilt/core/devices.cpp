@@ -118,12 +118,6 @@ void PoissonSpikeSource::inject(EvolutionContext * evo)
         return;
     }
 
-    // cout << "Check PoissonSpikeSource next_spike_time. Now is " <<evo->now << endl;
-    // for (int i = 0 ; i < pop->n_neurons; i++){
-    //     cout << next_spike_times[i] << " ";
-    // }
-    // cout << endl;
-
     for (int i = 0; i < pop->n_neurons; i++)
     {
         while (next_spike_times[i] < evo->now + evo->dt)
@@ -170,7 +164,6 @@ InhomPoissonSpikeSource::InhomPoissonSpikeSource( Population * pop,
         if (weights[i] < 0) throw std::runtime_error("Poisson spikesource weight is < 0");
     }
 
-    cout << "Inhomogeneous Poisson SpikeSource initialized"<< endl; 
 }
 
 
@@ -342,10 +335,6 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
 */
 void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // inhomlog.set_level(INFO);
-
-    std::stringstream ss;
-    ss << "in InhomPoissonSpikeSource::inject evo pointer is:"<< evo;  
-    get_global_logger().log(DEBUG, ss.str());
 
     // If we are in a time window that was already generated, do nothing
     if (evo->now < currently_generated_time){

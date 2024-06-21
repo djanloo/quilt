@@ -68,7 +68,6 @@ class SparseProjection{
                 end_dimension(end_dimension)
         {
             n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
-            // cout << "In projection " <<n_connections << " connections must be made"<<endl;
         }  
         virtual ~SparseProjection() = default;
         void build_sector(sparse_t *, RNGDispatcher *, float, unsigned int, unsigned int, unsigned int, unsigned int);

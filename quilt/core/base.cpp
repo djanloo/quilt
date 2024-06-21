@@ -116,34 +116,21 @@ void EvolutionContext::do_step(){
 int EvolutionContext::index_of(double time)
 {
     if (time < 0.0){
-        get_global_logger().log(ERROR, "Requested index of a negative time: " + std::to_string(time));
         throw runtime_error("Requested index of a negative time: " + std::to_string(time) );
         }
 
     if (time == 0.0 ){
-        get_global_logger().log(DEBUG, "EvolutionContext: Special case returned 0");
-        cout << this << endl;
         return 0;
     }
-    get_global_logger().log(DEBUG, "EvolutionContext: gotten" + to_string(time/dt));
     return static_cast<int>(time/dt);
 }
 
 double EvolutionContext::deviation_of(double time)
 {
-    get_global_logger().log(DEBUG, "EvolutionContext: getting deviation");
-    cout << this << endl;
-    get_global_logger().log(DEBUG, "time is " + to_string(time));
-    cout << this->dt <<endl;
-    get_global_logger().log(DEBUG, "dt is " + to_string(this->dt));
-
-    get_global_logger().log(DEBUG, "time/dt is " + to_string(time/this->dt));
-
     double deviation = time/dt - index_of(time);
 
     // Deviation is by definition positive
     deviation = (deviation < 0) ? 0.0 : deviation;
-    get_global_logger().log(DEBUG, "EvolutionContext: GOTTEN deviation");
     return deviation;
 }
 
@@ -179,19 +166,11 @@ vector<double> ContinuousRK::b_functions(double theta)
 }
 
 double ContinuousRK::get_past(int axis, double abs_time){
-    get_global_logger().log(DEBUG, "Memory integrator: getting past: " + to_string(abs_time));
-
-    std::stringstream ss;
-    ss << "in memory integrator evo pointer is: "<<evo;
-    get_global_logger().log(DEBUG, ss.str());
 
     // Split in bin_index + fractionary part
     int bin_id = evo->index_of(abs_time);
     double theta = evo->deviation_of(abs_time);
     
-    get_global_logger().log(DEBUG, "Memory integrator: getting time index: " + to_string(bin_id));
-    get_global_logger().log(DEBUG, "Memory integrator: history size: " + to_string(state_history.size()));
-
     if (bin_id == static_cast<int>(state_history.size())) bin_id -= 1;
 
     if (bin_id < 0) 
@@ -208,8 +187,6 @@ double ContinuousRK::get_past(int axis, double abs_time){
     for (int nu = 0; nu < 4; nu++){
         y += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
     }
-
-    get_global_logger().log(DEBUG, "Memory integrator: past retrieved");
 
     return y;
 }
