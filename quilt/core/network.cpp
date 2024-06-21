@@ -351,6 +351,7 @@ void Population::print_info()
 
 void Population::set_evolution_context(EvolutionContext * evo)
     {
+        get_global_logger().log(DEBUG, "set EvolutionContext of Population");
         this->evo = evo;
         for (auto neuron : neurons)
         {
@@ -388,6 +389,7 @@ PopulationStateMonitor * SpikingNetwork::add_state_monitor(Population * populati
 
 void SpikingNetwork::set_evolution_context(EvolutionContext * evo)
         {
+            get_global_logger().log(DEBUG, "set EvolutionContext of SpikingNetwork");
             this->evo = evo;
             for (auto population : populations)
             {
