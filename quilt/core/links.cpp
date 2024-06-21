@@ -60,16 +60,23 @@ double T2JRLink::get(int axis, double now){
 }
 
 double JR2TLink::get(int axis, double now){
-    // Returns the rate of the oscillator back in the past
-    get_global_logger().log(DEBUG, "JR2TLink: getting t=" + to_string(now-delay) );
 
-    double result = weight * std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
     if (axis != 0) throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
+
+    // Returns the rate of the oscillator back in the past 
+    double v0 =  source->get_past(axis, now - delay);
+    double rate = std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(v0);
+    double result = weight * rate;
+
     // cout << "Getting past from JRJR link" << endl;
     // cout << "JRJR got "<<result<< endl;
 
     //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
-    result *= 1000;
+    result *= 1e3;
+
+    std::stringstream ss;
+    ss << "JR2TLink: getting t = " << now-delay << " : v0 = " << v0 << " mV, rate = " << rate << " ms^-1, weight = " << weight << " (returning " << result << " Hz)";
+    get_global_logger().log(DEBUG, ss.str());
 
     return result;
 }

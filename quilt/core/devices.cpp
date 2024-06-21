@@ -203,16 +203,15 @@ static int nullcalls = 0;
 static int generation = 0;
 using std::to_string;
 
-// ThreadSafeFile InhomPoissonSpikeSource::outfile("test_inh_poiss.txt"); //DEBUG
+ThreadSafeFile InhomPoissonSpikeSource::outfile("test_inh_poiss.txt"); //DEBUG
 Logger inhomlog("ihompoisson.log");
 
 /**
  * Injects a partition of the target population. For multithreading.
 */
-void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start_id, int end_id){
-
+void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start_id, int end_id, RNGDispatcher * rng_disp){
     
- // DECOMMENT IF THIS METHOD CREATES TROUBLE
+    // DECOMMENT IF THIS METHOD CREATES TROUBLE
     // inhomlog.set_level(DEBUG);
 
     double y; // The threshold for spike generation
@@ -227,6 +226,9 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
     int generated_spikes = 0;
     
     // vector<double> produced_spikes; //DEBUG
+
+    // Gets an independent random number generator
+    RNG * thread_rng = rng_disp->get_rng();
 
     for (int i = start_id; i < end_id; i++)
     {
@@ -260,7 +262,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
          * This will raise a "Spike in past" error. 
         */
         do{
-            y = -std::log(rng.get_uniform());
+            y = -std::log(thread_rng->get_uniform());
             Y = 0; 
             timestep_done = 0;
 
@@ -286,11 +288,12 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
 
                 // Does a check on the values of the average instantaneous rate
                 // A typical interval of rates should be [10, 2000] Hz
-                if ( (avg_rate_in_timestep < 10)|(avg_rate_in_timestep > 2000) ){
-                    string msg = "Unusual value for instanteneous rate in InhomogeneousPoissonSpikeSource::inject\n";
-                    msg += "\trate = " + std::to_string(avg_rate_in_timestep)  + "Hz\n";
-                    get_global_logger().log(WARNING, msg);
-                }
+                // if ( (avg_rate_in_timestep < 10)|(avg_rate_in_timestep > 2000) ){
+                //     std::stringstream msg;
+                //     msg << "Unusual value for instanteneous rate in InhomogeneousPoissonSpikeSource::inject - "
+                //         << "rate = " + std::to_string(avg_rate_in_timestep)  + "Hz";
+                //     get_global_logger().log(WARNING, msg.str());
+                // }
 
                 // Conversion to ms^(-1)
                 avg_rate_in_timestep /= 1e3;
@@ -323,24 +326,30 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
 
             // Adds a spike to the neuron's queue
             pop->neurons[i]->incoming_spikes.emplace(this->weights[i], next_spike_times[i]);
-            // outfile.write( to_string(i) +  " "  + to_string(next_spike_times[i])); // DEBUG
+            outfile.write( to_string(i) +  " "  + to_string(next_spike_times[i])); // DEBUG
             generated_spikes++; 
 
         } while (proposed_next_spike_time < currently_generated_time + generation_window_length);
     } 
 
+    // Frees the RNG dispatcher
+    rng_disp->free();
 }
 /**
  * Creates (easy) population partitions and start threads to generate spikes using `InhomogeneousPoissonSPikeSource::_inject_partition()`
 */
 void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // inhomlog.set_level(INFO);
-
     // If we are in a time window that was already generated, do nothing
     if (evo->now < currently_generated_time){
         nullcalls ++;
         return;
     }else{
+
+        stringstream ss;
+        ss <<  "InhomPoiss is injecting - now is " << evo->now << " with dt "<<evo->dt; 
+        get_global_logger().log(INFO,ss.str());
+
         inhomlog.log(INFO, "Before this generation, " + std::to_string(nullcalls) + " null calls were performed");
         inhomlog.log(INFO, "\tnow:" + std::to_string(evo->now));
         inhomlog.log(INFO, "\tcurrently_generated_time:" + std::to_string(currently_generated_time));
@@ -358,18 +367,20 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // TODO: add a global management of seed
     RNGDispatcher rng_dispatcher(n_threads);
 
-    // for (int i=0; i < n_threads; i++){
-    //     inhomlog.log(INFO, "starting thread " + to_string(i) + " || neurons [" + to_string(i*pop->n_neurons/n_threads) + "," + to_string((i+1)*pop->n_neurons/n_threads-1));
-    //     threads.emplace_back(&InhomPoissonSpikeSource::_inject_partition, this ,
-    //                         evo->now, evo->dt,
-    //                         i*pop->n_neurons/n_threads, (i+1)*pop->n_neurons/n_threads-1);
-    // }
+    for (int i=0; i < n_threads; i++){
+        inhomlog.log(INFO, "starting thread " + to_string(i) + " || neurons [" + to_string(i*pop->n_neurons/n_threads) + "," + to_string((i+1)*pop->n_neurons/n_threads-1));
+        threads.emplace_back(&InhomPoissonSpikeSource::_inject_partition, this ,
+                            evo->now, evo->dt,
+                            i*pop->n_neurons/n_threads, (i+1)*pop->n_neurons/n_threads-1,
+                            &rng_dispatcher);
+    }
 
-    // for (auto& thread : threads) {
-    //     thread.join();
-    // }
+    for (auto& thread : threads) {
+        thread.join();
+    }
 
-    _inject_partition(evo->now, evo->dt, 0, pop->n_neurons);
+    // SINGLE THREAD FOR DEBUG
+    // _inject_partition(evo->now, evo->dt, 0, pop->n_neurons);
 
     // If the window generation is finished, updates the generated time
     currently_generated_time += generation_window_length;

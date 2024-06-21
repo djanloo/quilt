@@ -349,7 +349,7 @@ void test_multiscale_base(){
 
     map<string, ParaMap::param_t> map_of_params = {{"neuron_type", "aeif"},
                                         {"C_m", 40.1f},
-                                        {"G_L",2.0f},
+                                        {"G_L", 2.0f},
                                         {"E_l", -70.0f},
                                         {"V_reset", -55.0f},
                                         {"V_peak",0.1f},
@@ -364,27 +364,17 @@ void test_multiscale_base(){
                                         {"E_ex", 0.0f},
                                         {"E_in",-65.0f}
                                         };
-    logger.log(INFO, "creating spiking population" );
+    // logger.log(INFO, "creating spiking population" );
 
     ParaMap spiking_paramap = ParaMap(map_of_params);
     Population spikepop = Population(500, &spiking_paramap, &spike_net);
-    spike_net.add_injector(new PoissonSpikeSource(&spikepop, 500, 1, 0.0, 0, -1 ));
+    spike_net.add_injector(new PoissonSpikeSource(&spikepop, 15, 1, 0.0, 0, -1 ));
 
-    logger.log(INFO, "creating oscillator" );    
+    // logger.log(INFO, "creating oscillator" );    
     
     vector<vector<float>> weights, delays;
     EvolutionContext evo_long  =  EvolutionContext(1.0);
     EvolutionContext evo_short =  EvolutionContext(0.1);
-
-    std::stringstream ss;
-    
-    ss << "in main evo_long pointer:"<< &evo_long;  
-    get_global_logger().log(DEBUG, ss.str());
-
-    ss.str(""); ss.clear();
-
-    ss << "in main evo_short pointer:"<< &evo_short;  
-    get_global_logger().log(DEBUG, ss.str());
 
     
     weights = get_rand_proj_mat(2,2, 2.0, 5.0);
@@ -394,23 +384,23 @@ void test_multiscale_base(){
         weights[i][i] = 0.0;
     }
 
-    logger.log(INFO, "making projection between oscillators" );
+    // logger.log(INFO, "making projection between oscillators" );
 
     Projection * proj = new Projection(weights, delays);
     ParaMap * oscill_paramap = new ParaMap();
     oscill_paramap->add("oscillator_type", "jansen-rit");
-    OscillatorNetwork osc_net = OscillatorNetwork(2, oscill_paramap);
+    OscillatorNetwork osc_net = OscillatorNetwork(1, oscill_paramap);
 
     vector<dynamical_state> init_cond;
-    for (int i=0; i< 2; i++){
+    for (int i=0; i< 1; i++){
         vector<double> initstate(6, 2);
 
-        initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[0] = 10 * (1 + 0.0*static_cast<double>(rand())/RAND_MAX);
+        initstate[1] = 23.9 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
+        initstate[2] = 16.2 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
+        initstate[3] = -0.14/1e6 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
+        initstate[4] = 5.68/1e6 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
+        initstate[5] = 108.2/1e6 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
 
         
         init_cond.push_back(initstate);
@@ -420,29 +410,31 @@ void test_multiscale_base(){
 
     // cout << "After init the long timescale is " << evo_long->now <<endl;
 
-    logger.log(INFO, "creating multinet" );    
+    // logger.log(INFO, "creating multinet" );    
 
     // Create a multiscale network
     MultiscaleNetwork multi_net = MultiscaleNetwork(&spike_net, &osc_net);
 
-    logger.log(INFO, "creating transducer" );    
+    // logger.log(INFO, "creating transducer" );    
 
     // Create a transducer
     ParaMap * transd_paramap = new ParaMap();
-    transd_paramap->add_float("initialization_rate", 250.0f);
+    transd_paramap->add_float("initialization_rate", 100.0f);
+    transd_paramap->add_float("generation_window", 10.0);
+
     // cout <<"AAAAAAAAAAAAAAAAAAAA" << *transd_paramap <<endl;
     shared_ptr <Transducer> transd (new Transducer(&spikepop, transd_paramap, &multi_net));
 
-    logger.log(INFO, "adding transducer" );    
+    // logger.log(INFO, "adding transducer" );    
 
     multi_net.transducers.push_back(transd);
 
-    logger.log(INFO, "building connections" );    
+    // logger.log(INFO, "building connections" );    
 
-    vector<vector<float>> T2Oweights {{1, 1}}; 
-    vector<vector<float>> T2Odelays {{5 , 5}}; 
-    vector<vector<float>> O2Tweights {{1}, {1}}; 
-    vector<vector<float>> O2Tdelays {{5}, {5}}; 
+    vector<vector<float>> T2Oweights {{1}}; 
+    vector<vector<float>> T2Odelays {{5}}; 
+    vector<vector<float>> O2Tweights {{1}}; 
+    vector<vector<float>> O2Tdelays {{5}}; 
 
     Projection * T2Oproj = new Projection(T2Oweights, T2Odelays);
     Projection * O2Tproj = new Projection(O2Tweights, O2Tdelays);
@@ -453,18 +445,16 @@ void test_multiscale_base(){
     // Must add a check on this 
     multi_net.set_evolution_contextes(&evo_short, &evo_long);
 
-    logger.log(INFO, "initializing oscillator network" );    
+    // logger.log(INFO, "initializing oscillator network" );    
     osc_net.initialize(&evo_long, init_cond);
 
-    logger.log(WARNING, to_string(evo_short.dt));
-
-    logger.log(INFO, "initializing spiking network" );    
+    // logger.log(INFO, "initializing spiking network" );    
     spike_net.run(&evo_short, evo_long.now, 1);
 
-    logger.log(INFO, "running multinet" );    
+    // logger.log(INFO, "running multinet" );    
     // Evolve
 
-    multi_net.run(10, 1);
+    multi_net.run(100, 1);
 
     ofstream SpikeFile("spiking_history.txt");
     for (auto a : static_cast<PopulationSpikeMonitor*>(spike_net.population_monitors[0])->get_history()){
@@ -477,7 +467,8 @@ void test_multiscale_base(){
 
     for (int i=0; i < TT; i++ ){
         for (auto oscill : osc_net.oscillators){
-            OscFile << oscill->get_history()[i][0] << " ";
+            auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+            OscFile << 1000 * osc_casted->sigm(osc_casted->get_history()[i][0]) << " ";
         }
         OscFile << endl;
     }
