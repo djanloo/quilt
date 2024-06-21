@@ -149,6 +149,13 @@ class PoissonSpikeSource: public PopInjector{
         // static std::ofstream outfile;
         std::vector<double> next_spike_times;
 
+        /**
+         * Since the rate function must be evaluated for each neuron
+         * but it's the same for each neuron
+         * this buffer prevents useless calls
+        */
+        std::vector<double> rate_function_buffer;
+
         RNG rng;
 }; 
 
@@ -173,7 +180,7 @@ class InhomPoissonSpikeSource: public PopInjector{
          * Generate one spike for neuron given the current rate
          * 
         */
-        void _inject_partition(double now, double dt, int start_id, int end_id);
+        void _inject_partition(double now, double dt, int start_id, int end_id, RNGDispatcher * rng_disp);
         void inject(EvolutionContext * evo) override;
 
     private:
@@ -182,7 +189,7 @@ class InhomPoissonSpikeSource: public PopInjector{
         float weight_delta; //!< Semidispersion of the weight of the spikes
 
         std::vector<float> weights;
-        // static ThreadSafeFile outfile; //DEBUG
+        static ThreadSafeFile outfile; //DEBUG
         std::vector<double> next_spike_times;
         double generation_window_length; 
         double currently_generated_time;

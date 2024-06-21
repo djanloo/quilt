@@ -428,6 +428,10 @@ void SpikingNetwork::evolve(){
 
 void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
 {  
+    stringstream ss;
+    ss << "Evolving spiking network from t= "<< evo->now << " to t= " << time;
+    get_global_logger().log(INFO, ss.str());
+
     auto start = std::chrono::high_resolution_clock::now();
     int n_steps_done  = 0;
     int n_steps_total = static_cast<int>(time / evo->dt) ;

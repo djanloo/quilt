@@ -26,6 +26,7 @@ using std::vector;
 using std::map;
 using std::string;
 using std::to_string;
+using std::stringstream;
 
 
 //****************************** THREAD SAFE FILE *********************************//

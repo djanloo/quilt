@@ -24,9 +24,7 @@ void Oscillator::set_evolution_context(EvolutionContext * evo)
 
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
-{
-    cout << "Oscillator network homogeneous constructor" << endl;
-
+{    
     // Bureaucracy
     id = HierarchicalID();
 
@@ -36,13 +34,13 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params, this));
     }
     has_oscillators = true;
-    cout << "Done Oscillator network homogeneous constructor" << endl;
+
+    get_global_logger().log(INFO, "Built HOMOGENEOUS OscillatorNetwork");
 }
 
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
 {   
-    cout << "Oscillator network inhomogeneous constructor" << endl;
     // Bureaucracy
     id = HierarchicalID();
     string oscillator_type;
@@ -52,13 +50,11 @@ OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params[i], this));
     }
     has_oscillators = true;
-    cout << "Done Oscillator network inhomogeneous constructor" << endl;
+    get_global_logger().log(INFO, "Built NON-HOMOGENEOUS OscillatorNetwork");
 }
 
 void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_params)
 {
-    cout << "Oscillator network build_connections" << endl;
-
     if (!has_oscillators){
         throw runtime_error("Could not link oscillators since the network does not have oscillators yet.");
     }
@@ -68,10 +64,6 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
         throw std::invalid_argument("Projection matrix of OscillatorNetwork must be a square matrix");
     }
 
-    cout << "Test 0" << endl;
-    cout << oscillators.size() << endl;
-    cout << "Done Test 0"<< endl;
-
     if (proj->start_dimension != oscillators.size())
     {
         throw std::invalid_argument("Shape mismatch in projection matrix: size is "\
@@ -80,7 +72,6 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
         );
     }
 
-    cout << "Oscillator network build_connections (A)" << endl;
     for (unsigned int i =0; i < proj->start_dimension; i++)
     {
         for (unsigned int j = 0; j < proj->end_dimension; j++)
@@ -92,25 +83,24 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
         }
     }
     has_links = true;
-    cout << "Done Oscillator network build_connections" << endl;
+    get_global_logger().log(INFO, "Built links in OscillatorNetwork");
 }
 
 void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds)
 {
-    cout << "Initializing oscillators" << endl;
     if (init_conds.size() != oscillators.size()) throw runtime_error("Number of initial conditions is not equal to number of oscillators");
     
     // brutal search of maximum delay
     float max_tau = 0.0;
-    cout << "\tchecking taus:"<<endl;
     for (auto osc : oscillators){
         for (auto l : osc->incoming_osc){
             if (l->delay > max_tau) max_tau = l->delay;
-            cout << "\t\t" << l->delay<<endl;
         }
     }
-    // cout << "Max delay is " << max_tau << endl;
     // ~brutal search of maximum delay
+
+    // Adds a timestep to max_tau (this is useful for multiscale)
+    max_tau += evo->dt;
     
     int n_init_pts = static_cast<int>(std::ceil(max_tau/evo->dt) + 1);
 
@@ -146,12 +136,18 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
 
     // cout << "Network initialized (t = "<< evo->now << ")"<< endl;
     is_initialized = true;
+    get_global_logger().log(INFO, "Initialized past of OscillatorNetwork");
+
 }
 
 void OscillatorNetwork::evolve(){
     if (!is_initialized) throw runtime_error("The network must be initialized before evolving");
 
-    cout << "Evolving OSCILLATOR network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")" << endl;
+    Logger &log = get_global_logger();
+    std::stringstream ss;
+
+    ss << "Evolving OSCILLATOR network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")";
+    log.log(INFO, ss.str());
 
     // Gets the new values
     for (auto oscillator : oscillators){
