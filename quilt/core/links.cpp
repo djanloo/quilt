@@ -76,7 +76,7 @@ double JR2TLink::get(int axis, double now){
 
     std::stringstream ss;
     ss << "JR2TLink: getting t = " << now-delay << " : v0 = " << v0 << " mV, rate = " << rate << " ms^-1, weight = " << weight << " (returning " << result << " Hz)";
-    get_global_logger().log(DEBUG, ss.str());
+    get_global_logger().log(WARNING, ss.str());
 
     return result;
 }
