@@ -322,21 +322,21 @@ void test_inhom_poisson(){
                                         {"E_in",-65.0f}
                                         };
     ParaMap spiking_paramap = ParaMap(map_of_params);
-    Population spikepop = Population(6000, &spiking_paramap, &spike_net);
+    Population spikepop = Population(500, &spiking_paramap, &spike_net);
 
     // Now create a dummy double(void) function that mimicks the Link::get() method
     std::function<double(float)> ratefunc = [](float now){
         // cout << "Getting rate"<< endl;
         double t_sec = now * 1e-3;
         double u = sin(6.28 * 2.5 * t_sec);
-        return 20*u*u + 10;
+        return 200*u*u + 100;
     };
 
-    InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 0.5);
+    InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 50);
     EvolutionContext evo(0.1);
     // ips.inject(&evo);
     spike_net.add_injector(&ips);
-    spike_net.run(&evo, 1000, 1);
+    spike_net.run(&evo, 300, 1);
 
 }
 
@@ -422,7 +422,6 @@ void test_multiscale_base(){
     transd_paramap->add_float("initialization_rate", 100.0f);
     transd_paramap->add_float("generation_window", 10.0);
 
-    // cout <<"AAAAAAAAAAAAAAAAAAAA" << *transd_paramap <<endl;
     shared_ptr <Transducer> transd (new Transducer(&spikepop, transd_paramap, &multi_net));
 
     // logger.log(INFO, "adding transducer" );    
@@ -433,7 +432,7 @@ void test_multiscale_base(){
 
     vector<vector<float>> T2Oweights {{1}}; 
     vector<vector<float>> T2Odelays {{50}}; 
-    vector<vector<float>> O2Tweights {{1}}; 
+    vector<vector<float>> O2Tweights {{10}}; 
     vector<vector<float>> O2Tdelays {{50}}; 
 
     Projection * T2Oproj = new Projection(T2Oweights, T2Odelays);
@@ -454,7 +453,7 @@ void test_multiscale_base(){
     // logger.log(INFO, "running multinet" );    
     // Evolve
 
-    multi_net.run(100, 1);
+    multi_net.run(1000, 1);
 
     ofstream SpikeFile("spiking_history.txt");
     for (auto a : static_cast<PopulationSpikeMonitor*>(spike_net.population_monitors[0])->get_history()){

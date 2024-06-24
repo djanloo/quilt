@@ -18,9 +18,19 @@ def rate_of_spikes(spikes, time_bins, N_samples):
 
 n, tsp = np.loadtxt("test_inh_poiss.txt", unpack=True)
 
-time_bins = np.linspace(0, 300, 200)
-rates = rate_of_spikes(tsp, time_bins, 500)
+N = np.max(n) + 1
+
+time_bins = np.linspace(0, np.max(tsp), 200)
+rates = rate_of_spikes(tsp, time_bins, N)
 
 plt.step(time_bins, rates, where="mid")
 plt.plot(time_bins, ground_truth(time_bins))
+
+plt.figure(2)
+for i in range(50):
+    mask = (n==i)
+    # print(n[mask])
+    plt.scatter(tsp[mask], n[mask], s=10, color="k", marker="|")
+
+
 plt.show()

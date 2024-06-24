@@ -156,11 +156,20 @@ class PoissonSpikeSource: public PopInjector{
  * @class InhomPoissonSpikeSource
  * @brief Source of poisson-distributed spikes with time-dependent rate
  * 
+ * 
  * For now only one-to-one connection is implemented
+ * 
+ * @param pop Target spiking population of the source
+ * @param rate_function The rate function r(t). Must be double(double)
+ * @param weight
+ * @param weight_delta
+ * @param generation_window_length The length of the generation windos in ms
 */
 class InhomPoissonSpikeSource: public PopInjector{
     public:
         /**
+         * Initializes a Inhomogeneous Poisson Spike Source
+         * 
          * @param pop The spiking population
          * @param rate_function The rate function. It must have double(double) signature, given a time returns the rate. 
         */
@@ -183,7 +192,6 @@ class InhomPoissonSpikeSource: public PopInjector{
 
         std::vector<float> weights;
         static ThreadSafeFile outfile; //DEBUG
-        std::vector<double> next_spike_times;
         double generation_window_length; 
         double currently_generated_time;
         RNG rng;
@@ -194,4 +202,8 @@ class InhomPoissonSpikeSource: public PopInjector{
          * this buffer prevents useless calls
         */
         std::vector<double> rate_function_buffer;
+
+        std::vector<double> integration_start;
+        std::vector<double> integration_leftovers;
+        std::vector<double> integration_thresholds;
 };   
