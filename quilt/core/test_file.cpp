@@ -174,7 +174,7 @@ void test_poisson(){
 
 void test_oscill(){
 
-    int N = 50;
+    int N = 5;
     vector<vector<float>> weights, delays;
 
 
@@ -215,12 +215,12 @@ void test_oscill(){
     for (int i=0; i< N; i++){
         vector<double> initstate(6, 2);
 
-        // initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        // initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
 
         init_cond.push_back(initstate);
         cout << *(osc_net.oscillators[i]->params);
@@ -239,6 +239,18 @@ void test_oscill(){
             }
         }
         file << endl;
+    }
+
+    ofstream OscFile("cortex.txt");
+
+    int TT = osc_net.oscillators[0]->get_history().size();
+
+    for (int i=0; i < TT; i++ ){
+        for (auto oscill : osc_net.oscillators){
+            auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+            OscFile << 1000 * osc_casted->sigm(osc_casted->get_history()[i][0]) << " ";
+        }
+        OscFile << endl;
     }
 }
 
@@ -322,7 +334,7 @@ void test_inhom_poisson(){
                                         {"E_in",-65.0f}
                                         };
     ParaMap spiking_paramap = ParaMap(map_of_params);
-    Population spikepop = Population(500, &spiking_paramap, &spike_net);
+    Population spikepop = Population(5000, &spiking_paramap, &spike_net);
 
     // Now create a dummy double(void) function that mimicks the Link::get() method
     std::function<double(float)> ratefunc = [](float now){
@@ -332,7 +344,7 @@ void test_inhom_poisson(){
         return 200*u*u + 100;
     };
 
-    InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 50);
+    InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 100);
     EvolutionContext evo(0.1);
     // ips.inject(&evo);
     spike_net.add_injector(&ips);
@@ -367,8 +379,8 @@ void test_multiscale_base(){
     // logger.log(INFO, "creating spiking population" );
 
     ParaMap spiking_paramap = ParaMap(map_of_params);
-    Population spikepop = Population(500, &spiking_paramap, &spike_net);
-    spike_net.add_injector(new PoissonSpikeSource(&spikepop, 15, 1, 0.0, 0, -1 ));
+    Population spikepop = Population(5000, &spiking_paramap, &spike_net);
+    // spike_net.add_injector(new PoissonSpikeSource(&spikepop, 15, 1, 0.0, 0, -1 ));
 
     // logger.log(INFO, "creating oscillator" );    
     
@@ -395,12 +407,12 @@ void test_multiscale_base(){
     for (int i=0; i< 1; i++){
         vector<double> initstate(6, 2);
 
-        initstate[0] = 10 * (1 + 0.0*static_cast<double>(rand())/RAND_MAX);
-        initstate[1] = 23.9 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
-        initstate[2] = 16.2 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
-        initstate[3] = -0.14/1e6 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
-        initstate[4] = 5.68/1e6 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
-        initstate[5] = 108.2/1e6 * (1+ 0.1*static_cast<double>(rand())/RAND_MAX);
+        initstate[0] = 0.5 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
 
         
         init_cond.push_back(initstate);
@@ -419,8 +431,8 @@ void test_multiscale_base(){
 
     // Create a transducer
     ParaMap * transd_paramap = new ParaMap();
-    transd_paramap->add_float("initialization_rate", 100.0f);
-    transd_paramap->add_float("generation_window", 10.0);
+    transd_paramap->add_float("initialization_rate", 0.0f);
+    transd_paramap->add_float("generation_window", 7.0);
 
     shared_ptr <Transducer> transd (new Transducer(&spikepop, transd_paramap, &multi_net));
 
@@ -431,9 +443,9 @@ void test_multiscale_base(){
     // logger.log(INFO, "building connections" );    
 
     vector<vector<float>> T2Oweights {{1}}; 
-    vector<vector<float>> T2Odelays {{50}}; 
-    vector<vector<float>> O2Tweights {{10}}; 
-    vector<vector<float>> O2Tdelays {{50}}; 
+    vector<vector<float>> T2Odelays {{11.5}}; 
+    vector<vector<float>> O2Tweights {{1}}; 
+    vector<vector<float>> O2Tdelays {{11.5}}; 
 
     Projection * T2Oproj = new Projection(T2Oweights, T2Odelays);
     Projection * O2Tproj = new Projection(O2Tweights, O2Tdelays);
@@ -453,7 +465,7 @@ void test_multiscale_base(){
     // logger.log(INFO, "running multinet" );    
     // Evolve
 
-    multi_net.run(1000, 1);
+    multi_net.run(30, 1);
 
     ofstream SpikeFile("spiking_history.txt");
     for (auto a : static_cast<PopulationSpikeMonitor*>(spike_net.population_monitors[0])->get_history()){
@@ -477,7 +489,6 @@ void test_multiscale_base(){
 
 
 int main(){
-    get_global_logger().log(INFO, "main started");
     // test_spiking();
     // test_sparse();
     // test_poisson();

@@ -426,7 +426,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     int rate_func_buf_size = static_cast<int>(generation_window_length/evo->dt);
     rate_function_buffer = vector<double>(rate_func_buf_size, -1.0);
 
-    // Copies the discretised rate function. The interval that will be used is [now, now + 2*generation_window_length]
+    // Copies the discretised rate function. The interval that will be used is [now, now + generation_window_length]
     // Since the generation is called just after now > currently_generated_time
     // the interval is [currently_generated_time, currently_generated_time + 2*generation_window_length].
     // For each generation, r(t) ~ rate_buf[<int>((t-currently_generated_time)/dt)]
@@ -434,6 +434,9 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
         rate_function_buffer[i] = rate_function(currently_generated_time + i*evo->dt);
         // cout << rate_function_buffer[i] << " ";
     }
+    stringstream ss;
+    ss << "Getting rate of incoming oscillators from t= "<<currently_generated_time << " to t= "<<currently_generated_time + rate_func_buf_size*evo->dt;
+    get_global_logger().log(WARNING, ss.str());
     // cout << endl;
     
     int n_threads = N_THREADS_INHOM_POISS_INJECT;
@@ -465,7 +468,4 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // If the window generation is finished, updates the generated time
     currently_generated_time += generation_window_length;
     generation++;
-
-    // inhomlog.log(INFO, "Generated " + std::to_string(generated_spikes) + " spikes");
-
 }
