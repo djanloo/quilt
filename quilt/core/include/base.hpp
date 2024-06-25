@@ -218,8 +218,8 @@ class HierarchicalID{
         HierarchicalID(HierarchicalID * parent);
         unsigned int get_id();
     private:
-        unsigned int local_id;
-        unsigned int n_subclasses;
+        int local_id;
+        int n_subclasses;
 };
 
 /**
@@ -262,7 +262,7 @@ class ContinuousRK{
         // The system of equation (if no vanishing delays are present)
         // requires to update just one subsystem at a time since all the other variables
         // are locked to past values. To prevent the histories of two subsystems
-        // from "shearing" and refernecing wrong past elements, the new point is first proposed
+        // from "shearing" and referencing wrong past elements, the new point is first proposed
         // calling `compute_next()`
         // then when every CRK has done its proposal they are fixed using `fix_next()`
         dynamical_state proposed_state;
@@ -287,10 +287,11 @@ class ContinuousRK{
         vector<dynamical_state> state_history;
 
         /**
-         * The K coefficients of RK method.
+         * The K coefficients of RK method. This array contains the function evaluations: i-th element contains the evaluation
+         * to go from i-th timestep to (i+1)-th timestep.
          * 
-         * For each step previously computed, there are nu intermediate steps function evalutaions.
-         * For each evluation the number of coeffiecients is equal to the dimension of the oscillator.
+         * For each step previously computed, there are nu intermediate steps function evaluations.
+         * For each evaluation the number of coeffiecients is equal to the dimension of the oscillator.
          * Thus for a N-long history of a nu-stage RK of an M-dimensional oscillator, the K coefficients
          * have shape (N, nu, M).
         */
