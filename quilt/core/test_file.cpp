@@ -38,6 +38,8 @@ vector<vector<float>> get_rand_proj_mat(int N, int M, double min, double max){
 }
 
 
+
+
 void test_spiking()
 {
 
@@ -170,6 +172,23 @@ void test_poisson(){
 
     EvolutionContext evo = EvolutionContext(0.1);
     sn.run(&evo, 5000, 1);
+}
+
+void test_NCERK(){
+
+    double dt = 0.05;
+
+    ofstream BfuncFile("b_functions.txt");
+    ContinuousRK albert;
+
+    for (int i = 0 ; i <= 20; i++){
+        vector<double>vals = albert.b_functions(i*dt);
+        BfuncFile << i*dt << " ";
+        for (int nu =0; nu<4; nu++){
+            BfuncFile << vals[nu]<< " ";
+        }
+        BfuncFile<<endl;
+    }
 }
 
 void test_oscill(){
@@ -442,10 +461,10 @@ void test_multiscale_base(){
 
     // logger.log(INFO, "building connections" );    
 
-    vector<vector<float>> T2Oweights {{1}}; 
-    vector<vector<float>> T2Odelays {{11.5}}; 
+    vector<vector<float>> T2Oweights {{0.00001}}; 
+    vector<vector<float>> T2Odelays {{10}}; 
     vector<vector<float>> O2Tweights {{1}}; 
-    vector<vector<float>> O2Tdelays {{11.5}}; 
+    vector<vector<float>> O2Tdelays {{10}}; 
 
     Projection * T2Oproj = new Projection(T2Oweights, T2Odelays);
     Projection * O2Tproj = new Projection(O2Tweights, O2Tdelays);
@@ -494,10 +513,11 @@ void test_multiscale_base(){
 }
 
 
-int main(){
+int main(){ 
     // test_spiking();
     // test_sparse();
     // test_poisson();
+    // test_NCERK();
     // test_oscill();
     // test_inhom_poisson();
     test_multiscale_base();
