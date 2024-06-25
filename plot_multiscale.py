@@ -15,7 +15,7 @@ if len(osc.shape) == 1:
 for i, o in enumerate(osc):
     plt.plot(o, label = f"osc_{i}")
 
-plt.plot(bin_spikes(sp), label="binned_spikes")
+# plt.step(np.arange(0, len(bin_spikes(sp))) , bin_spikes(sp), label="binned_spikes")
 
 
 def rate_of_spikes(spikes, time_bins, N_samples):
@@ -31,13 +31,20 @@ def rate_of_spikes(spikes, time_bins, N_samples):
     return rate*1000
 
 n, tsp = np.loadtxt("test_inh_poiss.txt", unpack=True)
-
+N = np.max(n)
 time_bins = np.linspace(0, len(sp)/10, 200)
-rates = rate_of_spikes(tsp, time_bins, 500)
+rates = rate_of_spikes(tsp, time_bins, N)
 
-plt.step(time_bins, rates, where="mid", label="Transducer spikes")
+# plt.step(time_bins, rates, where="mid", label="Transducer spikes")
 
 t, rate = np.loadtxt("td_incoming_rates.txt", unpack=True)
 plt.scatter(t, rate, label="TD incoming rate", s=1)
+
+
+osc_interp = np.loadtxt("osc_interpol.txt")
+plt.plot(np.arange(len(osc_interp))/10 + 11.5, osc_interp)
+
+
+
 plt.legend()
 plt.show()

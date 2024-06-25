@@ -484,6 +484,12 @@ void test_multiscale_base(){
         OscFile << endl;
     }
 
+    ofstream OscInterp("osc_interpol.txt");
+
+    for (int i=0; i < static_cast<int>(evo_long.now / evo_short.dt) ; i++){
+        auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(osc_net.oscillators[0]);
+        OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, i*evo_short.dt)) << endl;
+    }
 
 }
 

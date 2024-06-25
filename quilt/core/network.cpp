@@ -408,7 +408,9 @@ void SpikingNetwork::evolve(){
         throw("Cannot evolve SpikingNetwok until its EvolutionContext is initialized.");
     }
 
-    cout << "Evolving SPIKING network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")" << endl;
+    stringstream ss;
+    ss << "Evolving SPIKING network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")";
+    get_global_logger().log(INFO, ss.str());
     for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
         }
