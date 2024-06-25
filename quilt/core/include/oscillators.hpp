@@ -69,8 +69,8 @@ public:
     double get_past(unsigned int axis, double t)
     {
         std::stringstream ss;
-        ss << "Getting past of oscillator " << id.get_id() << ": t = " << t;
-        get_global_logger().log(DEBUG,ss.str() );
+        ss << "Getting past of oscillator " << id.get_id() << ": t = " << t << " - returning "<< memory_integrator.get_past(axis, t);
+        get_global_logger().log(WARNING,ss.str() );
         return memory_integrator.get_past(axis, t);
     }
 
@@ -92,7 +92,7 @@ private:
 
 /**
  * @brief Builder method for creating an oscillator instance of a specific type.
- * @tparam OSC Type of the oscillator.
+ * @param OSC Type of the oscillator.
  * @param params Parameter map for the oscillator.
  * @param osc Pointer to the oscillator network.
  * @return Shared pointer to the created oscillator.
