@@ -13,7 +13,7 @@ if len(osc.shape) == 1:
     osc= osc[None, :]
 
 for i, o in enumerate(osc):
-    plt.plot(o, label = f"osc_{i}")
+    plt.plot(o, label = f"osc_{i}", marker="o")
 
 # plt.step(np.arange(0, len(bin_spikes(sp))) , bin_spikes(sp), label="binned_spikes")
 
@@ -37,14 +37,17 @@ rates = rate_of_spikes(tsp, time_bins, N)
 
 # plt.step(time_bins, rates, where="mid", label="Transducer spikes")
 
-t, rate = np.loadtxt("td_incoming_rates.txt", unpack=True)
-plt.scatter(t, rate, label="TD incoming rate", s=1)
-
 
 osc_interp = np.loadtxt("osc_interpol.txt")
-plt.plot(np.arange(len(osc_interp))/10 + 11.5, osc_interp)
+plt.plot(np.arange(len(osc_interp))/10, osc_interp, label = "oscillator past NCE interpolated")
+
+
+t, rate = np.loadtxt("td_incoming_rates.txt", unpack=True)
+plt.scatter(t -11.5, rate, label="TD incoming rate (shifted)", s=2, color="k", zorder=22)
 
 
 
+plt.xlim(13, 17)
+plt.ylim(0.266, 0.276)
 plt.legend()
 plt.show()
