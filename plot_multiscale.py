@@ -53,7 +53,7 @@ plt.scatter(t - delay, rate, label="TD incoming rate (shifted)", s=2, color="k",
 
 
 
-plt.xlim(13, 17)
-plt.ylim(0.266, 0.276)
+plt.xlim(11, 16)
+plt.ylim(0.215, 0.221)
 plt.legend()
 plt.show()

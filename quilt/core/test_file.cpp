@@ -426,12 +426,12 @@ void test_multiscale_base(){
     for (int i=0; i< 1; i++){
         vector<double> initstate(6, 2);
 
-        initstate[0] = 0.5 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[0] = 0.5 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
+        initstate[1] = 23.9 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
+        initstate[2] = 16.2 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
+        initstate[3] = -0.14/1e6 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
+        initstate[4] = 5.68/1e6 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
+        initstate[5] = 108.2/1e6 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
 
         
         init_cond.push_back(initstate);
