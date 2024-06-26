@@ -136,8 +136,12 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
 
     // cout << "Network initialized (t = "<< evo->now << ")"<< endl;
     is_initialized = true;
-    get_global_logger().log(INFO, "Initialized past of OscillatorNetwork");
-
+    Logger &log = get_global_logger();
+    log.log(INFO, "Initialized past of OscillatorNetwork");
+    stringstream ss;
+    ss << "Oscillators initialized with " << oscillators[0]->memory_integrator.state_history.size() << " states"
+        << " and " << oscillators[0]->memory_integrator.evaluation_history.size() << " evaluations";
+    log.log(INFO, ss.str());
 }
 
 void OscillatorNetwork::evolve(){

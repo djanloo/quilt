@@ -208,7 +208,7 @@ double ContinuousRK::get_past(int axis, double abs_time){
     cout << "Printing b-coeffiecients for t = " << abs_time << "bin number: " << bin_id << " - theta: "<<theta<<endl;
     for (int nu = 0; nu < 4; nu++){
         cout << b_func_values[nu]<< " ";
-        y += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
+        y += evo->dt * b_func_values[nu] * evaluation_history[bin_id + 1][nu][axis]; //The +1 is temporary
     }
     cout << endl;
 
@@ -220,7 +220,7 @@ double ContinuousRK::get_past(int axis, double abs_time){
     b_func_values = b_functions(1.0);
 
     for (int nu = 0; nu < 4; nu++){
-        delta_value += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
+        delta_value += evo->dt * b_func_values[nu] * evaluation_history[bin_id+ 1][nu][axis];
     }
     checkval += delta_value;
    
@@ -293,7 +293,7 @@ void ContinuousRK::compute_next(){
     }//~Compute K values
 
     stringstream ss;
-    ss<< "Proposed_evaluations:"<<endl;
+    ss<< "Proposed_evaluations for t = "<< evo->now << " (timestep " << evo->index_of(evo->now) <<"):"<<endl;
     for (int nu=0; nu < 4; nu++){
         ss << "nu: "<< nu << " ";
         for (unsigned int i = 0; i < space_dimension; i++){
