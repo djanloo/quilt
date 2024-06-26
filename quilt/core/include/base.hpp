@@ -214,9 +214,9 @@ class RNGDispatcher{
 class HierarchicalID{
     public:
         HierarchicalID * parent;
-        HierarchicalID():parent(NULL),local_id(-1),n_subclasses(0){}
+        HierarchicalID();
         HierarchicalID(HierarchicalID * parent);
-        unsigned int get_id();
+        int get_id();
     private:
         int local_id;
         int n_subclasses;
