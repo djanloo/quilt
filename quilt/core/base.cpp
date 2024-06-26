@@ -208,7 +208,7 @@ double ContinuousRK::get_past(int axis, double abs_time){
     cout << "Printing b-coeffiecients for t = " << abs_time << "bin number: " << bin_id << " - theta: "<<theta<<endl;
     for (int nu = 0; nu < 4; nu++){
         cout << b_func_values[nu]<< " ";
-        y += evo->dt * b_func_values[nu] * evaluation_history[bin_id + 1][nu][axis]; //The +1 is temporary
+        y += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
     }
     cout << endl;
 
