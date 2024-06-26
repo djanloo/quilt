@@ -97,11 +97,23 @@ Logger& get_global_logger(){
 
 //************************* UTILS FOR DYNAMICAL SYSTEMS **********************//
 
-HierarchicalID::HierarchicalID(HierarchicalID * parent): parent(parent),n_subclasses(0){
+HierarchicalID::HierarchicalID()
+            :   parent(NULL),
+                local_id(0),
+                n_subclasses(0)
+{
+    // get_global_logger().log(DEBUG, "Initialized a ROOT HierarchicalID - " + to_string(local_id));
+}
+
+HierarchicalID::HierarchicalID(HierarchicalID * parent)
+    :   parent(parent),
+        n_subclasses(0)
+{
     local_id = parent->n_subclasses;
     parent->n_subclasses ++;
+    // get_global_logger().log(DEBUG, "Initialized a NON ROOT HierarchicalID - " + to_string(local_id));
 }
-unsigned int HierarchicalID::get_id(){return local_id;}
+int HierarchicalID::get_id(){return local_id;}
 
 EvolutionContext::EvolutionContext(double dt)
     :   dt(dt),

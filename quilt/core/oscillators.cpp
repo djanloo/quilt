@@ -7,7 +7,7 @@ Oscillator::Oscillator(ParaMap * params, OscillatorNetwork * oscnet)
         oscnet(oscnet),
         memory_integrator()
 {
-    id = HierarchicalID(oscnet->id);
+    id = HierarchicalID(&(oscnet->id));
     evolve_state = [](const dynamical_state & /*x*/, dynamical_state & /*dxdt*/, double /*t*/){cout << "Warning: using virtual evolve_state of Oscillator" << endl;};
 }
 
@@ -35,7 +35,7 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     }
     has_oscillators = true;
 
-    get_global_logger().log(INFO, "Built HOMOGENEOUS OscillatorNetwork");
+    get_global_logger().log(WARNING, "Built HOMOGENEOUS OscillatorNetwork");
 }
 
 // Homogeneous network builder
