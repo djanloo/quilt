@@ -100,6 +100,8 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     // ~brutal search of maximum delay
 
     // Adds a timestep to max_tau (this is useful for multiscale)
+    // because Transuducers need an half-big-timestep in the past
+    // to average the spiking network activity
     max_tau += evo->dt;
     
     int n_init_pts = static_cast<int>(std::ceil(max_tau/evo->dt) + 1);
@@ -107,7 +109,7 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     for (unsigned int i = 0; i < init_conds.size(); i++ ){
         vector<dynamical_state> new_K(4, vector<double>(oscillators[i]->get_space_dimension()));
 
-        // Computes the value of X and K for the past values
+        // Adds n_init_points values for the state X
         for (int n = 0; n < n_init_pts; n++){
             //Checks that the initialization is right in dimension
             if (init_conds[i].size() != oscillators[i]->space_dimension) 
@@ -115,8 +117,38 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
             
             // Adds initial condition as value of X 
             oscillators[i]->memory_integrator.state_history.push_back(init_conds[i]);
+        }
 
-            // Computes the values of K for each intermediate step
+        /*
+
+        Adds n_init_points-1 values for the evaluation history K
+        This is because given a starting point you compute the K_n
+        so when the network actually runs it computes it first real K
+
+        INIT
+        ----
+        | X: *
+        |
+        | K: 
+
+        FIRST STEP
+        ----------
+        | X: *          | X: * *
+        |        -->    |
+        | K: *          | K: *
+
+        SECOND STEP
+        ----------
+        | X: * *            | X: * * *
+        |          -->      |
+        | K: * *            | K: **
+
+        NOTE: this section is the one that originated BUG #18
+
+        */
+
+        for (int n = 0; n < n_init_pts - 1; n++){
+
             for (int nu = 0; nu < 4; nu++){
                 for (unsigned int dim = 0; dim < oscillators[i]->get_space_dimension(); dim++){
                     new_K[nu][dim] = 0.0;
@@ -126,15 +158,12 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
         }
     }
 
-
-    // Set the current time to max_tau
-    // This makes the initialization to be in [0, T] instead of [-T, 0]
-    // but otherwise we should consider negative times in the `get()` method of links
-    for (int n = 0; n < n_init_pts - 1; n++){  // If I make n points I am at t = (n-1)*h because zero is included
+    // Set the current time to max_tau + dT
+    // This makes the initialization to be in [0, T+dT] instead of [-T, 0]
+    for (int n = 0; n < n_init_pts - 1; n++){
         evo->do_step();
     }
 
-    // cout << "Network initialized (t = "<< evo->now << ")"<< endl;
     is_initialized = true;
     Logger &log = get_global_logger();
     log.log(INFO, "Initialized past of OscillatorNetwork");
@@ -314,6 +343,19 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
         dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
         dxdt[4] = He*ke*( external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] -  ke*ke*x[1];
         dxdt[5] = Hi*ki*0.25*C*sigm(0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
+
+        stringstream ss;
+        ss << "Computed derivative of JR oscillator:"<<endl;
+        ss << "Current state:" << endl;
+        for (int i=0; i< space_dimension; i++){
+            ss << x[i] << " ";
+        }
+
+        ss << "Computed derivative:" << endl;
+        for (int i=0; i< space_dimension; i++){
+            ss << dxdt[i] << " ";
+        }
+        get_global_logger().log(INFO, ss.str());
     };
 
     // Sets the variable of interest for the EEG
