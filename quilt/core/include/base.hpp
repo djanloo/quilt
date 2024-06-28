@@ -255,7 +255,7 @@ class ContinuousRK{
         
         // These are the coefficients of the RK method
         vector<double> a = {0, 0.5, 0.5, 1};
-        vector<double> b = {1.0/3.0, 1.0/6.0, 1.0/6.0, 1.0/3.0};
+        vector<double> b = {1.0/6.0, 1.0/3.0, 1.0/3.0, 1.0/6.0};
         vector<double> c = {0, 0.5, 0.5, 1};
 
         // These two make it possible to do a sequential updating of a set of CRK.

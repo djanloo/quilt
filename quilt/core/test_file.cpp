@@ -249,7 +249,7 @@ void test_oscill(){
     osc_net.initialize(&evo, init_cond);
     
     ofstream file("output.txt");
-    osc_net.run(&evo, 1000, 1);
+    osc_net.run(&evo, 200, 1);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){
