@@ -5,6 +5,7 @@
 #include <map>
 #include <iostream>
 #include <string>
+#include <iomanip> // for std::setprecision
 
 // #include <boost/timer/progress_display.hpp>
 #include "include/base.hpp"
@@ -180,10 +181,12 @@ vector<double> ContinuousRK::b_functions(double theta)
 
     vector<double> result(4);
 
-    result[0] = 2*(1-4*b[0])*std::pow(theta, 3) + 3*(3*b[0] - 1)*theta*theta + theta;
-    for (int i = 1; i < 4; i++){
-        result[i] = 4*(3*c[i] - 2)*b[i]*std::pow(theta, 3) + 3*(3-4*c[i])*b[i]*theta*theta;
-    }
+    // For the default RK4 this is a NCE of order 3
+    result[0] = ( 2.0/3.0 * theta * theta - 3.0/2.0 * theta + 1.0) * theta;
+    result[1] = (-2.0/3.0 * theta + 1) * theta * theta;
+    result[2] = result[1];
+    result[3] = ( 2.0/3.0 * theta - 0.5) * theta * theta;
+
     return result;
 }
 
@@ -203,14 +206,11 @@ double ContinuousRK::get_past(int axis, double abs_time){
     int bin_id = evo->index_of(abs_time);
     double theta = evo->deviation_of(abs_time);
     
-    // What's this for?
-    // if (bin_id == static_cast<int>(state_history.size())) bin_id -= 1;
-
     if (bin_id < 0) 
         throw negative_time_exception("Requested past state that lays before initialization");
     
     else if (bin_id > static_cast<int>(state_history.size() - 1))
-        throw not_yet_computed_exception("Requested past state was not computed yet");
+        throw not_yet_computed_exception("The requested past state is not computed yet");
 
     // Get the values and the interpolation weights related to that moment in time
     double y = state_history[bin_id][axis];
@@ -228,14 +228,14 @@ double ContinuousRK::get_past(int axis, double abs_time){
     b_func_values = b_functions(1.0);
 
     for (int nu = 0; nu < 4; nu++){
-        delta_value += evo->dt * b_func_values[nu] * evaluation_history[bin_id+ 1][nu][axis];
+        delta_value += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
     }
     checkval += delta_value;
    
     if ( std::abs(checkval - state_history[bin_id+1][axis])/checkval > 0.005){
         stringstream msg;
         msg << "NCERK interpolated at theta = 1 is different from the next point." << endl
-            << "Interpolating from n = " << bin_id << endl
+            << "Interpolating at t = " << std::setprecision(std::numeric_limits<double>::max_digits10) << abs_time << "( n = "<< bin_id << " theta = " << theta <<")" << endl
             << "X[n] = "<< state_history[bin_id][axis]<< endl
             << "X[n+1] = "<< state_history[bin_id+1][axis]<< endl
             << "interpolation(theta=1) =" << checkval << endl
@@ -243,13 +243,13 @@ double ContinuousRK::get_past(int axis, double abs_time){
 
 
 
-        // for (int nu = 0; nu< 4; nu++){
-        //     msg << "b_"<<nu << "(theta = 1 ): "<< b_func_values[nu]<<endl;
-        //     msg << "b_"<<nu << ": "<< b[nu] << endl;
+        for (int nu = 0; nu< 4; nu++){
+            msg << "b_"<<nu << "(theta = 1 ): "<< b_func_values[nu]<<endl;
+            msg << "b_"<<nu << ": "<< b[nu] << endl;
 
-        //     msg << "\tadding to delta b_"<<nu <<" * K_"<<nu <<endl
-        //         << "\t\t K_"<< nu <<" = " << evaluation_history[bin_id][nu][axis] << endl;
-        // }
+            msg << "\tadding to delta b_"<<nu <<" * K_"<<nu <<endl
+                << "\t\t K_"<< nu <<" = " << evaluation_history[bin_id][nu][axis] << endl;
+        }
         // msg << "evaluation history is:" <<endl;
         // for (int kk = 0; kk < evaluation_history.size(); kk++){
         //     msg << "( ";
@@ -275,6 +275,10 @@ double ContinuousRK::get_past(int axis, double abs_time){
 void ContinuousRK::compute_next(){
     if (space_dimension == 0) throw runtime_error("Space dimension not set in ContinuousRK");
 
+    // This is a runtime guard for bug #18
+    if (state_history.size() == evaluation_history.size()){
+        throw runtime_error("state history of ContinuousRK has the same length of evaluation history.");
+    }
     proposed_evaluation = vector<dynamical_state>(4, dynamical_state(space_dimension, 0));
 
     double t_eval;
@@ -295,21 +299,32 @@ void ContinuousRK::compute_next(){
             }
         }//~Where
 
+        /* NOTE: The WHERE section is equivalent to:
+        
+        if ( nu == 0){
+            x_eval = state_history.back();
+        }else if ( nu == 1){
+            x_eval = state_history.back();
+            for (unsigned int i = 0; i < space_dimension; i++){
+                x_eval[i] += evo->dt * 0.5 * proposed_evaluation[0][i];
+            }
+        }else if(nu==2){
+            x_eval = state_history.back();
+            for (unsigned int i = 0; i < space_dimension; i++){
+                x_eval[i] += evo->dt * 0.5 * proposed_evaluation[1][i];
+            }
+        }else if (nu == 3){
+            x_eval = state_history.back();
+            for (unsigned int i = 0; i < space_dimension; i++){
+                x_eval[i] += evo->dt * 1 * proposed_evaluation[2][i];
+            }
+        }
+        */
+
         // Assigns the new K evaluation to the value of the evolution function
         evolve_state(x_eval, proposed_evaluation[nu], t_eval);
 
     }//~Compute K values
-
-    // stringstream ss;
-    // ss<< "Proposed_evaluations for t = "<< evo->now << " (timestep " << evo->index_of(evo->now) <<"):"<<endl;
-    // for (int nu=0; nu < 4; nu++){
-    //     ss << "nu: "<< nu << " ";
-    //     for (unsigned int i = 0; i < space_dimension; i++){
-    //             ss << proposed_evaluation[nu][i] << " ";
-    //         }
-    //     ss << endl;
-    // }
-    // get_global_logger().log(WARNING, ss.str());
 
     // Updates the state
     proposed_state = state_history.back();
@@ -318,11 +333,17 @@ void ContinuousRK::compute_next(){
             proposed_state[i] += evo->dt * b[nu] * proposed_evaluation[nu][i];
         }
     }//~Updates the state
+    stringstream ss;
+    ss << "Creating new state at index " << state_history.size() <<endl;
 
-    // ss.str(""); ss.clear();
-    // ss << "Old axis0: "<< state_history.back()[0] << endl;
-    // ss << "New axis0: "<< proposed_state[0] <<endl;
-    // get_global_logger().log(INFO, ss.str());
+    ss << "for axis 0:"<< endl;
+    ss << "\t new_state: " << proposed_state[0]<<endl;
+    ss << "Ks: ";
+    for (int nu = 0; nu < 4; nu++){
+        ss << proposed_evaluation[nu][0] << " ";
+    }
+
+    get_global_logger().log(WARNING, ss.str());
 }
 
 void ContinuousRK::fix_next(){
