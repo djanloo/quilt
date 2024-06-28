@@ -272,14 +272,14 @@ void test_oscill(){
         OscFile << endl;
     }
 
-    // ofstream OscInterp("cortex_interpolated.txt");
-    // for (int i=0; i < 9*TT; i++ ){
-    //     for (auto oscill : osc_net.oscillators){
-    //         auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
-    //         OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, 0.1*i)) << " ";
-    //     }
-    //     OscInterp << endl;
-    // }
+    ofstream OscInterp("cortex_interpolated.txt");
+    for (int i=0; i < 9*TT; i++ ){
+        for (auto oscill : osc_net.oscillators){
+            auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+            OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, 0.1*i)) << " ";
+        }
+        OscInterp << endl;
+    }
 }
 
 
