@@ -333,17 +333,18 @@ void ContinuousRK::compute_next(){
             proposed_state[i] += evo->dt * b[nu] * proposed_evaluation[nu][i];
         }
     }//~Updates the state
-    stringstream ss;
-    ss << "Creating new state at index " << state_history.size() <<endl;
+    
+    // stringstream ss;
+    // ss << "Creating new state at index " << state_history.size() <<endl;
 
-    ss << "for axis 0:"<< endl;
-    ss << "\t new_state: " << proposed_state[0]<<endl;
-    ss << "Ks: ";
-    for (int nu = 0; nu < 4; nu++){
-        ss << proposed_evaluation[nu][0] << " ";
-    }
+    // ss << "for axis 0:"<< endl;
+    // ss << "\t new_state: " << proposed_state[0]<<endl;
+    // ss << "Ks: ";
+    // for (int nu = 0; nu < 4; nu++){
+    //     ss << proposed_evaluation[nu][0] << " ";
+    // }
 
-    get_global_logger().log(WARNING, ss.str());
+    // get_global_logger().log(WARNING, ss.str());
 }
 
 void ContinuousRK::fix_next(){
