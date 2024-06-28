@@ -47,6 +47,8 @@ rates = rate_of_spikes(tsp, time_bins, N)
 osc_interp = np.loadtxt("osc_interpol.txt")
 plt.plot(np.arange(len(osc_interp))*dt, osc_interp, label = "oscillator past NCE interpolated")
 
+plt.plot(np.arange(len(osc_interp)-1)*dT,np.diff(osc_interp)/dT)
+
 
 t, rate = np.loadtxt("td_incoming_rates.txt", unpack=True)
 plt.scatter(t - delay, rate, label="TD incoming rate (shifted)", s=2, color="k", zorder=22)

@@ -217,13 +217,9 @@ double ContinuousRK::get_past(int axis, double abs_time){
     vector<double> b_func_values = b_functions(theta);
 
     // Updates using the interpolant
-    cout << "Printing b-coeffiecients for t = " << abs_time << "bin number: " << bin_id << " - theta: "<<theta<<endl;
     for (int nu = 0; nu < 4; nu++){
-        cout << b_func_values[nu]<< " ";
         y += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
     }
-    cout << endl;
-
 
     /**      *      *                  DEBUG        *        *                */
 
@@ -247,28 +243,28 @@ double ContinuousRK::get_past(int axis, double abs_time){
 
 
 
-        for (int nu = 0; nu< 4; nu++){
-            msg << "b_"<<nu << "(theta = 1 ): "<< b_func_values[nu]<<endl;
-            msg << "b_"<<nu << ": "<< b[nu] << endl;
+        // for (int nu = 0; nu< 4; nu++){
+        //     msg << "b_"<<nu << "(theta = 1 ): "<< b_func_values[nu]<<endl;
+        //     msg << "b_"<<nu << ": "<< b[nu] << endl;
 
-            msg << "\tadding to delta b_"<<nu <<" * K_"<<nu <<endl
-                << "\t\t K_"<< nu <<" = " << evaluation_history[bin_id][nu][axis] << endl;
-        }
-        msg << "evaluation history is:" <<endl;
-        for (int kk = 0; kk < evaluation_history.size(); kk++){
-            msg << "( ";
-            for (int nu=0; nu<4; nu++){
-                msg << evaluation_history[kk][nu][0] << ", ";
-            }
-            msg << ") -- ";
-        }
+        //     msg << "\tadding to delta b_"<<nu <<" * K_"<<nu <<endl
+        //         << "\t\t K_"<< nu <<" = " << evaluation_history[bin_id][nu][axis] << endl;
+        // }
+        // msg << "evaluation history is:" <<endl;
+        // for (int kk = 0; kk < evaluation_history.size(); kk++){
+        //     msg << "( ";
+        //     for (int nu=0; nu<4; nu++){
+        //         msg << evaluation_history[kk][nu][0] << ", ";
+        //     }
+        //     msg << ") -- ";
+        // }
 
-        msg << endl<< "state history is:" <<endl;
-        for (int kk = 0; kk < state_history.size(); kk++){
-            msg << "( ";
-            msg << state_history[kk][0];
-            msg << ") -- ";
-        }
+        // msg << endl<< "state history is:" <<endl;
+        // for (int kk = 0; kk < state_history.size(); kk++){
+        //     msg << "( ";
+        //     msg << state_history[kk][0];
+        //     msg << ") -- ";
+        // }
 
         get_global_logger().log(ERROR, msg.str());
     }
@@ -304,16 +300,16 @@ void ContinuousRK::compute_next(){
 
     }//~Compute K values
 
-    stringstream ss;
-    ss<< "Proposed_evaluations for t = "<< evo->now << " (timestep " << evo->index_of(evo->now) <<"):"<<endl;
-    for (int nu=0; nu < 4; nu++){
-        ss << "nu: "<< nu << " ";
-        for (unsigned int i = 0; i < space_dimension; i++){
-                ss << proposed_evaluation[nu][i] << " ";
-            }
-        ss << endl;
-    }
-    get_global_logger().log(WARNING, ss.str());
+    // stringstream ss;
+    // ss<< "Proposed_evaluations for t = "<< evo->now << " (timestep " << evo->index_of(evo->now) <<"):"<<endl;
+    // for (int nu=0; nu < 4; nu++){
+    //     ss << "nu: "<< nu << " ";
+    //     for (unsigned int i = 0; i < space_dimension; i++){
+    //             ss << proposed_evaluation[nu][i] << " ";
+    //         }
+    //     ss << endl;
+    // }
+    // get_global_logger().log(WARNING, ss.str());
 
     // Updates the state
     proposed_state = state_history.back();
@@ -323,10 +319,10 @@ void ContinuousRK::compute_next(){
         }
     }//~Updates the state
 
-    ss.str(""); ss.clear();
-    ss << "Old axis0: "<< state_history.back()[0] << endl;
-    ss << "New axis0: "<< proposed_state[0] <<endl;
-    get_global_logger().log(INFO, ss.str());
+    // ss.str(""); ss.clear();
+    // ss << "Old axis0: "<< state_history.back()[0] << endl;
+    // ss << "New axis0: "<< proposed_state[0] <<endl;
+    // get_global_logger().log(INFO, ss.str());
 }
 
 void ContinuousRK::fix_next(){
