@@ -247,9 +247,9 @@ void test_oscill(){
 
     osc_net.build_connections(proj, link_params);
     osc_net.initialize(&evo, init_cond);
-
+    
     ofstream file("output.txt");
-    osc_net.run(&evo, 2000, 1);
+    osc_net.run(&evo, 1000, 1);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){
@@ -271,6 +271,15 @@ void test_oscill(){
         }
         OscFile << endl;
     }
+
+    // ofstream OscInterp("cortex_interpolated.txt");
+    // for (int i=0; i < 9*TT; i++ ){
+    //     for (auto oscill : osc_net.oscillators){
+    //         auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+    //         OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, 0.1*i)) << " ";
+    //     }
+    //     OscInterp << endl;
+    // }
 }
 
 
@@ -429,9 +438,9 @@ void test_multiscale_base(){
         initstate[0] = 0.5 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
         initstate[1] = 23.9 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
         initstate[2] = 16.2 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
-        initstate[3] = -0.14/1e6 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
-        initstate[4] = 5.68/1e6 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
-        initstate[5] = 108.2/1e6 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
+        initstate[3] = -0.14/1e3 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
+        initstate[4] = 5.68/1e3 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
+        initstate[5] = 108.2/1e3 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
 
         
         init_cond.push_back(initstate);
@@ -518,8 +527,8 @@ int main(){
     // test_sparse();
     // test_poisson();
     // test_NCERK();
-    // test_oscill();
+    test_oscill();
     // test_inhom_poisson();
-    test_multiscale_base();
+    // test_multiscale_base();
 }
 
