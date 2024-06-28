@@ -17,6 +17,10 @@
 #include "include/multiscale.hpp"
 
 
+
+#include <iomanip>  // Per std::setprecision e std::fixed
+#include <limits>   // Per std::numeric_limits
+
 using namespace std;
 // ulimit -c unlimited
 // sudo sysctl -w kernel.core_pattern=/tmp/core-%e.%p.%h.%t
@@ -206,7 +210,7 @@ void test_oscill(){
     cout << "Making projection" << endl;
     Projection * proj = new Projection(weights, delays);
 
-    EvolutionContext evo = EvolutionContext(1);
+    EvolutionContext evo = EvolutionContext(2);
 
     ParaMap * params = new ParaMap();
     ParaMap * link_params = new ParaMap();
@@ -260,7 +264,45 @@ void test_oscill(){
         file << endl;
     }
 
+    //  Print potential
+    // ofstream OscFile("cortex.txt");
+
+    // OscFile << setprecision(std::numeric_limits<double>::max_digits10) 
+    //         << std::fixed;
+
+    // int TT = osc_net.oscillators[0]->get_history().size();
+
+    // for (int i=0; i < TT; i++ ){
+    //     for (auto oscill : osc_net.oscillators){
+    //         auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+    //         OscFile << osc_casted->get_history()[i][0] << " ";
+    //     }
+    //     OscFile << endl;
+    // }
+
+    // ofstream OscInterp("cortex_interpolated.txt");
+    // OscInterp << setprecision(std::numeric_limits<double>::max_digits10) 
+    //         << std::fixed;
+    // int i = 0;
+    // while (true){
+    //     try {
+    //         for (auto oscill : osc_net.oscillators){
+    //             auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+    //             OscInterp << osc_casted->get_past(0, 0.05*i) << " ";
+    //         }
+    //         OscInterp << endl;
+    //         i ++;
+    //     }catch(not_yet_computed_exception &e){
+    //         break;
+    //     }
+    // }
+
+
+    //  Print rates
     ofstream OscFile("cortex.txt");
+
+    OscFile << setprecision(std::numeric_limits<double>::max_digits10) 
+            << std::fixed;
 
     int TT = osc_net.oscillators[0]->get_history().size();
 
@@ -273,12 +315,22 @@ void test_oscill(){
     }
 
     ofstream OscInterp("cortex_interpolated.txt");
-    for (int i=0; i < 9*TT; i++ ){
-        for (auto oscill : osc_net.oscillators){
-            auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
-            OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, 0.1*i)) << " ";
+
+    OscInterp << setprecision(std::numeric_limits<double>::max_digits10) 
+            << std::fixed;
+
+    int i = 0;
+    while (true){
+        try {
+            for (auto oscill : osc_net.oscillators){
+                auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+                OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, 0.05*i)) << " ";
+            }
+            OscInterp << endl;
+            i ++;
+        }catch(not_yet_computed_exception &e){
+            break;
         }
-        OscInterp << endl;
     }
 }
 
