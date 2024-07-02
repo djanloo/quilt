@@ -35,7 +35,7 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     }
     has_oscillators = true;
 
-    get_global_logger().log(WARNING, "Built HOMOGENEOUS OscillatorNetwork");
+    get_global_logger().log(INFO, "Built HOMOGENEOUS OscillatorNetwork");
 }
 
 // Homogeneous network builder
@@ -180,7 +180,7 @@ void OscillatorNetwork::evolve(){
     std::stringstream ss;
 
     ss << "Evolving OSCILLATOR network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")";
-    log.log(INFO, ss.str());
+    log.log(DEBUG, ss.str());
 
     // Gets the new values
     for (auto oscillator : oscillators){

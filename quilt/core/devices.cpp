@@ -239,7 +239,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
     // Gets an independent random number generator
     RNG * thread_rng = rng_disp->get_rng();
 
-    inhomlog.log(INFO, "Starting generation " + to_string(generation));
+    inhomlog.log(DEBUG, "Starting generation " + to_string(generation));
 
     for (int i = start_id; i < end_id; i++)
     {
@@ -414,7 +414,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
 
         stringstream ss;
         ss <<  "InhomPoiss is injecting - now is " << evo->now << " with dt "<<evo->dt; 
-        get_global_logger().log(INFO,ss.str());
+        get_global_logger().log(DEBUG,ss.str());
 
         inhomlog.log(DEBUG, "Before this generation, " + std::to_string(nullcalls) + " null calls were performed");
         inhomlog.log(DEBUG, "\tnow:" + std::to_string(evo->now));
@@ -436,7 +436,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     }
     stringstream ss;
     ss << "Getting rate of incoming oscillators from t= "<<currently_generated_time << " to t= "<<currently_generated_time + rate_func_buf_size*evo->dt;
-    get_global_logger().log(WARNING, ss.str());
+    get_global_logger().log(DEBUG, ss.str());
     // cout << endl;
     
     int n_threads = N_THREADS_INHOM_POISS_INJECT;

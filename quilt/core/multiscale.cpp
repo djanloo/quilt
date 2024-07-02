@@ -86,8 +86,8 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     int time_idx_1 = spikenet_evo->index_of(time - T/2);
     int time_idx_2 = spikenet_evo->index_of(time + T/2);
 
-    cout << "\tdt = " << spikenet_evo->dt << ", dT = " << oscnet_evo->dt <<endl;
-    cout << "time indexes: [" << time_idx_1 << "," << time_idx_2 << "]" << endl;
+    // cout << "\tdt = " << spikenet_evo->dt << ", dT = " << oscnet_evo->dt <<endl;
+    // cout << "time indexes: [" << time_idx_1 << "," << time_idx_2 << "]" << endl;
     
     // double theta = evo->deviation_of(time); //TODO: make this not useless
 
