@@ -128,11 +128,11 @@ class Population{
         // Bureaucracy
         HierarchicalID id;
         SpikingNetwork * spiking_network;
-        double timestats_evo;
-        double timestats_spike_emission;
+
         void print_info();
         void set_evolution_context(EvolutionContext * evo);
         
+        PerformanceManager perf_mgr;
     private:
         EvolutionContext * evo;
 
@@ -177,6 +177,7 @@ class SpikingNetwork{
         void evolve();
         void run(EvolutionContext * evo, double time, int verbosity);
 
+        PerformanceManager perf_mgr;
     private:
         EvolutionContext * evo;
         bool evocontext_initialized;

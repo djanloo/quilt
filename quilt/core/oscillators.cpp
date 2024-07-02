@@ -24,6 +24,7 @@ void Oscillator::set_evolution_context(EvolutionContext * evo)
 
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
+    :   perf_mgr({"evolution"})
 {    
     // Bureaucracy
     id = HierarchicalID();
@@ -35,11 +36,15 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     }
     has_oscillators = true;
 
+    perf_mgr.set_label("oscillator_network");
+    perf_mgr.set_scales({{"evolution", N}});
+
     get_global_logger().log(INFO, "Built HOMOGENEOUS OscillatorNetwork");
 }
 
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
+    :   perf_mgr({"evolution"})
 {   
     // Bureaucracy
     id = HierarchicalID();
@@ -50,7 +55,12 @@ OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
         oscillators.push_back(get_oscillator_factory().get_oscillator(oscillator_type, params[i], this));
     }
     has_oscillators = true;
+
+    perf_mgr.set_label("oscillator_network");
+    perf_mgr.set_scales({{"evolution", params.size()}});
+
     get_global_logger().log(INFO, "Built NON-HOMOGENEOUS OscillatorNetwork");
+
 }
 
 void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_params)
@@ -182,6 +192,8 @@ void OscillatorNetwork::evolve(){
     ss << "Evolving OSCILLATOR network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")";
     log.log(DEBUG, ss.str());
 
+    perf_mgr.start_recording("evolution");
+
     // Gets the new values
     for (auto oscillator : oscillators){
         oscillator->memory_integrator.compute_next();
@@ -191,6 +203,7 @@ void OscillatorNetwork::evolve(){
     for (auto oscillator : oscillators){
         oscillator->memory_integrator.fix_next();
     }
+    perf_mgr.end_recording("evolution");
 
     evo->do_step();
 }
