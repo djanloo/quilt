@@ -198,12 +198,8 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         n_spikes_last_step(0),
         id(&(spiking_network->id)),
         spiking_network(spiking_network),
-        timestats_evo(0), 
-        timestats_spike_emission(0)
+        perf_mgr({"evolution", "spike_emission"})
 {
-
-    // // Adds itself to the hierarchical structure
-    // id = HierarchicalID(&(spiking_network->id));
 
     // Adds itself to the spiking network populations
     (spiking_network->populations).push_back(this);
@@ -228,6 +224,12 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     for ( int i = 0; i < n_neurons; i++){
         neurofactory->get_neuron( params->get<string>("neuron_type"), this);
     }
+
+    // Sets the scale for the evolution operation in PerformanceManager
+    // this prevents from calling start_recording on each neuron and saves the overhead time
+    perf_mgr.set_label("Population " + to_string(id.get_id()));
+    perf_mgr.set_scales({{"evolution",      n_neurons}, 
+                         {"spike_emission", n_neurons}});
 }
 
 void Population::project(const Projection * projection, Population * efferent_population)
@@ -257,7 +259,9 @@ void Population::project(const SparseProjection * projection, Population * effer
 
 void Population::evolve()
 {
-    auto start = std::chrono::high_resolution_clock::now();
+    // auto start = std::chrono::high_resolution_clock::now();
+
+    perf_mgr.start_recording("evolution");
 
     // Splits the work in equal parts using Nthreads threads
     unsigned int n_threads;
@@ -305,13 +309,15 @@ void Population::evolve()
         }
     } // multithreading case end
 
-    auto end = std::chrono::high_resolution_clock::now();
-    timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+    // auto end = std::chrono::high_resolution_clock::now();
+    perf_mgr.end_recording("evolution");
+    // timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
-    start = std::chrono::high_resolution_clock::now();
+    // start = std::chrono::high_resolution_clock::now();
+    perf_mgr.start_recording("spike_emission");
     this->n_spikes_last_step = 0;
     
     for (auto neuron : this->neurons){
@@ -321,9 +327,9 @@ void Population::evolve()
         }
         
     }
-
-    end = std::chrono::high_resolution_clock::now();
-    timestats_spike_emission += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+    perf_mgr.end_recording("spike_emission");
+    // end = std::chrono::high_resolution_clock::now();
+    // timestats_spike_emission += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 }
 
 void Population::print_info()
@@ -368,9 +374,11 @@ Population::~Population()
 }
 
 SpikingNetwork::SpikingNetwork()
-    :   evocontext_initialized(false)
+    :   evocontext_initialized(false),
+        id(),
+        perf_mgr({"simulation", "monitorize", "inject"})
 {
-    id = HierarchicalID();
+    perf_mgr.set_label("spiking network");
 }
 
 PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population)
@@ -434,12 +442,10 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
     ss << "Evolving spiking network from t= "<< evo->now << " to t= " << time;
     get_global_logger().log(INFO, ss.str());
 
-    auto start = std::chrono::high_resolution_clock::now();
+    perf_mgr.start_recording("simulation");
+
     int n_steps_done  = 0;
     int n_steps_total = static_cast<int>(time / evo->dt) ;
-
-    auto gather_time = std::chrono::duration_cast<std::chrono::microseconds>(start-start).count();
-    auto inject_time = std::chrono::duration_cast<std::chrono::microseconds>(start-start).count();
 
     int n_neurons_total = 0;
     for (auto pop : populations){n_neurons_total += pop->n_neurons;}
@@ -476,21 +482,18 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
     while (evo -> now < time){
 
         // Gathering from populations
-        auto start_gather = std::chrono::high_resolution_clock::now();
+        perf_mgr.start_recording("monitorize");
         for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
         }
-
-        auto end_gather = std::chrono::high_resolution_clock::now();
-        gather_time += std::chrono::duration_cast<std::chrono::microseconds>(end_gather-start_gather).count();
+        perf_mgr.end_recording("monitorize");
 
         // Injection of currents
-        auto start_inject = std::chrono::high_resolution_clock::now();
+        perf_mgr.start_recording("inject");
         for (auto injector : this->injectors){
             injector->inject(evo);
         }
-        auto end_inject = std::chrono::high_resolution_clock::now();
-        inject_time += std::chrono::duration_cast<std::chrono::microseconds>(end_inject-start_inject).count();
+        perf_mgr.end_recording("inject");
 
         // Evolution of each population
         for (auto population : this -> populations)
@@ -502,22 +505,15 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
         n_steps_done++;
         ++bar;
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    perf_mgr.end_recording("simulation");
 
+    // Prints performance
     if (verbosity > 0){
-        std::cout << "Simulation took " << (std::chrono::duration_cast<std::chrono::seconds>(end -start)).count() << " s";
-        std::cout << "\t(" << ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count())/n_steps_done << " ms/step)" << std::endl;
 
-        std::cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << std::endl;
-        std::cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << std::endl;
+        perf_mgr.print_record();
 
-        std::cout << "Population evolution stats:" << std::endl;
         for (auto pop : populations){
-            std::cout << "\t" << pop->id.get_id() << ":"<<std::endl;
-            std::cout << "\t\tevolution:\t" << pop->timestats_evo/n_steps_done << " us/step";
-            std::cout << "\t---\t" << static_cast<int>(pop->timestats_evo/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
-            std::cout << "\t\tspike emission:\t" << pop->timestats_spike_emission/n_steps_done << " us/step";
-            std::cout << "\t---\t" << static_cast<int>(pop->timestats_spike_emission/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
+            pop->perf_mgr.print_record();
         }
     }
 }

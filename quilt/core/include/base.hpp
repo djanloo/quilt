@@ -205,15 +205,20 @@ class RNGDispatcher{
 
 class PerformanceManager{
     private:
-        map<string, double> task_duration;
+        string label;
+        map<string, std::chrono::microseconds> task_duration;
         map<string, std::chrono::time_point<std::chrono::high_resolution_clock>> task_start_time;
+        map<string, int> task_count;
+        map<string, int> task_scale; //!< This prevents overhead for many calls (e.g. evolution of neurons)
 
     public:
         PerformanceManager(vector<string> task_names);
-
+        void set_label(string label);
+        void set_scales(map<string, int> scales);
         void start_recording(string task);
         void end_recording(string task);
         void print_record();
+        string format_duration(std::chrono::microseconds duration);
 };
 
 

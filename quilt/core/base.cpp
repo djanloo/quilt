@@ -10,10 +10,14 @@
 // #include <boost/timer/progress_display.hpp>
 #include "include/base.hpp"
 
+#define PERFMGR_OUTPUT_DIGITS 1
+
+
 using std::cout;
 using std::endl;
 using std::runtime_error;
 using std::vector;
+
 
 //************************* THREAD SAFE FILE ***************************//
 
@@ -95,10 +99,24 @@ Logger& get_global_logger(){
     return logger;
 }
 
+/************************************ PERFORMANCE MANAGER ***********************************/
 
-PerformanceManager::PerformanceManager(vector<string> task_names){
+PerformanceManager::PerformanceManager(vector<string> task_names)
+    :   label("no label")
+    {
     for (int i = 0; i < task_names.size(); i++ ){
-        task_duration[task_names[i]] = 0.0;
+        task_duration[task_names[i]] = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::duration<double>(0.0));
+        task_count[task_names[i]] = 0;
+        task_scale[task_names[i]] = 1;
+    }
+
+}
+
+void PerformanceManager::set_label(string label){ this->label = label; }
+
+void PerformanceManager::set_scales(map<string, int> scales){
+    for (auto &pair : scales){
+        task_scale[pair.first] = pair.second;
     }
 }
 
@@ -106,9 +124,46 @@ void PerformanceManager::start_recording(string task){
     task_start_time[task] = std::chrono::high_resolution_clock::now();
 }
 void PerformanceManager::end_recording(string task){
-    task_duration[task] += std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - task_start_time[task]).count();
+    task_count[task] ++;
+    task_duration[task] += std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - task_start_time[task]);
 }
 
+void PerformanceManager::print_record(){
+    stringstream ss;
+    ss << "Output for PerformanceManager "  << "<" << label << ">" << endl;
+    for (auto &pair : task_duration){
+        ss <<"\t--" << pair.first << " " << format_duration(pair.second) << " - ";
+        std::chrono::microseconds time_per_call = pair.second;
+        time_per_call /= static_cast<double>(task_count[pair.first]);
+        ss << "(" << format_duration(time_per_call) << " /step for "<< task_count[pair.first] << " steps )";
+
+        if (task_scale[pair.first] > 1){
+            time_per_call /= task_scale[pair.first];
+            ss << "(" << format_duration(time_per_call) << " /step/unit for "<< task_count[pair.first] << " steps and "<< task_scale[pair.first] << " units)";
+        }
+        ss << endl;
+    } 
+    get_global_logger().log(INFO, ss.str());
+}
+
+string PerformanceManager::format_duration (std::chrono::microseconds duration) {
+    auto micros = duration.count();
+    stringstream ss;
+    ss << std::setprecision(PERFMGR_OUTPUT_DIGITS) << std::fixed;
+    if (micros >= 1000000) {
+        double seconds = std::chrono::duration_cast <std::chrono::seconds>(duration).count();
+        ss << seconds << " s";
+    } else if (micros >= 1000) { 
+        double milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        ss << milliseconds << " ms";
+    } else if (micros >= 1){ 
+        ss << micros << " us";
+    } else {
+        double nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
+        ss << nanoseconds << " ns";
+    }
+    return ss.str();
+}
 
 //************************* UTILS FOR DYNAMICAL SYSTEMS **********************//
 
@@ -223,7 +278,8 @@ double ContinuousRK::get_past(int axis, double abs_time){
     if (bin_id < 0) 
         throw negative_time_exception("Requested past state that lays before initialization");
     
-    else if (bin_id > static_cast<int>(state_history.size() - 1))
+    // Remember that if state history has N values then the evaluation history has N-1
+    else if (bin_id > static_cast<int>(state_history.size()) - 2)
         throw not_yet_computed_exception("The requested past state is not computed yet");
 
     // Get the values and the interpolation weights related to that moment in time

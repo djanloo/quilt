@@ -151,7 +151,8 @@ InhomPoissonSpikeSource::InhomPoissonSpikeSource( Population * pop,
         weight(weight), 
         weight_delta(weight_delta),
         generation_window_length(generation_window_length),
-        currently_generated_time(0)
+        currently_generated_time(0),
+        perf_mgr({"injection"})
 {
     // Spike time initialization
     integration_start = std::vector<double> (pop->n_neurons, 0);
@@ -173,6 +174,9 @@ InhomPoissonSpikeSource::InhomPoissonSpikeSource( Population * pop,
         weights[i] = weight + weight_delta * (rng.get_uniform() - 0.5);
         if (weights[i] < 0) throw std::runtime_error("Poisson spikesource weight is < 0");
     }
+
+    // Sets the label for the performance manager
+    perf_mgr.set_label("transducer of pop " + to_string(pop->id.get_id()));
 }
 
 
@@ -407,6 +411,10 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
 void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // inhomlog.set_level(INFO);
     // If we are in a time window that was already generated, do nothing
+
+    // Measure the time from the parent thread
+    perf_mgr.start_recording("injection");
+
     if (evo->now < currently_generated_time){
         nullcalls ++;
         return;
@@ -468,4 +476,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // If the window generation is finished, updates the generated time
     currently_generated_time += generation_window_length;
     generation++;
+
+    // Ends time measure
+    perf_mgr.end_recording("injection");
 }

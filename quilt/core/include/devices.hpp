@@ -185,6 +185,8 @@ class InhomPoissonSpikeSource: public PopInjector{
         void _inject_partition(double now, double dt, int start_id, int end_id, RNGDispatcher * rng_disp);
         void inject(EvolutionContext * evo) override;
 
+        PerformanceManager perf_mgr;
+
     private:
         std::function<double(double)> rate_function;
         float weight;       //!< Weight of the spikes
