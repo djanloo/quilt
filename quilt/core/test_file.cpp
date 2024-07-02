@@ -197,11 +197,11 @@ void test_NCERK(){
 
 void test_oscill(){
 
-    int N = 5;
+    int N = 20;
     vector<vector<float>> weights, delays;
 
 
-    weights = get_rand_proj_mat(N,N, 2.0, 5.0);
+    weights = get_rand_proj_mat(N,N, 50, 100);
     delays = get_rand_proj_mat(N,N, 80, 200);
 
     for (int i = 0; i< N; i++){
@@ -238,7 +238,7 @@ void test_oscill(){
     for (int i=0; i< N; i++){
         vector<double> initstate(6, 2);
 
-        initstate[0] = 0.13 * (1+ static_cast<double>(rand())/RAND_MAX);
+        initstate[0] = 0.07 * (1+ static_cast<double>(rand())/RAND_MAX);
         initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
         initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
         initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
@@ -246,14 +246,14 @@ void test_oscill(){
         initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
 
         init_cond.push_back(initstate);
-        cout << *(osc_net.oscillators[i]->params);
+        // cout << *(osc_net.oscillators[i]->params);
     }    
 
     osc_net.build_connections(proj, link_params);
     osc_net.initialize(&evo, init_cond);
     
     ofstream file("output.txt");
-    osc_net.run(&evo, 200, 1);
+    osc_net.run(&evo, 2000, 1);
 
     for (int i=0; i < osc_net.oscillators[0]->memory_integrator.state_history.size(); i++){
         for (auto osc : osc_net.oscillators){
@@ -314,24 +314,24 @@ void test_oscill(){
         OscFile << endl;
     }
 
-    ofstream OscInterp("cortex_interpolated.txt");
+    // ofstream OscInterp("cortex_interpolated.txt");
 
-    OscInterp << setprecision(std::numeric_limits<double>::max_digits10) 
-            << std::fixed;
+    // OscInterp << setprecision(std::numeric_limits<double>::max_digits10) 
+    //         << std::fixed;
 
-    int i = 0;
-    while (true){
-        try {
-            for (auto oscill : osc_net.oscillators){
-                auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
-                OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, 0.05*i)) << " ";
-            }
-            OscInterp << endl;
-            i ++;
-        }catch(not_yet_computed_exception &e){
-            break;
-        }
-    }
+    // int i = 0;
+    // while (true){
+    //     try {
+    //         for (auto oscill : osc_net.oscillators){
+    //             auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+    //             OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, 0.05*i)) << " ";
+    //         }
+    //         OscInterp << endl;
+    //         i ++;
+    //     }catch(not_yet_computed_exception &e){
+    //         break;
+    //     }
+    // }
 }
 
 
@@ -545,7 +545,7 @@ void test_multiscale_base(){
     // logger.log(INFO, "running multinet" );    
     // Evolve
 
-    multi_net.run(30, 1);
+    multi_net.run(500, 1);
 
     ofstream SpikeFile("spiking_history.txt");
     for (auto a : static_cast<PopulationSpikeMonitor*>(spike_net.population_monitors[0])->get_history()){
@@ -579,8 +579,8 @@ int main(){
     // test_sparse();
     // test_poisson();
     // test_NCERK();
-    test_oscill();
+    // test_oscill();
     // test_inhom_poisson();
-    // test_multiscale_base();
+    test_multiscale_base();
 }
 

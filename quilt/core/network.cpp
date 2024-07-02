@@ -410,7 +410,7 @@ void SpikingNetwork::evolve(){
 
     stringstream ss;
     ss << "Evolving SPIKING network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")";
-    get_global_logger().log(INFO, ss.str());
+    get_global_logger().log(DEBUG, ss.str());
     for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
         }
