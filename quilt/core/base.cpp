@@ -96,6 +96,20 @@ Logger& get_global_logger(){
 }
 
 
+PerformanceManager::PerformanceManager(vector<string> task_names){
+    for (int i = 0; i < task_names.size(); i++ ){
+        task_duration[task_names[i]] = 0.0;
+    }
+}
+
+void PerformanceManager::start_recording(string task){
+    task_start_time[task] = std::chrono::high_resolution_clock::now();
+}
+void PerformanceManager::end_recording(string task){
+    task_duration[task] += std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - task_start_time[task]).count();
+}
+
+
 //************************* UTILS FOR DYNAMICAL SYSTEMS **********************//
 
 HierarchicalID::HierarchicalID()
