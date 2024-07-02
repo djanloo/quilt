@@ -21,7 +21,7 @@ time = np.arange(len(osc[0]))*dT
 for i, o in enumerate(osc):
     plt.plot(time, o, label = f"osc_{i}", marker="o")
 
-# plt.step(np.arange(0, len(bin_spikes(sp))) , bin_spikes(sp), label="binned_spikes")
+plt.step(np.arange(0, len(bin_spikes(sp))) , bin_spikes(sp), label="binned_spikes")
 
 
 def rate_of_spikes(spikes, time_bins, N_samples):
@@ -41,21 +41,21 @@ N = np.max(n)
 time_bins = np.linspace(0, len(sp)*dt, 200)
 rates = rate_of_spikes(tsp, time_bins, N)
 
-# plt.step(time_bins, rates, where="mid", label="Transducer spikes")
+plt.step(time_bins, rates, where="mid", label="Transducer spikes")
 
 
 osc_interp = np.loadtxt("osc_interpol.txt")
 plt.plot(np.arange(len(osc_interp))*dt, osc_interp, label = "oscillator past NCE interpolated")
 
-plt.plot(np.arange(len(osc_interp)-1)*dT,np.diff(osc_interp)/dT)
+# plt.plot(np.arange(len(osc_interp)-1)*dT,np.diff(osc_interp)/dT)
 
 
 t, rate = np.loadtxt("td_incoming_rates.txt", unpack=True)
-plt.scatter(t - delay, rate, label="TD incoming rate (shifted)", s=2, color="k", zorder=22)
+plt.scatter(t, rate, label="TD incoming rate (shifted)", s=2, color="k", zorder=22)
 
 
 
-plt.xlim(11, 16)
-plt.ylim(0.215, 0.221)
+# plt.xlim(11, 16)
+# plt.ylim(0.215, 0.221)
 plt.legend()
 plt.show()
