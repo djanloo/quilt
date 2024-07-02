@@ -17,6 +17,9 @@
 #include <fstream> 
 #include <sstream> 
 
+#include <chrono>
+
+
 #define WEIGHT_EPS 0.00001 //!< Weight threshold of synapses to be considered as zeroed out.
 
 using std::cout;
@@ -197,6 +200,20 @@ class RNGDispatcher{
         std::vector<RNG*> rngs;
         map<RNG*, bool> is_occupied;
         map<std::thread::id, RNG*> pids;
+};
+
+
+class PerformanceManager{
+    private:
+        map<string, double> task_duration;
+        map<string, std::chrono::time_point<std::chrono::high_resolution_clock>> task_start_time;
+
+    public:
+        PerformanceManager(vector<string> task_names);
+
+        void start_recording(string task);
+        void end_recording(string task);
+        void print_record();
 };
 
 
