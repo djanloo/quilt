@@ -268,20 +268,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
             // Skip the neuron, the appropriate generation will take care of him
             continue;
         }
-
-        // 
-        /**
-         * This loops goes on until all the window is generated.
-         * 
-         * The first spike outside the generation window is accepted.
-         * This is necessary because of the random nature of the process.
-         * 
-         * Imagine that the window is 50ms and the last valid spike is generated at 45ms.
-         * This function will do nothing until evo->now is over 50ms, and it may happen that
-         * a spike is generated at, say, 48ms while the spiking network is at 50.
-         * 
-         * This will raise a "Spike in past" error. 
-        */
+        
         do{
             timestep_done = 0;
             stringstream ss;
