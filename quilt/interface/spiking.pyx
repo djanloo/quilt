@@ -20,12 +20,12 @@ ctypedef vector[double] neuron_state
 
 cdef class SparseProjector:
 
-    cdef:
-        cinter.SparseProjection * _projection
-        int type
-        int dist_type
-        double connectivity
-        float weight, weight_delta, delay, delay_delta
+    # cdef:
+    #     cinter.SparseProjection * _projection
+    #     int type
+    #     int dist_type
+    #     double connectivity
+    #     float weight, weight_delta, delay, delay_delta
 
     def __cinit__(self, params_dict, dist_type="lognorm"):
         if params_dict["type"] != 'exc' and params_dict["type"] != 'inh':
@@ -82,11 +82,11 @@ cdef class SparseProjector:
 
 cdef class Population:
 
-    cdef cinter.Population * _population
-    cdef cinter.PopulationSpikeMonitor * _spike_monitor 
-    cdef cinter.PopulationStateMonitor * _state_monitor
+    # cdef cinter.Population * _population
+    # cdef cinter.PopulationSpikeMonitor * _spike_monitor 
+    # cdef cinter.PopulationStateMonitor * _state_monitor
 
-    cdef SpikingNetwork spikenet
+    # cdef SpikingNetwork spikenet
 
     def __cinit__(self, int n_neurons, base.ParaMap params, SpikingNetwork spikenet):
 
@@ -163,9 +163,9 @@ cdef class Population:
 
 cdef class SpikingNetwork:
 
-    cdef cinter.SpikingNetwork * _spiking_network
-    cdef cinter.EvolutionContext * _evo
-    cdef str name
+    # cdef cinter.SpikingNetwork * _spiking_network
+    # cdef cinter.EvolutionContext * _evo
+    # cdef str name
 
     def __cinit__(self, str name):
         self._spiking_network = new cinter.SpikingNetwork()
@@ -185,62 +185,62 @@ def set_verbosity(v):
     global VERBOSITY
     VERBOSITY = v
 
-class RandomProjector:
-    """Not an interface nor a C++ object, but stick to the convention"""
-    def __init__(self,  inh_fraction=0.0, exc_fraction=0.0,
-                        weight_inh = 0.0, weight_exc = 0.0,
-                        weight_inh_delta = 0, weight_exc_delta = 0.0,
-                        delay = 0.5, delay_delta=0.0):
+# class RandomProjector:
+#     """Not an interface nor a C++ object, but stick to the convention"""
+#     def __init__(self,  inh_fraction=0.0, exc_fraction=0.0,
+#                         weight_inh = 0.0, weight_exc = 0.0,
+#                         weight_inh_delta = 0, weight_exc_delta = 0.0,
+#                         delay = 0.5, delay_delta=0.0):
 
-        if weight_inh < 0:
-            raise ValueError( "Inhibition weight is a positive number")
+#         if weight_inh < 0:
+#             raise ValueError( "Inhibition weight is a positive number")
 
-        self.weight_inh = weight_inh
-        self.weight_inh_delta = weight_inh_delta
+#         self.weight_inh = weight_inh
+#         self.weight_inh_delta = weight_inh_delta
 
-        if weight_inh - weight_inh_delta/2 < 0.0:
-            raise ValueError("Inhibitory weight minimum is less than zero")
+#         if weight_inh - weight_inh_delta/2 < 0.0:
+#             raise ValueError("Inhibitory weight minimum is less than zero")
 
-        self.weight_exc = weight_exc
-        self.weight_exc_delta = weight_exc_delta
+#         self.weight_exc = weight_exc
+#         self.weight_exc_delta = weight_exc_delta
 
-        if weight_exc - weight_exc_delta/2 < 0.0:
-            raise ValueError("Excitatory weight minimum is less than zero")
-
-
-        self.exc_fraction = exc_fraction
-        self.inh_fraction = inh_fraction
-
-        self.delay = delay
-        self.delay_delta = delay_delta
-
-        if weight_inh - weight_inh_delta/2 < 0.0:
-            raise ValueError("Delay minimum is less than zero")
-
-    def get_projection(self, Population pop1, Population pop2):
-
-        N, M = pop1.n_neurons, pop2.n_neurons
-
-        active_inh_syn = (np.random.uniform(0,1, size=(N,M)) < self.inh_fraction)
-        active_exc_syn = (np.random.uniform(0,1, size=(N,M)) < self.exc_fraction)
-
-        weights = np.zeros((N,M))
-        delays = np.zeros((N,M))
-
-        exc_weights = np.random.uniform(self.weight_exc - self.weight_exc_delta/2, self.weight_exc + self.weight_exc_delta/2, size=(N,M))
-        inh_weights = np.random.uniform(0, self.weight_inh - self.weight_inh_delta/2, size=(N,M))
-
-        exc_weights[~active_exc_syn] = 0.0
-        inh_weights[~active_inh_syn] = 0.0
-
-        weights = exc_weights - inh_weights
-
-        delays = np.random.uniform(self.delay - self.delay_delta/2, self.delay + self.delay_delta/2, size=(N,M))
-        delays[(~active_inh_syn)&(~active_exc_syn)] = 0.0
+#         if weight_exc - weight_exc_delta/2 < 0.0:
+#             raise ValueError("Excitatory weight minimum is less than zero")
 
 
-        self.last_weights = weights
-        self.last_delays = delays
+#         self.exc_fraction = exc_fraction
+#         self.inh_fraction = inh_fraction
 
-        self.last_projection = base.Projection(weights.astype(np.float32), delays.astype(np.float32))
-        return self.last_projection
+#         self.delay = delay
+#         self.delay_delta = delay_delta
+
+#         if weight_inh - weight_inh_delta/2 < 0.0:
+#             raise ValueError("Delay minimum is less than zero")
+
+#     def get_projection(self, Population pop1, Population pop2):
+
+#         N, M = pop1.n_neurons, pop2.n_neurons
+
+#         active_inh_syn = (np.random.uniform(0,1, size=(N,M)) < self.inh_fraction)
+#         active_exc_syn = (np.random.uniform(0,1, size=(N,M)) < self.exc_fraction)
+
+#         weights = np.zeros((N,M))
+#         delays = np.zeros((N,M))
+
+#         exc_weights = np.random.uniform(self.weight_exc - self.weight_exc_delta/2, self.weight_exc + self.weight_exc_delta/2, size=(N,M))
+#         inh_weights = np.random.uniform(0, self.weight_inh - self.weight_inh_delta/2, size=(N,M))
+
+#         exc_weights[~active_exc_syn] = 0.0
+#         inh_weights[~active_inh_syn] = 0.0
+
+#         weights = exc_weights - inh_weights
+
+#         delays = np.random.uniform(self.delay - self.delay_delta/2, self.delay + self.delay_delta/2, size=(N,M))
+#         delays[(~active_inh_syn)&(~active_exc_syn)] = 0.0
+
+
+#         self.last_weights = weights
+#         self.last_delays = delays
+
+#         self.last_projection = base.Projection(weights.astype(np.float32), delays.astype(np.float32))
+#         return self.last_projection

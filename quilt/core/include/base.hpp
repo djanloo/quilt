@@ -54,9 +54,6 @@ class not_yet_computed_exception : public std::exception {
     }
 };
 
-
-
-
 //****************************** THREAD SAFE FILE *********************************//
 class ThreadSafeFile {
 public:

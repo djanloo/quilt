@@ -624,13 +624,18 @@ class EEGcap:
 
 class MultiscaleNetwork:
 
-    def __init__(self, networks, interscale_connectome):
+    def __init__(self, spiking_network, oscillator_network, interscale_connectome):
+        # The interscale connectome is a {weights: [{efferent: afferent}] , delays: [{efferent: afferent}]}} dictionary
         self.features = dict()
-        for network in networks:
-            if isinstance(network, SpikingNetwork):
-                self.features
-                pass
-            elif isinstance(network, OscillatorNetwork):
-                pass
-            else:
-                raise TypeError("Multiscale components must be a SpikingNetwork or an OscillatorNetwork")
+        self.features['interscale_connectome'] = interscale_connectome
+
+        
+
+        # for network in networks:
+        #     if isinstance(network, SpikingNetwork):
+        #         self.features
+        #         pass
+        #     elif isinstance(network, OscillatorNetwork):
+        #         pass
+        #     else:
+        #         raise TypeError("Multiscale components must be a SpikingNetwork or an OscillatorNetwork")
