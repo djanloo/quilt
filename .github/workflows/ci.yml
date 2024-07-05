@@ -48,7 +48,7 @@ jobs:
         mkdir doxyoutput
         doxygen
         make html
-
+        cd ..
     # deployment taken from https://coderefinery.github.io/documentation/gh_workflow/
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
