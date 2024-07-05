@@ -1,5 +1,6 @@
 #pragma once
 #include "base.hpp"
+#include "links.hpp"
 #include "oscillators.hpp"
 
 #include <memory>

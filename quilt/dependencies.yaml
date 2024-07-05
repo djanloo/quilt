@@ -27,8 +27,13 @@ spiking:
 oscill:
   sources:
     - interface/oscill.pyx
+    # - core/multiscale.cpp
     - core/oscillators.cpp
+    # - core/network.cpp
+    # - core/neurons_base.cpp
+    # - core/neuron_models.cpp
     - core/links.cpp
+    - core/devices.cpp
     - core/base.cpp
   include_dirs:
     - core/include
