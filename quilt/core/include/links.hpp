@@ -80,6 +80,9 @@ public:
      * @return True if the linker was added successfully, false otherwise.
      */
     bool add_linker(std::pair<std::string, std::string> const& key, linker const& lker) {
+        stringstream ss;
+        ss << "Registering a new Link: "<< key.first << " -> " << key.second;
+        get_global_logger().log(DEBUG, ss.str());
         return _linker_map.insert(std::make_pair(key, lker)).second;
     }
 
@@ -159,34 +162,5 @@ public:
      * @return The value of the link.
      */
     double get(int axis, double now) override;
-};
-
-/**
- * @brief Link between a transducer and a Jansen-Rit oscillator
- * 
-*/
-class T2JRLink: public Link{
-    public:
-         T2JRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
-        : Link(source, target, weight, delay, params) {}
-
-        /**
-         * Returns the firing rate of the population linked to the transducer.
-         * Firign rate is averaged on the long timescale.
-         * 
-         * Note: the averaging is performed by `Transducer::get_past()` method
-        */
-        double get(int axis, double now) override;
-};
-
-/**
- * @brief Link between a Jansen-Rit oscillator and a transducer
-*/
-class JR2TLink: public Link{
-    public:
-         JR2TLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
-        : Link(source, target, weight, delay, params) {}
-
-        double get(int axis, double now) override;
 };
 
