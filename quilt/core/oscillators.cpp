@@ -1,6 +1,7 @@
 #include "include/links.hpp"
 #include "include/oscillators.hpp"
 
+#include <limits>
 /******************************************* OSCILLATORS BASE **********************************/
 Oscillator::Oscillator(ParaMap * params, OscillatorNetwork * oscnet)
     :   params(params),
@@ -106,19 +107,28 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
         throw runtime_error("Number of initial conditions is not equal to number of oscillators");
     }
     
-    // brutal search of maximum delay
+    // brutal search of maximum delay (and minimum for bug #24)
     float max_tau = 0.0;
+    float min_tau = std::numeric_limits<float>::max();    
     for (auto osc : oscillators){
         for (auto l : osc->incoming_osc){
             if (l->delay > max_tau) max_tau = l->delay;
+            if (l->delay < min_tau) min_tau = l->delay;
         }
     }
-    // ~brutal search of maximum delay
+    // ~brutal search of maximum delay (and minimum for bug #24)
 
     // Adds a timestep to max_tau (this is useful for multiscale)
     // because Transuducers need an half-big-timestep in the past
     // to average the spiking network activity
     max_tau += evo->dt;
+
+    // Guard for bug #24: at least two timesteps of delay are necessary
+    if ( min_tau < 2*evo->dt){
+        get_global_logger().log(ERROR, "At least two timesteps of delay are necessary. See #24.");
+    }
+
+
     
     int n_init_pts = static_cast<int>(std::ceil(max_tau/evo->dt) + 1);
 
