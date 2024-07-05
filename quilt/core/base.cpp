@@ -105,7 +105,7 @@ PerformanceManager::PerformanceManager(vector<string> task_names)
     :   label("no label")
     {
     for (int i = 0; i < task_names.size(); i++ ){
-        task_duration[task_names[i]] = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::duration<double>(0.0));
+        task_duration[task_names[i]] = std::chrono::nanoseconds::zero();//std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::duration<double>(0.0));
         task_count[task_names[i]] = 0;
         task_scale[task_names[i]] = 1;
     }
@@ -132,32 +132,36 @@ void PerformanceManager::print_record(){
     stringstream ss;
     ss << "Output for PerformanceManager "  << "<" << label << ">" << endl;
     for (auto &pair : task_duration){
-        ss <<"\t--" << pair.first << " " << format_duration(pair.second) << " - ";
-        std::chrono::microseconds time_per_call = pair.second;
-        time_per_call /= static_cast<double>(task_count[pair.first]);
-        ss << "(" << format_duration(time_per_call) << " /step for "<< task_count[pair.first] << " steps )";
+        ss <<"\t--" << pair.first << "\t" << format_duration(pair.second);
+        std::chrono::nanoseconds time_per_call = pair.second;
+
+        if (task_count[pair.first] > 1){
+            time_per_call /= static_cast<double>(task_count[pair.first]);
+            ss << "\t-- " << " -- " << format_duration(time_per_call) << " /step for "<< task_count[pair.first] << " steps --";
+        }
 
         if (task_scale[pair.first] > 1){
             time_per_call /= task_scale[pair.first];
-            ss << "(" << format_duration(time_per_call) << " /step/unit for "<< task_count[pair.first] << " steps and "<< task_scale[pair.first] << " units)";
+            ss << "\t-- " << format_duration(time_per_call) << " /step/unit for "<< task_count[pair.first] << " steps and "<< task_scale[pair.first] << " units";
         }
         ss << endl;
     } 
     get_global_logger().log(INFO, ss.str());
 }
 
-string PerformanceManager::format_duration (std::chrono::microseconds duration) {
-    auto micros = duration.count();
+string PerformanceManager::format_duration (std::chrono::nanoseconds duration) {
+    auto nanoseconds = duration.count();
     stringstream ss;
     ss << std::setprecision(PERFMGR_OUTPUT_DIGITS) << std::fixed;
-    if (micros >= 1000000) {
+    if (nanoseconds >= 1000000000) {
         double seconds = std::chrono::duration_cast <std::chrono::seconds>(duration).count();
         ss << seconds << " s";
-    } else if (micros >= 1000) { 
+    } else if (nanoseconds >= 1000000) { 
         double milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
         ss << milliseconds << " ms";
-    } else if (micros >= 1){ 
-        ss << micros << " us";
+    } else if (nanoseconds >= 1000){ 
+        double microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+        ss << microseconds << " us";
     } else {
         double nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
         ss << nanoseconds << " ns";
