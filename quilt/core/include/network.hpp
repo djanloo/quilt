@@ -10,22 +10,12 @@
 
 using std::vector;
 
-// The menu
-// class HierarchicalID;
-// class EvolutionContext;
-
+// Forward declarations
 class Neuron;
 class NeuroParam;
 enum class neuron_type : unsigned int;
-
-// class Projection;
 class Population;
 class SpikingNetwork;
-
-// class PopulationMonitor;
-// class PopulationSpikeMonitor;
-// class PopulationStateMonitor;
-// class PopInjector;
 
 struct SparseIntHash {
     size_t operator()(const std::pair<int, int>& k) const 

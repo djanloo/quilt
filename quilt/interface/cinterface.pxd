@@ -110,6 +110,9 @@ cdef extern from "../core/include/oscillators.hpp":
 
         # Homogeneous constructor: only one type of oscillator
         OscillatorNetwork(int, ParaMap *)
+
+        # Dishomogeneous constructor: many types of oscillator
+        # this has to be done
         OscillatorNetwork(vector[ParaMap *])
 
         # Homogeneous connections: only one type of link
@@ -118,3 +121,15 @@ cdef extern from "../core/include/oscillators.hpp":
         # Evolutions methods
         void run(EvolutionContext * evo, double t, int verbosity) except +
         void initialize(EvolutionContext * evo, vector[vector[double]] init_state)
+
+# -------------------- MULTISCALE --------------------#
+
+cdef extern from "../core/include/multiscale.hpp":
+    cdef cppclass MultiscaleNetwork:
+        MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
+        void build_OT_projections(Projection * projT2O, Projection * projO2T)
+        void run(double time, int verbosity)
+        void set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long)
+
+    cdef cppclass Transducer:
+        Transducer(Population * population, ParaMap * params, MultiscaleNetwork * multinet)

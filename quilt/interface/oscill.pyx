@@ -14,7 +14,7 @@ def set_verbosity(v):
     VERBOSITY = v
 
 cdef class Oscillator:
-    cdef shared_ptr[cinter.Oscillator] _osc
+    # cdef shared_ptr[cinter.Oscillator] _osc
 
     def __cinit__(self):
         pass
@@ -37,9 +37,9 @@ cdef class Oscillator:
 
 cdef class OscillatorNetwork:
 
-    cdef cinter.OscillatorNetwork * _oscillator_network
-    cdef cinter.EvolutionContext * _evo
-    cdef public list oscillators
+    # cdef cinter.OscillatorNetwork * _oscillator_network
+    # cdef cinter.EvolutionContext * _evo
+    # cdef public list oscillators
 
     # This is needed otherwise OscillatorNetwork() will take
     # whatever number of arguments

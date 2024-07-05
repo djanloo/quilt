@@ -29,18 +29,13 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
 
     if (start_index_1 > end_index_1) throw std::runtime_error("SparseProjection::build : End index is before start index (efferent)");
     if (start_index_2 > end_index_2) throw std::runtime_error("SparseProjection::build : End index is before start index (afferent)");
-    // cout << "Started building projection sector with connectivity:"<<connectivity << endl; 
 
     // Maximum number of connection in a rectangular sector:
     // prevents from looping over a full matrix
     // This should not be actually used unless the connectivity is 1
     const int sector_max_connections = (end_index_1 - start_index_1 + 1)*(end_index_2 - start_index_2 + 1);
-    // cout << "\tSector indexes are  " << start_index_1 << "," << end_index_1<<"-"<<start_index_2<< "," <<end_index_2<<endl;
-    // cout << "\tMax connection is " << sector_max_connections <<endl;
-    // auto start = std::chrono::high_resolution_clock::now();
 
     unsigned int sector_nconn = static_cast<unsigned int>(sector_max_connections*connectivity);
-    // cout << "\tconnections to be made: "<<sector_nconn<<endl;
     
     RNG * rng = rng_dispatch->get_rng();
 
@@ -70,9 +65,7 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
         // Insert weight and delay
         // (This increases the length of sector map)
         (*sector)[coordinates] = this->get_weight_delay(rng, i, j);
-        // cout << "\tAdded a link!!"<<endl;
     }
-    // auto end = std::chrono::high_resolution_clock::now();
     rng_dispatch->free();
 }
 
@@ -95,9 +88,6 @@ void SparseProjection::build_multithreaded()
     RNGDispatcher rng_dispatcher(n_threads);
 
     for (int i=0; i < n_threads; i++){
-        // cout << "\tstarting thread " << i << endl;
-        // cout << "\tthis thread does "<< "("<<i*start_dimension/n_threads<<","<< (i+1)*start_dimension/n_threads-1<<")";
-        // cout << "("<<0 <<","<< end_dimension-1<<")"<<endl;
         weights_delays[i].reserve(n_connections/n_threads);
         threads.emplace_back(&SparseProjection::build_sector, this , 
                                     &(weights_delays[i]), &rng_dispatcher,
@@ -109,13 +99,6 @@ void SparseProjection::build_multithreaded()
     for (auto& thread : threads) {
         thread.join();
     }
-
-    // cout << "Done building multithreaded:"<< endl;
-    // for (auto sector : weights_delays){
-    //     for (auto conn : sector){
-    //         cout << "[ " << conn.first.first << "->" << conn.first.second << ",  w=" << conn.second.first << " d=" << conn.second.second  << "]" << endl;
-    //     }
-    // }
 }
 
 const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng, int /*i*/, unsigned int /*j*/)
