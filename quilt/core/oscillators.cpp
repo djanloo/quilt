@@ -66,20 +66,23 @@ OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
 void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_params)
 {
     if (!has_oscillators){
+        get_global_logger().log(ERROR,"Could not link oscillators since the network does not have oscillators yet.");
         throw runtime_error("Could not link oscillators since the network does not have oscillators yet.");
     }
 
     if (proj->start_dimension != proj->end_dimension)
     {
+        get_global_logger().log(ERROR,"Projection matrix of OscillatorNetwork must be a square matrix");
         throw std::invalid_argument("Projection matrix of OscillatorNetwork must be a square matrix");
     }
 
     if (proj->start_dimension != oscillators.size())
     {
-        throw std::invalid_argument("Shape mismatch in projection matrix: size is "\
+        string msg = "Shape mismatch in projection matrix: size is "\
                     + std::to_string(proj->end_dimension) + "x" + std::to_string(proj->end_dimension) \
-                    + " but network has n_oscillators = " + std::to_string(oscillators.size())
-        );
+                    + " but network has n_oscillators = " + std::to_string(oscillators.size());
+        get_global_logger().log(ERROR,msg);
+        throw std::invalid_argument(msg);
     }
 
     for (unsigned int i =0; i < proj->start_dimension; i++)
@@ -98,7 +101,10 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
 
 void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds)
 {
-    if (init_conds.size() != oscillators.size()) throw runtime_error("Number of initial conditions is not equal to number of oscillators");
+    if (init_conds.size() != oscillators.size()){
+        get_global_logger().log(ERROR, "Number of initial conditions is not equal to number of oscillators");
+        throw runtime_error("Number of initial conditions is not equal to number of oscillators");
+    }
     
     // brutal search of maximum delay
     float max_tau = 0.0;
@@ -122,8 +128,10 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
         // Adds n_init_points values for the state X
         for (int n = 0; n < n_init_pts; n++){
             //Checks that the initialization is right in dimension
-            if (init_conds[i].size() != oscillators[i]->space_dimension) 
+            if (init_conds[i].size() != oscillators[i]->space_dimension){
+                get_global_logger().log(ERROR, "Initial conditions have not the right space dimension");
                 throw runtime_error("Initial conditions have not the right space dimension");
+            }
             
             // Adds initial condition as value of X 
             oscillators[i]->memory_integrator.state_history.push_back(init_conds[i]);
@@ -179,12 +187,16 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     log.log(INFO, "Initialized past of OscillatorNetwork");
     stringstream ss;
     ss << "Oscillators initialized with " << oscillators[0]->memory_integrator.state_history.size() << " states"
-        << " and " << oscillators[0]->memory_integrator.evaluation_history.size() << " evaluations";
+        << " and " << oscillators[0]->memory_integrator.evaluation_history.size() << " evaluations ";
+    ss << "since (max_delay + dt) = " << max_tau;
     log.log(INFO, ss.str());
 }
 
 void OscillatorNetwork::evolve(){
-    if (!is_initialized) throw runtime_error("The network must be initialized before evolving");
+    if (!is_initialized){
+        get_global_logger().log(ERROR,"The network must be initialized before evolving" );
+        throw runtime_error("The network must be initialized before evolving");
+    }
 
     Logger &log = get_global_logger();
     std::stringstream ss;
@@ -210,7 +222,10 @@ void OscillatorNetwork::evolve(){
 
 void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
 {
-    if (!is_initialized) throw runtime_error("The network must be initialized before running");
+    if (!is_initialized){
+        get_global_logger().log(ERROR, "The network must be initialized before running");
+        throw runtime_error("The network must be initialized before running");
+    }
     
     // Synchronizes every component
     set_evolution_context(evo);
@@ -254,7 +269,10 @@ OscillatorFactory& get_oscillator_factory(){
 shared_ptr<Oscillator> OscillatorFactory::get_oscillator(string const& oscillator_type, ParaMap * params, OscillatorNetwork * osc_net)
         {
             auto it = _constructor_map.find(oscillator_type);
-            if (it == _constructor_map.end()) { throw runtime_error("No constructor was found for oscillator " + oscillator_type); }
+            if (it == _constructor_map.end()) { 
+                get_global_logger().log(ERROR,"No constructor was found for oscillator " + oscillator_type );
+                throw runtime_error("No constructor was found for oscillator " + oscillator_type); 
+            }
             return (it->second)(params, osc_net);
         };
 

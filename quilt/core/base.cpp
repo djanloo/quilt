@@ -62,7 +62,7 @@ void ThreadSafeFile::close() {
 //******************************* LOGGER ***************************//
 Logger::Logger(const string& filename)
     :   logFile(filename),
-        output_level(WARNING){}
+        output_level(DEBUG){}
 
 Logger::~Logger() { logFile.close(); } 
 
@@ -202,6 +202,7 @@ void EvolutionContext::do_step(){
 int EvolutionContext::index_of(double time)
 {
     if (time < 0.0){
+        get_global_logger().log(ERROR, "Requested index of a negative time: " + std::to_string(time) );
         throw negative_time_exception("Requested index of a negative time: " + std::to_string(time) );
         }
 
@@ -228,10 +229,16 @@ Projection::Projection(vector<vector<float>> weights, vector<vector<float>> dela
     weights(weights), delays(delays){
     
     start_dimension = weights.size();
-    if (start_dimension == 0) throw std::runtime_error("start dimension of projection is zero");
+    if (start_dimension == 0){
+        get_global_logger().log(ERROR,"Start dimension of projection is zero" );
+        throw std::runtime_error("Start dimension of projection is zero");
+    }
     
     end_dimension = weights[0].size();
-    if (end_dimension == 0) throw std::runtime_error("end dimension of projection is zero");
+    if (end_dimension == 0){ 
+        get_global_logger().log(ERROR,"End dimension of projection is zero" );
+        throw std::runtime_error("End dimension of projection is zero");
+    }
 
     for (unsigned int i = 0; i < start_dimension; i++){
         for (unsigned int j =0 ; j< end_dimension; j++){
@@ -246,9 +253,11 @@ Projection::Projection(vector<vector<float>> weights, vector<vector<float>> dela
 vector<double> ContinuousRK::b_functions(double theta)
 {
     if ((theta < 0)){
+        get_global_logger().log(ERROR,"NCERK b-functions were called with argument < 0" );
         throw std::invalid_argument("NCERK b-functions were called with argument < 0");
     }
     else if ((theta > 1)){
+        get_global_logger().log(ERROR,"NCERK b-functions were called with argument > 1" );
         throw std::invalid_argument("NCERK b-functions were called with argument > 1");
     }
 
@@ -279,12 +288,18 @@ double ContinuousRK::get_past(int axis, double abs_time){
     int bin_id = evo->index_of(abs_time);
     double theta = evo->deviation_of(abs_time);
     
-    if (bin_id < 0) 
+    if (bin_id < 0){
+        get_global_logger().log(ERROR, "Requested past state that lays before initialization");
         throw negative_time_exception("Requested past state that lays before initialization");
+    }
     
     // Remember that if state history has N values then the evaluation history has N-1
-    else if (bin_id > static_cast<int>(state_history.size()) - 2)
-        throw not_yet_computed_exception("The requested past state is not computed yet");
+    else if (bin_id > static_cast<int>(state_history.size()) - 2){
+        stringstream ss;
+        ss << "The requested past state is not computed yet"<< "(requested " << abs_time << ")";
+        get_global_logger().log(ERROR, ss.str());
+        throw not_yet_computed_exception(ss.str());
+    }
 
     // Get the values and the interpolation weights related to that moment in time
     double y = state_history[bin_id][axis];
@@ -347,11 +362,15 @@ double ContinuousRK::get_past(int axis, double abs_time){
 }
 
 void ContinuousRK::compute_next(){
-    if (space_dimension == 0) throw runtime_error("Space dimension not set in ContinuousRK");
+    if (space_dimension == 0){
+        get_global_logger().log(ERROR,"Space dimension not set in ContinuousRK");
+        throw runtime_error("Space dimension not set in ContinuousRK");
+    }
 
     // This is a runtime guard for bug #18
     if (state_history.size() == evaluation_history.size()){
-        throw runtime_error("state history of ContinuousRK has the same length of evaluation history.");
+        get_global_logger().log(ERROR,"State history of ContinuousRK has the same length of evaluation history.");
+        throw runtime_error("State history of ContinuousRK has the same length of evaluation history.");
     }
     proposed_evaluation = vector<dynamical_state>(4, dynamical_state(space_dimension, 0));
 
