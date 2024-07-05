@@ -1,5 +1,24 @@
 #GPeTA
-neuron1:
+neuron_rg:
+  neuron_type: aeif
+  C_m: 60
+  G_L: 1
+  E_l: -55.1
+  delta_T: 2.55
+  V_th: -50
+  E_ex: 0
+  E_in: -65
+  I_e: 3
+  tau_ex: 100
+  tau_in: 100
+  ada_tau_w: 20
+  ada_a: 0
+  ada_b: 100 #
+  V_peak: 15
+  V_reset: -60
+  tau_refrac: 0
+  
+neuron_inh:
   neuron_type: aeif
   C_m: 60
   G_L: 1
@@ -8,12 +27,12 @@ neuron1:
   V_th: -54.7
   E_ex: 0
   E_in: -65
-  I_e: 50
+  I_e: 0
   tau_ex: 10
   tau_in: 5.5
   ada_tau_w: 20
   ada_a: 2.5
-  ada_b: 105
+  ada_b: 100 #
   V_peak: 15
   V_reset: -60
   tau_refrac: 0

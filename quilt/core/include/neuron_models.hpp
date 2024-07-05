@@ -4,13 +4,13 @@
 #include "neurons_base.hpp"
 
 // The menu:
-class EvolutionContext;
-class HierarchicalID;
-class ParaMap;
-class Spike;
-class Synapse;
-class Population;
-class Projection;
+// class EvolutionContext;
+// class HierarchicalID;
+// class ParaMap;
+// class Spike;
+// class Synapse;
+// class Population;
+// class Projection;
 
 /**
  * @brief The adaptive quadratic integrate-and-fire neuron

@@ -1,4 +1,7 @@
 #pragma once
+
+#include "base.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <variant>
@@ -6,12 +9,10 @@
 #include <exception>
 
 using std::vector;
-using std::cout;
 using std::endl;
 
 typedef std::vector<double> dynamical_state;
 class Population;
-class EvolutionContext;
 
 /**
  * @brief Base class for population monitors
@@ -93,7 +94,7 @@ class PopInjector{
         virtual ~PopInjector() = default;
         virtual void inject(EvolutionContext * /*evo*/)
         {
-            std::cout <<"WARNING: using virtual PopInjector::inject()" << std::endl;
+            get_global_logger().log(WARNING, "using virtual PopInjector::inject()");
         }
         Population * pop;
 };
@@ -130,17 +131,81 @@ class PoissonSpikeSource: public PopInjector{
                             float rate, float weight, float weight_delta,
                             double t_min, double t_max);
         /**
-         * Generates spikes until a spike is generated in another time bin to prevent the spike queue from being uselessly too much long.
+         * Generates spikes until a spike is generated in another time bin to prevent the spike queue from being uselessly too long.
          * 
         */
         void inject(EvolutionContext * evo) override;
+
+        // This method is an approximation, must be removed in future
+        // by building the inhomogeneous poisson spikesource
+        void set_rate(float new_rate);
     private:
-        float rate;
-        float weight;
-        float weight_delta;
+        float rate;         //!< Rate of the Poisson process [Hz]
+        float weight;       //!< Weight of the spikes
+        float weight_delta; //!< Semidispersion of the weight of the spikes
         double t_min, t_max;
 
         std::vector<float> weights;
         // static std::ofstream outfile;
         std::vector<double> next_spike_times;
-};      
+
+        RNG rng;
+}; 
+
+/**
+ * @class InhomPoissonSpikeSource
+ * @brief Source of poisson-distributed spikes with time-dependent rate
+ * 
+ * 
+ * For now only one-to-one connection is implemented
+ * 
+ * @param pop Target spiking population of the source
+ * @param rate_function The rate function r(t). Must be double(double)
+ * @param weight
+ * @param weight_delta
+ * @param generation_window_length The length of the generation windos in ms
+*/
+class InhomPoissonSpikeSource: public PopInjector{
+    public:
+        /**
+         * Initializes a Inhomogeneous Poisson Spike Source
+         * 
+         * @param pop The spiking population
+         * @param rate_function The rate function. It must have double(double) signature, given a time returns the rate. 
+        */
+        InhomPoissonSpikeSource( Population * pop,
+                            std::function<double(double)> rate_function, 
+                            float weight, float weight_delta, 
+                            double generation_window_length);
+        /**
+         * 
+         * Generate one spike for neuron given the current rate
+         * 
+        */
+        void _inject_partition(double now, double dt, int start_id, int end_id, RNGDispatcher * rng_disp);
+        void inject(EvolutionContext * evo) override;
+
+        PerformanceManager perf_mgr;
+
+    private:
+        std::function<double(double)> rate_function;
+        float weight;       //!< Weight of the spikes
+        float weight_delta; //!< Semidispersion of the weight of the spikes
+
+        std::vector<float> weights;
+        static ThreadSafeFile outfile; //DEBUG
+        double generation_window_length; 
+        double currently_generated_time;
+        RNG rng;
+
+        /**
+         * Since the rate function must be evaluated for each neuron
+         * but it's the same for each neuron
+         * this buffer prevents useless calls
+        */
+        std::vector<double> rate_function_buffer;
+
+        std::vector<double> integration_start;
+        std::vector<double> integration_leftovers;
+        std::vector<double> integration_thresholds;
+};   

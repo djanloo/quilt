@@ -1,6 +1,5 @@
 #pragma once
 #include "base.hpp"
-#include "oscillators.hpp"
 
 #include <stdexcept>
 #include <memory>
@@ -8,6 +7,7 @@
 using std::vector;
 using std::shared_ptr;
 
+// Forward declarations
 class Oscillator;
 
 /**
@@ -20,9 +20,9 @@ class Link {
 public:
     shared_ptr<Oscillator> source; ///< The source oscillator of the link.
     shared_ptr<Oscillator> target; ///< The target oscillator of the link.
-    ParaMap* params; ///< Parameters associated with the link.
     float weight; ///< Weight of the link.
     float delay; ///< Delay in the link.
+    ParaMap* params; ///< Parameters associated with the link.
 
     /**
      * @brief Constructor for the Link class.
@@ -38,6 +38,8 @@ public:
           weight(weight),
           delay(delay),
           params(params) {}
+    // Virtual destructor since it's a base class  
+    virtual ~Link(){};
 
     /**
      * @brief Virtual function to get the value of the link.
@@ -45,7 +47,7 @@ public:
      * @param now Current time for the inner steps of Runge-Kutta.
      * @return The value of the link.
      */
-    virtual double get(int axis, double now) {
+    virtual double get(int /*axis*/, double /*now*/) {
         throw std::runtime_error("Using virtual `get()` of LinkBase");
     };
 
@@ -54,6 +56,7 @@ public:
      * @param evo EvolutionContext for the link.
      */
     void set_evolution_context(EvolutionContext* evo) {
+        get_global_logger().log(DEBUG, "set EvolutionContext of Link");
         this->evo = evo;
     };
 
@@ -77,6 +80,9 @@ public:
      * @return True if the linker was added successfully, false otherwise.
      */
     bool add_linker(std::pair<std::string, std::string> const& key, linker const& lker) {
+        stringstream ss;
+        ss << "Registering a new Link: "<< key.first << " -> " << key.second;
+        get_global_logger().log(DEBUG, ss.str());
         return _linker_map.insert(std::make_pair(key, lker)).second;
     }
 
@@ -157,3 +163,4 @@ public:
      */
     double get(int axis, double now) override;
 };
+
