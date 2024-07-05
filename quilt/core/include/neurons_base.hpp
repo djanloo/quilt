@@ -17,15 +17,11 @@
 
 typedef std::vector<double> dynamical_state;
 
-// The menu:
-class EvolutionContext;
-class HierarchicalID;
-class ParaMap;
+// Forward declarations
 class Spike;
 class Synapse;
 class Neuron;
 class Population;
-class Projection;
 
 /**
  * @class Spike

@@ -1,13 +1,10 @@
 #pragma once
 #include "base.hpp"
-#include "links.hpp"
-#include "network.hpp"
 
 #include <typeinfo>
 #include <memory>
 
-class EvolutionContext;
-class Population;
+// Forward declarations
 class Link;
 
 using std::vector;
@@ -29,13 +26,13 @@ class Oscillator;
 class Oscillator {
 public:
     HierarchicalID id;                  /**< Unique identifier for the oscillator. */
+    ParaMap* params;                    /**< Pointer to parameter map for the oscillator. */
     OscillatorNetwork* oscnet;          /**< Pointer to the oscillator network to which the oscillator belongs. */
     ContinuousRK memory_integrator;     /**< Continuous Runge-Kutta integrator for storing state history. */
     string oscillator_type = "base";    /**< Type of the oscillator. Default is "base". */
     unsigned int space_dimension = 2;   /**< Dimension of the oscillator's state space. Default is 2. */
 
     vector<Link*> incoming_osc;         /**< Vector of incoming links to the oscillator. */
-    ParaMap* params;                    /**< Pointer to parameter map for the oscillator. */
 
     /**
      * @brief Constructor for the Oscillator class.
@@ -71,6 +68,9 @@ public:
     // This returns the interpolated past using the continuous Runge-Kutta method
     double get_past(unsigned int axis, double t)
     {
+        // std::stringstream ss;
+        // ss << "Getting past of oscillator " << id.get_id() << ": t = " << t << " - returning "<< memory_integrator.get_past(axis, t);
+        // get_global_logger().log(WARNING,ss.str() );
         return memory_integrator.get_past(axis, t);
     }
 
@@ -92,7 +92,7 @@ private:
 
 /**
  * @brief Builder method for creating an oscillator instance of a specific type.
- * @tparam OSC Type of the oscillator.
+ * @param OSC Type of the oscillator.
  * @param params Parameter map for the oscillator.
  * @param osc Pointer to the oscillator network.
  * @return Shared pointer to the created oscillator.
@@ -197,15 +197,21 @@ class OscillatorNetwork{
 
 
         void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
+        void evolve();
         void run(EvolutionContext * evo, double time, int verbosity);
 
         void set_evolution_context(EvolutionContext * evo){
+            get_global_logger().log(DEBUG, "set EvolutionContext of OscillatorNetwork");
+
             this->evo = evo;
             for (auto & oscillator : oscillators){
                 oscillator->set_evolution_context(evo);
             }
         };
+        
+        EvolutionContext * get_evolution_context(){return evo;}
 
+        PerformanceManager perf_mgr;
     private:
         // Control variables for the building steps
         bool has_oscillators = false;

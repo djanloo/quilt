@@ -1,7 +1,7 @@
 #pragma once
 #include "base.hpp"
 #include "devices.hpp"
-#include "neurons_base.hpp"
+// #include "neurons_base.hpp"
 
 #include <unordered_map>
 #include <chrono>
@@ -11,21 +11,21 @@
 using std::vector;
 
 // The menu
-class HierarchicalID;
-class EvolutionContext;
+// class HierarchicalID;
+// class EvolutionContext;
 
 class Neuron;
 class NeuroParam;
 enum class neuron_type : unsigned int;
 
-class Projection;
+// class Projection;
 class Population;
 class SpikingNetwork;
 
-class PopulationMonitor;
-class PopulationSpikeMonitor;
-class PopulationStateMonitor;
-class PopInjector;
+// class PopulationMonitor;
+// class PopulationSpikeMonitor;
+// class PopulationStateMonitor;
+// class PopInjector;
 
 struct SparseIntHash {
     size_t operator()(const std::pair<int, int>& k) const 
@@ -68,7 +68,6 @@ class SparseProjection{
                 end_dimension(end_dimension)
         {
             n_connections = static_cast<unsigned int>(connectivity*start_dimension*end_dimension);
-            cout << "In projection " <<n_connections << " connections must be made"<<endl;
         }  
         virtual ~SparseProjection() = default;
         void build_sector(sparse_t *, RNGDispatcher *, float, unsigned int, unsigned int, unsigned int, unsigned int);
@@ -86,6 +85,8 @@ class SparseLognormProjection : public SparseProjection{
         float weight_sigma;     //!< Weight std
         float delay_mu;         //!< Average delay
         float delay_sigma;      //!< Delay std
+
+        float _weight, _delay;
 
         SparseLognormProjection(double connectivity, int type,
                                 unsigned int start_dimension, unsigned int end_dimension,
@@ -127,17 +128,11 @@ class Population{
         // Bureaucracy
         HierarchicalID id;
         SpikingNetwork * spiking_network;
-        double timestats_evo;
-        double timestats_spike_emission;
+
         void print_info();
-        void set_evolution_context(EvolutionContext * evo)
-        {
-            this->evo = evo;
-            for (auto neuron : neurons)
-            {
-                neuron->set_evolution_context(evo);
-            }
-        }
+        void set_evolution_context(EvolutionContext * evo);
+        
+        PerformanceManager perf_mgr;
     private:
         EvolutionContext * evo;
 
@@ -168,18 +163,9 @@ class SpikingNetwork{
             this->injectors.push_back(injector);
         }
 
-        void set_evolution_context(EvolutionContext * evo)
-        {
-            this->evo = evo;
-            for (auto population : populations)
-            {
-                population->set_evolution_context(evo);
-            }
-            for (auto monitor : population_monitors)
-            {
-                monitor->set_evolution_context(evo);
-            }
-        }
+        void set_evolution_context(EvolutionContext * evo);
+
+        EvolutionContext * get_evolution_context(){return evo;}
 
         // Monitors (outputs)
         std::vector<PopulationMonitor*> population_monitors;
@@ -188,8 +174,11 @@ class SpikingNetwork{
         PopulationStateMonitor * add_state_monitor(Population * population);
 
         // Evolution stuff
+        void evolve();
         void run(EvolutionContext * evo, double time, int verbosity);
 
+        PerformanceManager perf_mgr;
     private:
         EvolutionContext * evo;
+        bool evocontext_initialized;
 };

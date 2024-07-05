@@ -13,6 +13,12 @@
 #include <functional>
 
 #include <variant>
+#include <ctime> 
+#include <fstream> 
+#include <sstream> 
+
+#include <chrono>
+
 
 #define WEIGHT_EPS 0.00001 //!< Weight threshold of synapses to be considered as zeroed out.
 
@@ -22,7 +28,99 @@ using std::runtime_error;
 using std::vector;
 using std::map;
 using std::string;
+using std::to_string;
+using std::stringstream;
 
+
+class negative_time_exception : public std::exception {
+    private:
+    char * message;
+
+    public:
+    negative_time_exception(string msg) : message(msg.data()) {}
+    char * what () {
+        return message;
+    }
+};
+
+class not_yet_computed_exception : public std::exception {
+    private:
+    char * message;
+
+    public:
+    not_yet_computed_exception(string msg) : message(msg.data()) {}
+    char * what () {
+        return message;
+    }
+};
+
+
+
+
+//****************************** THREAD SAFE FILE *********************************//
+class ThreadSafeFile {
+public:
+    ThreadSafeFile(const std::string& filename);
+    ~ThreadSafeFile();
+
+    void open();
+    void write(const std::string& message);
+    void close();
+
+private:
+    std::string filename;
+    std::ofstream file;
+    std::mutex mtx;
+};
+
+//*********************************** LOGGER *****************************************//
+
+enum LogLevel { DEBUG, INFO, WARNING, ERROR, CRITICAL }; 
+/**
+    Logger logger("logfile.txt"); 
+
+    logger.log(INFO, "Program started."); 
+    logger.log(DEBUG, "Debugging information."); 
+    logger.log(ERROR, "An error occurred."); 
+*/
+class Logger { 
+    public: 
+        Logger(const string& filename);
+        ~Logger();
+
+        void log(LogLevel level, const string& message); 
+        void set_level(LogLevel level);
+
+    private: 
+        ThreadSafeFile logFile;
+        LogLevel output_level;
+        string levelToString(LogLevel level) 
+        { 
+            switch (level) { 
+            case DEBUG: 
+                return "DEBUG"; 
+            case INFO: 
+                return "INFO"; 
+            case WARNING: 
+                return "WARNING"; 
+            case ERROR: 
+                return "ERROR"; 
+            case CRITICAL: 
+                return "CRITICAL"; 
+            default: 
+                return "UNKNOWN"; 
+            } 
+        } 
+}; 
+
+/**
+ * @brief Get a reference to the singleton instance of Logger.
+ * @return Reference to the Logger instance.
+ */
+Logger& get_global_logger();
+
+
+//****************************** RANDOM NUMBER GENERATION *************************//
 
 class RNG{
     public:
@@ -86,6 +184,7 @@ class RNGDispatcher{
                     return rng;
                 }
             }
+            get_global_logger().log(ERROR, "No thread-locked random number generator was found to be free");
             throw std::runtime_error("No thread-locked random number generator was found to be free");
         }
 
@@ -104,6 +203,28 @@ class RNGDispatcher{
         map<std::thread::id, RNG*> pids;
 };
 
+
+class PerformanceManager{
+    private:
+        string label;
+        map<string, std::chrono::nanoseconds> task_duration;
+        map<string, std::chrono::time_point<std::chrono::high_resolution_clock>> task_start_time;
+        map<string, int> task_count;
+        map<string, int> task_scale; //!< This prevents overhead for many calls (e.g. evolution of neurons)
+
+    public:
+        PerformanceManager(vector<string> task_names);
+        void set_label(string label);
+        void set_scales(map<string, int> scales);
+        void start_recording(string task);
+        void end_recording(string task);
+        void print_record();
+        string format_duration(std::chrono::nanoseconds duration);
+};
+
+
+//******************************** UTILS FOR DYNAMICAL SYSTEMS *****************************//
+
 /**
  * @class HierarchicalID
  * @brief The ID object to identify nested structures
@@ -116,12 +237,12 @@ class RNGDispatcher{
 class HierarchicalID{
     public:
         HierarchicalID * parent;
-        HierarchicalID():parent(NULL),local_id(-1),n_subclasses(0){}
+        HierarchicalID();
         HierarchicalID(HierarchicalID * parent);
-        unsigned int get_id();
+        int get_id();
     private:
-        unsigned int local_id;
-        unsigned int n_subclasses;
+        int local_id;
+        int n_subclasses;
 };
 
 /**
@@ -157,14 +278,14 @@ class ContinuousRK{
         
         // These are the coefficients of the RK method
         vector<double> a = {0, 0.5, 0.5, 1};
-        vector<double> b = {1.0/3.0, 1.0/6.0, 1.0/6.0, 1.0/3.0};
+        vector<double> b = {1.0/6.0, 1.0/3.0, 1.0/3.0, 1.0/6.0};
         vector<double> c = {0, 0.5, 0.5, 1};
 
         // These two make it possible to do a sequential updating of a set of CRK.
         // The system of equation (if no vanishing delays are present)
         // requires to update just one subsystem at a time since all the other variables
         // are locked to past values. To prevent the histories of two subsystems
-        // from "shearing" and refernecing wrong past elements, the new point is first proposed
+        // from "shearing" and referencing wrong past elements, the new point is first proposed
         // calling `compute_next()`
         // then when every CRK has done its proposal they are fixed using `fix_next()`
         dynamical_state proposed_state;
@@ -189,10 +310,11 @@ class ContinuousRK{
         vector<dynamical_state> state_history;
 
         /**
-         * The K coefficients of RK method.
+         * The K coefficients of RK method. This array contains the function evaluations: i-th element contains the evaluation
+         * to go from i-th timestep to (i+1)-th timestep.
          * 
-         * For each step previously computed, there are nu intermediate steps function evalutaions.
-         * For each evluation the number of coeffiecients is equal to the dimension of the oscillator.
+         * For each step previously computed, there are nu intermediate steps function evaluations.
+         * For each evaluation the number of coeffiecients is equal to the dimension of the oscillator.
          * Thus for a N-long history of a nu-stage RK of an M-dimensional oscillator, the K coefficients
          * have shape (N, nu, M).
         */
@@ -205,6 +327,7 @@ class ContinuousRK{
         void fix_next();
 
         void set_evolution_context(EvolutionContext * evo){
+            get_global_logger().log(DEBUG, "set EvolutionContext of continuousRK");
             this->evo = evo;
         }
     private:

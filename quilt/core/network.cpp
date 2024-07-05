@@ -51,7 +51,7 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
     bool is_empty;
 
     while ((*sector).size() < sector_nconn){
-        if ((*sector).size() == sector_max_connections){
+        if ((*sector).size() == static_cast<unsigned int>(sector_max_connections)){
             cerr << "Sparse sturture was used to perform a all-to-all connection" << endl;
             break;
         }
@@ -94,9 +94,6 @@ void SparseProjection::build_multithreaded()
     // TODO: add a global management of seed
     RNGDispatcher rng_dispatcher(n_threads);
 
-
-    // cout << "Starting threads" << endl;
-
     for (int i=0; i < n_threads; i++){
         // cout << "\tstarting thread " << i << endl;
         // cout << "\tthis thread does "<< "("<<i*start_dimension/n_threads<<","<< (i+1)*start_dimension/n_threads-1<<")";
@@ -127,38 +124,48 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
     double u;
     float new_weight, new_delay;
 
-    try{
-        u = rng->get_uniform();
-        new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
-    }catch (const boost::wrapexcept<std::overflow_error>& e){
-        cerr << "overflow in erf_inv:" << endl;
-        cerr << "u: " << u <<endl;
-        cerr << "weight mu: " << weight_mu << endl;
-        cerr << "weight sigma:"<< weight_sigma <<endl;
-        throw(e);
+    if (weight_sigma > 0.0){
+        try{
+            u = rng->get_uniform();
+            new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
+        }catch (const boost::wrapexcept<std::overflow_error>& e){
+            cerr << "overflow in erf_inv:" << endl;
+            // cerr << "u: " << u <<endl;
+            cerr << "weight mu: " << weight_mu << endl;
+            cerr << "weight sigma:"<< weight_sigma <<endl;
+            throw(e);
+        }
+    }else{
+        new_weight = _weight;
     }
 
-    try{
-        u = rng->get_uniform();
-        new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
-    }catch (const boost::wrapexcept<std::overflow_error>& e){
-        cerr << "overflow:" << endl;
-        cerr << "u: " << u <<endl;
-        cerr << "delay mu: " << delay_mu << endl;
-        cerr << "delay sigma:"<< delay_sigma << endl;
-        throw(e);
+    if (delay_sigma > 0.0){
+        try{
+            u = rng->get_uniform();
+            new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
+        }catch (const boost::wrapexcept<std::overflow_error>& e){
+            cerr << "overflow:" << endl;
+            // cerr << "u: " << u <<endl;
+            cerr << "delay mu: " << delay_mu << endl;
+            cerr << "delay sigma:"<< delay_sigma << endl;
+            throw(e);
+        }
+    }else{
+        new_delay = _delay;
     }
+
     // Inhibitory 
     if (type == 1) new_weight *=  -1;
 
-    // Zero-delay
-    if ((delay_mu == 0.0)&&(delay_sigma ==0.0)){
-        new_delay = 0.0;
-    }
+    // // Zero-delay
+    // if ((delay_mu == 0.0)&&(delay_sigma ==0.0)){
+    //     cerr << "SparseLogNormProjection::get_weight_delay -> Delay mu and delay sigma are zero: d_mu="<<delay_mu <<" d_sigma="<<delay_sigma<<endl;
+    //     new_delay = 0.0;
+    // }
 
 
-    if (std::isnan(new_weight) ) throw runtime_error("Nan in weight generation");
-    if (std::isnan(new_delay) ) throw runtime_error("Nan in delay generation");
+    if (std::isnan(new_weight) ) throw runtime_error("Nan in delay generation");
+    if (std::isnan(new_delay) ) throw runtime_error("Nan in weight generation for delay_mu, delay_sigma = " + std::to_string(delay_mu) + ", " + std::to_string(delay_sigma));
 
     return std::make_pair(new_weight, new_delay);
 }
@@ -168,11 +175,16 @@ SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
                                 unsigned int start_dimension, unsigned int end_dimension,
                                 float weight, float weight_delta,
                                 float delay, float delay_delta)
-    :   SparseProjection(connectivity, type, start_dimension, end_dimension)
+    :   SparseProjection(connectivity, type, start_dimension, end_dimension),
+        _weight(weight), 
+        _delay(delay)
 {
-       
-    weight_sigma = std::sqrt(std::log( (weight_delta*weight_delta)/(weight*weight)  + 1.0));
-    delay_sigma  = std::sqrt(std::log( (delay_delta*delay_delta)/(delay*delay)      + 1.0));
+    if (weight == 0.0) throw runtime_error("synaptic weight cannot be zero");
+    if (delay == 0.0) throw runtime_error("synaptic delay cannot be zero");
+
+    // cout << "SparseLogNormProjection::SparseLogNormProjection : delay is "<<delay<<endl;
+    weight_sigma = std::sqrt(std::log1p( (weight_delta*weight_delta)/(weight*weight)));
+    delay_sigma  = std::sqrt(std::log1p( (delay_delta*delay_delta)/(delay*delay)));
 
     weight_mu   = std::log(weight) - 0.5 * weight_sigma * weight_sigma;
     delay_mu    = std::log(delay)  - 0.5 * delay_sigma * delay_sigma;
@@ -183,14 +195,11 @@ SparseLognormProjection::SparseLognormProjection(double connectivity, int type,
 
 Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking_network)
     :   n_neurons(n_neurons),
-        n_spikes_last_step(0), 
+        n_spikes_last_step(0),
+        id(&(spiking_network->id)),
         spiking_network(spiking_network),
-        timestats_evo(0), 
-        timestats_spike_emission(0)
+        perf_mgr({"evolution", "spike_emission"})
 {
-
-    // Adds itself to the hierarchical structure
-    id = HierarchicalID(&(spiking_network->id));
 
     // Adds itself to the spiking network populations
     (spiking_network->populations).push_back(this);
@@ -215,6 +224,12 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     for ( int i = 0; i < n_neurons; i++){
         neurofactory->get_neuron( params->get<string>("neuron_type"), this);
     }
+
+    // Sets the scale for the evolution operation in PerformanceManager
+    // this prevents from calling start_recording on each neuron and saves the overhead time
+    perf_mgr.set_label("Population " + to_string(id.get_id()));
+    perf_mgr.set_scales({{"evolution",      n_neurons}, 
+                         {"spike_emission", n_neurons}});
 }
 
 void Population::project(const Projection * projection, Population * efferent_population)
@@ -239,12 +254,14 @@ void Population::project(const SparseProjection * projection, Population * effer
             neurons[connection.first.first]->connect(efferent_population->neurons[connection.first.second], connection.second.first, connection.second.second);
         }
     }
-    cout << "Performed " << connections << " connections between pop:"<< this->id.get_id() << " and pop:"<< efferent_population->id.get_id() << endl; 
+    // cout << "Performed " << connections << " connections between pop:"<< this->id.get_id() << " and pop:"<< efferent_population->id.get_id() << endl; 
 }
 
 void Population::evolve()
 {
-    auto start = std::chrono::high_resolution_clock::now();
+    // auto start = std::chrono::high_resolution_clock::now();
+
+    perf_mgr.start_recording("evolution");
 
     // Splits the work in equal parts using Nthreads threads
     unsigned int n_threads;
@@ -292,13 +309,15 @@ void Population::evolve()
         }
     } // multithreading case end
 
-    auto end = std::chrono::high_resolution_clock::now();
-    timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+    // auto end = std::chrono::high_resolution_clock::now();
+    perf_mgr.end_recording("evolution");
+    // timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
-    start = std::chrono::high_resolution_clock::now();
+    // start = std::chrono::high_resolution_clock::now();
+    perf_mgr.start_recording("spike_emission");
     this->n_spikes_last_step = 0;
     
     for (auto neuron : this->neurons){
@@ -308,9 +327,9 @@ void Population::evolve()
         }
         
     }
-
-    end = std::chrono::high_resolution_clock::now();
-    timestats_spike_emission += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+    perf_mgr.end_recording("spike_emission");
+    // end = std::chrono::high_resolution_clock::now();
+    // timestats_spike_emission += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 }
 
 void Population::print_info()
@@ -330,11 +349,21 @@ void Population::print_info()
     }
 
     cout << "Each neuron is connected (on average) with:"<<endl;
-    for (int i = 0; i < connection_counts.size(); i++){
+    for (unsigned int i = 0; i < connection_counts.size(); i++){
         cout << "\t" << static_cast<float>(connection_counts[i])/this->n_neurons << " neurons of population " << i << endl;
     }
 
  }
+
+void Population::set_evolution_context(EvolutionContext * evo)
+    {
+        get_global_logger().log(DEBUG, "set EvolutionContext of Population");
+        this->evo = evo;
+        for (auto neuron : neurons)
+        {
+            neuron->set_evolution_context(evo);
+        }
+    }
 
 Population::~Population()
 {
@@ -345,8 +374,11 @@ Population::~Population()
 }
 
 SpikingNetwork::SpikingNetwork()
+    :   evocontext_initialized(false),
+        id(),
+        perf_mgr({"simulation", "monitorize", "inject"})
 {
-    id = HierarchicalID();
+    perf_mgr.set_label("spiking network");
 }
 
 PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population)
@@ -363,14 +395,60 @@ PopulationStateMonitor * SpikingNetwork::add_state_monitor(Population * populati
     return new_monitor;
 };
 
+void SpikingNetwork::set_evolution_context(EvolutionContext * evo)
+        {
+            get_global_logger().log(DEBUG, "set EvolutionContext of SpikingNetwork");
+            this->evo = evo;
+            for (auto population : populations)
+            {
+                population->set_evolution_context(evo);
+            }
+            for (auto monitor : population_monitors)
+            {
+                monitor->set_evolution_context(evo);
+            }
+            evocontext_initialized = true;
+        }
+
+void SpikingNetwork::evolve(){
+
+    if (!evocontext_initialized){
+        throw("Cannot evolve SpikingNetwok until its EvolutionContext is initialized.");
+    }
+
+    stringstream ss;
+    ss << "Evolving SPIKING network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")";
+    get_global_logger().log(DEBUG, ss.str());
+    for (const auto& population_monitor : this->population_monitors){
+            population_monitor->gather();
+        }
+
+        // Injection of currents
+        for (auto injector : this->injectors){
+            injector->inject(evo);
+        }
+
+        // Evolution of each population
+        for (auto population : this -> populations)
+        {
+            population -> evolve();
+        }
+        evo -> do_step();
+}
+
 void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
 {  
-    auto start = std::chrono::high_resolution_clock::now();
+    stringstream ss;
+    if (verbosity > 0){
+        get_global_logger().set_level(INFO);
+    }
+    ss << "Evolving spiking network from t= "<< evo->now << " to t= " << time;
+    get_global_logger().log(INFO, ss.str());
+
+    perf_mgr.start_recording("simulation");
+
     int n_steps_done  = 0;
     int n_steps_total = static_cast<int>(time / evo->dt) ;
-
-    auto gather_time = std::chrono::duration_cast<std::chrono::microseconds>(start-start).count();
-    auto inject_time = std::chrono::duration_cast<std::chrono::microseconds>(start-start).count();
 
     int n_neurons_total = 0;
     for (auto pop : populations){n_neurons_total += pop->n_neurons;}
@@ -407,21 +485,18 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
     while (evo -> now < time){
 
         // Gathering from populations
-        auto start_gather = std::chrono::high_resolution_clock::now();
+        perf_mgr.start_recording("monitorize");
         for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
         }
-
-        auto end_gather = std::chrono::high_resolution_clock::now();
-        gather_time += std::chrono::duration_cast<std::chrono::microseconds>(end_gather-start_gather).count();
+        perf_mgr.end_recording("monitorize");
 
         // Injection of currents
-        auto start_inject = std::chrono::high_resolution_clock::now();
+        perf_mgr.start_recording("inject");
         for (auto injector : this->injectors){
             injector->inject(evo);
         }
-        auto end_inject = std::chrono::high_resolution_clock::now();
-        inject_time += std::chrono::duration_cast<std::chrono::microseconds>(end_inject-start_inject).count();
+        perf_mgr.end_recording("inject");
 
         // Evolution of each population
         for (auto population : this -> populations)
@@ -433,22 +508,15 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
         n_steps_done++;
         ++bar;
     }
-    auto end = std::chrono::high_resolution_clock::now();
+    perf_mgr.end_recording("simulation");
 
+    // Prints performance
     if (verbosity > 0){
-        std::cout << "Simulation took " << (std::chrono::duration_cast<std::chrono::seconds>(end -start)).count() << " s";
-        std::cout << "\t(" << ((double)(std::chrono::duration_cast<std::chrono::milliseconds>(end -start)).count())/n_steps_done << " ms/step)" << std::endl;
 
-        std::cout << "\tGathering time avg: " << static_cast<double>(gather_time)/n_steps_done << " us/step" << std::endl;
-        std::cout << "\tInject time avg: " << static_cast<double>(inject_time)/n_steps_done << " us/step" << std::endl;
+        perf_mgr.print_record();
 
-        std::cout << "Population evolution stats:" << std::endl;
         for (auto pop : populations){
-            std::cout << "\t" << pop->id.get_id() << ":"<<std::endl;
-            std::cout << "\t\tevolution:\t" << pop->timestats_evo/n_steps_done << " us/step";
-            std::cout << "\t---\t" << static_cast<int>(pop->timestats_evo/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
-            std::cout << "\t\tspike emission:\t" << pop->timestats_spike_emission/n_steps_done << " us/step";
-            std::cout << "\t---\t" << static_cast<int>(pop->timestats_spike_emission/n_steps_done/pop->n_neurons*1000) << " ns/step/neuron" << std::endl;
+            pop->perf_mgr.print_record();
         }
     }
 }

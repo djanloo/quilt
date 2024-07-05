@@ -28,8 +28,9 @@ def test_run():
     params = base.ParaMap({'oscillator_type': "jansen-rit"})
     net = oscill.OscillatorNetwork.homogeneous(N, params)
 
-    w = np.arange(N*N).reshape((N,N)).astype(np.float32) + 1
+    w = np.arange(N*N).reshape((N,N)).astype(np.float32) + 2
     d = w.copy()
+    print(d)
 
     proj = base.Projection(w,d)
 
@@ -64,4 +65,5 @@ def test_history():
     net.oscillators['lTCV'].history
 
 if __name__=="__main__":
+    test_run()
     pass
