@@ -184,6 +184,7 @@ class RNGDispatcher{
                     return rng;
                 }
             }
+            get_global_logger().log(ERROR, "No thread-locked random number generator was found to be free");
             throw std::runtime_error("No thread-locked random number generator was found to be free");
         }
 
@@ -326,7 +327,7 @@ class ContinuousRK{
         void fix_next();
 
         void set_evolution_context(EvolutionContext * evo){
-            get_global_logger().log(DEBUG, "set EvolutionCOntext of continuousRK");
+            get_global_logger().log(DEBUG, "set EvolutionContext of continuousRK");
             this->evo = evo;
         }
     private:
