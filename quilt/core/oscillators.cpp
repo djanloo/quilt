@@ -127,8 +127,6 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     if ( min_tau < 2*evo->dt){
         get_global_logger().log(ERROR, "At least two timesteps of delay are necessary. See #24.");
     }
-
-
     
     int n_init_pts = static_cast<int>(std::ceil(max_tau/evo->dt) + 1);
 
