@@ -459,7 +459,7 @@ void test_multiscale_base(){
     // logger.log(INFO, "creating spiking population" );
 
     ParaMap spiking_paramap = ParaMap(map_of_params);
-    Population spikepop = Population(5000, &spiking_paramap, &spike_net);
+    Population spikepop = Population(500, &spiking_paramap, &spike_net);
     // spike_net.add_injector(new PoissonSpikeSource(&spikepop, 15, 1, 0.0, 0, -1 ));
 
     // logger.log(INFO, "creating oscillator" );    
@@ -496,7 +496,7 @@ void test_multiscale_base(){
 
         
         init_cond.push_back(initstate);
-        cout << *(osc_net.oscillators[i]->params);
+        // cout << *(osc_net.oscillators[i]->params);
     }    
 
 
@@ -516,13 +516,9 @@ void test_multiscale_base(){
 
     shared_ptr <Transducer> transd (new Transducer(&spikepop, transd_paramap, &multi_net));
 
-    // logger.log(INFO, "adding transducer" );    
-
     multi_net.transducers.push_back(transd);
 
-    // logger.log(INFO, "building connections" );    
-
-    vector<vector<float>> T2Oweights {{0.00001}}; 
+    vector<vector<float>> T2Oweights {{0.5}}; 
     vector<vector<float>> T2Odelays {{15}}; 
     vector<vector<float>> O2Tweights {{1}}; 
     vector<vector<float>> O2Tdelays {{15}}; 
@@ -545,7 +541,7 @@ void test_multiscale_base(){
     // logger.log(INFO, "running multinet" );    
     // Evolve
 
-    multi_net.run(100, 1);
+    multi_net.run(50, 1);
 
     ofstream SpikeFile("spiking_history.txt");
     for (auto a : static_cast<PopulationSpikeMonitor*>(spike_net.population_monitors[0])->get_history()){
