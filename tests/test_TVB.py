@@ -3,7 +3,7 @@ from quilt.builder import OscillatorNetwork
 from quilt.builder import EEGcap
 
 import matplotlib.pyplot as plt
-from sklearn.preprocessing import StandardScaler
+# from sklearn.preprocessing import StandardScaler
 
 global_coupling = 0.01
 conduction_speed = 1.0
