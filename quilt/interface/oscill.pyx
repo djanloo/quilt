@@ -47,8 +47,6 @@ cdef class OscillatorNetwork:
         self.oscillators = list()
 
     def wrap_oscillators(self):
-        # pass
-        # print(self._oscillator_network.oscillators.size())
         cdef unsigned int i = 0
         cdef shared_ptr[cinter.Oscillator] _osc
         cdef Oscillator osc
@@ -59,8 +57,6 @@ cdef class OscillatorNetwork:
             osc.wrap(_osc)
             self.oscillators.append(osc)
         
-        print(f"Oscillators has len ({len(self.oscillators)})")
-
     @classmethod
     def homogeneous(cls, int N, base.ParaMap params):
         cdef OscillatorNetwork net = cls()

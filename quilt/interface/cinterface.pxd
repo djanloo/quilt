@@ -127,7 +127,8 @@ cdef extern from "../core/include/oscillators.hpp":
 cdef extern from "../core/include/multiscale.hpp":
     cdef cppclass MultiscaleNetwork:
         MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
-        void build_OT_projections(Projection * projT2O, Projection * projO2T)
+        void build_multiscale_projections(Projection * projT2O, Projection * projO2T)
+        void add_transducer(Population * population, ParaMap * params)
         void run(double time, int verbosity)
         void set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long)
 

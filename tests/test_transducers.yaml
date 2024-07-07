@@ -1,0 +1,14 @@
+transducers:
+  - name: albert_td
+    population: Albert
+    initialization_rate: 500
+    weight: 0.1
+    weight_delta: 0.05
+    generation_window: 10
+
+  - name: mona_lisa_td
+    population: MonaLisa
+    initialization_rate: 500
+    weight: 0.1
+    weight_delta: 0.05
+    generation_window: 10
