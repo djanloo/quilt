@@ -212,10 +212,16 @@ class OscillatorNetwork{
         EvolutionContext * get_evolution_context(){return evo;}
 
         PerformanceManager perf_mgr;
-    private:
+        
         // Control variables for the building steps
         bool has_oscillators = false;
         bool has_links = false;
         bool is_initialized = false;
+
+        // Control variables for the initialization
+        float max_delay, min_delay;
+
+    private:
+
         EvolutionContext * evo;
 };

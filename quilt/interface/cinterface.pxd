@@ -46,13 +46,14 @@ cdef extern from "../core/include/devices.hpp":
 
     cdef cppclass PopCurrentInjector:
         PopCurrentInjector(Population * pop, double I, double t_min, double t_max)
-        # void inject(EvolutionContext * evo)
     
     cdef cppclass PoissonSpikeSource:
         PoissonSpikeSource( Population * pop,
                             float rate, float weight, float weight_delta,
                             float t_min, float t_max
                             )
+                            
+#------------------------ SPIKING -------------------- #
 
 cdef extern from "../core/include/neurons_base.hpp":
 
@@ -105,8 +106,7 @@ cdef extern from "../core/include/oscillators.hpp":
         vector[double] get_eeg()
         
     cdef cppclass OscillatorNetwork:
-        vector [shared_ptr[Oscillator]] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
-        # int n_oscillators
+        vector [shared_ptr[Oscillator]] oscillators 
 
         # Homogeneous constructor: only one type of oscillator
         OscillatorNetwork(int, ParaMap *)
@@ -127,7 +127,7 @@ cdef extern from "../core/include/oscillators.hpp":
 cdef extern from "../core/include/multiscale.hpp":
     cdef cppclass MultiscaleNetwork:
         MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
-        void build_multiscale_projections(Projection * projT2O, Projection * projO2T)
+        void build_multiscale_projections(Projection * projT2O, Projection * projO2T) except +
         void add_transducer(Population * population, ParaMap * params)
         void run(double time, int verbosity)
         void set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long)
