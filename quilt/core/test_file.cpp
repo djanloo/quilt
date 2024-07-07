@@ -526,7 +526,7 @@ void test_multiscale_base(){
     Projection * T2Oproj = new Projection(T2Oweights, T2Odelays);
     Projection * O2Tproj = new Projection(O2Tweights, O2Tdelays);
 
-    multi_net.build_OT_projections(T2Oproj, O2Tproj);
+    multi_net.build_multiscale_projections(T2Oproj, O2Tproj);
     
     // This must be done before every time dependent operation.
     // Must add a check on this 

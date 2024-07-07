@@ -71,7 +71,7 @@ cdef class ParaMapList:
 
 cdef class Projection:
     def __cinit__(self,  np.ndarray[np.float32_t, ndim=2,mode='c'] weights, np.ndarray[np.float32_t,ndim=2,mode='c'] delays):
-        print("Making projection")
+        # print("Making projection")
         self.weights = weights
         self.delays = delays
 
@@ -99,7 +99,7 @@ cdef class Projection:
             self._delays[i] = delays_row
         
         self._projection = new cinter.Projection(self._weights, self._delays)
-        print("Projection done")
+        # print("Projection done")
         
 
     @property

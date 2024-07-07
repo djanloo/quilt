@@ -84,9 +84,6 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     int time_idx_1 = spikenet_evo->index_of(time - T/2);
     int time_idx_2 = spikenet_evo->index_of(time + T/2);
 
-    // cout << "\tdt = " << spikenet_evo->dt << ", dT = " << oscnet_evo->dt <<endl;
-    // cout << "time indexes: [" << time_idx_1 << "," << time_idx_2 << "]" << endl;
-    
     // double theta = evo->deviation_of(time); //TODO: make this not useless
 
     vector<int> activity_history = monitor->get_history();
@@ -153,6 +150,15 @@ void MultiscaleNetwork::set_evolution_contextes(EvolutionContext * evo_short, Ev
 */
 void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Projection * projO2T){
     
+    // Initialization check
+    // The delays between transducers and oscillators may increase the initialization time
+    // so the oscillator network must not be initialized befor building the multiscale connections
+    if (oscnet->is_initialized){
+        string msg = "OscillatorNetwork was initialized before building multiscale connections";
+        get_global_logger().log(ERROR, msg);
+        throw runtime_error(msg); 
+    }
+
     // For now: link params is just nothing
     // In future I have to find a way to express variability in this stuff
     // Probably I must step onto matrices of ParaMaps
@@ -163,7 +169,7 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     // Dimension check 1
     if( (projT2O->start_dimension != transducers.size())|((projT2O->end_dimension != n_oscillators))){
         string msg = "Projection shape mismatch while building T->O projections.\n";
-        msg += "N_transd = " + std::to_string(transducers.size()) +  " N_oscill = " + std::to_string(n_oscillators) + "\n";
+        msg += "n_transducers = " + std::to_string(transducers.size()) +  " n_oscillators = " + std::to_string(n_oscillators) + "\n";
         msg += "Projection shape: (" + std::to_string(projT2O->start_dimension) + "," +std::to_string(projT2O->end_dimension) + ")\n";
         throw std::invalid_argument(msg);
     }
@@ -171,7 +177,7 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     // Dimension check 2
     if( (projO2T->start_dimension != n_oscillators)|((projO2T->end_dimension != transducers.size()))){
         string msg = "Projection shape mismatch while building O->T projections.\n";
-        msg += "N_oscill = " + std::to_string(n_oscillators) + " N_transd = " + std::to_string(transducers.size())  +"\n";
+        msg += "n_oscillators = " + std::to_string(n_oscillators) + " n_transducers = " + std::to_string(transducers.size())  +"\n";
         msg += "Projection shape: (" + std::to_string(projO2T->start_dimension) + "," +std::to_string(projO2T->end_dimension) + ")\n";
         throw std::invalid_argument(msg);
     }
@@ -182,14 +188,22 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     logmsg.str(""); logmsg.clear();
 
     // T->O
+    int new_connections = 0;
     for (unsigned int i = 0; i < transducers.size(); i++){
         for (unsigned int j= 0; j < n_oscillators ; j++){
 
-            if (projT2O->weights[i][j] != 0)
+            if (std::abs(projT2O->weights[i][j]) > WEIGHT_EPS)
             {   
                 oscnet->oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(transducers[i], oscnet->oscillators[j], 
                                                                                             projT2O->weights[i][j], projT2O->delays[i][j], 
                                                                                             link_params)); // Remember: link params is none here
+                new_connections++;
+
+                // Takes trace of minimum delay
+                if (projT2O->delays[i][j] < oscnet->min_delay) oscnet->min_delay = projT2O->delays[i][j];
+                // Takes trace of maximum delay
+                if (projT2O->delays[i][j] > oscnet->max_delay) oscnet->max_delay = projT2O->delays[i][j];
+
             }else{
                 // cout << "\t\tweigth is zero"<<endl;
             }
@@ -200,17 +214,24 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     for (unsigned int i = 0; i < n_oscillators; i++){
         for (unsigned int j= 0; j < transducers.size() ; j++){
 
-            if (projO2T->weights[i][j] != 0)
+            if ( std::abs(projO2T->weights[i][j]) > WEIGHT_EPS)
             {   
                 transducers[j]->incoming_osc.push_back(get_link_factory().get_link( oscnet->oscillators[i], transducers[j],
                                                                                             projO2T->weights[i][j], projO2T->delays[i][j], 
                                                                                             link_params)); // Remember: link params is none here
+                new_connections++;
+
+                // Takes trace of minimum delay
+                if (projO2T->delays[i][j] < oscnet->min_delay) oscnet->min_delay = projO2T->delays[i][j];
+                // Takes trace of maximum delay
+                if (projO2T->delays[i][j] > oscnet->max_delay) oscnet->max_delay = projO2T->delays[i][j];
+
             }else{
                 // cout << "\t\tweigth is zero"<<endl;
             }
         }
     }
-    logmsg << "Multiscale connections done";
+    logmsg << "Multiscale connections done "<< "(added "<< new_connections<< " links)";
     log.log(INFO, logmsg.str());
     return;
 }
