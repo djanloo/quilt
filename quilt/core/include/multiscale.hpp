@@ -75,9 +75,13 @@ class MultiscaleNetwork{
         vector<shared_ptr<Transducer>> transducers;
 
         MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet);
-        void build_OT_projections(Projection * projT2O, Projection * projO2T);
+
+        void build_multiscale_projections(Projection * projS2O, Projection * projO2S);
+
         void run(double time, int verbosity);
         void set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long);
+
+        void add_transducer(Population * population, ParaMap * params);
 
         unsigned int n_populations; //!< Number of populations in the multiscale network. Must not change after init.
         unsigned int n_oscillators; //!< Number of oscillators in the multiscale network. Must not change after init.

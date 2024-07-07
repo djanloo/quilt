@@ -35,8 +35,6 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
         throw runtime_error("Calling 'eeg_voi' of a transducer object is not allowed");
         return 0.0;
     };
-
-    cout << "\ttransducer created"<<endl;
 }
 
 Transducer::~Transducer(){
@@ -153,7 +151,7 @@ void MultiscaleNetwork::set_evolution_contextes(EvolutionContext * evo_short, Ev
  * 
  * 
 */
-void MultiscaleNetwork::build_OT_projections(Projection * projT2O, Projection * projO2T){
+void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Projection * projO2T){
     
     // For now: link params is just nothing
     // In future I have to find a way to express variability in this stuff
@@ -215,6 +213,10 @@ void MultiscaleNetwork::build_OT_projections(Projection * projT2O, Projection * 
     logmsg << "Multiscale connections done";
     log.log(INFO, logmsg.str());
     return;
+}
+
+void MultiscaleNetwork::add_transducer(Population * population, ParaMap * params){
+    transducers.push_back(make_shared<Transducer>(population, params, this));
 }
 
 // void MultiscaleNetwork::build_connections(Projection * projection){

@@ -15,6 +15,7 @@ from scipy.signal import butter, sosfiltfilt
 import quilt.interface.base as base
 import quilt.interface.spiking as spiking
 import quilt.interface.oscill as oscill
+import quilt.interface.multiscale as multi
 
 class SpikingNetwork:
 
@@ -624,18 +625,36 @@ class EEGcap:
 
 class MultiscaleNetwork:
 
-    def __init__(self, spiking_network, oscillator_network, interscale_connectome):
-        # The interscale connectome is a {weights: [{efferent: afferent}] , delays: [{efferent: afferent}]}} dictionary
-        self.features = dict()
-        self.features['interscale_connectome'] = interscale_connectome
+    def __init__(self, 
+                 spiking_network : SpikingNetwork,
+                 oscillator_network: OscillatorNetwork
+                 ):
+        self.spiking_network = spiking_network
+        self.oscillator_network = oscillator_network
+        self.transducers = dict()
+    
+        self._interface = multi.MultiscaleNetwork(spiking_network._interface, oscillator_network._interface)
+
+
+    def add_transducers(self, transducers: list|str):
+        transducers_list = []
+        if type(transducers) is str:
+
+            if not os.path.exists(transducers):
+                raise FileNotFoundError("YAML file not found")
+            
+            with open(transducers, "r") as f:
+                transducers_list = yaml.safe_load(f)['transducers']
+
+        elif type(transducers) is list:
+            transducers_list = transducers
+
+        for td in transducers_list:
+            self.transducers[td['name']] = {key:val for key, val in td.items() if key != 'name'}
+            
+            population = self.spiking_network.populations[td['population']]
+            params = base.ParaMap(self.transducers[td['name']])
+
+            self._interface.add_transducer(population, params)
 
         
-
-        # for network in networks:
-        #     if isinstance(network, SpikingNetwork):
-        #         self.features
-        #         pass
-        #     elif isinstance(network, OscillatorNetwork):
-        #         pass
-        #     else:
-        #         raise TypeError("Multiscale components must be a SpikingNetwork or an OscillatorNetwork")
