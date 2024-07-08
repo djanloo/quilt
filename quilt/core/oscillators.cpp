@@ -25,7 +25,7 @@ void Oscillator::set_evolution_context(EvolutionContext * evo)
 
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
-    :   perf_mgr({"evolution"}),
+    :   perf_mgr("oscillator network"),
         max_delay(0.0),
         min_delay(std::numeric_limits<float>::max())
 {    
@@ -39,7 +39,7 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     }
     has_oscillators = true;
 
-    perf_mgr.set_label("oscillator_network");
+    perf_mgr.set_tasks({"evolution"});
     perf_mgr.set_scales({{"evolution", N}});
 
     get_global_logger().log(INFO, "Built HOMOGENEOUS OscillatorNetwork");
@@ -47,7 +47,7 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
 
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
-    :   perf_mgr({"evolution"}),
+    :   perf_mgr("oscillator network"),
         max_delay(0.0),
         min_delay(std::numeric_limits<float>::max())
 {   
@@ -61,7 +61,7 @@ OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
     }
     has_oscillators = true;
 
-    perf_mgr.set_label("oscillator_network");
+    perf_mgr.set_tasks({"evolution"});
     perf_mgr.set_scales({{"evolution", params.size()}});
 
     get_global_logger().log(INFO, "Built NON-HOMOGENEOUS OscillatorNetwork");

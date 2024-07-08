@@ -181,7 +181,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         n_spikes_last_step(0),
         id(&(spiking_network->id)),
         spiking_network(spiking_network),
-        perf_mgr({"evolution", "spike_emission"})
+        perf_mgr("population")
 {
 
     // Adds itself to the spiking network populations
@@ -210,6 +210,7 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
 
     // Sets the scale for the evolution operation in PerformanceManager
     // this prevents from calling start_recording on each neuron and saves the overhead time
+    perf_mgr.set_tasks({"evolution", "spike_emission"});
     perf_mgr.set_label("Population " + to_string(id.get_id()));
     perf_mgr.set_scales({{"evolution",      n_neurons}, 
                          {"spike_emission", n_neurons}});
@@ -359,9 +360,9 @@ Population::~Population()
 SpikingNetwork::SpikingNetwork()
     :   evocontext_initialized(false),
         id(),
-        perf_mgr({"simulation", "monitorize", "inject"})
+        perf_mgr("spiking network")
 {
-    perf_mgr.set_label("spiking network");
+    perf_mgr.set_tasks({"simulation", "monitorize", "inject"});
 }
 
 PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population)
@@ -495,12 +496,7 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
 
     // Prints performance
     if (verbosity > 0){
-
-        perf_mgr.print_record();
-
-        for (auto pop : populations){
-            pop->perf_mgr.print_record();
-        }
+        PerformanceRegistrar::get_instance().print_records();
     }
 }
 
