@@ -1,17 +1,37 @@
-.PHONY: generate cleanall clean test_file.hpp
+.PHONY: generate lib cleanall clean test_file.hpp
 
 CXX := g++
 PYTHON := python3
 CXXFLAGS := -std=c++17 -Wall -Wextra -ggdb
+BOOST_LIBS := -lboost_filesystem -lboost_system
 SOURCES := quilt/core/multiscale.cpp quilt/core/oscillators.cpp quilt/core/links.cpp quilt/core/network.cpp quilt/core/neuron_models.cpp quilt/core/neurons_base.cpp quilt/core/devices.cpp quilt/core/base.cpp
 
 OBJECTS := $(patsubst %.cpp, %.o, $(SOURCES))
 DEPENDS := $(patsubst %.cpp,%.d, $(SOURCES))
 
 EXECUTABLE := quilt.exe
+LIBFILE := quilt/libquilt.so
 
-generate:
+generate: lib
 	@ $(PYTHON) setup.py
+
+lib: $(LIBFILE)
+
+$(LIBFILE): $(OBJECTS)
+	@echo "Building library"
+	$(CXX) -shared -fPIC -o $(LIBFILE) $(OBJECTS) $(CXXFLAGS) $(BOOST_LIBS)
+
+$(EXECUTABLE): quilt/core/test_file.o $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+-include $(DEPENDS)
+
+%.o: %.cpp Makefile
+	@echo "Compiling .cpp into .o files"
+	$(CXX) $(WARNING) $(CXXFLAGS) -fPIC -MMD -MP -c $< -o $@
+
+clean:
+	rm -f $(OBJECTS) $(EXECUTABLE)
 
 cleanall: clean
 	@echo "Cleaning all.."
@@ -26,14 +46,3 @@ cleanall: clean
 	@rm -R -f quilt/core/*.d
 	@rm -R -f quilt/core/*.o
 	@echo "Cleaned."
-
-$(EXECUTABLE): quilt/core/test_file.o $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
-
--include $(DEPENDS)
-
-%.o: %.cpp Makefile
-	$(CXX) $(WARNING) $(CXXFLAGS) -MMD -MP -c $< -o $@
-
-clean:
-	rm -f $(OBJECTS) $(EXECUTABLE)
