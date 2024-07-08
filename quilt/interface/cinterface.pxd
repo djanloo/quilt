@@ -4,6 +4,10 @@ from libcpp.map cimport map
 from libcpp.memory cimport shared_ptr
 
 cdef extern from "../core/include/base.hpp":
+    cdef cppclass PerformanceRegistrar:
+        @staticmethod
+        PerformanceRegistrar& get_instance()
+        
     cdef cppclass EvolutionContext:
         double dt
         double now
@@ -52,7 +56,7 @@ cdef extern from "../core/include/devices.hpp":
                             float rate, float weight, float weight_delta,
                             float t_min, float t_max
                             )
-                            
+
 #------------------------ SPIKING -------------------- #
 
 cdef extern from "../core/include/neurons_base.hpp":
@@ -127,6 +131,8 @@ cdef extern from "../core/include/oscillators.hpp":
 cdef extern from "../core/include/multiscale.hpp":
     cdef cppclass MultiscaleNetwork:
         MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
+        OscillatorNetwork * oscnet
+        SpikingNetwork * spikenet
         void build_multiscale_projections(Projection * projT2O, Projection * projO2T) except +
         void add_transducer(Population * population, ParaMap * params)
         void run(double time, int verbosity)
