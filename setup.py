@@ -26,6 +26,7 @@ extension_names = ["base", "spiking", "oscill", "multiscale"]
 extension_common_kwargs = dict( include_dirs=DEFAULT_INCLUDES + ["core/include"],
                                 language="c++",
                                 extra_compile_args=["-O3", "-std=c++17"],
+                                define_macros= [('NPY_NO_DEPRECATED_API','NPY_1_7_API_VERSION')], #Silences npy deprecated warn
                                 extra_link_args=["-std=c++17", LIBRARY_PATH])
 
 extensions = []
