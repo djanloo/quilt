@@ -84,7 +84,7 @@ cdef class OscillatorNetwork:
     def run(self, time=1):
         self._oscillator_network.run(self._evo, time, VERBOSITY)
     
-    def init(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt=1.0):
+    def initialize(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt=1.0):
         self._evo = new cinter.EvolutionContext(dt)
         self._oscillator_network.initialize(self._evo, states)
 

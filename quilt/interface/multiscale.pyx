@@ -4,7 +4,9 @@ cimport quilt.interface.base as base
 cimport quilt.interface.spiking as spiking
 cimport quilt.interface.oscill as oscill
 
-from libcpp.memory cimport shared_ptr
+import numpy as np
+cimport numpy as np
+# from libcpp.memory cimport shared_ptr
 
 cdef class Transducer:
     cdef cinter.Transducer * _transducer
@@ -28,3 +30,13 @@ cdef class MultiscaleNetwork:
 
     def build_multiscale_projections(self,  base.Projection T2O, base.Projection O2T):
         self._multiscale_network.build_multiscale_projections(T2O._projection, O2T._projection)
+
+    def set_evolution_contextes(self, dt_short=0.1, dt_long=1.0):
+        self._evo_short = new cinter.EvolutionContext(dt_short)
+        self._evo_long = new cinter.EvolutionContext(dt_long)
+
+        self._multiscale_network.set_evolution_contextes(self._evo_short, self._evo_long)
+    
+    def initialize(self, np.ndarray[np.double_t, ndim=2, mode='c'] states):
+        self._multiscale_network.oscnet.initialize(self._evo_long, states)
+        self._multiscale_network.spikenet.run(self._evo_short, self._evo_long.now, 1)
