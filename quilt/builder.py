@@ -700,3 +700,9 @@ class MultiscaleNetwork:
             self._interface.build_multiscale_projections(T2O, O2T)
         else:
             raise ValueError("Both projections (oscillators to transducers and vice versa) must be specified.")
+    
+    def set_evolution_contextes(self, dt_short=0.1, dt_long=1.0):
+        self._interface.set_evolution_contextes(dt_short, dt_long)
+
+    def initialize(self, states):
+        self._interface.initialize(states)
