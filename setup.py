@@ -1,6 +1,7 @@
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 from Cython.Build import cythonize
+from Cython.Compiler.Options import get_directive_defaults
 import numpy as np
 import os
 
@@ -32,7 +33,12 @@ extension_common_kwargs = dict( include_dirs=DEFAULT_INCLUDES + ["core/include"]
 extensions = []
 for ext_name in extension_names:
     extensions += [Extension(ext_name, sources=[f"{BIN_FOLDER}/{ext_name}.pyx"], **extension_common_kwargs)]
-    
+
+
+cython_compiler_directives = get_directive_defaults()
+cython_compiler_directives['language_level'] = "3"
+cython_compiler_directives['warn'] = True
+
 # Compiles the extensions
 ext_modules = cythonize(
     extensions,
@@ -40,7 +46,8 @@ ext_modules = cythonize(
     include_path=["."],
     build_dir=CYTHON_GEN_FOLDER,
     force=False,
-    annotate=False
+    annotate=False,
+    compiler_directives=cython_compiler_directives
 )
 
 # Configurazione di setup.py
