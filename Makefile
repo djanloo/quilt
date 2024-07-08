@@ -12,12 +12,13 @@ DEPENDS := $(patsubst %.cpp,%.d, $(SOURCES))
 EXECUTABLE := quilt.exe
 LIBFILE := quilt/libquilt.so
 
-generate:
+generate: lib
 	@ $(PYTHON) setup.py
 
 lib: $(LIBFILE)
 
 $(LIBFILE): $(OBJECTS)
+	@echo "Building library"
 	$(CXX) -shared -fPIC -o $(LIBFILE) $(OBJECTS) $(CXXFLAGS) $(BOOST_LIBS)
 
 $(EXECUTABLE): quilt/core/test_file.o $(OBJECTS)
@@ -26,6 +27,7 @@ $(EXECUTABLE): quilt/core/test_file.o $(OBJECTS)
 -include $(DEPENDS)
 
 %.o: %.cpp Makefile
+	@echo "Compiling .cpp into .o files"
 	$(CXX) $(WARNING) $(CXXFLAGS) -fPIC -MMD -MP -c $< -o $@
 
 clean:
