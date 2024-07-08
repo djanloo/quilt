@@ -111,14 +111,14 @@ MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwor
     :   spikenet(spikenet),
         oscnet(oscnet),
         timescales_initialized(false),
-        perf_mgr({"evolve_spikenet", "evolve_oscnet"})
+        perf_mgr("multiscale network")
 {
    n_populations = spikenet->populations.size();
    n_oscillators = oscnet->oscillators.size();
    stringstream ss;
    ss << "MultiscaleNetwork has " << n_populations << " populations and " << n_oscillators << " oscillators";
 
-   perf_mgr.set_label("multiscale network");
+   perf_mgr.set_tasks({"evolve_spikenet", "evolve_oscnet"});
    get_global_logger().log(INFO, ss.str());
 }
 

@@ -62,7 +62,7 @@ void ThreadSafeFile::close() {
 //******************************* LOGGER ***************************//
 Logger::Logger(const string& filename)
     :   logFile(filename),
-        output_level(DEBUG){}
+        output_level(LOG_LEVEL_DEFAULT){}
 
 Logger::~Logger() { logFile.close(); } 
 
@@ -101,23 +101,29 @@ Logger& get_global_logger(){
 
 /************************************ PERFORMANCE MANAGER ***********************************/
 
-PerformanceManager::PerformanceManager(vector<string> task_names)
-    :   label("no label")
+PerformanceManager::PerformanceManager(string label)
+    :   label(label)
     {
+    // Register itself in the performance registry on creation
+    PerformanceRegistrar::get_instance().add_manager(this);
+}
+
+void PerformanceManager::set_tasks(vector<string> task_names){
     for (int i = 0; i < task_names.size(); i++ ){
-        task_duration[task_names[i]] = std::chrono::nanoseconds::zero();//std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::duration<double>(0.0));
+        task_duration[task_names[i]] = std::chrono::nanoseconds::zero();
         task_count[task_names[i]] = 0;
         task_scale[task_names[i]] = 1;
     }
-
 }
-
-void PerformanceManager::set_label(string label){ this->label = label; }
 
 void PerformanceManager::set_scales(map<string, int> scales){
     for (auto &pair : scales){
         task_scale[pair.first] = pair.second;
     }
+}
+
+void PerformanceManager::set_label(string label){
+    this->label = label;
 }
 
 void PerformanceManager::start_recording(string task){
@@ -132,17 +138,17 @@ void PerformanceManager::print_record(){
     stringstream ss;
     ss << "Output for PerformanceManager "  << "<" << label << ">" << endl;
     for (auto &pair : task_duration){
-        ss <<"\t--" << pair.first << "\t" << format_duration(pair.second);
+        ss << std::setfill('_') << std::setw(15) << pair.first  << " " << std::setw(10) << format_duration(pair.second);
         std::chrono::nanoseconds time_per_call = pair.second;
 
         if (task_count[pair.first] > 1){
             time_per_call /= static_cast<double>(task_count[pair.first]);
-            ss << "\t-- " << " -- " << format_duration(time_per_call) << " /step for "<< task_count[pair.first] << " steps --";
+            ss << " | " << std::setw(8) <<  format_duration(time_per_call)  << "/step for "<< task_count[pair.first] << " steps";
         }
 
         if (task_scale[pair.first] > 1){
             time_per_call /= task_scale[pair.first];
-            ss << "\t-- " << format_duration(time_per_call) << " /step/unit for "<< task_count[pair.first] << " steps and "<< task_scale[pair.first] << " units";
+            ss << " | " << std::setw(8) << format_duration(time_per_call)  << "/step/unit for "<< task_count[pair.first] << " steps and "<< task_scale[pair.first] << " units";
         }
         ss << endl;
     } 
@@ -167,6 +173,42 @@ string PerformanceManager::format_duration (std::chrono::nanoseconds duration) {
         ss << nanoseconds << " ns";
     }
     return ss.str();
+}
+
+
+PerformanceRegistrar::PerformanceRegistrar(){
+    stringstream ss;
+    ss <<  "Created PerformanceRegistrar at index: "<<this; 
+    get_global_logger().log(INFO,ss.str());
+}
+PerformanceRegistrar::~PerformanceRegistrar(){
+    stringstream ss;
+    ss <<  "Destroyed PerformanceRegistrar at index: "<<this;
+    get_global_logger().log(INFO,ss.str());
+}
+
+// Static method definition to get the singleton instance
+PerformanceRegistrar& PerformanceRegistrar::get_instance() {
+    static PerformanceRegistrar instance;
+    return instance;
+}
+
+// Method to add a PerformanceManager instance to the registrar
+void PerformanceRegistrar::add_manager(PerformanceManager* pm) {
+    instances.push_back(pm);
+    stringstream ss;
+    ss << "PerformanceRegistrar: registered manager " << instances.size() <<":"<< pm->label;
+    get_global_logger().log(INFO, ss.str());
+}
+
+// Method to print records for all registered instances
+void PerformanceRegistrar::print_records() {
+    stringstream ss;
+    ss << "Ouput for PerformanceRegistrar "<< "(" << instances.size() << " managers )";
+    get_global_logger().log(INFO, ss.str());
+    for (auto pm : instances) {
+        pm->print_record();
+    }
 }
 
 //************************* UTILS FOR DYNAMICAL SYSTEMS **********************//
@@ -202,8 +244,10 @@ void EvolutionContext::do_step(){
 int EvolutionContext::index_of(double time)
 {
     if (time < 0.0){
-        get_global_logger().log(ERROR, "Requested index of a negative time: " + std::to_string(time) );
-        throw negative_time_exception("Requested index of a negative time: " + std::to_string(time) );
+        stringstream ss;
+        ss <<"Requested index of a negative time: " << time <<" ms.";
+        get_global_logger().log(WARNING, ss.str() + "Throwing an exception, will it be catched?" );
+        throw negative_time_exception(ss.str());
         }
 
     if (time == 0.0 ){

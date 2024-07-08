@@ -567,10 +567,7 @@ void test_multiscale_base(){
         OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, i*evo_short.dt)) << endl;
     }
 
-    transd->injector->perf_mgr.print_record();
-    osc_net.perf_mgr.print_record();
-    spike_net.perf_mgr.print_record();
-    multi_net.perf_mgr.print_record();
+    PerformanceRegistrar::get_instance().print_records();
 }
 
 
