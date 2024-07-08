@@ -47,8 +47,8 @@ vector<vector<float>> get_rand_proj_mat(int N, int M, double min, double max){
 void test_spiking()
 {
 
-    int Na = 1000;
-    int Nb = 1000;
+    int Na = 2000;
+    int Nb = 2000;
 
     SpikingNetwork sn = SpikingNetwork();
 
@@ -572,12 +572,12 @@ void test_multiscale_base(){
 
 
 int main(){ 
-    // test_spiking();
+    test_spiking();
     // test_sparse();
     // test_poisson();
     // test_NCERK();
     // test_oscill();
     // test_inhom_poisson();
-    test_multiscale_base();
+    // test_multiscale_base();
 }
 
