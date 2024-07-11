@@ -116,7 +116,7 @@ void test_spiking()
 
     EvolutionContext evo = EvolutionContext(0.1);
     
-    sn.run(&evo, 5, 1);
+    sn.run(&evo, 50, 1);
 
     // if ( PopulationSpikeMonitor * psm = dynamic_cast<C*>(instance)) {
     //         derivedC->get_history();  // Chiamata a get_history() se l'istanza è di tipo C
