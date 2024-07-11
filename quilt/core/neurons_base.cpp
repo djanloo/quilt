@@ -127,7 +127,7 @@ void Neuron::evolve(){
     // because EXACTLY at time t the spikes are not arrived yet
     // The other way of doing this is to evaluate at the beginning of the evolution the spikes
     // that arrived from t-dt and t
-    handle_incoming_spikes();
+    // handle_incoming_spikes();
 
     // THIS CHECKS NANS
     // auto before_step = state;
