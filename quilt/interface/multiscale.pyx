@@ -40,3 +40,6 @@ cdef class MultiscaleNetwork:
     def initialize(self, np.ndarray[np.double_t, ndim=2, mode='c'] states):
         self._multiscale_network.oscnet.initialize(self._evo_long, states)
         self._multiscale_network.spikenet.run(self._evo_short, self._evo_long.now, 1)
+
+    def run(self, time=10):
+        self._multiscale_network.run(time, 1)
