@@ -706,3 +706,6 @@ class MultiscaleNetwork:
 
     def initialize(self, states):
         self._interface.initialize(states)
+    
+    def run(self, time):
+        self._interface.run(time=time)

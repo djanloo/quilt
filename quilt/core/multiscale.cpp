@@ -282,7 +282,7 @@ void MultiscaleNetwork::run(double time, int verbosity){
 
     std::stringstream ss;
 
-    ss  << "Multiscale network running ( time ctxts: " 
+    ss  << "Multiscale network running ( now time ctxts are: " 
         << "["<< evo_long->now <<"|" <<  evo_long->dt <<"]" 
         << " and " << "["<< evo_long->now <<"|" <<  evo_short->dt <<"]"
         << " )";

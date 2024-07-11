@@ -138,5 +138,44 @@ def test_initialize():
     multinet.set_evolution_contextes(dt_short=0.1, dt_long=1.0)
     multinet.initialize(states)
 
+def test_run():
+    # Builds the spiking network
+    spikenet = SpikingNetwork.from_yaml(TEST_NET, TEST_NEURONS)
+    spikenet.build()
+
+    # Builds the oscillator network
+    oscnet = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+                                             {'oscillator_type':'jansen-rit'}, 
+                                             global_weight=0.1, 
+                                             conduction_speed=1)
+    oscnet.build()
+
+    multinet = MultiscaleNetwork(spikenet, oscnet)
+
+    multinet.add_transducers(TEST_TRANSDUCERS)
+    np.random.seed(1997)
+    T2O_delays = np.random.uniform(10, 11, size = (multinet.n_transducers, multinet.n_oscillators)).astype(np.float32)
+    T2O_weights = np.random.uniform(0, 1, size = (multinet.n_transducers, multinet.n_oscillators)).astype(np.float32)
+
+    # Deletes some links
+    T2O_weights[(T2O_weights < 0.5)] = 0.0
+
+    O2T_delays = np.random.uniform(10, 11, size=(multinet.n_oscillators, multinet.n_transducers)).astype(np.float32)
+    O2T_weights = np.random.uniform(0, 1, size=(multinet.n_oscillators, multinet.n_transducers)).astype(np.float32)
+    # Deletes some links
+    O2T_weights[(O2T_weights < 0.5)] = 0.0
+
+    T2Oproj = Projection(T2O_weights, T2O_delays)
+    O2Tproj = Projection(O2T_weights, O2T_delays)
+
+    multinet.build_multiscale_projections(T2O=T2Oproj, O2T=O2Tproj)
+
+    states = np.random.uniform(0, 0.05, size=6*oscnet.n_oscillators).reshape(oscnet.n_oscillators, 6)
+    
+    multinet.set_evolution_contextes(dt_short=0.1, dt_long=1.0)
+    multinet.initialize(states)
+
+    multinet.run(time=1000)
+
 if __name__ == "__main__":
-    test_initialize()
+    test_run()
