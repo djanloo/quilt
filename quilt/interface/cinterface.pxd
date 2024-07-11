@@ -136,7 +136,7 @@ cdef extern from "../core/include/multiscale.hpp":
         SpikingNetwork * spikenet
         void build_multiscale_projections(Projection * projT2O, Projection * projO2T) except +
         void add_transducer(Population * population, ParaMap * params)
-        void run(double time, int verbosity)
+        void run(double time, int verbosity) except +
         void set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long)
 
     cdef cppclass Transducer:
