@@ -181,7 +181,8 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         n_spikes_last_step(0),
         id(&(spiking_network->id)),
         spiking_network(spiking_network),
-        perf_mgr("population")
+        perf_mgr("population"),
+        thread_pool(N_THREADS_POP_EVOLVE)
 {
 
     // Adds itself to the spiking network populations
@@ -244,94 +245,113 @@ void Population::project(const SparseProjection * projection, Population * effer
 
 void Population::evolve()
 {
-    // Splits the work in equal parts using Nthreads threads
-    unsigned int n_threads;
+    // COMMENTED FOR ENHANCEMENT #9
+    // // Splits the work in equal parts using Nthreads threads
+    // unsigned int n_threads;
 
-    if (n_neurons < MAX_N_1_THREADS)        n_threads = 0;
-    else if (n_neurons < MAX_N_2_THREADS)   n_threads = 2;
-    else if (n_neurons < MAX_N_3_THREADS)   n_threads = 3;
-    else if (n_neurons < MAX_N_4_THREADS)   n_threads = 4;
-    else                                    n_threads = std::thread::hardware_concurrency();
+    // // This is reduntant if done here
+    // if (n_neurons < MAX_N_1_THREADS)        n_threads = 0;
+    // else if (n_neurons < MAX_N_2_THREADS)   n_threads = 2;
+    // else if (n_neurons < MAX_N_3_THREADS)   n_threads = 3;
+    // else if (n_neurons < MAX_N_4_THREADS)   n_threads = 4;
+    // else                                    n_threads = std::thread::hardware_concurrency();
 
-    auto evolve_bunch = [this](unsigned int from, unsigned int to){
-                            for (unsigned int i = from; i< to; i++){
-                                this->neurons[i]->evolve();
-                            }
-                        };
+    // auto evolve_bunch = [this](unsigned int from, unsigned int to){
+    //                         for (unsigned int i = from; i< to; i++){
+    //                             this->neurons[i]->evolve();
+    //                         }
+    //                     };
 
-    auto handle_spikes_bunch = [this](unsigned int from, unsigned int to){
-                            for (unsigned int i = from; i< to; i++){
-                                this->neurons[i]->handle_incoming_spikes();
-                            }
-                        };
+    // auto handle_spikes_bunch = [this](unsigned int from, unsigned int to){
+    //                         for (unsigned int i = from; i< to; i++){
+    //                             this->neurons[i]->handle_incoming_spikes();
+    //                         }
+    //                     };
 
+    // perf_mgr.start_recording("evolution");
+    // // In case few neurons are present, do not use multithreading
+    // // to avoid overhead
+    // if (n_threads == 0){
+    //     evolve_bunch(0, n_neurons);
+    // }
+    // else{// multithreading evolution
+
+    //     std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
+
+    //     for (unsigned int i = 0; i < n_threads; i++){
+    //         bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
+    //         bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
+    //     }
+
+    //     // Ensures that all neurons are covered
+    //     bunch_ends[n_threads-1] = this->n_neurons-1;
+
+    //     // Starts the threads
+    //     // NOTE: spawning threads costs roughly 10 us/thread
+    //     // it is a non-negligible overhead
+    //     std::vector<std::thread> evolver_threads(n_threads);
+    //     for (unsigned int i = 0; i < n_threads; i++){
+    //         evolver_threads[i] = std::thread(evolve_bunch, bunch_starts[i], bunch_ends[i] );
+    //     }
+
+    //     // Waits the threads
+    //     for (unsigned int i = 0; i < n_threads; i++){
+    //         evolver_threads[i].join();
+    //     }
+    // } // ~multithreading evolution
+
+    // perf_mgr.end_recording("evolution");
+
+    // // BAD CODE HERE. I copied ane pasted, but it's a test.
+    // perf_mgr.start_recording("spike_handling");
+    // // In case few neurons are present, do not use multithreading
+    // // to avoid overhead
+    // if (n_threads == 0){
+    //     evolve_bunch(0, n_neurons);
+    // }
+    // else{// multithreading spike handling
+
+    //     std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
+
+    //     for (unsigned int i = 0; i < n_threads; i++){
+    //         bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
+    //         bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
+    //     }
+
+    //     // Ensures that all neurons are covered
+    //     bunch_ends[n_threads-1] = this->n_neurons-1;
+
+    //     // Starts the threads
+    //     // NOTE: spawning threads costs roughly 10 us/thread
+    //     // it is a non-negligible overhead
+    //     std::vector<std::thread> evolver_threads(n_threads);
+    //     for (unsigned int i = 0; i < n_threads; i++){
+    //         evolver_threads[i] = std::thread(evolve_bunch, bunch_starts[i], bunch_ends[i] );
+    //     }
+
+    //     // Waits the threads
+    //     for (unsigned int i = 0; i < n_threads; i++){
+    //         evolver_threads[i].join();
+    //     }
+    // } // ~multithreading spike_handling
+
+    // perf_mgr.end_recording("spike_handling");
+    // ~ENHANCEMENT 9
+
+    // Uses the thread pool to evolve the neurons
     perf_mgr.start_recording("evolution");
-    // In case few neurons are present, do not use multithreading
-    // to avoid overhead
-    if (n_threads == 0){
-        evolve_bunch(0, n_neurons);
+    for (const auto& neuron : neurons) {
+        boost::asio::post(thread_pool, boost::bind(&Neuron::evolve, neuron));
     }
-    else{// multithreading evolution
-
-        std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
-
-        for (unsigned int i = 0; i < n_threads; i++){
-            bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
-            bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
-        }
-
-        // Ensures that all neurons are covered
-        bunch_ends[n_threads-1] = this->n_neurons-1;
-
-        // Starts the threads
-        // NOTE: spawning threads costs roughly 10 us/thread
-        // it is a non-negligible overhead
-        std::vector<std::thread> evolver_threads(n_threads);
-        for (unsigned int i = 0; i < n_threads; i++){
-            evolver_threads[i] = std::thread(evolve_bunch, bunch_starts[i], bunch_ends[i] );
-        }
-
-        // Waits the threads
-        for (unsigned int i = 0; i < n_threads; i++){
-            evolver_threads[i].join();
-        }
-    } // ~multithreading evolution
-
+    thread_pool.join();
     perf_mgr.end_recording("evolution");
 
-    // BAD CODE HERE. I copied ane pasted, but it's a test.
+    // Uses the thread pool to handle the incoming spikes of the neurons
     perf_mgr.start_recording("spike_handling");
-    // In case few neurons are present, do not use multithreading
-    // to avoid overhead
-    if (n_threads == 0){
-        evolve_bunch(0, n_neurons);
+    for (const auto& neuron : neurons) {
+        boost::asio::post(thread_pool, boost::bind(&Neuron::handle_incoming_spikes, neuron));
     }
-    else{// multithreading spike handling
-
-        std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
-
-        for (unsigned int i = 0; i < n_threads; i++){
-            bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
-            bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
-        }
-
-        // Ensures that all neurons are covered
-        bunch_ends[n_threads-1] = this->n_neurons-1;
-
-        // Starts the threads
-        // NOTE: spawning threads costs roughly 10 us/thread
-        // it is a non-negligible overhead
-        std::vector<std::thread> evolver_threads(n_threads);
-        for (unsigned int i = 0; i < n_threads; i++){
-            evolver_threads[i] = std::thread(evolve_bunch, bunch_starts[i], bunch_ends[i] );
-        }
-
-        // Waits the threads
-        for (unsigned int i = 0; i < n_threads; i++){
-            evolver_threads[i].join();
-        }
-    } // ~multithreading spike_handling
-
+    thread_pool.join();
     perf_mgr.end_recording("spike_handling");
 
     // TODO: spike emission is moved here in the population evolution because 

@@ -1,7 +1,9 @@
 #pragma once
 #include "base.hpp"
 #include "devices.hpp"
-// #include "neurons_base.hpp"
+
+#include <boost/asio.hpp>
+#include <boost/bind/bind.hpp>
 
 #include <unordered_map>
 #include <chrono>
@@ -9,6 +11,8 @@
 #include <variant>
 
 using std::vector;
+
+#define N_THREADS_POP_EVOLVE 8
 
 // Forward declarations
 class Neuron;
@@ -124,6 +128,7 @@ class Population{
         
         PerformanceManager perf_mgr;
     private:
+        boost::asio::thread_pool thread_pool; //!< Thread pool for evolution and spike handling
         EvolutionContext * evo;
 
 };
