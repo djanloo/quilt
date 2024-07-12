@@ -7,11 +7,8 @@
 
 #include <string>
 #include <thread>
-
-#define MAX_N_1_THREADS 150
-#define MAX_N_2_THREADS 300
-#define MAX_N_3_THREADS 600
-#define MAX_N_4_THREADS 1000
+#include <algorithm>
+#include <execution>
 
 #define N_THREADS_BUILD 8
 
@@ -246,118 +243,66 @@ void Population::project(const SparseProjection * projection, Population * effer
 void Population::evolve()
 {
     // COMMENTED FOR ENHANCEMENT #9
-    // // Splits the work in equal parts using Nthreads threads
-    // unsigned int n_threads;
+    // Splits the work in equal parts
+    std::vector<unsigned int> bunch_starts(N_THREADS_POP_EVOLVE), bunch_ends(N_THREADS_POP_EVOLVE);
+    for (unsigned int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE;
+        bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE - 1;
+    }
 
-    // // This is reduntant if done here
-    // if (n_neurons < MAX_N_1_THREADS)        n_threads = 0;
-    // else if (n_neurons < MAX_N_2_THREADS)   n_threads = 2;
-    // else if (n_neurons < MAX_N_3_THREADS)   n_threads = 3;
-    // else if (n_neurons < MAX_N_4_THREADS)   n_threads = 4;
-    // else                                    n_threads = std::thread::hardware_concurrency();
+    // Ensures that all neurons are covered
+    bunch_ends[N_THREADS_POP_EVOLVE-1] = this->n_neurons-1;
 
+    // // Lambda function for batch evolution
     // auto evolve_bunch = [this](unsigned int from, unsigned int to){
     //                         for (unsigned int i = from; i< to; i++){
     //                             this->neurons[i]->evolve();
     //                         }
     //                     };
 
+    // // Lambda function for batch spike handling
     // auto handle_spikes_bunch = [this](unsigned int from, unsigned int to){
     //                         for (unsigned int i = from; i< to; i++){
     //                             this->neurons[i]->handle_incoming_spikes();
     //                         }
     //                     };
 
+    perf_mgr.start_recording("evolution");
+    std::for_each(std::execution::par, neurons.begin(), neurons.end(), [](Neuron* neuron) {
+            neuron->evolve();
+        });
+    perf_mgr.end_recording("evolution");
+    
+    perf_mgr.start_recording("spike_handling");
+    std::for_each(std::execution::par, neurons.begin(), neurons.end(), [](Neuron* neuron) {
+            neuron->handle_incoming_spikes();
+        });
+    perf_mgr.end_recording("spike_handling");
+    // ~ENHANCEMENT #9
+
+    // // POOL TEST
+    // // Uses the thread pool to evolve the neurons
     // perf_mgr.start_recording("evolution");
-    // // In case few neurons are present, do not use multithreading
-    // // to avoid overhead
-    // if (n_threads == 0){
-    //     evolve_bunch(0, n_neurons);
+    // for (const auto& neuron : neurons) {
+    //     boost::asio::post(thread_pool, boost::bind(&Neuron::evolve, neuron));
     // }
-    // else{// multithreading evolution
-
-    //     std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
-
-    //     for (unsigned int i = 0; i < n_threads; i++){
-    //         bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
-    //         bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
-    //     }
-
-    //     // Ensures that all neurons are covered
-    //     bunch_ends[n_threads-1] = this->n_neurons-1;
-
-    //     // Starts the threads
-    //     // NOTE: spawning threads costs roughly 10 us/thread
-    //     // it is a non-negligible overhead
-    //     std::vector<std::thread> evolver_threads(n_threads);
-    //     for (unsigned int i = 0; i < n_threads; i++){
-    //         evolver_threads[i] = std::thread(evolve_bunch, bunch_starts[i], bunch_ends[i] );
-    //     }
-
-    //     // Waits the threads
-    //     for (unsigned int i = 0; i < n_threads; i++){
-    //         evolver_threads[i].join();
-    //     }
-    // } // ~multithreading evolution
-
+    // thread_pool.join();
     // perf_mgr.end_recording("evolution");
 
-    // // BAD CODE HERE. I copied ane pasted, but it's a test.
+    // // Uses the thread pool to handle the incoming spikes of the neurons
     // perf_mgr.start_recording("spike_handling");
-    // // In case few neurons are present, do not use multithreading
-    // // to avoid overhead
-    // if (n_threads == 0){
-    //     evolve_bunch(0, n_neurons);
+    // for (const auto& neuron : neurons) {
+    //     boost::asio::post(thread_pool, boost::bind(&Neuron::handle_incoming_spikes, neuron));
     // }
-    // else{// multithreading spike handling
 
-    //     std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
-
-    //     for (unsigned int i = 0; i < n_threads; i++){
-    //         bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
-    //         bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
-    //     }
-
-    //     // Ensures that all neurons are covered
-    //     bunch_ends[n_threads-1] = this->n_neurons-1;
-
-    //     // Starts the threads
-    //     // NOTE: spawning threads costs roughly 10 us/thread
-    //     // it is a non-negligible overhead
-    //     std::vector<std::thread> evolver_threads(n_threads);
-    //     for (unsigned int i = 0; i < n_threads; i++){
-    //         evolver_threads[i] = std::thread(evolve_bunch, bunch_starts[i], bunch_ends[i] );
-    //     }
-
-    //     // Waits the threads
-    //     for (unsigned int i = 0; i < n_threads; i++){
-    //         evolver_threads[i].join();
-    //     }
-    // } // ~multithreading spike_handling
-
+    // thread_pool.join();
     // perf_mgr.end_recording("spike_handling");
-    // ~ENHANCEMENT 9
 
-    // Uses the thread pool to evolve the neurons
-    perf_mgr.start_recording("evolution");
-    for (const auto& neuron : neurons) {
-        boost::asio::post(thread_pool, boost::bind(&Neuron::evolve, neuron));
-    }
-    thread_pool.join();
-    perf_mgr.end_recording("evolution");
-
-    // Uses the thread pool to handle the incoming spikes of the neurons
-    perf_mgr.start_recording("spike_handling");
-    for (const auto& neuron : neurons) {
-        boost::asio::post(thread_pool, boost::bind(&Neuron::handle_incoming_spikes, neuron));
-    }
-    thread_pool.join();
-    perf_mgr.end_recording("spike_handling");
+    //  // ~ POOL TEST
 
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
-    // start = std::chrono::high_resolution_clock::now();
     perf_mgr.start_recording("spike_emission");
     this->n_spikes_last_step = 0;
     
@@ -369,8 +314,6 @@ void Population::evolve()
         
     }
     perf_mgr.end_recording("spike_emission");
-    // end = std::chrono::high_resolution_clock::now();
-    // timestats_spike_emission += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 }
 
 void Population::print_info()
