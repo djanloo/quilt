@@ -129,6 +129,7 @@ class Population{
         PerformanceManager perf_mgr;
     private:
         boost::asio::thread_pool thread_pool; //!< Thread pool for evolution and spike handling
+        vector<unsigned int> batch_starts, batch_ends;
         EvolutionContext * evo;
 
 };

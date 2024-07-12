@@ -179,7 +179,9 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         id(&(spiking_network->id)),
         spiking_network(spiking_network),
         perf_mgr("population"),
-        thread_pool(N_THREADS_POP_EVOLVE)
+        thread_pool(N_THREADS_POP_EVOLVE),
+        batch_starts(N_THREADS_POP_EVOLVE),
+        batch_ends(N_THREADS_POP_EVOLVE)
 {
 
     // Adds itself to the spiking network populations
@@ -213,6 +215,14 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     perf_mgr.set_scales({{"evolution",      n_neurons}, 
                          {"spike_emission", n_neurons},
                          {"spike_handling", n_neurons}});
+
+    // Divides the population in batches
+    for (unsigned int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        batch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE;
+        batch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE - 1;
+    }
+    // Ensures that all neurons are covered
+    batch_ends[N_THREADS_POP_EVOLVE-1] = this->n_neurons-1;
 }
 
 void Population::project(const Projection * projection, Population * efferent_population)
@@ -242,63 +252,26 @@ void Population::project(const SparseProjection * projection, Population * effer
 
 void Population::evolve()
 {
-    // COMMENTED FOR ENHANCEMENT #9
-    // Splits the work in equal parts
-    std::vector<unsigned int> bunch_starts(N_THREADS_POP_EVOLVE), bunch_ends(N_THREADS_POP_EVOLVE);
-    for (unsigned int i = 0; i < N_THREADS_POP_EVOLVE; i++){
-        bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE;
-        bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE - 1;
+    // Lambda function for batch evolution
+    auto evolve_bunch = [this](unsigned int from, unsigned int to){
+                            for (unsigned int i = from; i< to; i++){
+                                this->neurons[i]->evolve();
+                            }
+                        };
+
+    // Lambda function for batch spike handling
+    auto handle_spikes_bunch = [this](unsigned int from, unsigned int to){
+                            for (unsigned int i = from; i< to; i++){
+                                this->neurons[i]->handle_incoming_spikes();
+                            }
+                        };
+
+    for (int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        thread_pool.enqueue(evolve_bunch, batch_starts[i], batch_ends[i]);
+        thread_pool.enqueue(handle_spikes_bunch, batch_starts[i], batch_ends[i]);
+
     }
-
-    // Ensures that all neurons are covered
-    bunch_ends[N_THREADS_POP_EVOLVE-1] = this->n_neurons-1;
-
-    // // Lambda function for batch evolution
-    // auto evolve_bunch = [this](unsigned int from, unsigned int to){
-    //                         for (unsigned int i = from; i< to; i++){
-    //                             this->neurons[i]->evolve();
-    //                         }
-    //                     };
-
-    // // Lambda function for batch spike handling
-    // auto handle_spikes_bunch = [this](unsigned int from, unsigned int to){
-    //                         for (unsigned int i = from; i< to; i++){
-    //                             this->neurons[i]->handle_incoming_spikes();
-    //                         }
-    //                     };
-
-    perf_mgr.start_recording("evolution");
-    std::for_each(std::execution::par, neurons.begin(), neurons.end(), [](Neuron* neuron) {
-            neuron->evolve();
-        });
-    perf_mgr.end_recording("evolution");
-    
-    perf_mgr.start_recording("spike_handling");
-    std::for_each(std::execution::par, neurons.begin(), neurons.end(), [](Neuron* neuron) {
-            neuron->handle_incoming_spikes();
-        });
-    perf_mgr.end_recording("spike_handling");
-    // ~ENHANCEMENT #9
-
-    // // POOL TEST
-    // // Uses the thread pool to evolve the neurons
-    // perf_mgr.start_recording("evolution");
-    // for (const auto& neuron : neurons) {
-    //     boost::asio::post(thread_pool, boost::bind(&Neuron::evolve, neuron));
-    // }
-    // thread_pool.join();
-    // perf_mgr.end_recording("evolution");
-
-    // // Uses the thread pool to handle the incoming spikes of the neurons
-    // perf_mgr.start_recording("spike_handling");
-    // for (const auto& neuron : neurons) {
-    //     boost::asio::post(thread_pool, boost::bind(&Neuron::handle_incoming_spikes, neuron));
-    // }
-
-    // thread_pool.join();
-    // perf_mgr.end_recording("spike_handling");
-
-    //  // ~ POOL TEST
+    thread_pool.wait();
 
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
@@ -309,9 +282,7 @@ void Population::evolve()
     for (auto neuron : this->neurons){
         if ((neuron->getV()) >= neuroparam->V_peak){
             neuron->emit_spike();
-            // cout << "V over threshold neuron: spiked at t: "<< evo->now << endl;
         }
-        
     }
     perf_mgr.end_recording("spike_emission");
 }
