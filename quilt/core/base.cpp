@@ -179,13 +179,13 @@ string PerformanceManager::format_duration (std::chrono::nanoseconds duration) {
     stringstream ss;
     ss << std::setprecision(PERFMGR_OUTPUT_DIGITS) << std::fixed;
     if (nanoseconds >= 1000000000) {
-        double seconds = std::chrono::duration_cast <std::chrono::seconds>(duration).count();
+        double seconds = std::chrono::duration_cast <std::chrono::milliseconds>(duration).count()/1000.0;
         ss << seconds << " s";
     } else if (nanoseconds >= 1000000) { 
-        double milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        double milliseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count()/1000.0;
         ss << milliseconds << " ms";
     } else if (nanoseconds >= 1000){ 
-        double microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+        double microseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count()/1000.0;
         ss << microseconds << " us";
     } else {
         double nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
