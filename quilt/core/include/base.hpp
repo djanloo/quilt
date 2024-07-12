@@ -21,7 +21,6 @@
 
 
 #define WEIGHT_EPS 0.00001 //!< Weight threshold of synapses to be considered as zeroed out.
-#define LOG_LEVEL_DEFAULT DEBUG
 
 using std::cout;
 using std::endl;
@@ -32,6 +31,14 @@ using std::string;
 using std::to_string;
 using std::stringstream;
 
+enum LogLevel { DEBUG, INFO, WARNING, ERROR, CRITICAL };
+
+namespace settings {
+    extern LogLevel verbosity;
+
+    void set_verbosity(int value);
+    LogLevel get_verbosity();
+}
 
 class negative_time_exception : public std::exception {
     private:
@@ -73,7 +80,6 @@ private:
 
 //*********************************** LOGGER *****************************************//
 
-enum LogLevel { DEBUG, INFO, WARNING, ERROR, CRITICAL }; 
 /**
     Logger logger("logfile.txt"); 
 
@@ -91,7 +97,7 @@ class Logger {
 
     private: 
         ThreadSafeFile logFile;
-        LogLevel output_level;
+        // LogLevel output_level;
         string levelToString(LogLevel level) 
         { 
             switch (level) { 
