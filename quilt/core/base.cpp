@@ -179,12 +179,12 @@ string PerformanceManager::format_duration (std::chrono::nanoseconds duration) {
 PerformanceRegistrar::PerformanceRegistrar(){
     stringstream ss;
     ss <<  "Created PerformanceRegistrar at index: "<<this; 
-    get_global_logger().log(INFO,ss.str());
+    get_global_logger().log(DEBUG,ss.str());
 }
 PerformanceRegistrar::~PerformanceRegistrar(){
     stringstream ss;
     ss <<  "Destroyed PerformanceRegistrar at index: "<<this;
-    get_global_logger().log(INFO,ss.str());
+    get_global_logger().log(DEBUG,ss.str());
 }
 
 // Static method definition to get the singleton instance
