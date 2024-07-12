@@ -92,7 +92,7 @@ Logger::~Logger() { logFile.close(); }
 void Logger::log(LogLevel level, const string& message) 
 {   
     // Do not print level under the current one
-    if (level < 4 - settings::verbosity){
+    if (level < ERROR - settings::verbosity){
         return;
     }
 
@@ -217,7 +217,7 @@ void PerformanceRegistrar::add_manager(PerformanceManager* pm) {
     instances.push_back(pm);
     stringstream ss;
     ss << "PerformanceRegistrar: registered manager " << instances.size() <<":"<< pm->label;
-    get_global_logger().log(INFO, ss.str());
+    get_global_logger().log(DEBUG, ss.str());
 }
 
 // Method to print records for all registered instances
