@@ -1,7 +1,8 @@
 #pragma once
 #include "base.hpp"
 #include "devices.hpp"
-// #include "neurons_base.hpp"
+
+#include "../thread-pool/include/BS_thread_pool.hpp"
 
 #include <unordered_map>
 #include <chrono>
@@ -9,6 +10,8 @@
 #include <variant>
 
 using std::vector;
+
+#define N_THREADS_POP_EVOLVE 8
 
 // Forward declarations
 class Neuron;
@@ -124,6 +127,8 @@ class Population{
         
         PerformanceManager perf_mgr;
     private:
+        BS::thread_pool thread_pool; //!< Thread pool for evolution and spike handling
+        vector<unsigned int> batch_starts, batch_ends;
         EvolutionContext * evo;
 
 };

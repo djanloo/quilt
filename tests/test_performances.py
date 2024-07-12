@@ -7,7 +7,8 @@ sn = SpikingNetwork.from_yaml("bg_analysis/ortone_network_dispersive.yaml", "bg_
 
 sn.monitorize_spikes()
 sn.build()
-sn.run(dt=0.1, time=60)
+sn.run(dt=0.1, time=600)
+
 
 import matplotlib.pyplot as plt
 
