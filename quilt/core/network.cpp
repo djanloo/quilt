@@ -7,8 +7,6 @@
 
 #include <string>
 #include <thread>
-#include <algorithm>
-#include <execution>
 
 #define N_THREADS_BUILD 8
 
@@ -220,6 +218,10 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     for (unsigned int i = 0; i < N_THREADS_POP_EVOLVE; i++){
         batch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE;
         batch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE - 1;
+        stringstream ss;
+
+        ss << "Population " << id.get_id() << " - batch "<< i << " is  "<< "(" << batch_starts[i] << " - " << batch_ends[i] << ")";
+        get_global_logger().log(DEBUG, ss.str());
     }
     // Ensures that all neurons are covered
     batch_ends[N_THREADS_POP_EVOLVE-1] = this->n_neurons-1;
@@ -252,27 +254,35 @@ void Population::project(const SparseProjection * projection, Population * effer
 
 void Population::evolve()
 {
-    // Lambda function for batch evolution
-    auto evolve_bunch = [this](unsigned int from, unsigned int to){
-                            for (unsigned int i = from; i< to; i++){
-                                this->neurons[i]->evolve();
-                            }
-                        };
-
-    // Lambda function for batch spike handling
-    auto handle_spikes_bunch = [this](unsigned int from, unsigned int to){
-                            for (unsigned int i = from; i< to; i++){
-                                this->neurons[i]->handle_incoming_spikes();
-                            }
-                        };
-
+    // Evolves neurons
+    perf_mgr.start_recording("evolution");
     for (int i = 0; i < N_THREADS_POP_EVOLVE; i++){
-        thread_pool.enqueue(evolve_bunch, batch_starts[i], batch_ends[i]);
-        thread_pool.enqueue(handle_spikes_bunch, batch_starts[i], batch_ends[i]);
-
+        thread_pool.detach_task(
+                [this, i](){
+                    for (unsigned int j = this->batch_starts[i]; j< batch_ends[i]; j++){
+                        this->neurons[j]->evolve();
+                    }
+                }
+        );
     }
     thread_pool.wait();
+    perf_mgr.end_recording("evolution");
 
+    // Handles spikes for each neuron
+    perf_mgr.start_recording("spike_handling");
+    for (int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        thread_pool.detach_task(
+                [this, i](){
+                    for (unsigned int j = this->batch_starts[i]; j< batch_ends[i]; j++){
+                        this->neurons[j]->handle_incoming_spikes();
+                    }
+                }       
+        );
+    }
+    thread_pool.wait();
+    perf_mgr.end_recording("spike_handling");
+
+    // Emits spikes
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
