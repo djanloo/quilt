@@ -19,6 +19,26 @@ using std::runtime_error;
 using std::vector;
 
 
+namespace settings {
+    LogLevel verbosity = INFO;
+
+    void set_verbosity(int value) {
+        // std::cout << "Set verbosity to " << value << std::endl;
+        if ((value < 0)|(value > 4)){
+            stringstream ss;
+            ss << "Verbosity must be between 0(NO OUTPUT) and 4(DEBUG)";
+            get_global_logger().log(ERROR, ss.str());
+
+            ss << endl;
+            std::cerr << ss.str();
+        }
+        verbosity = static_cast<LogLevel>(value);
+    }
+
+    LogLevel get_verbosity() {
+        return verbosity;
+    }
+}
 //************************* THREAD SAFE FILE ***************************//
 
 ThreadSafeFile::ThreadSafeFile (const std::string& filename) : filename(filename), file() {
@@ -61,19 +81,18 @@ void ThreadSafeFile::close() {
 
 //******************************* LOGGER ***************************//
 Logger::Logger(const string& filename)
-    :   logFile(filename),
-        output_level(LOG_LEVEL_DEFAULT){}
+    :   logFile(filename){}
 
 Logger::~Logger() { logFile.close(); } 
 
-void Logger::set_level(LogLevel level){
-    output_level = level;
-}
+// void Logger::set_level(LogLevel level){
+//     output_level = level;
+// }
   
 void Logger::log(LogLevel level, const string& message) 
 {   
     // Do not print level under the current one
-    if (output_level > level){
+    if (level < ERROR - settings::verbosity){
         return;
     }
 
@@ -198,7 +217,7 @@ void PerformanceRegistrar::add_manager(PerformanceManager* pm) {
     instances.push_back(pm);
     stringstream ss;
     ss << "PerformanceRegistrar: registered manager " << instances.size() <<":"<< pm->label;
-    get_global_logger().log(INFO, ss.str());
+    get_global_logger().log(DEBUG, ss.str());
 }
 
 // Method to print records for all registered instances
