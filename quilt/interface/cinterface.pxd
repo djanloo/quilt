@@ -1,7 +1,10 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
-# from libcpp.map cimport map
 from libcpp.memory cimport shared_ptr
+
+cdef extern from "../core/include/base.hpp" namespace "settings":
+
+    void set_verbosity(int value)
 
 cdef extern from "../core/include/base.hpp":
 

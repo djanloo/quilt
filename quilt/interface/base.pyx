@@ -6,7 +6,10 @@ from libcpp.vector cimport vector
 
 # TODO: solve relative import from quilt.interface import cinterface
 from quilt.interface.cinterface cimport ParaMap as cParaMap
+from quilt.interface.cinterface cimport set_verbosity as cset_verbosity
 
+cpdef set_verbosity(value):
+    cset_verbosity(value)
 
 cdef class ParaMap:
 
