@@ -423,9 +423,9 @@ void SpikingNetwork::evolve(){
 void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
 {  
     stringstream ss;
-    if (verbosity > 0){
-        get_global_logger().set_level(INFO);
-    }
+    // if (verbosity > 0){
+    //     get_global_logger().set_level(INFO);
+    // }
     ss << "Evolving spiking network from t= "<< evo->now << " to t= " << time;
     get_global_logger().log(INFO, ss.str());
 
