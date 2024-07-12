@@ -2,8 +2,7 @@
 #include "base.hpp"
 #include "devices.hpp"
 
-#include <boost/asio.hpp>
-#include <boost/bind/bind.hpp>
+#include "../thread-pool/include/BS_thread_pool.hpp"
 
 #include <unordered_map>
 #include <chrono>
@@ -128,7 +127,7 @@ class Population{
         
         PerformanceManager perf_mgr;
     private:
-        boost::asio::thread_pool thread_pool; //!< Thread pool for evolution and spike handling
+        BS::thread_pool thread_pool; //!< Thread pool for evolution and spike handling
         vector<unsigned int> batch_starts, batch_ends;
         EvolutionContext * evo;
 
