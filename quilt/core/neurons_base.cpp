@@ -64,7 +64,7 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
 
 
 void Neuron::handle_incoming_spikes(){
-
+    // get_global_logger().log(WARNING, "Handling spikes");
     while (!(incoming_spikes.empty())){ // This loop will be broken later
 
         auto spike = incoming_spikes.top();
@@ -108,6 +108,7 @@ void Neuron::handle_incoming_spikes(){
 
 
 void Neuron::evolve(){
+    // get_global_logger().log(WARNING, "Evolving neuron");
     if (spike_flag){
         // cout << "Spike flag was True at t: "<< evo->now <<endl;
         on_spike();
@@ -127,7 +128,7 @@ void Neuron::evolve(){
     // because EXACTLY at time t the spikes are not arrived yet
     // The other way of doing this is to evaluate at the beginning of the evolution the spikes
     // that arrived from t-dt and t
-    handle_incoming_spikes();
+    // handle_incoming_spikes();
 
     // THIS CHECKS NANS
     // auto before_step = state;

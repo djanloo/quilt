@@ -8,11 +8,6 @@
 #include <string>
 #include <thread>
 
-#define MAX_N_1_THREADS 150
-#define MAX_N_2_THREADS 300
-#define MAX_N_3_THREADS 600
-#define MAX_N_4_THREADS 1000
-
 #define N_THREADS_BUILD 8
 
 using std::cout;
@@ -181,7 +176,10 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         n_spikes_last_step(0),
         id(&(spiking_network->id)),
         spiking_network(spiking_network),
-        perf_mgr("population")
+        perf_mgr("population"),
+        thread_pool(N_THREADS_POP_EVOLVE),
+        batch_starts(N_THREADS_POP_EVOLVE),
+        batch_ends(N_THREADS_POP_EVOLVE)
 {
 
     // Adds itself to the spiking network populations
@@ -210,10 +208,23 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
 
     // Sets the scale for the evolution operation in PerformanceManager
     // this prevents from calling start_recording on each neuron and saves the overhead time
-    perf_mgr.set_tasks({"evolution", "spike_emission"});
+    perf_mgr.set_tasks({"evolution","spike_handling", "spike_emission"});
     perf_mgr.set_label("Population " + to_string(id.get_id()));
     perf_mgr.set_scales({{"evolution",      n_neurons}, 
-                         {"spike_emission", n_neurons}});
+                         {"spike_emission", n_neurons},
+                         {"spike_handling", n_neurons}});
+
+    // Divides the population in batches
+    for (unsigned int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        batch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE;
+        batch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE - 1;
+        stringstream ss;
+
+        ss << "Population " << id.get_id() << " - batch "<< i << " is  "<< "(" << batch_starts[i] << " - " << batch_ends[i] << ")";
+        get_global_logger().log(DEBUG, ss.str());
+    }
+    // Ensures that all neurons are covered
+    batch_ends[N_THREADS_POP_EVOLVE-1] = this->n_neurons-1;
 }
 
 void Population::project(const Projection * projection, Population * efferent_population)
@@ -243,77 +254,47 @@ void Population::project(const SparseProjection * projection, Population * effer
 
 void Population::evolve()
 {
-    // auto start = std::chrono::high_resolution_clock::now();
-
+    // Evolves neurons
     perf_mgr.start_recording("evolution");
-
-    // Splits the work in equal parts using Nthreads threads
-    unsigned int n_threads;
-
-    if (n_neurons < MAX_N_1_THREADS)        n_threads = 0;
-    else if (n_neurons < MAX_N_2_THREADS)   n_threads = 2;
-    else if (n_neurons < MAX_N_3_THREADS)   n_threads = 3;
-    else if (n_neurons < MAX_N_4_THREADS)   n_threads = 4;
-    else                                    n_threads = std::thread::hardware_concurrency();
-
-    auto evolve_bunch = [this](unsigned int from, unsigned int to){
-                            for (unsigned int i = from; i< to; i++){
-                                this->neurons[i]->evolve();
-                            }
-                        };
-
-    // In case few neurons are present, do not use multithreading
-    // to avoid overhead
-    if (n_threads == 0){
-        evolve_bunch(0, n_neurons);
+    for (int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        thread_pool.detach_task(
+                [this, i](){
+                    for (unsigned int j = this->batch_starts[i]; j< batch_ends[i]; j++){
+                        this->neurons[j]->evolve();
+                    }
+                }
+        );
     }
-    else{// multithreading case begin
-
-        std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
-
-        for (unsigned int i = 0; i < n_threads; i++){
-            bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
-            bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
-        }
-
-        // Ensures that all neurons are covered
-        bunch_ends[n_threads-1] = this->n_neurons-1;
-
-        // Starts the threads
-        // NOTE: spawning threads costs roughly 10 us/thread
-        // it is a non-negligible overhead
-        std::vector<std::thread> evolver_threads(n_threads);
-        for (unsigned int i = 0; i < n_threads; i++){
-            evolver_threads[i] = std::thread(evolve_bunch, bunch_starts[i], bunch_ends[i] );
-        }
-
-        // Waits the threads
-        for (unsigned int i = 0; i < n_threads; i++){
-            evolver_threads[i].join();
-        }
-    } // multithreading case end
-
-    // auto end = std::chrono::high_resolution_clock::now();
+    thread_pool.wait();
     perf_mgr.end_recording("evolution");
-    // timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 
+    // Handles spikes for each neuron
+    perf_mgr.start_recording("spike_handling");
+    for (int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        thread_pool.detach_task(
+                [this, i](){
+                    for (unsigned int j = this->batch_starts[i]; j< batch_ends[i]; j++){
+                        this->neurons[j]->handle_incoming_spikes();
+                    }
+                }       
+        );
+    }
+    thread_pool.wait();
+    perf_mgr.end_recording("spike_handling");
+
+    // Emits spikes
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
-    // start = std::chrono::high_resolution_clock::now();
     perf_mgr.start_recording("spike_emission");
     this->n_spikes_last_step = 0;
     
     for (auto neuron : this->neurons){
         if ((neuron->getV()) >= neuroparam->V_peak){
             neuron->emit_spike();
-            // cout << "V over threshold neuron: spiked at t: "<< evo->now << endl;
         }
-        
     }
     perf_mgr.end_recording("spike_emission");
-    // end = std::chrono::high_resolution_clock::now();
-    // timestats_spike_emission += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 }
 
 void Population::print_info()
