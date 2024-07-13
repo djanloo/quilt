@@ -176,7 +176,6 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         n_spikes_last_step(0),
         id(&(spiking_network->id)),
         spiking_network(spiking_network),
-        perf_mgr("population"),
         thread_pool(N_THREADS_POP_EVOLVE),
         batch_starts(N_THREADS_POP_EVOLVE),
         batch_ends(N_THREADS_POP_EVOLVE)
@@ -208,11 +207,15 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
 
     // Sets the scale for the evolution operation in PerformanceManager
     // this prevents from calling start_recording on each neuron and saves the overhead time
-    perf_mgr.set_tasks({"evolution","spike_handling", "spike_emission"});
-    perf_mgr.set_label("Population " + to_string(id.get_id()));
-    perf_mgr.set_scales({{"evolution",      n_neurons}, 
+    perf_mgr = std::make_shared<PerformanceManager>("Population " + to_string(id.get_id()));
+    perf_mgr->set_tasks({"evolution","spike_handling", "spike_emission"});
+    // perf_mgr->set_label("Population " + to_string(id.get_id()));
+    perf_mgr->set_scales({{"evolution",      n_neurons}, 
                          {"spike_emission", n_neurons},
                          {"spike_handling", n_neurons}});
+    // Adds it to the global list
+    PerformanceRegistrar::get_instance().add_manager(perf_mgr);
+
 
     // Divides the population in batches
     for (unsigned int i = 0; i < N_THREADS_POP_EVOLVE; i++){
@@ -255,7 +258,7 @@ void Population::project(const SparseProjection * projection, Population * effer
 void Population::evolve()
 {
     // Evolves neurons
-    perf_mgr.start_recording("evolution");
+    perf_mgr->start_recording("evolution");
     for (int i = 0; i < N_THREADS_POP_EVOLVE; i++){
         thread_pool.detach_task(
                 [this, i](){
@@ -266,10 +269,10 @@ void Population::evolve()
         );
     }
     thread_pool.wait();
-    perf_mgr.end_recording("evolution");
+    perf_mgr->end_recording("evolution");
 
     // Handles spikes for each neuron
-    perf_mgr.start_recording("spike_handling");
+    perf_mgr->start_recording("spike_handling");
     for (int i = 0; i < N_THREADS_POP_EVOLVE; i++){
         thread_pool.detach_task(
                 [this, i](){
@@ -280,13 +283,13 @@ void Population::evolve()
         );
     }
     thread_pool.wait();
-    perf_mgr.end_recording("spike_handling");
+    perf_mgr->end_recording("spike_handling");
 
     // Emits spikes
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
-    perf_mgr.start_recording("spike_emission");
+    perf_mgr->start_recording("spike_emission");
     this->n_spikes_last_step = 0;
     
     for (auto neuron : this->neurons){
@@ -294,7 +297,7 @@ void Population::evolve()
             neuron->emit_spike();
         }
     }
-    perf_mgr.end_recording("spike_emission");
+    perf_mgr->end_recording("spike_emission");
 }
 
 void Population::print_info()
@@ -340,10 +343,11 @@ Population::~Population()
 
 SpikingNetwork::SpikingNetwork()
     :   evocontext_initialized(false),
-        id(),
-        perf_mgr("spiking network")
+        id()
 {
-    perf_mgr.set_tasks({"simulation", "monitorize", "inject"});
+    perf_mgr = std::make_shared<PerformanceManager>("spiking network");
+    perf_mgr->set_tasks({"simulation", "monitorize", "inject"});
+    PerformanceRegistrar::get_instance().add_manager(perf_mgr);
 }
 
 PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population)
@@ -410,7 +414,7 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
     ss << "Evolving spiking network from t= "<< evo->now << " to t= " << time;
     get_global_logger().log(INFO, ss.str());
 
-    perf_mgr.start_recording("simulation");
+    perf_mgr->start_recording("simulation");
 
     int n_steps_done  = 0;
     int n_steps_total = static_cast<int>(time / evo->dt) ;
@@ -450,18 +454,18 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
     while (evo -> now < time){
 
         // Gathering from populations
-        perf_mgr.start_recording("monitorize");
+        perf_mgr->start_recording("monitorize");
         for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
         }
-        perf_mgr.end_recording("monitorize");
+        perf_mgr->end_recording("monitorize");
 
         // Injection of currents
-        perf_mgr.start_recording("inject");
+        perf_mgr->start_recording("inject");
         for (auto injector : this->injectors){
             injector->inject(evo);
         }
-        perf_mgr.end_recording("inject");
+        perf_mgr->end_recording("inject");
 
         // Evolution of each population
         for (auto population : this -> populations)
@@ -473,7 +477,7 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
         n_steps_done++;
         ++bar;
     }
-    perf_mgr.end_recording("simulation");
+    perf_mgr->end_recording("simulation");
 
     // Prints performance
     if (verbosity > 0){

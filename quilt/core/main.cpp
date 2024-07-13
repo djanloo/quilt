@@ -434,7 +434,7 @@ void test_inhom_poisson(){
 
 void test_multiscale_base(){
     Logger &logger = get_global_logger();
-    logger.set_level(INFO);
+    // logger.set_level(INFO);
 
     // Create a spiking network of just one population
     SpikingNetwork spike_net = SpikingNetwork();

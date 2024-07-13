@@ -87,7 +87,7 @@ class MultiscaleNetwork{
         unsigned int n_oscillators; //!< Number of oscillators in the multiscale network. Must not change after init.
         unsigned int time_ratio;    //!< Timescale separation. Must be defined by two evolution contextes.
 
-        PerformanceManager perf_mgr;
+        std::shared_ptr<PerformanceManager> perf_mgr;
     private:
         bool timescales_initialized;
         EvolutionContext * evo_short;

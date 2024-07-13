@@ -5,6 +5,7 @@
 #include <cstddef>
 #include <cmath>
 #include <stdexcept>
+#include <memory>
 #include <vector>
 #include <map>
 #include <random>
@@ -35,9 +36,8 @@ enum LogLevel { DEBUG, INFO, WARNING, ERROR, CRITICAL };
 
 namespace settings {
     extern LogLevel verbosity;
-
+    extern string global_logfile;
     void set_verbosity(int value);
-    LogLevel get_verbosity();
 }
 
 class negative_time_exception : public std::exception {
@@ -80,13 +80,6 @@ private:
 
 //*********************************** LOGGER *****************************************//
 
-/**
-    Logger logger("logfile.txt"); 
-
-    logger.log(INFO, "Program started."); 
-    logger.log(DEBUG, "Debugging information."); 
-    logger.log(ERROR, "An error occurred."); 
-*/
 class Logger { 
     public: 
         Logger(const string& filename);
@@ -123,6 +116,52 @@ class Logger {
  */
 Logger& get_global_logger();
 
+//********************************************************************************//
+//******************************* PERFORMANCE MANAGER ****************************//
+//********************************************************************************//
+
+class PerformanceManager{
+    private:
+        map<string, std::chrono::nanoseconds> task_duration;
+        map<string, std::chrono::time_point<std::chrono::high_resolution_clock>> task_start_time;
+        map<string, int> task_count;
+        map<string, int> task_scale; //!< This prevents overhead for many calls (e.g. evolution of neurons)
+
+    public:
+        string label;
+        PerformanceManager(string label);
+        ~PerformanceManager();
+        void set_tasks(vector<string> task_names);
+        void set_scales(map<string, int> scales);
+        void set_label(string label);
+        void start_recording(string task);
+        void end_recording(string task);
+        void print_record();
+        string format_duration(std::chrono::nanoseconds duration);
+};
+
+class PerformanceRegistrar {
+private:
+    std::vector<std::weak_ptr<PerformanceManager>> instances;
+
+    PerformanceRegistrar(); // Private constructor to prevent instantiation
+    ~PerformanceRegistrar();
+public:
+    // Static method to get the singleton instance
+    static PerformanceRegistrar& get_instance();
+
+    // Method to add a PerformanceManager instance to the registrar
+    void add_manager(std::shared_ptr<PerformanceManager> pm);
+
+    // Method to print records for all registered instances
+    void print_records();
+
+    void cleanup();
+
+    // Delete copy constructor and assignment operator to prevent cloning
+    PerformanceRegistrar(const PerformanceRegistrar&) = delete;
+    void operator=(const PerformanceRegistrar&) = delete;
+};
 
 //****************************** RANDOM NUMBER GENERATION *************************//
 
@@ -206,47 +245,6 @@ class RNGDispatcher{
         map<RNG*, bool> is_occupied;
         map<std::thread::id, RNG*> pids;
 };
-
-
-class PerformanceManager{
-    private:
-        map<string, std::chrono::nanoseconds> task_duration;
-        map<string, std::chrono::time_point<std::chrono::high_resolution_clock>> task_start_time;
-        map<string, int> task_count;
-        map<string, int> task_scale; //!< This prevents overhead for many calls (e.g. evolution of neurons)
-
-    public:
-        string label;
-        PerformanceManager(string label);
-        void set_tasks(vector<string> task_names);
-        void set_scales(map<string, int> scales);
-        void set_label(string label);
-        void start_recording(string task);
-        void end_recording(string task);
-        void print_record();
-        string format_duration(std::chrono::nanoseconds duration);
-};
-class PerformanceRegistrar {
-private:
-    std::vector<PerformanceManager*> instances;
-
-    PerformanceRegistrar(); // Private constructor to prevent instantiation
-    ~PerformanceRegistrar();
-public:
-    // Static method to get the singleton instance
-    static PerformanceRegistrar& get_instance();
-
-    // Method to add a PerformanceManager instance to the registrar
-    void add_manager(PerformanceManager* pm);
-
-    // Method to print records for all registered instances
-    void print_records();
-
-    // Delete copy constructor and assignment operator to prevent cloning
-    PerformanceRegistrar(const PerformanceRegistrar&) = delete;
-    void operator=(const PerformanceRegistrar&) = delete;
-};
-
 
 //******************************** UTILS FOR DYNAMICAL SYSTEMS *****************************//
 

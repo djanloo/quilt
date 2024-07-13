@@ -11,7 +11,7 @@
 #include "include/base.hpp"
 
 #define PERFMGR_OUTPUT_DIGITS 1
-
+#define DEFAULT_LOG_FILE "quilt_log.log"
 
 using std::cout;
 using std::endl;
@@ -21,6 +21,7 @@ using std::vector;
 
 namespace settings {
     LogLevel verbosity = INFO;
+    string global_logfile = "";
 
     void set_verbosity(int value) {
         // std::cout << "Set verbosity to " << value << std::endl;
@@ -35,9 +36,6 @@ namespace settings {
         verbosity = static_cast<LogLevel>(value);
     }
 
-    LogLevel get_verbosity() {
-        return verbosity;
-    }
 }
 //************************* THREAD SAFE FILE ***************************//
 
@@ -114,8 +112,13 @@ void Logger::log(LogLevel level, const string& message)
 }
 
 Logger& get_global_logger(){
-    static Logger logger("quilt_log.log");
-    return logger;
+    if (!settings::global_logfile.empty()){
+        static Logger logger(settings::global_logfile);
+        return logger;
+    }else{
+        static Logger logger(DEFAULT_LOG_FILE);
+        return logger;
+    }
 }
 
 /************************************ PERFORMANCE MANAGER ***********************************/
@@ -123,8 +126,16 @@ Logger& get_global_logger(){
 PerformanceManager::PerformanceManager(string label)
     :   label(label)
     {
-    // Register itself in the performance registry on creation
-    PerformanceRegistrar::get_instance().add_manager(this);
+
+    stringstream ss;
+    ss << "Created PerformanceManager at " << this;
+    get_global_logger().log(DEBUG, ss.str());   
+}
+
+PerformanceManager::~PerformanceManager(){
+    stringstream ss;
+    ss << "Destroyed PerformanceManager at " << this;
+    get_global_logger().log(DEBUG, ss.str());
 }
 
 void PerformanceManager::set_tasks(vector<string> task_names){
@@ -194,7 +205,6 @@ string PerformanceManager::format_duration (std::chrono::nanoseconds duration) {
     return ss.str();
 }
 
-
 PerformanceRegistrar::PerformanceRegistrar(){
     stringstream ss;
     ss <<  "Created PerformanceRegistrar at index: "<<this; 
@@ -213,7 +223,8 @@ PerformanceRegistrar& PerformanceRegistrar::get_instance() {
 }
 
 // Method to add a PerformanceManager instance to the registrar
-void PerformanceRegistrar::add_manager(PerformanceManager* pm) {
+void PerformanceRegistrar::add_manager(std::shared_ptr<PerformanceManager> pm) {
+    cleanup();
     instances.push_back(pm);
     stringstream ss;
     ss << "PerformanceRegistrar: registered manager " << instances.size() <<":"<< pm->label;
@@ -226,8 +237,16 @@ void PerformanceRegistrar::print_records() {
     ss << "Ouput for PerformanceRegistrar "<< "(" << instances.size() << " managers )";
     get_global_logger().log(INFO, ss.str());
     for (auto pm : instances) {
-        pm->print_record();
+        //  Locks the weak pointer and prints
+        auto locked_ptr = pm.lock();
+        if (locked_ptr) locked_ptr->print_record();
     }
+}
+
+void PerformanceRegistrar::cleanup(){
+    get_global_logger().log(DEBUG, "Cleaning up PerformanceRegistrar");
+    auto expiration_criteria = [](const std::weak_ptr<PerformanceManager>& pm) { return pm.expired(); };
+    instances.erase(std::remove_if(instances.begin(), instances.end(), expiration_criteria), instances.end());
 }
 
 //************************* UTILS FOR DYNAMICAL SYSTEMS **********************//
