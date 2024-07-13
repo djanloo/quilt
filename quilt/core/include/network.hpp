@@ -125,7 +125,7 @@ class Population{
         void print_info();
         void set_evolution_context(EvolutionContext * evo);
         
-        PerformanceManager perf_mgr;
+        std::shared_ptr<PerformanceManager> perf_mgr;
     private:
         BS::thread_pool thread_pool; //!< Thread pool for evolution and spike handling
         vector<unsigned int> batch_starts, batch_ends;
@@ -172,7 +172,7 @@ class SpikingNetwork{
         void evolve();
         void run(EvolutionContext * evo, double time, int verbosity);
 
-        PerformanceManager perf_mgr;
+        std::shared_ptr<PerformanceManager> perf_mgr;
     private:
         EvolutionContext * evo;
         bool evocontext_initialized;

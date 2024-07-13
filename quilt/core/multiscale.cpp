@@ -110,16 +110,18 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
 MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
     :   spikenet(spikenet),
         oscnet(oscnet),
-        timescales_initialized(false),
-        perf_mgr("multiscale network")
+        timescales_initialized(false)
 {
-   n_populations = spikenet->populations.size();
-   n_oscillators = oscnet->oscillators.size();
-   stringstream ss;
-   ss << "MultiscaleNetwork has " << n_populations << " populations and " << n_oscillators << " oscillators";
+    n_populations = spikenet->populations.size();
+    n_oscillators = oscnet->oscillators.size();
+    stringstream ss;
+    ss << "MultiscaleNetwork has " << n_populations << " populations and " << n_oscillators << " oscillators";
 
-   perf_mgr.set_tasks({"evolve_spikenet", "evolve_oscnet"});
-   get_global_logger().log(INFO, ss.str());
+    perf_mgr = std::make_shared<PerformanceManager>("multiscale network");
+    perf_mgr->set_tasks({"evolve_spikenet", "evolve_oscnet"});
+    PerformanceRegistrar::get_instance().add_manager(perf_mgr);
+
+    get_global_logger().log(INFO, ss.str());
 }
 
 void MultiscaleNetwork::set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long){
@@ -297,16 +299,16 @@ void MultiscaleNetwork::run(double time, int verbosity){
         // Evolve the short timescale until it catches up with 
         // the long timescale
         // cout << "Doing one big step" << endl;
-        perf_mgr.start_recording("evolve_spikenet");
+        perf_mgr->start_recording("evolve_spikenet");
         while (evo_short->now < evo_long->now){
             // cout << "Doing one small step"<<endl;
             spikenet->evolve();
         }
-        perf_mgr.end_recording("evolve_spikenet");
+        perf_mgr->end_recording("evolve_spikenet");
 
-        perf_mgr.start_recording("evolve_oscnet");
+        perf_mgr->start_recording("evolve_oscnet");
         oscnet->evolve();
-        perf_mgr.end_recording("evolve_oscnet");
+        perf_mgr->end_recording("evolve_oscnet");
         ++bar;
     }
 
