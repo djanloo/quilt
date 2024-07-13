@@ -41,7 +41,7 @@ Transducer::~Transducer(){
     delete injector;
 }
 
-ThreadSafeFile Transducer::outfile("td_incoming_rates.txt");
+// ThreadSafeFile Transducer::outfile("td_incoming_rates.txt");
 
 double Transducer::incoming_rate(double now){
 
@@ -62,9 +62,9 @@ double Transducer::incoming_rate(double now){
     }
     get_global_logger().log(DEBUG, "total input to transducer is " + to_string(rate) + " Hz");
     
-    stringstream ss;
-    ss << now << " " << rate;
-    outfile.write(ss.str());
+    // stringstream ss;
+    // ss << now << " " << rate;
+    // outfile.write(ss.str());
     
     return rate;
 }
