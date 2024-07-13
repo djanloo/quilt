@@ -31,7 +31,7 @@ class Transducer: public Oscillator{
     private:
         Population * population;  
         double initialization_rate;
-        static ThreadSafeFile outfile;
+        // static ThreadSafeFile outfile;
 
     public:
         InhomPoissonSpikeSource * injector;
