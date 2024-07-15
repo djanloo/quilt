@@ -530,8 +530,8 @@ class OscillatorNetwork:
 
         self.oscillators = dict()
     
-    def init(self, states, dt=0.1):
-        self._interface.init(states, dt=dt)
+    def initialize(self, states, dt=0.1):
+        self._interface.initialize(states, dt=dt)
 
     def run(self, dt=0.2, time=1):
         if not self.is_built:

@@ -151,8 +151,7 @@ InhomPoissonSpikeSource::InhomPoissonSpikeSource( Population * pop,
         weight(weight), 
         weight_delta(weight_delta),
         generation_window_length(generation_window_length),
-        currently_generated_time(0),
-        perf_mgr("InhomPoissonSpikeSource")
+        currently_generated_time(0)
 {
     // Spike time initialization
     integration_start = std::vector<double> (pop->n_neurons, 0);
@@ -176,8 +175,8 @@ InhomPoissonSpikeSource::InhomPoissonSpikeSource( Population * pop,
     }
 
     // Sets the label for the performance manager
-    perf_mgr.set_tasks({"injection"});
-    perf_mgr.set_label("InhomPoissSS of pop " + to_string(pop->id.get_id()));
+    perf_mgr = std::make_shared<PerformanceManager>("InhomPoissSS of pop " + to_string(pop->id.get_id()));
+    perf_mgr->set_tasks({"injection"});
 }
 
 
@@ -233,7 +232,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
     bool add_spike = false;
     int seek_buffer_index;
     int last_spike_time_index;  // Time index of the last produced spike
-    int timestep_done;         // Timesteps of the integration done
+    int timesteps_done;         // Timesteps of the integration done
     int proposed_next_spike_time_index; // Time index of the newly proposed spike
     double proposed_next_spike_time;    // Time of the newly proposed spike
 
@@ -271,7 +270,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
         }
         
         do{
-            timestep_done = 0;
+            timesteps_done = 0;
             // stringstream ss;
             // ss << "neuron " << i <<  ": integration of r(t) started at t = " << (last_spike_time_index + timestep_done)*dt;
             // inhomlog.log(DEBUG, ss.str());
@@ -288,7 +287,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
                 // r(last_spike_time) = rate_buffer[<int>((last_spike_time - currently_generated_time)/dt )]
                 // so to carry out the integration from last_spike_time you have to request
                 // r(last_spike_time + timesteps_done*dt) = rate_buffer[<int>((last_spike_time - currently_generated_time)/dt ) + timesteps_done]
-                seek_buffer_index = last_spike_time_index + timestep_done - static_cast<int>(currently_generated_time/dt);
+                seek_buffer_index = last_spike_time_index + timesteps_done - static_cast<int>(currently_generated_time/dt);
                 if (seek_buffer_index >= rate_function_buffer.size()){        
                     // Exits with no spike generated but with modified integration extrema
                     add_spike = false;
@@ -322,7 +321,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
                 // Trapezoidal rule
                 integration_leftovers[i] += avg_rate_in_timestep * dt;                
 
-                timestep_done ++;
+                timesteps_done ++;
 
                 if(integration_leftovers[i] >= integration_thresholds[i]){
                     add_spike = true;
@@ -333,7 +332,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
             if (add_spike){
 
                 // At this point Y has overcomed y
-                proposed_next_spike_time_index = last_spike_time_index + timestep_done;
+                proposed_next_spike_time_index = last_spike_time_index + timesteps_done;
                 proposed_next_spike_time = proposed_next_spike_time_index * dt;
 
                 // This is real bad
@@ -401,7 +400,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // If we are in a time window that was already generated, do nothing
 
     // Measure the time from the parent thread
-    perf_mgr.start_recording("injection");
+    perf_mgr->start_recording("injection");
 
     if (evo->now < currently_generated_time){
         nullcalls ++;
@@ -427,8 +426,22 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // the interval is [currently_generated_time, currently_generated_time + 2*generation_window_length].
     // For each generation, r(t) ~ rate_buf[<int>((t-currently_generated_time)/dt)]
     for (int i = 0; i < rate_func_buf_size; i++){
-        rate_function_buffer[i] = rate_function(currently_generated_time + i*evo->dt);
-        // cout << rate_function_buffer[i] << " ";
+        try{
+            rate_function_buffer[i] = rate_function(currently_generated_time + i*evo->dt);
+        }
+        catch (not_yet_computed_exception& e){
+
+            generation_window_length = (i-2) * evo->dt;
+            rate_function_buffer.resize(i-2);
+            stringstream ss;
+            ss << "While buffering the rate function for InhomogeneousPoissonSpikeSource anot_yet_computed exception was thrown."
+            << endl 
+            << "Reducing the generation window to prevent that this happens again."
+            << endl
+            << "The new window size is " << generation_window_length;
+
+            get_global_logger().log(WARNING, ss.str());
+        }
     }
     stringstream ss;
     ss << "Getting rate of incoming oscillators from t= "<<currently_generated_time << " to t= "<<currently_generated_time + rate_func_buf_size*evo->dt;
@@ -466,5 +479,5 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     generation++;
 
     // Ends time measure
-    perf_mgr.end_recording("injection");
+    perf_mgr->end_recording("injection");
 }

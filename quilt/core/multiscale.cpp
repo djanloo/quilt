@@ -58,9 +58,9 @@ double Transducer::incoming_rate(double now){
             return initialization_rate;
         }
         rate += single_input_rate;
-        get_global_logger().log(DEBUG, "single input to transducer is " + to_string(single_input_rate));
+        // get_global_logger().log(DEBUG, "single input to transducer is " + to_string(single_input_rate));
     }
-    get_global_logger().log(DEBUG, "total input to transducer is " + to_string(rate) + " Hz");
+    // get_global_logger().log(DEBUG, "total input to transducer is " + to_string(rate) + " Hz");
     
     // stringstream ss;
     // ss << now << " " << rate;
@@ -73,8 +73,8 @@ double Transducer::incoming_rate(double now){
 double Transducer::get_past(unsigned int /*axis*/, double time)
 {
     stringstream ss;
-    ss << "Getting past from transducer: time requested = " << time; 
-    get_global_logger().log(DEBUG, ss.str());
+    // ss << "Getting past from transducer: time requested = " << time; 
+    // get_global_logger().log(DEBUG, ss.str());
 
     // I want to get the avg rate of the pop in [t-T/2, t+T/2]
     EvolutionContext * oscnet_evo = multinet->oscnet->get_evolution_context();
@@ -97,12 +97,12 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     avg_rate *= 1000; // Hz
 
 
-    ss.str(""); ss.clear();
-    ss << "Transducer::get_past() : returning rate from t="<<time-T/2<<"(index "<<time_idx_1 << ")";
-    ss << " to t=" << time+T/2<<"(index "<<time_idx_2 << ")"; 
-    ss << ": avg_rate is "<< avg_rate << "Hz";
+    // ss.str(""); ss.clear();
+    // ss << "Transducer::get_past() : returning rate from t="<<time-T/2<<"(index "<<time_idx_1 << ")";
+    // ss << " to t=" << time+T/2<<"(index "<<time_idx_2 << ")"; 
+    // ss << ": avg_rate is "<< avg_rate << "Hz";
 
-    get_global_logger().log(DEBUG, ss.str());
+    // get_global_logger().log(DEBUG, ss.str());
     // return monitor->get_history()[time_idx] * (1 - theta) + monitor->get_history()[time_idx + 1]* theta;
     return avg_rate;
 }
@@ -302,6 +302,7 @@ void MultiscaleNetwork::run(double time, int verbosity){
         perf_mgr->start_recording("evolve_spikenet");
         while (evo_short->now < evo_long->now){
             // cout << "Doing one small step"<<endl;
+            
             spikenet->evolve();
         }
         perf_mgr->end_recording("evolve_spikenet");
@@ -320,7 +321,7 @@ void MultiscaleNetwork::run(double time, int verbosity){
 double T2JRLink::get(int axis, double now){
     // This function is called by Oscillator objects linked to this transducer
     // during their evolution function
-    get_global_logger().log(DEBUG, "T2JRLink: getting t=" + to_string(now-delay) );
+    // get_global_logger().log(DEBUG, "T2JRLink: getting t=" + to_string(now-delay) );
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
@@ -343,9 +344,9 @@ double JR2TLink::get(int axis, double now){
     //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
     result *= 1e3;
 
-    std::stringstream ss;
-    ss << "JR2TLink:" << "now is t=" << now << " and getting " << now-delay << ":\n v0 = " << v0 << " mV, rate = " << rate << " ms^-1, weight = " << weight << " (returning " << result << " Hz)\n";
-    get_global_logger().log(DEBUG, ss.str());
+    // std::stringstream ss;
+    // ss << "JR2TLink:" << "now is t=" << now << " and getting " << now-delay << ":\n v0 = " << v0 << " mV, rate = " << rate << " ms^-1, weight = " << weight << " (returning " << result << " Hz)\n";
+    // get_global_logger().log(DEBUG, ss.str());
 
     return result;
 }
