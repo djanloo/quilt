@@ -2,6 +2,10 @@ from quilt.builder import MultiscaleNetwork, SpikingNetwork, OscillatorNetwork
 from quilt.interface.base import Projection
 import numpy as np
 
+from quilt.interface.base import set_verbosity
+
+set_verbosity(4)
+
 TEST_NET="tests/test_spiking.yaml"
 TEST_NEURONS    = "tests/test_neurons.yaml"
 TEST_TRANSDUCERS = "tests/test_transducers.yaml"
@@ -98,7 +102,7 @@ def test_build_projections():
     multinet.build_multiscale_projections(T2O=T2Oproj, O2T=O2Tproj)
 
     states = np.random.uniform(0, 0.05, size=6*oscnet.n_oscillators).reshape(oscnet.n_oscillators, 6)
-    oscnet.init(states, dt=1)
+    oscnet.initialize(states, dt=1)
 
 
 def test_initialize():
@@ -174,6 +178,10 @@ def test_run():
     
     multinet.set_evolution_contextes(dt_short=0.1, dt_long=1.0)
     multinet.initialize(states)
+
+    print("Printing max times:")
+    for _ in [O2T_delays, T2O_delays, oscnet.features['connectivity']['delays']]:
+        print(np.min(_[~np.isnan(_)]))
 
     multinet.run(time=1000)
 
