@@ -425,8 +425,11 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     // Since the generation is called just after now > currently_generated_time
     // the interval is [currently_generated_time, currently_generated_time + 2*generation_window_length].
     // For each generation, r(t) ~ rate_buf[<int>((t-currently_generated_time)/dt)]
+    cout << "Buffering the rate function:"<<endl;
+
     for (int i = 0; i < rate_func_buf_size; i++){
         try{
+            cout << i;
             rate_function_buffer[i] = rate_function(currently_generated_time + i*evo->dt);
         }
         catch (not_yet_computed_exception& e){
@@ -441,6 +444,7 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
             << "The new window size is " << generation_window_length;
 
             get_global_logger().log(WARNING, ss.str());
+            break;
         }
     }
     stringstream ss;
