@@ -23,7 +23,7 @@ wurlitzer = "^3.0"
 scipy = "^1.7"
 
 [bumpver]
-current_version = "0.1.0"
+current_version = "0.1.1"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version to {new_version}"
 tag_message = "{new_version}"
