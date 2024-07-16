@@ -5,9 +5,9 @@ build-backend = "mesonpy"
 [project]
 name = "quilt"
 version = "0.1.0"
-description = "Descrizione del mio progetto"
+description = "A neural multiscale simulator"
 authors = [
-    { name = "Tuo Nome", email = "tuo@email.com" }
+    { name = "Gianluca Becuzzi", email = "becuzzigianluca#gmail.com" }
 ]
 dependencies = ["numpy"]
 
@@ -21,3 +21,15 @@ PyYAML = "6.0.1"
 pytest = "^6.0"
 wurlitzer = "^3.0"
 scipy = "^1.7"
+
+[bumpver]
+current_version = "0.1.0"
+version_pattern = "MAJOR.MINOR.PATCH"
+
+[bumpver.file_patterns]
+"setup.py" = [
+    'version="{version}",$',
+]
+"quilt/__init__.py" = [
+    '^__version__ = "{version}"$',
+]

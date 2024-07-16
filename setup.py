@@ -10,7 +10,7 @@ class build_ext(_build_ext):
 
 setup(
     name='quilt',
-    version='0.1.0',
+    version="0.1.0",
     description='Descrizione del mio progetto',
     author='Tuo Nome',
     author_email='tuo@email.com',
