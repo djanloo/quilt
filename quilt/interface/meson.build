@@ -8,6 +8,8 @@ pyx_ext_names = ['base',
 
 dep_py = py.dependency()
 
+# Gets the numpy include directory
+# See scipy/meson.build for further info  
 incdir_numpy = run_command(py,
     [
       '-c',

@@ -10,3 +10,14 @@ authors = [
     { name = "Tuo Nome", email = "tuo@email.com" }
 ]
 dependencies = ["numpy"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Cython = "3.0.7"
+numpy = "1.26.3"
+matplotlib = "3.8.2"
+rich = "13.7.0"
+PyYAML = "6.0.1"
+pytest = "^6.0"
+wurlitzer = "^3.0"
+scipy = "^1.7"
