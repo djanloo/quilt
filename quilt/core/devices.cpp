@@ -434,14 +434,14 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
         }
         catch (not_yet_computed_exception& e){
 
-            generation_window_length = (i-2) * evo->dt;
-            rate_function_buffer.resize(i-2);
+            generation_window_length = (i-1) * evo->dt;
+            rate_function_buffer.resize(i-1);
             stringstream ss;
-            ss << "While buffering the rate function for InhomogeneousPoissonSpikeSource anot_yet_computed exception was thrown."
+            ss << "While buffering the rate function for InhomogeneousPoissonSpikeSource a not_yet_computed exception was thrown."
             << endl 
             << "Reducing the generation window to prevent that this happens again."
             << endl
-            << "The new window size is " << generation_window_length;
+            << "The new window size is " << generation_window_length << " ms";
 
             get_global_logger().log(WARNING, ss.str());
             break;
