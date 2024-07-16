@@ -27,8 +27,8 @@ jobs:
         sudo apt-get install -y libboost-all-dev
         pip install -r requirements.txt
 
-    - name: Build with make
-      run: make
+    - name: Build with meson
+      run: pip install .
 
     - name: Run tests
       run: | 
