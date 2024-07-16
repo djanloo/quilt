@@ -11,9 +11,9 @@ class build_ext(_build_ext):
 setup(
     name='quilt',
     version="0.1.1",
-    description='Descrizione del mio progetto',
-    author='Tuo Nome',
-    author_email='tuo@email.com',
+    description='A neural multiscale simulator',
+    author='Gianluca Becuzzi',
+    author_email='becuzzigianluca@gmail.com',
     ext_modules=[],
     cmdclass={'build_ext': build_ext},
     zip_safe=False,
