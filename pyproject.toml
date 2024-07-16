@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "meson-python", "numpy", "build"]
+build-backend = "mesonpy"
+
+[project]
+name = "quilt"
+version = "0.1.0"
+description = "Descrizione del mio progetto"
+authors = [
+    { name = "Tuo Nome", email = "tuo@email.com" }
+]
+dependencies = ["numpy"]
