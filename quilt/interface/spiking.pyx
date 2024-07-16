@@ -1,18 +1,13 @@
 # distutils: language = c++
-"""Interface module between C++ and python.
 
-Convention:
-    - Python-visible objects get nice names
-    - C++ objects get a '_' prefix
-"""
 from libc.stdlib cimport malloc, free
 from libcpp.vector cimport vector
 
 import numpy as np
 cimport numpy as np
 
-cimport quilt.interface.cinterface as cinter
-cimport quilt.interface.base as base
+cimport cinterface as cinter
+cimport base
 
 VERBOSITY = 1
 

@@ -1,44 +1,39 @@
 inc_dirs = include_directories('../core')
 
-pyxsources = ['base.pyx',
-                        'spiking.pyx',
-                        'oscill.pyx',
-                        'multiscale.pyx']
+pyx_ext_names = ['base',
+                            'spiking',
+                            'oscill',
+                            'multiscale']
 
 
 dep_py = py.dependency()
 
-cy = meson.get_compiler('cython')
-# generator() doesn't accept compilers, only found programs - cast it.
-cython = find_program(cy.cmd_array()[0])
+incdir_numpy = run_command(py,
+    [
+      '-c',
+      '''import os
+import numpy as np
+try:
+  incdir = os.path.relpath(np.get_include())
+except Exception:
+  incdir = np.get_include()
+print(incdir)
+  '''
+    ],
+    check: true
+  ).stdout().strip()
+inc_np = include_directories(incdir_numpy)
+numpy_nodepr_api = ['-DNPY_NO_DEPRECATED_API=NPY_1_9_API_VERSION']
+np_dep = declare_dependency(include_directories: inc_np, compile_args: numpy_nodepr_api)
 
-py.install_sources(
-  'cinterface.pxd',
-  subdir: 'quilt/interface'
-)
-
-pxd_files = files(
-  'some_header.pxd',
-  'another_header.pxd',
-  # aggiungi tutti i tuoi file .pxd qui
-)
-
-
-foreach cython_source : pyxsources
-    name = fs.name(cython_source).split('.')[0]
-    cpp_cyth_file = custom_target(name,
-    output : name +'.cpp',
-    input : name + '.pyx',
-    depend_files: [name + '.pxd', 'cinterface.pxd'], 
-    command : [cython, '--cplus', '-3', '--fast-fail', '@INPUT@', '-o', '@OUTPUT@']
-    )
+foreach name : pyx_ext_names
 
     cython_cpp_lib = py.extension_module(
         name,
-        cpp_cyth_file,
+        name + '.pyx',
         override_options : ['cython_language=cpp'],
         link_with : [libcpp],
-        dependencies : dep_py,
+        dependencies : [dep_py, np_dep],
         include_directories : inc_dirs,
         subdir: 'quilt/interface',
         install: true

@@ -1,6 +1,6 @@
 from libcpp.memory cimport shared_ptr
 
-cimport quilt.interface.cinterface as cinter
+cimport cinterface as cinter
 
 cdef class Oscillator:
     cdef shared_ptr[cinter.Oscillator] _osc
