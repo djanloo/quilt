@@ -1,6 +1,6 @@
 fs=import('fs')
 
-py = import('python').find_installation()
+py = import('python').find_installation(pure: false)
 
 python_sources = [
   '__init__.py',

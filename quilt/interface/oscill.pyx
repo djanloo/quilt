@@ -4,8 +4,8 @@ from libcpp.memory cimport shared_ptr
 import numpy as np
 cimport numpy as np
 
-cimport quilt.interface.cinterface as cinter
-cimport quilt.interface.base as base
+cimport cinterface as cinter
+cimport base
 
 VERBOSITY = 1
 
