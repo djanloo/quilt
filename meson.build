@@ -7,7 +7,7 @@ project('quilt',
             'c_std=c17',
             'cpp_std=c++17'
         ],
-version: '0.2.0'
+version: '0.3.0'
 )
 
 subdir('quilt')
