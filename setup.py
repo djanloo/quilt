@@ -10,7 +10,7 @@ class build_ext(_build_ext):
 
 setup(
     name='quilt',
-    version="0.2.0",
+    version="0.3.0",
     description='A neural multiscale simulator',
     author='Gianluca Becuzzi',
     author_email='becuzzigianluca@gmail.com',
