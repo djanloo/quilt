@@ -14,3 +14,8 @@ libcpp = library('quilt', cppsources,
                  dependencies : boost_dep,
                  install: true,
                  )
+
+# This is used only for testing and optimization using valgrind
+# so it's placed in the root folder
+executable('quilt.exe', cppsources + ['main.cpp'], 
+            link_with : libcpp)
