@@ -1,4 +1,4 @@
-project('quilt', 
+project('quilt',
         'cpp','cython',
         default_options: [
             'buildtype=release',
@@ -6,6 +6,8 @@ project('quilt',
             'optimization=3',
             'c_std=c17',
             'cpp_std=c++17'
-        ]
+        ],
+version: '0.2.0'
 )
+
 subdir('quilt')
