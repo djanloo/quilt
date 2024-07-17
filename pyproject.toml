@@ -4,7 +4,6 @@ build-backend = "mesonpy"
 
 [project]
 name = "quilt"
-version = "0.1.0"
 description = "A neural multiscale simulator"
 authors = [
     { name = "Gianluca Becuzzi", email = "becuzzigianluca#gmail.com" }
@@ -38,6 +37,9 @@ push = true
 "setup.py" = [
     'version="{version}",$',
 ]
-"quilt/__init__.py" = [
+"quilt/__qinit__.py" = [
     '^__version__ = "{version}"$',
+]
+"pyproject.toml" = [
+    '^current_version = "{version}"$',
 ]
