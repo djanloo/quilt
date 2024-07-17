@@ -1,6 +1,6 @@
 # distutils: language = c++
-cimport quilt.interface.cinterface as cinter
-cimport quilt.interface.base as base
+cimport cinterface as cinter
+cimport base
 
 
 cdef class SparseProjector:
