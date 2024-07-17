@@ -7,6 +7,8 @@ project('quilt',
             'c_std=c17',
             'cpp_std=c++17'
         ],
+# DO NOT CHANGE MANUALLY
+# use `bumpver update` instead
 version: '0.3.0'
 )
 

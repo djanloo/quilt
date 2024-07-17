@@ -8,7 +8,6 @@ dynamic = ["version"]
 description = "A neural multiscale simulator"
 authors = [{name = "Gianluca Becuzzi", email = "becuzzigianluca@gmail.com"}]
 
-
 dependencies = [
     "numpy==1.26.3",
     "matplotlib==3.8.2",
@@ -23,10 +22,16 @@ test = [
     "pytest==6.2.5",
     "pytest-cov==3.0.0",
 ]
+
 docs = [
     "sphinx",
     "sphinx-rtd-theme",
     "breathe"
+]
+
+dev = [
+    "setuptools>=61.0", "meson==1.5.0", "ninja==1.11.1.1", "numpy==1.26.3", "meson-python", "cython",
+    "bumpver",
 ]
 
 [bumpver]
@@ -42,9 +47,6 @@ tag = true
 push = true
 
 [bumpver.file_patterns]
-"setup.py" = [
-    'version="{version}",$',
-]
 "quilt/__qinit__.py" = [
     '^__version__ = "{version}"$',
 ]
