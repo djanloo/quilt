@@ -1,9 +1,12 @@
 py = import('python').find_installation(pure: false)
 
 python_sources = [
-  '__init__.py',
   'builder.py'
 ]
+
+install_data('__qinit__.py', 
+            rename: '__init__.py',
+            install_dir : py.get_install_dir() / 'quilt')
 
 py.install_sources(
   python_sources,
