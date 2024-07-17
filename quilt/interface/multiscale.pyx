@@ -1,8 +1,8 @@
-cimport quilt.interface.cinterface as cinter
-cimport quilt.interface.base as base
+cimport cinterface as cinter
+cimport base
 
-cimport quilt.interface.spiking as spiking
-cimport quilt.interface.oscill as oscill
+cimport spiking
+cimport oscill
 
 import numpy as np
 cimport numpy as np
