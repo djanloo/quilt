@@ -1,7 +1,8 @@
 py = import('python').find_installation(pure: false)
 
 python_sources = [
-  'builder.py'
+  'builder.py',
+  'utils.py'
 ]
 
 install_data('__qinit__.py', 
