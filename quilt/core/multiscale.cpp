@@ -312,7 +312,7 @@ void MultiscaleNetwork::run(double time, int verbosity){
         perf_mgr->end_recording("evolve_oscnet");
         ++bar;
     }
-
+    PerformanceRegistrar::get_instance().print_records();
 }
 
 
