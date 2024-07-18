@@ -209,7 +209,6 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
     // this prevents from calling start_recording on each neuron and saves the overhead time
     perf_mgr = std::make_shared<PerformanceManager>("Population " + to_string(id.get_id()));
     perf_mgr->set_tasks({"evolution","spike_handling", "spike_emission"});
-    // perf_mgr->set_label("Population " + to_string(id.get_id()));
     perf_mgr->set_scales({{"evolution",      n_neurons}, 
                          {"spike_emission", n_neurons},
                          {"spike_handling", n_neurons}});
@@ -388,21 +387,22 @@ void SpikingNetwork::evolve(){
     stringstream ss;
     ss << "Evolving SPIKING network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")";
     get_global_logger().log(DEBUG, ss.str());
+    
     for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
-        }
+    }
 
-        // Injection of currents
-        for (auto injector : this->injectors){
-            injector->inject(evo);
-        }
+    // Injection of currents
+    for (auto injector : this->injectors){
+        injector->inject(evo);
+    }
 
-        // Evolution of each population
-        for (auto population : this -> populations)
-        {
-            population -> evolve();
-        }
-        evo -> do_step();
+    // Evolution of each population
+    for (auto population : this -> populations)
+    {
+        population->evolve();
+    }
+    evo -> do_step();
 }
 
 void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
