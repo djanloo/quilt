@@ -1,9 +1,9 @@
 populations:
   Albert:
-    size: 50
+    size: 100
     neuron_model: dummy_aeif
   MonaLisa:
-    size: 50
+    size: 100
     neuron_model: dummy_aqif
 
 projections:
@@ -23,6 +23,13 @@ devices:
   pop_Albert_spikesource:
     type: poisson_spike_source
     rate: 100
-    weight: 0.1
+    weight: 1.5
     t_min: 2
-    t_max: 50
+    t_max: -1
+
+  pop_MonaLisa_spikesource:
+    type: poisson_spike_source
+    rate: 100
+    weight: 1.5
+    t_min: 2
+    t_max: -1

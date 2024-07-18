@@ -22,28 +22,22 @@ dummy_aqif:
 
 dummy_aeif:
   neuron_type: aeif
-  C_m : 40.
-  G_L : 200.0
-
-  E_l: -70.0
-  V_reset: -55.0
-  V_peak: 0.5
-  tau_refrac: 0.0
-
-  # Exp pars
-  delta_T:  2
-  V_th: -40
-
-  # Adapting pars
-  ada_a: 0.0
-  ada_b: 5.0
-  ada_tau_w: 100.0
-
-  # Syn pars
-  tau_ex: 10.
+  C_m: 40
+  G_L: 1
+  E_l: -55.1
+  delta_T: 1.7
+  V_th: -54.7
+  E_ex: 0
+  E_in: -65
+  I_e: 12
+  tau_ex: 10
   tau_in: 5.5
-  E_ex: 0.
-  E_in: -65.
+  ada_tau_w: 20
+  ada_a: 2.5
+  ada_b: 70
+  V_peak: 15
+  V_reset: -60
+  tau_refrac: 0
 
     
 dummy_izhikevich:
