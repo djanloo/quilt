@@ -15,6 +15,7 @@ from scipy.signal import butter, sosfiltfilt
 import quilt.interface.base as base
 import quilt.interface.spiking as spiking
 import quilt.interface.oscill as oscill
+import quilt.interface.multiscale as multi
 
 class SpikingNetwork:
 
@@ -210,6 +211,9 @@ class SpikingNetwork:
         # Adds back the monitors
         self._build_monitors()
         self.is_built = True
+    @property
+    def n_populations(self):
+        return len(self.populations.keys())
 
 class ParametricSpikingNetwork(SpikingNetwork):
 
@@ -526,8 +530,8 @@ class OscillatorNetwork:
 
         self.oscillators = dict()
     
-    def init(self, states, dt=0.1):
-        self._interface.init(states, dt=dt)
+    def initialize(self, states, dt=0.1):
+        self._interface.initialize(states, dt=dt)
 
     def run(self, dt=0.2, time=1):
         if not self.is_built:
@@ -539,9 +543,17 @@ class OscillatorNetwork:
         if self.homogeneous_dict is not None:
             self._interface = oscill.OscillatorNetwork.homogeneous(self.n_oscillators,  base.ParaMap(self.homogeneous_dict))
         
-        # Links the oscillators
+        # Creates the dictionary of the oscillators
         self.oscillators = {n:o for n,o in zip(self.features["oscillators"], self._interface.oscillators)}
         
+        # Makes the connections
+        projection = base.Projection(   
+                                    self.features['connectivity']['weights'], 
+                                    self.features['connectivity']['delays']
+                                    )
+        # ACHTUNG !!: for now the links take a blank paramap 
+        self._interface.build_connections(projection, base.ParaMap({}))
+
         self.is_built = True
     
     @classmethod
@@ -569,7 +581,7 @@ class OscillatorNetwork:
             # Load tract lengths
             if "tract_lengths.txt" in zip_ref.namelist():
                 tracts = zip_ref.read("tract_lengths.txt").decode('utf-8')
-                net.features['connectivity']['delays'] = conduction_speed * np.loadtxt(tracts.splitlines())
+                net.features['connectivity']['delays'] = 1/conduction_speed * np.loadtxt(tracts.splitlines())
             else:
                 print(f"tract_lengths.txt not in connectivity.")
             
@@ -579,8 +591,29 @@ class OscillatorNetwork:
                 net.features['connectivity']['weights'] = global_weight * np.loadtxt(tracts.splitlines())
             else:
                 print(f"weights.txt not in connectivity.")
+        
+        # Checks for vanishing delays
+        real_connections = (net.features['connectivity']['weights'] > 0)
+        vanishing_delays = (net.features['connectivity']['delays'][real_connections] == 0)
+
+        if np.sum(vanishing_delays) > 1:
+            # import matplotlib.pyplot as plt
+            real_delays = net.features['connectivity']['delays']
+            real_delays[~real_connections] = np.nan
+            # print(real_delays)
+            # plt.matshow(real_delays)
+            # plt.colorbar()
+            # plt.show()
+
+            warnings.warn("While loading TVB data: a delay of 0 ms is not supported"+f" ({int(np.sum(vanishing_delays))} over {np.sum(real_connections)} are vanishing)")
+
         net.n_oscillators = len(net.features['oscillators'])
         net.homogeneous_dict = oscillator_parameters
+
+        # Converts the connectivity to float32
+        net.features['connectivity']['weights'] = net.features['connectivity']['weights'].astype(np.float32)
+        net.features['connectivity']['delays'] = net.features['connectivity']['delays'].astype(np.float32)
+
         return net
 
 class EEGcap:
@@ -624,13 +657,55 @@ class EEGcap:
 
 class MultiscaleNetwork:
 
-    def __init__(self, networks, interscale_connectome):
-        self.features = dict()
-        for network in networks:
-            if isinstance(network, SpikingNetwork):
-                self.features
-                pass
-            elif isinstance(network, OscillatorNetwork):
-                pass
-            else:
-                raise TypeError("Multiscale components must be a SpikingNetwork or an OscillatorNetwork")
+    def __init__(self, 
+                 spiking_network : SpikingNetwork,
+                 oscillator_network: OscillatorNetwork
+                 ):
+        self.spiking_network = spiking_network
+        self.oscillator_network = oscillator_network
+        self.transducers = dict()
+    
+        self._interface = multi.MultiscaleNetwork(spiking_network._interface, oscillator_network._interface)
+
+        self.n_oscillators = oscillator_network.n_oscillators
+        self.n_populations = spiking_network.n_populations
+
+    def add_transducers(self, transducers: list|str):
+        transducers_list = []
+        if type(transducers) is str:
+
+            if not os.path.exists(transducers):
+                raise FileNotFoundError("YAML file not found")
+            
+            with open(transducers, "r") as f:
+                transducers_list = yaml.safe_load(f)['transducers']
+
+        elif type(transducers) is list:
+            transducers_list = transducers
+
+        for td in transducers_list:
+            self.transducers[td['name']] = {key:val for key, val in td.items() if key != 'name'}
+            
+            population = self.spiking_network.populations[td['population']]
+            params = base.ParaMap(self.transducers[td['name']])
+
+            self._interface.add_transducer(population, params)
+    
+    @property
+    def n_transducers(self):
+        return len(self.transducers.keys())
+
+    def build_multiscale_projections(self, T2O=None, O2T=None):
+        if T2O is not None and O2T is not None:
+            self._interface.build_multiscale_projections(T2O, O2T)
+        else:
+            raise ValueError("Both projections (oscillators to transducers and vice versa) must be specified.")
+    
+    def set_evolution_contextes(self, dt_short=0.1, dt_long=1.0):
+        self._interface.set_evolution_contextes(dt_short, dt_long)
+
+    def initialize(self, states):
+        self._interface.initialize(states)
+    
+    def run(self, time):
+        self._interface.run(time=time)

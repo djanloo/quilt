@@ -1,7 +1,8 @@
 #pragma once
 #include "base.hpp"
 #include "devices.hpp"
-// #include "neurons_base.hpp"
+
+#include "../thread-pool/include/BS_thread_pool.hpp"
 
 #include <unordered_map>
 #include <chrono>
@@ -10,22 +11,14 @@
 
 using std::vector;
 
-// The menu
-// class HierarchicalID;
-// class EvolutionContext;
+#define N_THREADS_POP_EVOLVE 8
 
+// Forward declarations
 class Neuron;
 class NeuroParam;
 enum class neuron_type : unsigned int;
-
-// class Projection;
 class Population;
 class SpikingNetwork;
-
-// class PopulationMonitor;
-// class PopulationSpikeMonitor;
-// class PopulationStateMonitor;
-// class PopInjector;
 
 struct SparseIntHash {
     size_t operator()(const std::pair<int, int>& k) const 
@@ -132,8 +125,10 @@ class Population{
         void print_info();
         void set_evolution_context(EvolutionContext * evo);
         
-        PerformanceManager perf_mgr;
+        std::shared_ptr<PerformanceManager> perf_mgr;
     private:
+        BS::thread_pool thread_pool; //!< Thread pool for evolution and spike handling
+        vector<unsigned int> batch_starts, batch_ends;
         EvolutionContext * evo;
 
 };
@@ -177,7 +172,7 @@ class SpikingNetwork{
         void evolve();
         void run(EvolutionContext * evo, double time, int verbosity);
 
-        PerformanceManager perf_mgr;
+        std::shared_ptr<PerformanceManager> perf_mgr;
     private:
         EvolutionContext * evo;
         bool evocontext_initialized;

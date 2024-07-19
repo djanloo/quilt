@@ -5,8 +5,11 @@ cimport numpy as np
 from libcpp.vector cimport vector
 
 # TODO: solve relative import from quilt.interface import cinterface
-from quilt.interface.cinterface cimport ParaMap as cParaMap
+from cinterface cimport ParaMap as cParaMap
+from cinterface cimport set_verbosity as cset_verbosity
 
+cpdef set_verbosity(value):
+    cset_verbosity(value)
 
 cdef class ParaMap:
 
@@ -71,7 +74,7 @@ cdef class ParaMapList:
 
 cdef class Projection:
     def __cinit__(self,  np.ndarray[np.float32_t, ndim=2,mode='c'] weights, np.ndarray[np.float32_t,ndim=2,mode='c'] delays):
-        print("Making projection")
+        # print("Making projection")
         self.weights = weights
         self.delays = delays
 
@@ -99,7 +102,7 @@ cdef class Projection:
             self._delays[i] = delays_row
         
         self._projection = new cinter.Projection(self._weights, self._delays)
-        print("Projection done")
+        # print("Projection done")
         
 
     @property

@@ -35,15 +35,13 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
         throw runtime_error("Calling 'eeg_voi' of a transducer object is not allowed");
         return 0.0;
     };
-
-    cout << "\ttransducer created"<<endl;
 }
 
 Transducer::~Transducer(){
     delete injector;
 }
 
-ThreadSafeFile Transducer::outfile("td_incoming_rates.txt");
+// ThreadSafeFile Transducer::outfile("td_incoming_rates.txt");
 
 double Transducer::incoming_rate(double now){
 
@@ -60,13 +58,13 @@ double Transducer::incoming_rate(double now){
             return initialization_rate;
         }
         rate += single_input_rate;
-        get_global_logger().log(DEBUG, "single input to transducer is " + to_string(single_input_rate));
+        // get_global_logger().log(DEBUG, "single input to transducer is " + to_string(single_input_rate));
     }
-    get_global_logger().log(DEBUG, "total input to transducer is " + to_string(rate) + " Hz");
+    // get_global_logger().log(DEBUG, "total input to transducer is " + to_string(rate) + " Hz");
     
-    stringstream ss;
-    ss << now << " " << rate;
-    outfile.write(ss.str());
+    // stringstream ss;
+    // ss << now << " " << rate;
+    // outfile.write(ss.str());
     
     return rate;
 }
@@ -75,8 +73,8 @@ double Transducer::incoming_rate(double now){
 double Transducer::get_past(unsigned int /*axis*/, double time)
 {
     stringstream ss;
-    ss << "Getting past from transducer: time requested = " << time; 
-    get_global_logger().log(DEBUG, ss.str());
+    // ss << "Getting past from transducer: time requested = " << time; 
+    // get_global_logger().log(DEBUG, ss.str());
 
     // I want to get the avg rate of the pop in [t-T/2, t+T/2]
     EvolutionContext * oscnet_evo = multinet->oscnet->get_evolution_context();
@@ -86,9 +84,6 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     int time_idx_1 = spikenet_evo->index_of(time - T/2);
     int time_idx_2 = spikenet_evo->index_of(time + T/2);
 
-    // cout << "\tdt = " << spikenet_evo->dt << ", dT = " << oscnet_evo->dt <<endl;
-    // cout << "time indexes: [" << time_idx_1 << "," << time_idx_2 << "]" << endl;
-    
     // double theta = evo->deviation_of(time); //TODO: make this not useless
 
     vector<int> activity_history = monitor->get_history();
@@ -102,12 +97,12 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     avg_rate *= 1000; // Hz
 
 
-    ss.str(""); ss.clear();
-    ss << "Transducer::get_past() : returning rate from t="<<time-T/2<<"(index "<<time_idx_1 << ")";
-    ss << " to t=" << time+T/2<<"(index "<<time_idx_2 << ")"; 
-    ss << ": avg_rate is "<< avg_rate << "Hz";
+    // ss.str(""); ss.clear();
+    // ss << "Transducer::get_past() : returning rate from t="<<time-T/2<<"(index "<<time_idx_1 << ")";
+    // ss << " to t=" << time+T/2<<"(index "<<time_idx_2 << ")"; 
+    // ss << ": avg_rate is "<< avg_rate << "Hz";
 
-    get_global_logger().log(DEBUG, ss.str());
+    // get_global_logger().log(DEBUG, ss.str());
     // return monitor->get_history()[time_idx] * (1 - theta) + monitor->get_history()[time_idx + 1]* theta;
     return avg_rate;
 }
@@ -115,16 +110,18 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
 MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
     :   spikenet(spikenet),
         oscnet(oscnet),
-        timescales_initialized(false),
-        perf_mgr({"evolve_spikenet", "evolve_oscnet"})
+        timescales_initialized(false)
 {
-   n_populations = spikenet->populations.size();
-   n_oscillators = oscnet->oscillators.size();
-   stringstream ss;
-   ss << "MultiscaleNetwork has " << n_populations << " populations and " << n_oscillators << " oscillators";
+    n_populations = spikenet->populations.size();
+    n_oscillators = oscnet->oscillators.size();
+    stringstream ss;
+    ss << "MultiscaleNetwork has " << n_populations << " populations and " << n_oscillators << " oscillators";
 
-   perf_mgr.set_label("multiscale network");
-   get_global_logger().log(INFO, ss.str());
+    perf_mgr = std::make_shared<PerformanceManager>("multiscale network");
+    perf_mgr->set_tasks({"evolve_spikenet", "evolve_oscnet"});
+    PerformanceRegistrar::get_instance().add_manager(perf_mgr);
+
+    get_global_logger().log(INFO, ss.str());
 }
 
 void MultiscaleNetwork::set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long){
@@ -153,8 +150,17 @@ void MultiscaleNetwork::set_evolution_contextes(EvolutionContext * evo_short, Ev
  * 
  * 
 */
-void MultiscaleNetwork::build_OT_projections(Projection * projT2O, Projection * projO2T){
+void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Projection * projO2T){
     
+    // Initialization check
+    // The delays between transducers and oscillators may increase the initialization time
+    // so the oscillator network must not be initialized befor building the multiscale connections
+    if (oscnet->is_initialized){
+        string msg = "OscillatorNetwork was initialized before building multiscale connections";
+        get_global_logger().log(ERROR, msg);
+        throw runtime_error(msg); 
+    }
+
     // For now: link params is just nothing
     // In future I have to find a way to express variability in this stuff
     // Probably I must step onto matrices of ParaMaps
@@ -165,7 +171,7 @@ void MultiscaleNetwork::build_OT_projections(Projection * projT2O, Projection * 
     // Dimension check 1
     if( (projT2O->start_dimension != transducers.size())|((projT2O->end_dimension != n_oscillators))){
         string msg = "Projection shape mismatch while building T->O projections.\n";
-        msg += "N_transd = " + std::to_string(transducers.size()) +  " N_oscill = " + std::to_string(n_oscillators) + "\n";
+        msg += "n_transducers = " + std::to_string(transducers.size()) +  " n_oscillators = " + std::to_string(n_oscillators) + "\n";
         msg += "Projection shape: (" + std::to_string(projT2O->start_dimension) + "," +std::to_string(projT2O->end_dimension) + ")\n";
         throw std::invalid_argument(msg);
     }
@@ -173,7 +179,7 @@ void MultiscaleNetwork::build_OT_projections(Projection * projT2O, Projection * 
     // Dimension check 2
     if( (projO2T->start_dimension != n_oscillators)|((projO2T->end_dimension != transducers.size()))){
         string msg = "Projection shape mismatch while building O->T projections.\n";
-        msg += "N_oscill = " + std::to_string(n_oscillators) + " N_transd = " + std::to_string(transducers.size())  +"\n";
+        msg += "n_oscillators = " + std::to_string(n_oscillators) + " n_transducers = " + std::to_string(transducers.size())  +"\n";
         msg += "Projection shape: (" + std::to_string(projO2T->start_dimension) + "," +std::to_string(projO2T->end_dimension) + ")\n";
         throw std::invalid_argument(msg);
     }
@@ -184,14 +190,22 @@ void MultiscaleNetwork::build_OT_projections(Projection * projT2O, Projection * 
     logmsg.str(""); logmsg.clear();
 
     // T->O
+    int new_connections = 0;
     for (unsigned int i = 0; i < transducers.size(); i++){
         for (unsigned int j= 0; j < n_oscillators ; j++){
 
-            if (projT2O->weights[i][j] != 0)
+            if (std::abs(projT2O->weights[i][j]) > WEIGHT_EPS)
             {   
                 oscnet->oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(transducers[i], oscnet->oscillators[j], 
                                                                                             projT2O->weights[i][j], projT2O->delays[i][j], 
                                                                                             link_params)); // Remember: link params is none here
+                new_connections++;
+
+                // Takes trace of minimum delay
+                if (projT2O->delays[i][j] < oscnet->min_delay) oscnet->min_delay = projT2O->delays[i][j];
+                // Takes trace of maximum delay
+                if (projT2O->delays[i][j] > oscnet->max_delay) oscnet->max_delay = projT2O->delays[i][j];
+
             }else{
                 // cout << "\t\tweigth is zero"<<endl;
             }
@@ -202,19 +216,30 @@ void MultiscaleNetwork::build_OT_projections(Projection * projT2O, Projection * 
     for (unsigned int i = 0; i < n_oscillators; i++){
         for (unsigned int j= 0; j < transducers.size() ; j++){
 
-            if (projO2T->weights[i][j] != 0)
+            if ( std::abs(projO2T->weights[i][j]) > WEIGHT_EPS)
             {   
                 transducers[j]->incoming_osc.push_back(get_link_factory().get_link( oscnet->oscillators[i], transducers[j],
                                                                                             projO2T->weights[i][j], projO2T->delays[i][j], 
                                                                                             link_params)); // Remember: link params is none here
+                new_connections++;
+
+                // Takes trace of minimum delay
+                if (projO2T->delays[i][j] < oscnet->min_delay) oscnet->min_delay = projO2T->delays[i][j];
+                // Takes trace of maximum delay
+                if (projO2T->delays[i][j] > oscnet->max_delay) oscnet->max_delay = projO2T->delays[i][j];
+
             }else{
                 // cout << "\t\tweigth is zero"<<endl;
             }
         }
     }
-    logmsg << "Multiscale connections done";
+    logmsg << "Multiscale connections done "<< "(added "<< new_connections<< " links)";
     log.log(INFO, logmsg.str());
     return;
+}
+
+void MultiscaleNetwork::add_transducer(Population * population, ParaMap * params){
+    transducers.push_back(make_shared<Transducer>(population, params, this));
 }
 
 // void MultiscaleNetwork::build_connections(Projection * projection){
@@ -259,7 +284,7 @@ void MultiscaleNetwork::run(double time, int verbosity){
 
     std::stringstream ss;
 
-    ss  << "Multiscale network running ( time ctxts: " 
+    ss  << "Multiscale network running ( now time ctxts are: " 
         << "["<< evo_long->now <<"|" <<  evo_long->dt <<"]" 
         << " and " << "["<< evo_long->now <<"|" <<  evo_short->dt <<"]"
         << " )";
@@ -274,19 +299,20 @@ void MultiscaleNetwork::run(double time, int verbosity){
         // Evolve the short timescale until it catches up with 
         // the long timescale
         // cout << "Doing one big step" << endl;
-        perf_mgr.start_recording("evolve_spikenet");
+        perf_mgr->start_recording("evolve_spikenet");
         while (evo_short->now < evo_long->now){
             // cout << "Doing one small step"<<endl;
+            
             spikenet->evolve();
         }
-        perf_mgr.end_recording("evolve_spikenet");
+        perf_mgr->end_recording("evolve_spikenet");
 
-        perf_mgr.start_recording("evolve_oscnet");
+        perf_mgr->start_recording("evolve_oscnet");
         oscnet->evolve();
-        perf_mgr.end_recording("evolve_oscnet");
+        perf_mgr->end_recording("evolve_oscnet");
         ++bar;
     }
-
+    PerformanceRegistrar::get_instance().print_records();
 }
 
 
@@ -295,7 +321,7 @@ void MultiscaleNetwork::run(double time, int verbosity){
 double T2JRLink::get(int axis, double now){
     // This function is called by Oscillator objects linked to this transducer
     // during their evolution function
-    get_global_logger().log(DEBUG, "T2JRLink: getting t=" + to_string(now-delay) );
+    // get_global_logger().log(DEBUG, "T2JRLink: getting t=" + to_string(now-delay) );
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
@@ -318,9 +344,9 @@ double JR2TLink::get(int axis, double now){
     //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
     result *= 1e3;
 
-    std::stringstream ss;
-    ss << "JR2TLink:" << "now is t=" << now << " and getting " << now-delay << ":\n v0 = " << v0 << " mV, rate = " << rate << " ms^-1, weight = " << weight << " (returning " << result << " Hz)\n";
-    get_global_logger().log(DEBUG, ss.str());
+    // std::stringstream ss;
+    // ss << "JR2TLink:" << "now is t=" << now << " and getting " << now-delay << ":\n v0 = " << v0 << " mV, rate = " << rate << " ms^-1, weight = " << weight << " (returning " << result << " Hz)\n";
+    // get_global_logger().log(DEBUG, ss.str());
 
     return result;
 }

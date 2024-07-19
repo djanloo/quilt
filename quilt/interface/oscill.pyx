@@ -4,8 +4,8 @@ from libcpp.memory cimport shared_ptr
 import numpy as np
 cimport numpy as np
 
-cimport quilt.interface.cinterface as cinter
-cimport quilt.interface.base as base
+cimport cinterface as cinter
+cimport base
 
 VERBOSITY = 1
 
@@ -14,7 +14,7 @@ def set_verbosity(v):
     VERBOSITY = v
 
 cdef class Oscillator:
-    cdef shared_ptr[cinter.Oscillator] _osc
+    # cdef shared_ptr[cinter.Oscillator] _osc
 
     def __cinit__(self):
         pass
@@ -37,9 +37,9 @@ cdef class Oscillator:
 
 cdef class OscillatorNetwork:
 
-    cdef cinter.OscillatorNetwork * _oscillator_network
-    cdef cinter.EvolutionContext * _evo
-    cdef public list oscillators
+    # cdef cinter.OscillatorNetwork * _oscillator_network
+    # cdef cinter.EvolutionContext * _evo
+    # cdef public list oscillators
 
     # This is needed otherwise OscillatorNetwork() will take
     # whatever number of arguments
@@ -47,8 +47,6 @@ cdef class OscillatorNetwork:
         self.oscillators = list()
 
     def wrap_oscillators(self):
-        # pass
-        # print(self._oscillator_network.oscillators.size())
         cdef unsigned int i = 0
         cdef shared_ptr[cinter.Oscillator] _osc
         cdef Oscillator osc
@@ -59,8 +57,6 @@ cdef class OscillatorNetwork:
             osc.wrap(_osc)
             self.oscillators.append(osc)
         
-        print(f"Oscillators has len ({len(self.oscillators)})")
-
     @classmethod
     def homogeneous(cls, int N, base.ParaMap params):
         cdef OscillatorNetwork net = cls()
@@ -88,7 +84,7 @@ cdef class OscillatorNetwork:
     def run(self, time=1):
         self._oscillator_network.run(self._evo, time, VERBOSITY)
     
-    def init(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt=1.0):
+    def initialize(self, np.ndarray[np.double_t, ndim=2, mode='c'] states, dt=1.0):
         self._evo = new cinter.EvolutionContext(dt)
         self._oscillator_network.initialize(self._evo, states)
 

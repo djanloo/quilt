@@ -11,7 +11,7 @@
 #include "include/base.hpp"
 
 #define PERFMGR_OUTPUT_DIGITS 1
-
+#define DEFAULT_LOG_FILE "quilt_log.log"
 
 using std::cout;
 using std::endl;
@@ -19,6 +19,24 @@ using std::runtime_error;
 using std::vector;
 
 
+namespace settings {
+    LogLevel verbosity = INFO;
+    string global_logfile = "";
+
+    void set_verbosity(int value) {
+        // std::cout << "Set verbosity to " << value << std::endl;
+        if ((value < 0)|(value > 4)){
+            stringstream ss;
+            ss << "Verbosity must be between 0(NO OUTPUT) and 4(DEBUG)";
+            get_global_logger().log(ERROR, ss.str());
+
+            ss << endl;
+            std::cerr << ss.str();
+        }
+        verbosity = static_cast<LogLevel>(value);
+    }
+
+}
 //************************* THREAD SAFE FILE ***************************//
 
 ThreadSafeFile::ThreadSafeFile (const std::string& filename) : filename(filename), file() {
@@ -61,19 +79,18 @@ void ThreadSafeFile::close() {
 
 //******************************* LOGGER ***************************//
 Logger::Logger(const string& filename)
-    :   logFile(filename),
-        output_level(DEBUG){}
+    :   logFile(filename){}
 
 Logger::~Logger() { logFile.close(); } 
 
-void Logger::set_level(LogLevel level){
-    output_level = level;
-}
+// void Logger::set_level(LogLevel level){
+//     output_level = level;
+// }
   
 void Logger::log(LogLevel level, const string& message) 
 {   
     // Do not print level under the current one
-    if (output_level > level){
+    if (level < ERROR - settings::verbosity){
         return;
     }
 
@@ -95,29 +112,48 @@ void Logger::log(LogLevel level, const string& message)
 }
 
 Logger& get_global_logger(){
-    static Logger logger("quilt_log.log");
-    return logger;
+    if (!settings::global_logfile.empty()){
+        static Logger logger(settings::global_logfile);
+        return logger;
+    }else{
+        static Logger logger(DEFAULT_LOG_FILE);
+        return logger;
+    }
 }
 
 /************************************ PERFORMANCE MANAGER ***********************************/
 
-PerformanceManager::PerformanceManager(vector<string> task_names)
-    :   label("no label")
+PerformanceManager::PerformanceManager(string label)
+    :   label(label)
     {
+
+    stringstream ss;
+    ss << "Created PerformanceManager at " << this;
+    get_global_logger().log(DEBUG, ss.str());   
+}
+
+PerformanceManager::~PerformanceManager(){
+    stringstream ss;
+    ss << "Destroyed PerformanceManager at " << this;
+    get_global_logger().log(DEBUG, ss.str());
+}
+
+void PerformanceManager::set_tasks(vector<string> task_names){
     for (int i = 0; i < task_names.size(); i++ ){
-        task_duration[task_names[i]] = std::chrono::nanoseconds::zero();//std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::duration<double>(0.0));
+        task_duration[task_names[i]] = std::chrono::nanoseconds::zero();
         task_count[task_names[i]] = 0;
         task_scale[task_names[i]] = 1;
     }
-
 }
-
-void PerformanceManager::set_label(string label){ this->label = label; }
 
 void PerformanceManager::set_scales(map<string, int> scales){
     for (auto &pair : scales){
         task_scale[pair.first] = pair.second;
     }
+}
+
+void PerformanceManager::set_label(string label){
+    this->label = label;
 }
 
 void PerformanceManager::start_recording(string task){
@@ -132,17 +168,17 @@ void PerformanceManager::print_record(){
     stringstream ss;
     ss << "Output for PerformanceManager "  << "<" << label << ">" << endl;
     for (auto &pair : task_duration){
-        ss <<"\t--" << pair.first << "\t" << format_duration(pair.second);
+        ss << std::setfill('_') << std::setw(15) << pair.first  << " " << std::setw(10) << format_duration(pair.second);
         std::chrono::nanoseconds time_per_call = pair.second;
 
         if (task_count[pair.first] > 1){
             time_per_call /= static_cast<double>(task_count[pair.first]);
-            ss << "\t-- " << " -- " << format_duration(time_per_call) << " /step for "<< task_count[pair.first] << " steps --";
+            ss << " | " << std::setw(8) <<  format_duration(time_per_call)  << "/step for "<< task_count[pair.first] << " steps";
         }
 
         if (task_scale[pair.first] > 1){
             time_per_call /= task_scale[pair.first];
-            ss << "\t-- " << format_duration(time_per_call) << " /step/unit for "<< task_count[pair.first] << " steps and "<< task_scale[pair.first] << " units";
+            ss << " | " << std::setw(8) << format_duration(time_per_call)  << "/step/unit for "<< task_count[pair.first] << " steps and "<< task_scale[pair.first] << " units";
         }
         ss << endl;
     } 
@@ -154,19 +190,63 @@ string PerformanceManager::format_duration (std::chrono::nanoseconds duration) {
     stringstream ss;
     ss << std::setprecision(PERFMGR_OUTPUT_DIGITS) << std::fixed;
     if (nanoseconds >= 1000000000) {
-        double seconds = std::chrono::duration_cast <std::chrono::seconds>(duration).count();
+        double seconds = std::chrono::duration_cast <std::chrono::milliseconds>(duration).count()/1000.0;
         ss << seconds << " s";
     } else if (nanoseconds >= 1000000) { 
-        double milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+        double milliseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count()/1000.0;
         ss << milliseconds << " ms";
     } else if (nanoseconds >= 1000){ 
-        double microseconds = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+        double microseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count()/1000.0;
         ss << microseconds << " us";
     } else {
         double nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(duration).count();
         ss << nanoseconds << " ns";
     }
     return ss.str();
+}
+
+PerformanceRegistrar::PerformanceRegistrar(){
+    stringstream ss;
+    ss <<  "Created PerformanceRegistrar at index: "<<this; 
+    get_global_logger().log(DEBUG,ss.str());
+}
+PerformanceRegistrar::~PerformanceRegistrar(){
+    stringstream ss;
+    ss <<  "Destroyed PerformanceRegistrar at index: "<<this;
+    get_global_logger().log(DEBUG,ss.str());
+}
+
+// Static method definition to get the singleton instance
+PerformanceRegistrar& PerformanceRegistrar::get_instance() {
+    static PerformanceRegistrar instance;
+    return instance;
+}
+
+// Method to add a PerformanceManager instance to the registrar
+void PerformanceRegistrar::add_manager(std::shared_ptr<PerformanceManager> pm) {
+    cleanup();
+    instances.push_back(pm);
+    stringstream ss;
+    ss << "PerformanceRegistrar: registered manager " << instances.size() <<":"<< pm->label;
+    get_global_logger().log(DEBUG, ss.str());
+}
+
+// Method to print records for all registered instances
+void PerformanceRegistrar::print_records() {
+    stringstream ss;
+    ss << "Ouput for PerformanceRegistrar "<< "(" << instances.size() << " managers )";
+    get_global_logger().log(INFO, ss.str());
+    for (auto pm : instances) {
+        //  Locks the weak pointer and prints
+        auto locked_ptr = pm.lock();
+        if (locked_ptr) locked_ptr->print_record();
+    }
+}
+
+void PerformanceRegistrar::cleanup(){
+    get_global_logger().log(DEBUG, "Cleaning up PerformanceRegistrar");
+    auto expiration_criteria = [](const std::weak_ptr<PerformanceManager>& pm) { return pm.expired(); };
+    instances.erase(std::remove_if(instances.begin(), instances.end(), expiration_criteria), instances.end());
 }
 
 //************************* UTILS FOR DYNAMICAL SYSTEMS **********************//
@@ -202,8 +282,10 @@ void EvolutionContext::do_step(){
 int EvolutionContext::index_of(double time)
 {
     if (time < 0.0){
-        get_global_logger().log(ERROR, "Requested index of a negative time: " + std::to_string(time) );
-        throw negative_time_exception("Requested index of a negative time: " + std::to_string(time) );
+        stringstream ss;
+        ss <<"Requested index of a negative time: " << time <<" ms.";
+        get_global_logger().log(WARNING, ss.str() + "Throwing an exception, will it be catched?" );
+        throw negative_time_exception(ss.str());
         }
 
     if (time == 0.0 ){

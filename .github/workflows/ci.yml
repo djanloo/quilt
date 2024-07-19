@@ -28,22 +28,22 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y libboost-all-dev
-        pip install -r requirements.txt
 
-    - name: Build with make
-      run: make
+    - name: Build with meson
+    
+      run: |
+        pip install --upgrade pip
+        echo "PATH is $PATH"
+        pip install .
 
     - name: Run tests
       run: | 
-        pip install -r requirements.txt
-        pip install pytest
-        export PYTHONPATH=$(pwd):$PYTHONPATH
+        pip install .[test]
         pytest tests
 
     - name: Install docs requirements
       run: |
-        pip install -r requirements.txt
-        pip install sphinx sphinx-rtd-theme breathe
+        pip install .[docs]
         sudo apt install doxygen graphviz
     - name: Build the docs
       run: |

@@ -1,9 +1,17 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
-from libcpp.map cimport map
 from libcpp.memory cimport shared_ptr
 
+cdef extern from "../core/include/base.hpp" namespace "settings":
+
+    void set_verbosity(int value) except +
+
 cdef extern from "../core/include/base.hpp":
+
+    cdef cppclass PerformanceRegistrar:
+        @staticmethod
+        PerformanceRegistrar& get_instance()
+
     cdef cppclass EvolutionContext:
         double dt
         double now
@@ -46,13 +54,14 @@ cdef extern from "../core/include/devices.hpp":
 
     cdef cppclass PopCurrentInjector:
         PopCurrentInjector(Population * pop, double I, double t_min, double t_max)
-        # void inject(EvolutionContext * evo)
     
     cdef cppclass PoissonSpikeSource:
         PoissonSpikeSource( Population * pop,
                             float rate, float weight, float weight_delta,
                             float t_min, float t_max
                             )
+
+#------------------------ SPIKING -------------------- #
 
 cdef extern from "../core/include/neurons_base.hpp":
 
@@ -105,11 +114,13 @@ cdef extern from "../core/include/oscillators.hpp":
         vector[double] get_eeg()
         
     cdef cppclass OscillatorNetwork:
-        vector [shared_ptr[Oscillator]] oscillators # Note: this is reported as an error in my syntax highlighter, but it's right
-        # int n_oscillators
+        vector [shared_ptr[Oscillator]] oscillators 
 
         # Homogeneous constructor: only one type of oscillator
         OscillatorNetwork(int, ParaMap *)
+
+        # Dishomogeneous constructor: many types of oscillator
+        # this has to be done
         OscillatorNetwork(vector[ParaMap *])
 
         # Homogeneous connections: only one type of link
@@ -118,3 +129,18 @@ cdef extern from "../core/include/oscillators.hpp":
         # Evolutions methods
         void run(EvolutionContext * evo, double t, int verbosity) except +
         void initialize(EvolutionContext * evo, vector[vector[double]] init_state)
+
+# -------------------- MULTISCALE --------------------#
+
+cdef extern from "../core/include/multiscale.hpp":
+    cdef cppclass MultiscaleNetwork:
+        MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
+        OscillatorNetwork * oscnet
+        SpikingNetwork * spikenet
+        void build_multiscale_projections(Projection * projT2O, Projection * projO2T) except +
+        void add_transducer(Population * population, ParaMap * params)
+        void run(double time, int verbosity) except +
+        void set_evolution_contextes(EvolutionContext * evo_short, EvolutionContext * evo_long)
+
+    cdef cppclass Transducer:
+        Transducer(Population * population, ParaMap * params, MultiscaleNetwork * multinet)

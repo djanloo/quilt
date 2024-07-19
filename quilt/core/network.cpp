@@ -8,11 +8,6 @@
 #include <string>
 #include <thread>
 
-#define MAX_N_1_THREADS 150
-#define MAX_N_2_THREADS 300
-#define MAX_N_3_THREADS 600
-#define MAX_N_4_THREADS 1000
-
 #define N_THREADS_BUILD 8
 
 using std::cout;
@@ -29,18 +24,13 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
 
     if (start_index_1 > end_index_1) throw std::runtime_error("SparseProjection::build : End index is before start index (efferent)");
     if (start_index_2 > end_index_2) throw std::runtime_error("SparseProjection::build : End index is before start index (afferent)");
-    // cout << "Started building projection sector with connectivity:"<<connectivity << endl; 
 
     // Maximum number of connection in a rectangular sector:
     // prevents from looping over a full matrix
     // This should not be actually used unless the connectivity is 1
     const int sector_max_connections = (end_index_1 - start_index_1 + 1)*(end_index_2 - start_index_2 + 1);
-    // cout << "\tSector indexes are  " << start_index_1 << "," << end_index_1<<"-"<<start_index_2<< "," <<end_index_2<<endl;
-    // cout << "\tMax connection is " << sector_max_connections <<endl;
-    // auto start = std::chrono::high_resolution_clock::now();
 
     unsigned int sector_nconn = static_cast<unsigned int>(sector_max_connections*connectivity);
-    // cout << "\tconnections to be made: "<<sector_nconn<<endl;
     
     RNG * rng = rng_dispatch->get_rng();
 
@@ -70,9 +60,7 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
         // Insert weight and delay
         // (This increases the length of sector map)
         (*sector)[coordinates] = this->get_weight_delay(rng, i, j);
-        // cout << "\tAdded a link!!"<<endl;
     }
-    // auto end = std::chrono::high_resolution_clock::now();
     rng_dispatch->free();
 }
 
@@ -95,9 +83,6 @@ void SparseProjection::build_multithreaded()
     RNGDispatcher rng_dispatcher(n_threads);
 
     for (int i=0; i < n_threads; i++){
-        // cout << "\tstarting thread " << i << endl;
-        // cout << "\tthis thread does "<< "("<<i*start_dimension/n_threads<<","<< (i+1)*start_dimension/n_threads-1<<")";
-        // cout << "("<<0 <<","<< end_dimension-1<<")"<<endl;
         weights_delays[i].reserve(n_connections/n_threads);
         threads.emplace_back(&SparseProjection::build_sector, this , 
                                     &(weights_delays[i]), &rng_dispatcher,
@@ -109,13 +94,6 @@ void SparseProjection::build_multithreaded()
     for (auto& thread : threads) {
         thread.join();
     }
-
-    // cout << "Done building multithreaded:"<< endl;
-    // for (auto sector : weights_delays){
-    //     for (auto conn : sector){
-    //         cout << "[ " << conn.first.first << "->" << conn.first.second << ",  w=" << conn.second.first << " d=" << conn.second.second  << "]" << endl;
-    //     }
-    // }
 }
 
 const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng, int /*i*/, unsigned int /*j*/)
@@ -198,7 +176,9 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
         n_spikes_last_step(0),
         id(&(spiking_network->id)),
         spiking_network(spiking_network),
-        perf_mgr({"evolution", "spike_emission"})
+        thread_pool(N_THREADS_POP_EVOLVE),
+        batch_starts(N_THREADS_POP_EVOLVE),
+        batch_ends(N_THREADS_POP_EVOLVE)
 {
 
     // Adds itself to the spiking network populations
@@ -227,9 +207,26 @@ Population::Population(int n_neurons, ParaMap * params, SpikingNetwork * spiking
 
     // Sets the scale for the evolution operation in PerformanceManager
     // this prevents from calling start_recording on each neuron and saves the overhead time
-    perf_mgr.set_label("Population " + to_string(id.get_id()));
-    perf_mgr.set_scales({{"evolution",      n_neurons}, 
-                         {"spike_emission", n_neurons}});
+    perf_mgr = std::make_shared<PerformanceManager>("Population " + to_string(id.get_id()));
+    perf_mgr->set_tasks({"evolution","spike_handling", "spike_emission"});
+    perf_mgr->set_scales({{"evolution",      n_neurons}, 
+                         {"spike_emission", n_neurons},
+                         {"spike_handling", n_neurons}});
+    // Adds it to the global list
+    PerformanceRegistrar::get_instance().add_manager(perf_mgr);
+
+
+    // Divides the population in batches
+    for (unsigned int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        batch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE;
+        batch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/N_THREADS_POP_EVOLVE - 1;
+        stringstream ss;
+
+        ss << "Population " << id.get_id() << " - batch "<< i << " is  "<< "(" << batch_starts[i] << " - " << batch_ends[i] << ")";
+        get_global_logger().log(DEBUG, ss.str());
+    }
+    // Ensures that all neurons are covered
+    batch_ends[N_THREADS_POP_EVOLVE-1] = this->n_neurons-1;
 }
 
 void Population::project(const Projection * projection, Population * efferent_population)
@@ -259,77 +256,47 @@ void Population::project(const SparseProjection * projection, Population * effer
 
 void Population::evolve()
 {
-    // auto start = std::chrono::high_resolution_clock::now();
-
-    perf_mgr.start_recording("evolution");
-
-    // Splits the work in equal parts using Nthreads threads
-    unsigned int n_threads;
-
-    if (n_neurons < MAX_N_1_THREADS)        n_threads = 0;
-    else if (n_neurons < MAX_N_2_THREADS)   n_threads = 2;
-    else if (n_neurons < MAX_N_3_THREADS)   n_threads = 3;
-    else if (n_neurons < MAX_N_4_THREADS)   n_threads = 4;
-    else                                    n_threads = std::thread::hardware_concurrency();
-
-    auto evolve_bunch = [this](unsigned int from, unsigned int to){
-                            for (unsigned int i = from; i< to; i++){
-                                this->neurons[i]->evolve();
-                            }
-                        };
-
-    // In case few neurons are present, do not use multithreading
-    // to avoid overhead
-    if (n_threads == 0){
-        evolve_bunch(0, n_neurons);
+    // Evolves neurons
+    perf_mgr->start_recording("evolution");
+    for (int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        thread_pool.detach_task(
+                [this, i](){
+                    for (unsigned int j = this->batch_starts[i]; j< batch_ends[i]; j++){
+                        this->neurons[j]->evolve();
+                    }
+                }
+        );
     }
-    else{// multithreading case begin
+    thread_pool.wait();
+    perf_mgr->end_recording("evolution");
 
-        std::vector<unsigned int> bunch_starts(n_threads), bunch_ends(n_threads);
+    // Handles spikes for each neuron
+    perf_mgr->start_recording("spike_handling");
+    for (int i = 0; i < N_THREADS_POP_EVOLVE; i++){
+        thread_pool.detach_task(
+                [this, i](){
+                    for (unsigned int j = this->batch_starts[i]; j< batch_ends[i]; j++){
+                        this->neurons[j]->handle_incoming_spikes();
+                    }
+                }       
+        );
+    }
+    thread_pool.wait();
+    perf_mgr->end_recording("spike_handling");
 
-        for (unsigned int i = 0; i < n_threads; i++){
-            bunch_starts[i] = i*static_cast<unsigned int>(this->n_neurons)/n_threads;
-            bunch_ends[i] = (i + 1)*static_cast<unsigned int>(this->n_neurons)/n_threads - 1;
-        }
-
-        // Ensures that all neurons are covered
-        bunch_ends[n_threads-1] = this->n_neurons-1;
-
-        // Starts the threads
-        // NOTE: spawning threads costs roughly 10 us/thread
-        // it is a non-negligible overhead
-        std::vector<std::thread> evolver_threads(n_threads);
-        for (unsigned int i = 0; i < n_threads; i++){
-            evolver_threads[i] = std::thread(evolve_bunch, bunch_starts[i], bunch_ends[i] );
-        }
-
-        // Waits the threads
-        for (unsigned int i = 0; i < n_threads; i++){
-            evolver_threads[i].join();
-        }
-    } // multithreading case end
-
-    // auto end = std::chrono::high_resolution_clock::now();
-    perf_mgr.end_recording("evolution");
-    // timestats_evo += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
-
+    // Emits spikes
     // TODO: spike emission is moved here in the population evolution because 
     // it's not thread safe. Accessing members of other instances requires
     // a memory access control.
-    // start = std::chrono::high_resolution_clock::now();
-    perf_mgr.start_recording("spike_emission");
+    perf_mgr->start_recording("spike_emission");
     this->n_spikes_last_step = 0;
     
     for (auto neuron : this->neurons){
         if ((neuron->getV()) >= neuroparam->V_peak){
             neuron->emit_spike();
-            // cout << "V over threshold neuron: spiked at t: "<< evo->now << endl;
         }
-        
     }
-    perf_mgr.end_recording("spike_emission");
-    // end = std::chrono::high_resolution_clock::now();
-    // timestats_spike_emission += (double)(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+    perf_mgr->end_recording("spike_emission");
 }
 
 void Population::print_info()
@@ -375,10 +342,11 @@ Population::~Population()
 
 SpikingNetwork::SpikingNetwork()
     :   evocontext_initialized(false),
-        id(),
-        perf_mgr({"simulation", "monitorize", "inject"})
+        id()
 {
-    perf_mgr.set_label("spiking network");
+    perf_mgr = std::make_shared<PerformanceManager>("spiking network");
+    perf_mgr->set_tasks({"simulation", "monitorize", "inject"});
+    PerformanceRegistrar::get_instance().add_manager(perf_mgr);
 }
 
 PopulationSpikeMonitor * SpikingNetwork::add_spike_monitor(Population * population)
@@ -419,33 +387,34 @@ void SpikingNetwork::evolve(){
     stringstream ss;
     ss << "Evolving SPIKING network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")";
     get_global_logger().log(DEBUG, ss.str());
+    
     for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
-        }
+    }
 
-        // Injection of currents
-        for (auto injector : this->injectors){
-            injector->inject(evo);
-        }
+    // Injection of currents
+    for (auto injector : this->injectors){
+        injector->inject(evo);
+    }
 
-        // Evolution of each population
-        for (auto population : this -> populations)
-        {
-            population -> evolve();
-        }
-        evo -> do_step();
+    // Evolution of each population
+    for (auto population : this -> populations)
+    {
+        population->evolve();
+    }
+    evo -> do_step();
 }
 
 void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
 {  
     stringstream ss;
-    if (verbosity > 0){
-        get_global_logger().set_level(INFO);
-    }
+    // if (verbosity > 0){
+    //     get_global_logger().set_level(INFO);
+    // }
     ss << "Evolving spiking network from t= "<< evo->now << " to t= " << time;
     get_global_logger().log(INFO, ss.str());
 
-    perf_mgr.start_recording("simulation");
+    perf_mgr->start_recording("simulation");
 
     int n_steps_done  = 0;
     int n_steps_total = static_cast<int>(time / evo->dt) ;
@@ -485,18 +454,18 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
     while (evo -> now < time){
 
         // Gathering from populations
-        perf_mgr.start_recording("monitorize");
+        perf_mgr->start_recording("monitorize");
         for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
         }
-        perf_mgr.end_recording("monitorize");
+        perf_mgr->end_recording("monitorize");
 
         // Injection of currents
-        perf_mgr.start_recording("inject");
+        perf_mgr->start_recording("inject");
         for (auto injector : this->injectors){
             injector->inject(evo);
         }
-        perf_mgr.end_recording("inject");
+        perf_mgr->end_recording("inject");
 
         // Evolution of each population
         for (auto population : this -> populations)
@@ -508,16 +477,11 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
         n_steps_done++;
         ++bar;
     }
-    perf_mgr.end_recording("simulation");
+    perf_mgr->end_recording("simulation");
 
     // Prints performance
     if (verbosity > 0){
-
-        perf_mgr.print_record();
-
-        for (auto pop : populations){
-            pop->perf_mgr.print_record();
-        }
+        PerformanceRegistrar::get_instance().print_records();
     }
 }
 

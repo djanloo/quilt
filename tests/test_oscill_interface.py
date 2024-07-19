@@ -37,7 +37,7 @@ def test_run():
     link_params = base.ParaMap({})
     net.build_connections(proj, link_params)
 
-    net.init(np.zeros((N, 6)), dt=1)
+    net.initialize(np.zeros((N, 6)), dt=1)
 
     net.run(time=100)
 
@@ -49,7 +49,7 @@ def test_tvb():
                                                 global_weight=global_coupling, 
                                                 conduction_speed=conduction_speed)
     net.build()
-    net.init(np.zeros((net.n_oscillators, 6)), dt=1)
+    net.initialize(np.zeros((net.n_oscillators, 6)), dt=1)
     net.run(time=100)
 
 def test_history():
@@ -60,7 +60,7 @@ def test_history():
                                                 global_weight=global_coupling, 
                                                 conduction_speed=conduction_speed)
     net.build()
-    net.init(np.zeros((net.n_oscillators, 6)), dt=1)
+    net.initialize(np.zeros((net.n_oscillators, 6)), dt=1)
     net.run(time=100)
     net.oscillators['lTCV'].history
 
