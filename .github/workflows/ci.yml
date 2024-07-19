@@ -9,6 +9,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build_test_docs:
     runs-on: ubuntu-latest
@@ -48,9 +51,13 @@ jobs:
         mkdir doxyoutput
         doxygen
         make html
+        cd ..
+    # deployment taken from https://coderefinery.github.io/documentation/gh_workflow/
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       with:
-        github_token: ${{ secrets.DEPLOY_DOCS }}
-        publish_dir: ./docs/_build/html
         publish_branch: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_build/html
+        force_orphan: true
