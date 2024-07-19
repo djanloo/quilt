@@ -299,14 +299,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
                                             rate_function_buffer[seek_buffer_index]     +   \
                                             rate_function_buffer[seek_buffer_index + 1]     \
                                            );
-
-                // A negative rate clearly does not make any sense.... Or does it? (vsauce reference)
-                if (avg_rate_in_timestep < 0.0){
-                    string msg = "Negative rate in InhomogeneousPoissonSpikeSource.\n";
-                    msg += "\tt = " +std::to_string(now) + "\n";
-                    throw runtime_error(msg);
-                }
-
+                if (avg_rate_in_timestep < 0.0) get_global_logger().log(ERROR, "Negative rate while injecting IhomogeneousPoissonSS");
                 // Does a check on the values of the average instantaneous rate
                 // A typical interval of rates should be [10, 2000] Hz
                 // if ( (avg_rate_in_timestep < 10)|(avg_rate_in_timestep > 2000) ){
@@ -444,6 +437,12 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
 
             get_global_logger().log(WARNING, ss.str());
             break;
+        }
+        // A negative rate clearly does not make any sense.... Or does it? (vsauce reference)
+        if (rate_function_buffer[i] < 0.0){
+            stringstream ss;
+            ss << "Negative rate in InhomogeneousPoissonSpikeSource at time " << currently_generated_time + i*evo->dt <<endl;
+            throw runtime_error(ss.str());
         }
     }
     stringstream ss;

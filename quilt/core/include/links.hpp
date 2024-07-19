@@ -56,7 +56,7 @@ public:
      * @param evo EvolutionContext for the link.
      */
     void set_evolution_context(EvolutionContext* evo) {
-        get_global_logger().log(DEBUG, "set EvolutionContext of Link");
+        // get_global_logger().log(DEBUG, "set EvolutionContext of Link");
         this->evo = evo;
     };
 
