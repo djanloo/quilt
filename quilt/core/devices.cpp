@@ -223,7 +223,10 @@ using std::to_string;
 /**
  * Injects a partition of the target population. For multithreading.
 */
-void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start_id, int end_id, RNGDispatcher * rng_disp){
+void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffer, 
+                                                double now, double dt, 
+                                                int start_id, int end_id, 
+                                                RNGDispatcher * rng_disp){
     
     // DECOMMENT IF THIS METHOD CREATES TROUBLE
     // inhomlog.set_level(INFO);
@@ -244,7 +247,7 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
     // Gets an independent random number generator
     RNG * thread_rng = rng_disp->get_rng();
 
-    // inhomlog.log(DEBUG, "Starting generation " + to_string(generation));
+    // inhomlog.log(DEBUG, "Starting generation " + to_string(generation));\
 
     for (int i = start_id; i < end_id; i++)
     {
@@ -289,17 +292,22 @@ void InhomPoissonSpikeSource::_inject_partition(double now, double dt, int start
                 // so to carry out the integration from last_spike_time you have to request
                 // r(last_spike_time + timesteps_done*dt) = rate_buffer[<int>((last_spike_time - currently_generated_time)/dt ) + timesteps_done]
                 seek_buffer_index = last_spike_time_index + timesteps_done - static_cast<int>(currently_generated_time/dt);
-                if (seek_buffer_index >= rate_function_buffer.size()){        
+                if (seek_buffer_index >= static_cast<int>(rate_buffer.size()) - 1){ // Because the average is taken for the trapezoidal rule  
                     // Exits with no spike generated but with modified integration extrema
                     add_spike = false;
                     break;
                 }
 
                 avg_rate_in_timestep = 0.5*(
-                                            rate_function_buffer[seek_buffer_index]     +   \
-                                            rate_function_buffer[seek_buffer_index + 1]     \
+                                            rate_buffer[seek_buffer_index]     +   \
+                                            rate_buffer[seek_buffer_index + 1]     \
                                            );
-                if (avg_rate_in_timestep < 0.0) get_global_logger().log(ERROR, "Negative rate while injecting IhomogeneousPoissonSS");
+                if (avg_rate_in_timestep < 0.0){
+                    stringstream ss;
+                    ss << "Negative rate while injecting IhomogeneousPoissonSS: "
+                        << "rate = " << avg_rate_in_timestep << " at seek_index="<< seek_buffer_index; 
+                    get_global_logger().log(ERROR, ss.str());
+                }
                 // Does a check on the values of the average instantaneous rate
                 // A typical interval of rates should be [10, 2000] Hz
                 // if ( (avg_rate_in_timestep < 10)|(avg_rate_in_timestep > 2000) ){
@@ -413,21 +421,23 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
 
     // Evaluates the rate function and stores it in the buffer
     int rate_func_buf_size = static_cast<int>(generation_window_length/evo->dt);
-    rate_function_buffer = vector<double>(rate_func_buf_size, -1.0);
+    vector<double> rate_buffer = vector<double>(rate_func_buf_size, -1.0);
 
     // Copies the discretised rate function. The interval that will be used is [now, now + generation_window_length]
     // Since the generation is called just after now > currently_generated_time
     // the interval is [currently_generated_time, currently_generated_time + 2*generation_window_length].
     // For each generation, r(t) ~ rate_buf[<int>((t-currently_generated_time)/dt)]
-
+    stringstream ss;
+    ss << "Getting rate of incoming oscillators from t= "<<currently_generated_time << " to t= "<<currently_generated_time + rate_func_buf_size*evo->dt;
+    get_global_logger().log(DEBUG, ss.str());
     for (int i = 0; i < rate_func_buf_size; i++){
         try{
-            rate_function_buffer[i] = rate_function(currently_generated_time + i*evo->dt);
+            rate_buffer[i] = rate_function(currently_generated_time + i*evo->dt);
         }
         catch (not_yet_computed_exception& e){
 
             generation_window_length = (i-1) * evo->dt;
-            rate_function_buffer.resize(i-1);
+            rate_buffer.resize(i-1);
             stringstream ss;
             ss << "While buffering the rate function for InhomogeneousPoissonSpikeSource a not_yet_computed exception was thrown."
             << endl 
@@ -439,17 +449,14 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
             break;
         }
         // A negative rate clearly does not make any sense.... Or does it? (vsauce reference)
-        if (rate_function_buffer[i] < 0.0){
+        if (rate_buffer[i] < 0.0){
             stringstream ss;
             ss << "Negative rate in InhomogeneousPoissonSpikeSource at time " << currently_generated_time + i*evo->dt <<endl;
             throw runtime_error(ss.str());
         }
     }
-    stringstream ss;
-    ss << "Getting rate of incoming oscillators from t= "<<currently_generated_time << " to t= "<<currently_generated_time + rate_func_buf_size*evo->dt;
-    get_global_logger().log(DEBUG, ss.str());
-    // cout << endl;
-    
+    ss.str(""); ss.clear();
+
     int n_threads = N_THREADS_INHOM_POISS_INJECT;
     if (pop->n_neurons < 50){
         n_threads = 1;
@@ -462,8 +469,12 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
     RNGDispatcher rng_dispatcher(n_threads);
 
     for (int i=0; i < n_threads; i++){
+        // Creates a local copy of the buffer to prevent concurrent access (see #34)
+        vector<double> local_buffer = rate_buffer;
+
         // inhomlog.log(DEBUG, "starting thread " + to_string(i) + " || neurons [" + to_string(i*pop->n_neurons/n_threads) + "," + to_string((i+1)*pop->n_neurons/n_threads-1));
         threads.emplace_back(&InhomPoissonSpikeSource::_inject_partition, this ,
+                            local_buffer,
                             evo->now, evo->dt,
                             i*pop->n_neurons/n_threads, (i+1)*pop->n_neurons/n_threads-1,
                             &rng_dispatcher);
@@ -473,6 +484,9 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
         thread.join();
     }
 
+    {
+        get_global_logger().log(DEBUG, "Ended InhomPoissonSS injection");
+    }
     // SINGLE THREAD FOR DEBUG
     // _inject_partition(evo->now, evo->dt, 0, pop->n_neurons);
 

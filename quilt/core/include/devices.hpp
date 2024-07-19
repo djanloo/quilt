@@ -182,7 +182,7 @@ class InhomPoissonSpikeSource: public PopInjector{
          * Generate one spike for neuron given the current rate
          * 
         */
-        void _inject_partition(double now, double dt, int start_id, int end_id, RNGDispatcher * rng_disp);
+        void _inject_partition(const vector<double> &rate_buffer, double now, double dt, int start_id, int end_id, RNGDispatcher * rng_disp);
         void inject(EvolutionContext * evo) override;
 
         std::shared_ptr<PerformanceManager> perf_mgr;
@@ -197,13 +197,6 @@ class InhomPoissonSpikeSource: public PopInjector{
         double generation_window_length; 
         double currently_generated_time;
         RNG rng;
-
-        /**
-         * Since the rate function must be evaluated for each neuron
-         * but it's the same for each neuron
-         * this buffer prevents useless calls
-        */
-        std::vector<double> rate_function_buffer;
 
         std::vector<double> integration_start;
         std::vector<double> integration_leftovers;
