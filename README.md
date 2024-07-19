@@ -10,7 +10,7 @@ A virtual environment is highly recommended.
 - on `Linux`:
   - install boost: ```sudo apt-get install libboost-all-dev```
   - install using pip ```pip install .```
-- on `Windows`: for now only WSL was tested. (Install it)[https://learn.microsoft.com/en-us/windows/wsl/install] and follow the instructions for Linux.
+- on `Windows`: for now only WSL was tested. [Install it](https://learn.microsoft.com/en-us/windows/wsl/install) and follow the instructions for Linux.
 - on `MacOs`: TODO
 
 ### dev installation
