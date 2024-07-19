@@ -6,20 +6,22 @@
 A multiscale neural simulator.
 
 ## Installation
+A virtual environment is highly recommended. 
 - on `Linux`:
   - install boost: ```sudo apt-get install libboost-all-dev```
-  - install requirements: ```pip install -r requirements.txt```
-  - to build the Python interface run: ```make```
-  - to build just the C++ code run: ```make quilt.exe```
-- on `Windows`: for now only WSL was tested. Install it and follow the instructions for Linux.
+  - install using pip ```pip install .```
+- on `Windows`: for now only WSL was tested. [Install it](https://learn.microsoft.com/en-us/windows/wsl/install) and follow the instructions for Linux.
 - on `MacOs`: TODO
 
+### dev installation
+Be sure to have your virtual environment set.
+For a faster build&install pipeline use `meson`:
+- `pip install meson`
+- `make`
 
-By default the code is built inplace, so be sure to have this folder in your PYTHONPATH
-```
-export PYTHONPATH=$(path/to/quilt):$PYTHONPATH
-```
+This builds the code and installs it in the virtual environment.
 
+This places the 
 ## Tests and optimization
 The `tests` folder contains mainly tests for the Cython/Python interface.
 

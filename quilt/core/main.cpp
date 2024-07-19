@@ -47,8 +47,8 @@ vector<vector<float>> get_rand_proj_mat(int N, int M, double min, double max){
 void test_spiking()
 {
 
-    int Na = 1000;
-    int Nb = 1000;
+    int Na = 2000;
+    int Nb = 2000;
 
     SpikingNetwork sn = SpikingNetwork();
 
@@ -116,7 +116,7 @@ void test_spiking()
 
     EvolutionContext evo = EvolutionContext(0.1);
     
-    sn.run(&evo, 5, 1);
+    sn.run(&evo, 50, 1);
 
     // if ( PopulationSpikeMonitor * psm = dynamic_cast<C*>(instance)) {
     //         derivedC->get_history();  // Chiamata a get_history() se l'istanza è di tipo C
@@ -434,7 +434,7 @@ void test_inhom_poisson(){
 
 void test_multiscale_base(){
     Logger &logger = get_global_logger();
-    logger.set_level(INFO);
+    // logger.set_level(INFO);
 
     // Create a spiking network of just one population
     SpikingNetwork spike_net = SpikingNetwork();
@@ -526,7 +526,7 @@ void test_multiscale_base(){
     Projection * T2Oproj = new Projection(T2Oweights, T2Odelays);
     Projection * O2Tproj = new Projection(O2Tweights, O2Tdelays);
 
-    multi_net.build_OT_projections(T2Oproj, O2Tproj);
+    multi_net.build_multiscale_projections(T2Oproj, O2Tproj);
     
     // This must be done before every time dependent operation.
     // Must add a check on this 
@@ -567,20 +567,17 @@ void test_multiscale_base(){
         OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, i*evo_short.dt)) << endl;
     }
 
-    transd->injector->perf_mgr.print_record();
-    osc_net.perf_mgr.print_record();
-    spike_net.perf_mgr.print_record();
-    multi_net.perf_mgr.print_record();
+    PerformanceRegistrar::get_instance().print_records();
 }
 
 
 int main(){ 
-    // test_spiking();
+    test_spiking();
     // test_sparse();
     // test_poisson();
     // test_NCERK();
     // test_oscill();
     // test_inhom_poisson();
-    test_multiscale_base();
+    // test_multiscale_base();
 }
 

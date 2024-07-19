@@ -1,6 +1,6 @@
 from libcpp cimport bool
 from libcpp.vector cimport vector
-cimport quilt.interface.cinterface as cinter
+cimport cinterface as cinter
 
 cdef class ParaMap:
     cdef:

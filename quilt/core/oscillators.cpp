@@ -25,7 +25,9 @@ void Oscillator::set_evolution_context(EvolutionContext * evo)
 
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
-    :   perf_mgr({"evolution"})
+    :   perf_mgr("oscillator network"),
+        max_delay(0.0),
+        min_delay(std::numeric_limits<float>::max())
 {    
     // Bureaucracy
     id = HierarchicalID();
@@ -37,7 +39,7 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     }
     has_oscillators = true;
 
-    perf_mgr.set_label("oscillator_network");
+    perf_mgr.set_tasks({"evolution"});
     perf_mgr.set_scales({{"evolution", N}});
 
     get_global_logger().log(INFO, "Built HOMOGENEOUS OscillatorNetwork");
@@ -45,7 +47,9 @@ OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
 
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
-    :   perf_mgr({"evolution"})
+    :   perf_mgr("oscillator network"),
+        max_delay(0.0),
+        min_delay(std::numeric_limits<float>::max())
 {   
     // Bureaucracy
     id = HierarchicalID();
@@ -57,7 +61,7 @@ OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
     }
     has_oscillators = true;
 
-    perf_mgr.set_label("oscillator_network");
+    perf_mgr.set_tasks({"evolution"});
     perf_mgr.set_scales({{"evolution", params.size()}});
 
     get_global_logger().log(INFO, "Built NON-HOMOGENEOUS OscillatorNetwork");
@@ -90,9 +94,15 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
     {
         for (unsigned int j = 0; j < proj->end_dimension; j++)
         {
-            if (proj->weights[i][j] != 0)
+            if (std::abs(proj->weights[i][j]) > WEIGHT_EPS)
             {                   
                 oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(oscillators[i], oscillators[j], proj->weights[i][j], proj->delays[i][j], link_params));
+                
+                // Takes trace of minimum delay
+                if (proj->delays[i][j] < min_delay) min_delay = proj->delays[i][j];
+                // Takes trace of maximum delay
+                if (proj->delays[i][j] > max_delay) max_delay = proj->delays[i][j];
+
             }
         }
     }
@@ -106,29 +116,44 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
         get_global_logger().log(ERROR, "Number of initial conditions is not equal to number of oscillators");
         throw runtime_error("Number of initial conditions is not equal to number of oscillators");
     }
-    
-    // brutal search of maximum delay (and minimum for bug #24)
-    float max_tau = 0.0;
-    float min_tau = std::numeric_limits<float>::max();    
-    for (auto osc : oscillators){
-        for (auto l : osc->incoming_osc){
-            if (l->delay > max_tau) max_tau = l->delay;
-            if (l->delay < min_tau) min_tau = l->delay;
-        }
-    }
-    // ~brutal search of maximum delay (and minimum for bug #24)
 
-    // Adds a timestep to max_tau (this is useful for multiscale)
+    if (!has_links){
+        get_global_logger().log(WARNING, "Initializing an OscillatorNetwork without links");
+    }
+    
+    // Adds a timestep to max_delay (this is useful for multiscale)
     // because Transuducers need an half-big-timestep in the past
     // to average the spiking network activity
-    max_tau += evo->dt;
+    max_delay += evo->dt;
 
     // Guard for bug #24: at least two timesteps of delay are necessary
-    if ( min_tau < 2*evo->dt){
-        get_global_logger().log(ERROR, "At least two timesteps of delay are necessary. See #24.");
+    if ( min_delay < 2*evo->dt){
+        stringstream logmsg;
+        logmsg << "During initialization of OscillatorNetwork:"<< endl
+                << "minimum delay is too short, at least two timesteps of delay are necessary" << endl
+                << "(now min_tau=" << min_delay << " ms, dt=" << evo->dt <<")"<< endl
+                << "Delays are considered 2 timestep"<<endl
+                << "See https://github.com/djanloo/quilt/issues/24";
+        get_global_logger().log(WARNING, logmsg.str());
+
+        int n_rounded = 0;
+        int n_links = 0;
+        for (auto osc : oscillators){
+            for (auto l : osc->incoming_osc){
+                if (l->delay < 2*evo->dt){
+                    l->delay = 2*evo->dt;
+                    n_rounded ++;
+                }
+                n_links++;
+            }
+        }
+        logmsg.str(""); logmsg.clear();
+        logmsg << "Rounded "<< n_rounded << " delays over "<< n_links <<" to " << 2*evo->dt << " ms instead of 0 ms";
+        get_global_logger().log(WARNING, logmsg.str());
+
     }
     
-    int n_init_pts = static_cast<int>(std::ceil(max_tau/evo->dt) + 1);
+    int n_init_pts = static_cast<int>(std::ceil(max_delay/evo->dt) + 1);
 
     for (unsigned int i = 0; i < init_conds.size(); i++ ){
         vector<dynamical_state> new_K(4, vector<double>(oscillators[i]->get_space_dimension()));
@@ -196,7 +221,7 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
     stringstream ss;
     ss << "Oscillators initialized with " << oscillators[0]->memory_integrator.state_history.size() << " states"
         << " and " << oscillators[0]->memory_integrator.evaluation_history.size() << " evaluations ";
-    ss << "since (max_delay + dt) = " << max_tau;
+    ss << "since (max_delay + dt) = " << max_delay;
     log.log(INFO, ss.str());
 }
 
@@ -233,6 +258,10 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
     if (!is_initialized){
         get_global_logger().log(ERROR, "The network must be initialized before running");
         throw runtime_error("The network must be initialized before running");
+    }
+
+    if (!has_links){
+        get_global_logger().log(WARNING, "Running an OscillatorNetwork without links");
     }
     
     // Synchronizes every component
