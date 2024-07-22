@@ -15,7 +15,13 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
 
     // Builds the injector
     std::function<double(double)> bound_rate_function = [this](double now){ return this->incoming_rate(now); };
-    injector = new InhomPoissonSpikeSource(population, bound_rate_function, 10, 0.5, 
+    float weight, weight_delta;
+
+    weight = params->get<float>("weight");
+    weight_delta = params->get<float>("weight_delta");
+
+    injector = new InhomPoissonSpikeSource(population, bound_rate_function, 
+                                        weight, weight_delta, 
                                         static_cast<int>(params->get<float>("generation_window")) 
                                         );
 
@@ -48,23 +54,24 @@ double Transducer::incoming_rate(double now){
     double rate = 0;    // Remember that this is a weighted sum
     double single_input_rate = 0;
 
+    stringstream ss;
+    ss << "Transducer: incoming rates are: "<< endl;
     for (auto input : incoming_osc){
         try {
         single_input_rate = input->get(0, now);
+        ss << single_input_rate << ", ";
         }
         catch (negative_time_exception & e){
         // If this error is raised the link tried to get a non existing past
             get_global_logger().log(DEBUG, "transducer using burn-in value for incoming oscillator rate: " + to_string(initialization_rate) + " Hz");
             return initialization_rate;
         }
+
         rate += single_input_rate;
-        // get_global_logger().log(DEBUG, "single input to transducer is " + to_string(single_input_rate));
     }
-    // get_global_logger().log(DEBUG, "total input to transducer is " + to_string(rate) + " Hz");
-    
-    // stringstream ss;
-    // ss << now << " " << rate;
-    // outfile.write(ss.str());
+    ss<<endl;
+    ss << "Transducer::incoming_rate returning " << rate;
+    get_global_logger().log(DEBUG, ss.str());
     
     return rate;
 }
