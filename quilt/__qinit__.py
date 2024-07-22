@@ -4,4 +4,4 @@
 
 # DO NOT CHANGE MANUALLY
 # use `bumpver update` instead
-__version__ = "0.3.0"
+__version__ = "0.3.1"
