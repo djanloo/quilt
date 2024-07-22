@@ -137,6 +137,7 @@ cdef extern from "../core/include/multiscale.hpp":
         MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
         OscillatorNetwork * oscnet
         SpikingNetwork * spikenet
+        vector[shared_ptr[Transducer]] transducers
         void build_multiscale_projections(Projection * projT2O, Projection * projO2T) except +
         void add_transducer(Population * population, ParaMap * params)
         void run(double time, int verbosity) except +
@@ -144,3 +145,4 @@ cdef extern from "../core/include/multiscale.hpp":
 
     cdef cppclass Transducer:
         Transducer(Population * population, ParaMap * params, MultiscaleNetwork * multinet)
+        vector[double] history

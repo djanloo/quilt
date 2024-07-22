@@ -709,3 +709,7 @@ class MultiscaleNetwork:
     
     def run(self, time):
         self._interface.run(time=time)
+
+    @property
+    def transducer_histories(self):
+        return self._interface.transducer_histories

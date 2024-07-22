@@ -43,3 +43,14 @@ cdef class MultiscaleNetwork:
 
     def run(self, time=10):
         self._multiscale_network.run(time, 1)
+
+    @property
+    def transducer_histories(self):
+        cdef int n_transd = self._multiscale_network.transducers.size()
+        histories = []
+        for i in range(n_transd):
+            histories.append(self._multiscale_network.transducers[i].get().history)
+        return histories
+
+
+

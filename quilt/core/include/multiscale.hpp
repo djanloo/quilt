@@ -66,6 +66,8 @@ class Transducer: public Oscillator{
          * It must thus return the rate of the spiking population in the past.
         */
         double get_past(unsigned int axis, double time);
+        vector<double> history;
+
 };
 
 class MultiscaleNetwork{
