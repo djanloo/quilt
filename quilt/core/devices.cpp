@@ -292,7 +292,7 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
                 // so to carry out the integration from last_spike_time you have to request
                 // r(last_spike_time + timesteps_done*dt) = rate_buffer[<int>((last_spike_time - currently_generated_time)/dt ) + timesteps_done]
                 seek_buffer_index = last_spike_time_index + timesteps_done - static_cast<int>(currently_generated_time/dt);
-                if (seek_buffer_index >= static_cast<int>(rate_buffer.size()) - 1){ // Because the average is taken for the trapezoidal rule  
+                if (seek_buffer_index >= static_cast<int>(rate_buffer.size()) - 1){ // Because the average is taken for the trapezoidal rule  ( -1 solves #34)
                     // Exits with no spike generated but with modified integration extrema
                     add_spike = false;
                     break;
