@@ -4,11 +4,11 @@ transducers:
     initialization_rate: 500
     weight: 0.1
     weight_delta: 0.05
-    generation_window: 20
+    generation_window: 5
 
   - name: D2_td
     population: D2
     initialization_rate: 500
     weight: 0.1
     weight_delta: 0.05
-    generation_window: 20
+    generation_window: 5

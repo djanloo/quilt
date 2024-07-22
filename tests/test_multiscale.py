@@ -5,7 +5,7 @@ import numpy as np
 
 from quilt.interface.base import set_verbosity
 
-set_verbosity(2)
+set_verbosity(4)
 
 TEST_NET="tests/test_spiking.yaml"
 TEST_NEURONS    = "tests/test_neurons.yaml"
@@ -264,4 +264,4 @@ def test_get_history():
     # plt.show()
 
 if __name__ == "__main__":
-    test_get_history()
+    test_build_projections()
