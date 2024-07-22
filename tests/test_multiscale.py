@@ -44,7 +44,9 @@ def test_transducers_from_list():
                                 population="Albert", 
                                 generation_window=10, 
                                 initialization_rate=100, 
-                                weight=0.1)
+                                weight=0.1,
+                                weight_delta=0
+                                )
                         ]
     multinet.add_transducers(list_of_transducers)
 
@@ -264,4 +266,4 @@ def test_get_history():
     # plt.show()
 
 if __name__ == "__main__":
-    test_build_projections()
+    test_transducers_from_list()
