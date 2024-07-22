@@ -73,6 +73,8 @@ double Transducer::incoming_rate(double now){
     ss << "Transducer::incoming_rate returning " << rate;
     get_global_logger().log(DEBUG, ss.str());
     
+    history.push_back(rate);
+
     return rate;
 }
 
