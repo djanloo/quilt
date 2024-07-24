@@ -17,7 +17,7 @@ def test_vanilla_init():
     spikenet.build()
 
     # Builds the oscillator network
-    oscnet = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+    oscnet = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
                                              {'oscillator_type':'jansen-rit'}, 
                                              global_weight=0.1, 
                                              conduction_speed=0.5)
@@ -32,7 +32,7 @@ def test_transducers_from_list():
     spikenet.build()
 
     # Builds the oscillator network
-    oscnet = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+    oscnet = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
                                              {'oscillator_type':'jansen-rit'}, 
                                              global_weight=0.1, 
                                              conduction_speed=0.5)
@@ -56,7 +56,7 @@ def test_transducers_from_yaml():
     spikenet.build()
 
     # Builds the oscillator network
-    oscnet = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+    oscnet = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
                                              {'oscillator_type':'jansen-rit'}, 
                                              global_weight=0.1, 
                                              conduction_speed=0.5)
@@ -71,7 +71,7 @@ def test_build_projections():
     spikenet.build()
 
     # Builds the oscillator network
-    oscnet = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+    oscnet = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
                                              {'oscillator_type':'jansen-rit'}, 
                                              global_weight=0.1, 
                                              conduction_speed=1)
@@ -106,7 +106,7 @@ def test_initialize():
     spikenet.build()
 
     # Builds the oscillator network
-    oscnet = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+    oscnet = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
                                              {'oscillator_type':'jansen-rit'}, 
                                              global_weight=0.1, 
                                              conduction_speed=1)
@@ -144,7 +144,7 @@ def test_run():
     spikenet.build()
 
     # Builds the oscillator network
-    oscnet = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+    oscnet = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
                                              {'oscillator_type':'jansen-rit'}, 
                                              global_weight=0.1, 
                                              conduction_speed=1)
@@ -189,7 +189,7 @@ def test_get_history():
     spikenet.build()
 
     # Builds the oscillator network
-    oscnet = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+    oscnet = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
                                              {'oscillator_type':'jansen-rit'}, 
                                              global_weight=0.1, 
                                              conduction_speed=1)

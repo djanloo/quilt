@@ -44,7 +44,7 @@ def test_run():
 def test_tvb():
     global_coupling = 0.01
     conduction_speed = 1.0
-    net = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+    net = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
                                                 {'oscillator_type':'jansen-rit'}, 
                                                 global_weight=global_coupling, 
                                                 conduction_speed=conduction_speed)
@@ -55,7 +55,7 @@ def test_tvb():
 def test_history():
     global_coupling = 0.01
     conduction_speed = 1.0
-    net = OscillatorNetwork.homogeneous_from_TVB('brain_data/connectivity_76.zip', 
+    net = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
                                                 {'oscillator_type':'jansen-rit'}, 
                                                 global_weight=global_coupling, 
                                                 conduction_speed=conduction_speed)
