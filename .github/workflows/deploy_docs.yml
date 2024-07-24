@@ -18,6 +18,7 @@ jobs:
       run: |
         git submodule init
         git submodule update
+
     - name: Install dependencies
       run: |
         sudo apt-get update
@@ -25,8 +26,8 @@ jobs:
 
     - name: Install docs requirements
       run: |
-        pip install .[docs]
         sudo apt install doxygen graphviz
+        pip install .[docs]
 
     - name: Build with meson
       run: |
