@@ -1,0 +1,232 @@
+populations:
+  D1:
+    size: 6000
+    neuron_model: D1_neuron
+  D2:
+    size: 6000
+    neuron_model: D2_neuron
+  FSN:
+    size: 420
+    neuron_model: FSN_neuron
+  GPeTI:
+    size: 780
+    neuron_model: GPeTI_neuron
+  GPeTA:
+    size: 260
+    neuron_model: GPeTA_neuron
+  STN:
+    size: 408
+    neuron_model: STN_neuron
+  SNR:
+    size: 754
+    neuron_model: SNR_neuron
+
+# Note: projections must be in the A->B format
+projections:
+  D1->D1:
+    # connectivity: 0.0607
+    fan_in:     364
+    delay:      1.7
+    delay_delta: 0.2
+    weight:     0.12
+    type:       inh
+
+  D1->D2:
+    # connectivity: 0.014
+    fan_in:     84
+    delay:      1.7
+    delay_delta: 0.2
+    weight:     0.30
+    type:       inh
+
+  D1->SNR:
+    # connectivity: 0.0132
+    fan_in:     79
+    delay:      7.0
+    delay_delta: 0.7
+    weight:     2.0
+    type:       inh
+
+  D2->D1:
+    # connectivity: 0.0653
+    fan_in:     392
+    delay:      1.7
+    delay_delta: 0.2
+    weight:     0.36
+    type:       inh
+
+  D2->D2:
+    # connectivity: 0.0840
+    fan_in:     504
+    delay:      1.7
+    delay_delta: 0.2
+    weight:     0.20
+    type:       inh
+
+  D2->GPeTI:
+    # connectivity: 0.0833
+    fan_in:     500
+    delay:      7.0
+    delay_delta: 0.7
+    weight:     1.28
+    type:       inh
+
+  FSN->D1:
+    # connectivity: 0.0381
+    fan_in:     16
+    delay:      1.7
+    delay_delta: 0.2
+    weight:     6.6
+    type:       inh
+
+  FSN->FSN:
+    # connectivity: 0.0238
+    fan_in:     10
+    delay:      1.0
+    delay_delta: 0.1
+    weight:     0.5
+    type:       inh
+
+  FSN->D2:
+    # connectivity: 0.0262
+    fan_in:     11
+    delay:      1.7
+    delay_delta: 0.2
+    weight:     4.8
+    type:       inh
+
+  GPeTI->GPeTI:
+    # connectivity: 0.0321
+    fan_in:     25
+    delay:      1.0
+    delay_delta: 0.1
+    weight:     1.2
+    type:       inh
+
+  GPeTI->GPeTA:
+    # connectivity: 0.0321
+    fan_in:     25
+    delay:      1.0
+    delay_delta: 0.1
+    weight:     0.35
+    type:       inh
+
+  GPeTI->FSN:
+    # connectivity: 0.0128
+    fan_in:     10
+    delay:      7.0
+    delay_delta: 0.7
+    weight:     1.6
+    type:       inh
+
+  GPeTI->STN:
+    # connectivity: 0.0385
+    fan_in:     30
+    delay:      1.0
+    delay_delta: 0.1
+    weight:     0.08
+    type:       inh
+
+  GPeTI->SNR:
+    # connectivity: 0.0324
+    fan_in:     25
+    delay:      3.0
+    delay_delta: 0.3
+    weight:     76.0
+    type:       inh
+
+  GPeTA->D1:
+    # connectivity: 0.0379
+    fan_in:     10
+    delay:      7.0
+    delay_delta: 0.7
+    weight:     0.35
+    type:       inh
+
+  GPeTA->D2:
+    # connectivity: 0.0379
+    fan_in:     10
+    delay:      7.0
+    delay_delta: 0.7
+    weight:     0.61
+    type:       inh
+
+  GPeTA->FSN:
+    # connectivity: 0.0379
+    fan_in:     10
+    delay:      7.0
+    delay_delta: 0.7
+    weight:     1.85
+    type:       inh
+
+  GPeTA->GPeTA:
+    # connectivity: 0.0189
+    fan_in:     5
+    delay:      1.0
+    delay_delta: 0.1
+    weight:     0.35
+    type:       inh
+
+  GPeTA->GPeTI:
+    # connectivity: 0.0189
+    fan_in:     5
+    delay:      1.0
+    delay_delta: 0.1
+    weight:     1.2
+    type:       inh
+
+  STN->GPeTA:
+    # connectivity: 0.0735
+    fan_in:     30
+    delay:      2.0
+    delay_delta: 0.2
+    weight:     0.13
+    type:       exc
+
+  STN->GPeTI:
+    # connectivity: 0.0735
+    fan_in:     30
+    delay:      2.0
+    delay_delta: 0.2
+    weight:     0.42
+    type:       exc
+
+  STN->SNR:
+    # connectivity: 0.0773
+    fan_in:     30
+    delay:      4.5
+    delay_delta: 0.5
+    weight:     0.91
+    type:       exc
+
+# Note: devices must be in the pop_population_description format
+devices:
+  pop_D1_spikesource:
+    type: poisson_spike_source
+    weight: 0.45
+    rate: 1120 
+  pop_D2_spikesource:
+    type: poisson_spike_source
+    weight: 0.45
+    rate: 973 
+  pop_STN_spikesource:
+    type: poisson_spike_source
+    weight: 0.25
+    rate: 500
+  pop_GPeTA_spikesource:
+    type: poisson_spike_source
+    weight: 0.15
+    rate: 170
+  pop_GPeTI_spikesource:
+    type: poisson_spike_source
+    weight: 0.25
+    rate: 1530
+  pop_FSN_spikesource:
+    type: poisson_spike_source
+    weight: 0.5
+    rate: 944.4
+  pop_SNR_spikesource:
+    type: poisson_spike_source
+    weight: 0.55
+    rate: 6000
+    
