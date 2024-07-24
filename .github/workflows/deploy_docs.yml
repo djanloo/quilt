@@ -6,6 +6,9 @@ on:
       - '*'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build_docs:
     runs-on: ubuntu-latest
@@ -27,7 +30,6 @@ jobs:
     - name: Install docs requirements
       run: |
         sudo apt install doxygen graphviz
-        pip install .[docs]
 
     - name: Build with meson
       run: |
