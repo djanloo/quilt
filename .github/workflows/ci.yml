@@ -13,7 +13,7 @@ permissions:
   contents: write
 
 jobs:
-  build_test_docs:
+  build_and_test:
     runs-on: ubuntu-latest
 
     steps:
@@ -34,30 +34,8 @@ jobs:
       run: |
         pip install --upgrade pip
         echo "PATH is $PATH"
-        pip install .
+        pip install .[test]
 
     - name: Run tests
       run: | 
-        pip install .[test]
         pytest tests
-
-    - name: Install docs requirements
-      run: |
-        pip install .[docs]
-        sudo apt install doxygen graphviz
-    - name: Build the docs
-      run: |
-        cd docs
-        mkdir doxyoutput
-        doxygen
-        make html
-        cd ..
-    # deployment taken from https://coderefinery.github.io/documentation/gh_workflow/
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
-      with:
-        publish_branch: gh-pages
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./docs/_build/html
-        force_orphan: true
