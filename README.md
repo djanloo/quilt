@@ -15,13 +15,12 @@ A virtual environment is highly recommended.
 
 ### dev installation
 Be sure to have your virtual environment set.
-For a faster build&install pipeline use `meson`:
-- `pip install meson`
+For a faster build&install pipeline use the makefile:
+- `pip install .[dev]`
 - `make`
 
 This builds the code and installs it in the virtual environment.
 
-This places the 
 ## Tests and optimization
 The `tests` folder contains mainly tests for the Cython/Python interface.
 
