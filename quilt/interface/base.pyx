@@ -107,11 +107,11 @@ cdef class Projection:
 
     @property
     def weights(self):
-        return self.weights
+        return np.array(self.weights)
     
     @property
     def delays(self):
-        return self.delays
+        return np.array(self.delays)
 
     @property
     def cweights(self):
