@@ -101,8 +101,9 @@ void Logger::log(LogLevel level, const string& message)
                 "%Y-%m-%d %H:%M:%S", timeinfo); 
 
     std::ostringstream logEntry; 
-    logEntry << "[" << timestamp << "] "<< "- PID " << std::this_thread::get_id() << " - "
-                << levelToString(level) << ": " << message; 
+    logEntry << "[" << timestamp << "] " 
+            //  << "- PID " << std::this_thread::get_id() << " - "
+             << levelToString(level) << ": " << message; 
 
     // Output to console 
     cout << logEntry.str() << endl; 
