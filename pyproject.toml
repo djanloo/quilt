@@ -20,14 +20,7 @@ dependencies = [
     "matplotlib==3.8.2",
     "rich==13.7.0",
     "PyYAML==6.0.1",
-    "scipy>=1.7",
-
-    ipywidgets,
-    pyvista,
-    trame,
-    vtk,
-    trame-vtk,
-    trame-vuetify,
+    "scipy>=1.7"
 ]
 
 [project.optional-dependencies]
@@ -50,6 +43,15 @@ dev = [
     "meson-python", 
     "cython",
     "bumpver",
+]
+
+view = [
+    "ipywidgets",
+    "pyvista",
+    "trame",
+    "vtk",
+    "trame-vtk",
+    "trame-vuetify",
 ]
 
 [bumpver]
