@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import networkx as nx
+import zipfile
+
+import pyvista as pv
 
 def animate_spiking(spiking_network):
 
@@ -71,3 +74,34 @@ def plot_graph(network):
             connectionstyle="arc3,rad=0.1",
             width=linewidths
             )
+
+
+def plot_neural_field(regional_attribute, surface_zipfile=None, region_mapping=None):
+
+    regions = list(regional_attribute.keys())
+
+    with zipfile.ZipFile(surface_zipfile, 'r') as zip_ref:
+            vertices = np.loadtxt(zip_ref.open('vertices.txt'))
+            triangles = np.loadtxt(zip_ref.open('triangles.txt')).astype(int)
+
+    mapping = np.loadtxt(region_mapping).astype(int)
+
+    mesh = pv.PolyData()
+    mesh.points = vertices
+
+    faces = np.hstack([[3, *tr] for tr in triangles]).astype(int)
+    mesh.faces = faces
+
+    colors = list(regional_attribute).values()
+
+    color_faces = np.zeros(len(triangles))
+    for i in range(len(triangles)):
+        if mapping[triangles[i][0]] == mapping[triangles[i][1]] and mapping[triangles[i][1]] == mapping[triangles[i][2]]:
+            try:
+                color_faces[i] = colors[mapping[triangles[i][0]]]
+            except IndexError as e:
+                break
+                print(triangles[i][0], end=" ", flush=True)
+
+    plotter = pv.Plotter(notebook=True)
+    plotter.add_mesh(mesh, scalars=color_faces, cmap="plasma", show_edges=False)
