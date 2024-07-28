@@ -111,6 +111,7 @@ cdef extern from "../core/include/network.hpp":
 cdef extern from "../core/include/oscillators.hpp":
     cdef cppclass Oscillator:
         vector[vector[double]] get_history()
+        vector[double] input_history
         vector[double] get_eeg()
         
     cdef cppclass OscillatorNetwork:

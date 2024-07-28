@@ -33,7 +33,7 @@ public:
     unsigned int space_dimension = 2;   /**< Dimension of the oscillator's state space. Default is 2. */
 
     vector<Link*> incoming_osc;         /**< Vector of incoming links to the oscillator. */
-
+    vector<double> input_history;       /**< Vector of the history of inputs*/
     /**
      * @brief Constructor for the Oscillator class.
      * @param params Parameter map for the oscillator.
@@ -159,6 +159,7 @@ class test_oscillator : public Oscillator{
 class jansen_rit_oscillator : public Oscillator{
     public:
         float ke, ki, He, Hi, v0, C, s, rmax;
+        float U;
         jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
         double sigm(double v);
 };

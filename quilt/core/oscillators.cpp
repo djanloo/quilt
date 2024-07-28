@@ -393,20 +393,21 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
     v0 = params->get("v0", 6.0);
     C = params->get("C", 135.0);
     s = params->get("s", 0.56);
+    U = params->get("U", 0.13);
 
     // The system of ODEs implementing the evolution equation 
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
     {
-        // stringstream ss;
-        // ss << "In evolution: placing result of evolution at " << &dxdt;
-        // get_global_logger().log(WARNING, ss.str());
 
         double external_currents = 0;
         for (auto input : incoming_osc)
         {
             external_currents += input->get(0, t);
         }
-        double external_inputs = 0.13 + external_currents + 0.19*static_cast<double>(rand())/RAND_MAX;
+        double external_inputs = U + external_currents;
+
+        // This is mostly a test
+        input_history.push_back(external_inputs);
 
         dxdt[0] = x[3];
         dxdt[1] = x[4];
@@ -416,18 +417,6 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
         dxdt[4] = He*ke*( external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] -  ke*ke*x[1];
         dxdt[5] = Hi*ki*0.25*C*sigm(0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
 
-        // ss.str(""); ss.clear();
-        // ss << "Computed derivative of JR oscillator:"<<endl;
-        // ss << "Current state:" << endl;
-        // for (int i=0; i< space_dimension; i++){
-        //     ss << x[i] << " ";
-        // }
-
-        // ss << "Computed derivative:" << endl;
-        // for (int i=0; i< space_dimension; i++){
-        //     ss << dxdt[i] << " ";
-        // }
-        // get_global_logger().log(WARNING, ss.str());
     };
 
     // Sets the variable of interest for the EEG
