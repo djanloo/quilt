@@ -215,8 +215,6 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
                 // Takes trace of maximum delay
                 if (projT2O->delays[i][j] > oscnet->max_delay) oscnet->max_delay = projT2O->delays[i][j];
 
-            }else{
-                // cout << "\t\tweigth is zero"<<endl;
             }
         }
     }
@@ -237,8 +235,6 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
                 // Takes trace of maximum delay
                 if (projO2T->delays[i][j] > oscnet->max_delay) oscnet->max_delay = projO2T->delays[i][j];
 
-            }else{
-                // cout << "\t\tweigth is zero"<<endl;
             }
         }
     }
@@ -250,41 +246,6 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
 void MultiscaleNetwork::add_transducer(Population * population, ParaMap * params){
     transducers.push_back(make_shared<Transducer>(population, params, this));
 }
-
-// void MultiscaleNetwork::build_connections(Projection * projection){
-//     // First does a quick check that no intra-scale connections are given
-//     // For convention lets say that a multiscale projection matrix is given by
-//     //  an (N+M)x(N+M) matrix in which the first N indexes are related to 
-//     // the spiking part and the last M indexes are relate to the oscillator part
-//     for (unsigned int i = 0; i < n_populations; i++){
-//         for (unsigned int j = 0; j < n_populations; j++){
-//             if (projection->weights[i][j] != 0.0 ){
-//                 throw runtime_error("Connections of a multiscale network must not have intra-scale weights");
-//             }
-//         }
-//     }
-//     for (unsigned int i = n_populations; i < n_populations + n_oscillators; i++){
-//         for (unsigned int j = n_populations + n_oscillators; j < n_populations; j++){
-//             if (projection->weights[i][j] != 0.0 ){
-//                 throw runtime_error("Connections of a multiscale network must not have intra-scale weights");
-//             }
-//         }
-//     }
-
-//     // Now creates the transducers
-//     for (unsigned int i = n_populations; i < n_populations; i++){
-//         for (unsigned int j = n_populations + n_oscillators; j < n_populations; j++){
-//             if ( (projection->weights[i][j] != 0.0 ) | (projection->weights[j][i] != 0.0 )){
-//                 // If there is a nonzero element between i-j or j-i the two dynamical objects communicate
-//                 transducers.emplace_back(spikenet->populations[i]);
-//             }
-//             if ( projection->weights[i][j] != 0.0){
-
-//             }
-//         }
-//     }
-
-// }
 
 void MultiscaleNetwork::run(double time, int verbosity){
     if (!timescales_initialized){
@@ -334,7 +295,7 @@ double T2JRLink::get(int axis, double now){
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
-    double result = weight * std::static_pointer_cast<Transducer>(source)->get_past(axis, now - delay); //axis is useless
+    double result = weight * 1e-3 * std::static_pointer_cast<Transducer>(source)->get_past(axis, now - delay); //axis is useless
     return result;
 }
 
