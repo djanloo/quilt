@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.signal import welch, butter, sosfiltfilt
+from scipy.integrate import simpson
 from scipy import stats
 
 def bin_spikes(spikes, points_per_bin = 10):
@@ -85,3 +86,41 @@ def bandpass(data, edges, sample_rate, poles = 5):
 #     # print(f"F resolution { f[1] - f[0] :.2f} Hz")
 #     norm = simpson(PSD, x=f)
 #     return f, PSD
+
+
+def spectral_properties(signal, sampling_frequency=1e3):
+    T = len(signal)
+    f, PSD = welch(signal, 
+                   sampling_frequency, 
+                   nperseg = T/2,
+                   noverlap= T/4,
+                   nfft=None, 
+                   scaling='density', 
+                   window='hamming')
+
+    alpha_mask = (f>=8)&(f<12)
+    beta_mask = (f>=12)&(f<30)
+    low_gamma_mask = (f>=30)&(f<50)
+    high_gamma_mask = (f>=50)&(f<90)
+    
+    spectral_norm = simpson(PSD, x=f)
+    fmean = simpson(f*PSD/spectral_norm, x=f)
+
+    result = dict(
+        fmax = f[np.argmax(PSD)],
+        fmean=fmean,
+        
+        norm_alpha_power=simpson(PSD[alpha_mask], x=f[alpha_mask])/spectral_norm,
+        norm_beta_power=simpson(PSD[beta_mask], x=f[beta_mask])/spectral_norm,
+        norm_low_gamma_power=simpson(PSD[low_gamma_mask], x=f[low_gamma_mask])/spectral_norm,
+        norm_high_gamma_power=simpson(PSD[high_gamma_mask], x=f[high_gamma_mask])/spectral_norm,
+
+        alpha_power = simpson(PSD[alpha_mask], x=f[alpha_mask]),
+        beta_power = simpson(PSD[beta_mask], x=f[beta_mask]),
+        low_gamma_power = simpson(PSD[low_gamma_mask], x=f[low_gamma_mask]),
+        high_gamma_power = simpson(PSD[high_gamma_mask], x=f[high_gamma_mask]),
+
+        entropy=stats.entropy(PSD/spectral_norm),
+    )
+    
+    return result
