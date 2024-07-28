@@ -693,14 +693,106 @@ class MultiscaleNetwork:
     
     @property
     def n_transducers(self):
-        return len(self.transducers.keys())
-
-    def build_multiscale_projections(self, T2O=None, O2T=None):
-        if T2O is not None and O2T is not None:
-            self._interface.build_multiscale_projections(T2O, O2T)
-        else:
-            raise ValueError("Both projections (oscillators to transducers and vice versa) must be specified.")
+        return len(self.features['transducers'].keys())
     
+    @property
+    def n_oscillators(self):
+        return self.oscillator_network.n_oscillators
+    
+    @property
+    def n_populations(self):
+        return self.spiking_network.n_populations
+
+    @property
+    def transducer_histories(self):
+        return self._interface.transducer_histories
+    
+    def set_multiscale_projections(self, file=None, 
+                                    T2O_coupling=None, O2T_coupling=None, 
+                                    T2O=None, O2T=None):
+
+        if file is not None:
+            T2O, O2T = self._get_mproj_from_yaml(file, T2O_coupling=T2O_coupling, O2T_coupling=O2T_coupling)
+            self.features["O2T_projection"] = O2T
+            self.features["T2O_projection"] = T2O
+        elif T2O is not None and O2T is not None:
+            self.features["O2T_projection"] = O2T
+            self.features["T2O_projection"] = T2O
+        else:
+            raise ValueError("File or projection must be specified")
+    
+    def _get_mproj_from_yaml(self, file, T2O_coupling=None, O2T_coupling=None):
+        with open(file, 'r') as f:
+            proj_dict = yaml.safe_load(f)
+
+        # Checks that transducers match
+        for td in self.features['transducers']:
+            if td not in proj_dict.keys():
+                raise ValueError(f"Transducer {td} is missing from connectivity file")
+
+        # Check that all population exists
+        nonexistent_td = set()
+        nonexistent_regions = set()
+        for td in proj_dict:
+            if td not in self.features['transducers']:
+                nonexistent_td.add(td)
+
+            td_options = list(proj_dict[td].keys())
+            valid_options = ['outgoing', 'incoming']
+            unvalid_options = [opt for opt in td_options if opt not in valid_options]
+
+            if unvalid_options:
+                raise ValueError(f"Multiscale connectivity can only specify 'incoming' and 'outgoing' properties. Unvalid options: {unvalid_options}")
+            
+            for direction in ['incoming', 'outgoing']:
+                try:
+                    # Check that all region exist
+                    for region in proj_dict[td][direction]:
+                        if region not in self.oscillator_network.oscillators.keys():
+                            nonexistent_regions.add(region)
+                except KeyError:
+                    pass
+
+        if nonexistent_regions:
+            raise KeyError(f"Regions {nonexistent_regions} were specified by multiscale connectivity but are not present in oscillator network")
+        if nonexistent_td:
+            raise KeyError(f"Transducers {nonexistent_td} were specified by multiscale connectivity but are not present in transducers")
+    
+        # Builds the matrices: T2O
+        T2O_w = np.zeros((len(proj_dict), self.n_oscillators))
+        T2O_d = np.zeros((len(proj_dict), self.n_oscillators))
+
+        for td in proj_dict:
+            try:
+                reg_dict = proj_dict[td]['outgoing']
+                for reg in reg_dict:
+                    T2O_w[self.transducer_id(td), self.oscillator_network.reg_id(reg)] = reg_dict[reg]['weight']
+                    T2O_d[self.transducer_id(td), self.oscillator_network.reg_id(reg)] = reg_dict[reg]['delay']
+            except KeyError:
+                pass
+
+        O2T_w = np.zeros((self.n_oscillators, len(proj_dict)))
+        O2T_d = np.zeros((self.n_oscillators, len(proj_dict)))
+        
+        # Builds the matrices: O2T
+        for td in proj_dict:
+            try:
+                reg_dict = proj_dict[td]['incoming']
+                for reg in reg_dict:
+                    O2T_w[self.oscillator_network.reg_id(reg), self.transducer_id(td)] = reg_dict[reg]['weight']
+                    O2T_d[self.oscillator_network.reg_id(reg), self.transducer_id(td),] = reg_dict[reg]['delay']
+
+            except KeyError:
+                pass
+        
+        if T2O_coupling is not None:
+            T2O_w *= T2O_coupling
+        
+        if O2T_coupling is not None:
+            O2T_w *= O2T_coupling
+
+        return base.Projection(T2O_w.astype(np.float32), T2O_d.astype(np.float32)), base.Projection(O2T_w.astype(np.float32), O2T_d.astype(np.float32))
+            
     def set_evolution_contextes(self, dt_short=0.1, dt_long=1.0):
         self._interface.set_evolution_contextes(dt_short, dt_long)
 
