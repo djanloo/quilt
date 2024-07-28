@@ -1,0 +1,29 @@
+Building connections.. ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100% 0:00:04
+Running network consisting of 14622 neurons for 6000 timesteps
+--------------------------------------------------
+**************************************************
+Simulation took 8 s	(1.39433 ms/step)
+	Gathering time avg: 0 us/step
+	Inject time avg: 147.633 us/step
+Population evolution stats:
+	0:
+		evolution:	380.659 us/step	---	63 ns/step/neuron
+		spike emission:	34.1322 us/step	---	5 ns/step/neuron
+	1:
+		evolution:	373.055 us/step	---	62 ns/step/neuron
+		spike emission:	32.8957 us/step	---	5 ns/step/neuron
+	2:
+		evolution:	70.5442 us/step	---	167 ns/step/neuron
+		spike emission:	9.53733 us/step	---	22 ns/step/neuron
+	3:
+		evolution:	97.5183 us/step	---	125 ns/step/neuron
+		spike emission:	17.2243 us/step	---	22 ns/step/neuron
+	4:
+		evolution:	53.9407 us/step	---	207 ns/step/neuron
+		spike emission:	2.33867 us/step	---	8 ns/step/neuron
+	5:
+		evolution:	62.5945 us/step	---	153 ns/step/neuron
+		spike emission:	3.75417 us/step	---	9 ns/step/neuron
+	6:
+		evolution:	96.7672 us/step	---	128 ns/step/neuron
+		spike emission:	3.33033 us/step	---	4 ns/step/neuron
