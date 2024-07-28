@@ -211,9 +211,13 @@ class SpikingNetwork:
         # Adds back the monitors
         self._build_monitors()
         self.is_built = True
+
     @property
     def n_populations(self):
         return len(self.populations.keys())
+    
+    def pop_id(self, pop_name):
+        return {pop:i for pop, i in zip(self.populations, range(self.n_populations))}[pop_name]
 
 class ParametricSpikingNetwork(SpikingNetwork):
 
@@ -569,6 +573,9 @@ class OscillatorNetwork:
         net.features['connectivity']['delays'] = net.features['connectivity']['delays'].astype(np.float32)
 
         return net
+    
+    def reg_id(self, reg_name):
+        return {reg:i for reg, i in zip(self.oscillators, range(self.n_oscillators))}[reg_name]
 
 class EEGcap:
     def __init__(self, region_mapping_file, eeg_gain_file):
@@ -772,3 +779,6 @@ class MultiscaleNetwork:
 
         self._interface.build_multiscale_projections(self.features['T2O_projection'], self.features['O2T_projection'])
         self.is_built = True
+
+    def transducer_id(self, td_name):
+        return {td: i for i, td in enumerate(self.features['transducers'])}[td_name]

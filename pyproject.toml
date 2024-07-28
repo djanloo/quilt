@@ -1,5 +1,12 @@
 [build-system]
-requires = ["setuptools>=61.0", "meson==1.5.0", "ninja==1.11.1.1", "numpy==1.26.3", "meson-python", "cython"]
+requires = [
+    "setuptools>=61.0", 
+    "meson==1.5.0", 
+    "ninja==1.11.1.1", 
+    "numpy==1.26.3", 
+    "meson-python", 
+    "cython"]
+
 build-backend = "mesonpy"
 
 [project]
@@ -13,7 +20,6 @@ dependencies = [
     "matplotlib==3.8.2",
     "rich==13.7.0",
     "PyYAML==6.0.1",
-    "wurlitzer>=3.0",
     "scipy>=1.7"
 ]
 
@@ -30,8 +36,22 @@ docs = [
 ]
 
 dev = [
-    "setuptools>=61.0", "meson==1.5.0", "ninja==1.11.1.1", "numpy==1.26.3", "meson-python", "cython",
+    "setuptools>=61.0", 
+    "meson==1.5.0", 
+    "ninja==1.11.1.1", 
+    "numpy==1.26.3", 
+    "meson-python", 
+    "cython",
     "bumpver",
+]
+
+view = [
+    "ipywidgets",
+    "pyvista",
+    "trame",
+    "vtk",
+    "trame-vtk",
+    "trame-vuetify",
 ]
 
 [bumpver]
