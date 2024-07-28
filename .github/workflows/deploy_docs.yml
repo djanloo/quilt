@@ -1,0 +1,52 @@
+name: Deploy Docs
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build_docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Submodules
+      run: |
+        git submodule init
+        git submodule update
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libboost-all-dev
+
+    - name: Install docs requirements
+      run: |
+        pip install .[docs]
+        sudo apt install doxygen graphviz
+
+    - name: Build with meson
+      run: |
+        pip install --upgrade pip
+        pip install .[docs]
+
+    - name: Build the docs
+      run: |
+        cd docs
+        mkdir doxyoutput
+        doxygen
+        make html
+        cd ..
+
+    # deployment taken from https://coderefinery.github.io/documentation/gh_workflow/
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      with:
+        publish_branch: gh-pages
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs/_build/html
+        force_orphan: true

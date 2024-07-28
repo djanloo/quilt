@@ -282,52 +282,6 @@ class ParametricSpikingNetwork(SpikingNetwork):
             susceptibility_dict['parametric'].update(chi_dict['parametric'])
         
         return ParametricSpikingNetwork.from_dict(susceptibility_dict, network_file=network_file, neuron_file=neuron_file)
-        ######################3
-        net = super().from_yaml(network_file, neuron_file)
-
-        # Backups for parametrization
-        net.original_features = copy.deepcopy(net.features)
-        net.original_neuron_catalogue = copy.deepcopy(net.neuron_catalogue)
-
-        net.susceptibility_files = susceptibility_files
-        # In case is a single file
-        if isinstance(net.susceptibility_files, str):
-            net.susceptibility_files = [net.susceptibility_files]
-
-        # Loads parameters
-        net.susceptibility_dict = dict(parameters=dict(), parametric=dict())
-        for susceptibility_file in net.susceptibility_files:
-            if not os.path.exists(susceptibility_file):
-                raise FileNotFoundError(f"YAML file '{susceptibility_file}' not found")
-            
-            with open(susceptibility_file, "r") as f:
-                chi_dict = yaml.safe_load(f)            
-            try:
-                chi_dict['parameters']
-            except KeyError as e:
-                raise KeyError(f"Susceptibility file {susceptibility_file} must have a 'parameters' field")
-            
-            try:
-                chi_dict['parametric']
-            except KeyError as e:
-                raise KeyError(f"Susceptibility file {susceptibility_file} must have a 'parametric' field")
-
-            # Adds to parameters
-            net.susceptibility_dict['parameters'].update(chi_dict['parameters'])
-            net.susceptibility_dict['parametric'].update(chi_dict['parametric'])
-
-        net.params_value = dict()
-        net.params_range = dict()
-        net.params_shift = dict()
-
-        # Initializes all possible parameters to default (shift) value so the have no 'driving force'
-        for param_name in net.susceptibility_dict['parameters']:
-
-            net.params_value[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0)
-            net.params_shift[param_name] = net.susceptibility_dict['parameters'][param_name].get('shift',0)
-            net.params_range[param_name] = [net.susceptibility_dict['parameters'][param_name].get('min',0),
-                                            net.susceptibility_dict['parameters'][param_name].get('max',1)]
-        return net
 
     def set_parameters(self, **params):
         # Signals to the run method that this must be rebuilt
@@ -659,19 +613,16 @@ class MultiscaleNetwork:
 
     def __init__(self, 
                  spiking_network : SpikingNetwork,
-                 oscillator_network: OscillatorNetwork
+                 oscillator_network: OscillatorNetwork,
+                 transducers: str | list
                  ):
         self.spiking_network = spiking_network
         self.oscillator_network = oscillator_network
-        self.transducers = dict()
-    
-        self._interface = multi.MultiscaleNetwork(spiking_network._interface, oscillator_network._interface)
+        self.features = dict()
 
-        self.n_oscillators = oscillator_network.n_oscillators
-        self.n_populations = spiking_network.n_populations
-
-    def add_transducers(self, transducers: list|str):
+        # Adds transducers
         transducers_list = []
+        self.features['transducers'] = dict()
         if type(transducers) is str:
 
             if not os.path.exists(transducers):
@@ -684,12 +635,9 @@ class MultiscaleNetwork:
             transducers_list = transducers
 
         for td in transducers_list:
-            self.transducers[td['name']] = {key:val for key, val in td.items() if key != 'name'}
-            
-            population = self.spiking_network.populations[td['population']]
-            params = base.ParaMap(self.transducers[td['name']])
+            self.features['transducers'][td['name']] = {key:val for key, val in td.items() if key != 'name'}
 
-            self._interface.add_transducer(population, params)
+        self.is_built = False
     
     @property
     def n_transducers(self):
@@ -794,14 +742,33 @@ class MultiscaleNetwork:
         return base.Projection(T2O_w.astype(np.float32), T2O_d.astype(np.float32)), base.Projection(O2T_w.astype(np.float32), O2T_d.astype(np.float32))
             
     def set_evolution_contextes(self, dt_short=0.1, dt_long=1.0):
+        if not self.is_built:
+            raise RuntimeError("Network must be built before setting the evolution contextes")
         self._interface.set_evolution_contextes(dt_short, dt_long)
 
     def initialize(self, states):
+        if not self.is_built:
+            self.build()
         self._interface.initialize(states)
     
     def run(self, time):
+        if not self.is_built:
+            self.build()
+            raise RuntimeError("Network must be initialized first")
         self._interface.run(time=time)
 
-    @property
-    def transducer_histories(self):
-        return self._interface.transducer_histories
+    def build(self):
+        self.spiking_network.build()
+        self.oscillator_network.build()
+
+        # Builds C++ objects
+        self._interface = multi.MultiscaleNetwork(self.spiking_network._interface, self.oscillator_network._interface)
+
+        for td in self.features['transducers']:
+            population = self.spiking_network.populations[self.features['transducers'][td]['population']]
+            params = base.ParaMap(self.features['transducers'][td])
+
+            self._interface.add_transducer(population, params)
+
+        self._interface.build_multiscale_projections(self.features['T2O_projection'], self.features['O2T_projection'])
+        self.is_built = True

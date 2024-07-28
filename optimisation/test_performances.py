@@ -3,7 +3,7 @@ from quilt.interface.base import set_verbosity
 
 set_verbosity(2)
 
-sn = SpikingNetwork.from_yaml("bg_analysis/ortone_network_dispersive.yaml", "bg_analysis/ortone_neurons.yaml")
+sn = SpikingNetwork.from_yaml("bg_network_dispersive.yaml", "bg_neurons.yaml")
 
 sn.monitorize_spikes()
 sn.build()

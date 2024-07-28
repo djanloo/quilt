@@ -21,7 +21,7 @@ cdef extern from "../core/include/base.hpp":
         pass
 
     cdef cppclass ParaMap:
-        ParaMap()
+        ParaMap() except +
         void update(ParaMap * new_values) except +
 
         # The ridiculous trio
@@ -33,7 +33,7 @@ cdef extern from "../core/include/base.hpp":
         float get(string key) except +
 
         # Defaulted get: sets the value in the map if not found
-        float get(string key, float default_value)
+        float get(string key, float default_value) except +
 
     cdef cppclass Projection:
         int start_dimension, end_dimension

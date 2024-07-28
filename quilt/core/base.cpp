@@ -284,7 +284,7 @@ int EvolutionContext::index_of(double time)
     if (time < 0.0){
         stringstream ss;
         ss <<"Requested index of a negative time: " << time <<" ms.";
-        get_global_logger().log(WARNING, ss.str() + "Throwing an exception, will it be catched?" );
+        // get_global_logger().log(WARNING, ss.str() + "Throwing an exception, will it be catched?" );
         throw negative_time_exception(ss.str());
         }
 
