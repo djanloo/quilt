@@ -385,14 +385,14 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
     space_dimension = 6;
 
     // Parameters default from references
-    He = params->get("He", 3.25);
-    Hi = params->get("Hi", 22.0);
+    He = params->get("He", 3.25);   // mV
+    Hi = params->get("Hi", 22.0);   // mV
     ke = params->get("ke", 0.1);   // ms^(-1)
     ki = params->get("ki", 0.05);    // ms^(-1)
     rmax = params->get("rmax", 0.005); // ms^(-1)
-    v0 = params->get("v0", 6.0);
-    C = params->get("C", 135.0);
-    s = params->get("s", 0.56);
+    v0 = params->get("v0", 6.0);    // mV
+    C = params->get("C", 135.0); 
+    s = params->get("s", 0.56);     // mV^-1
     U = params->get("U", 0.13);
 
     // The system of ODEs implementing the evolution equation 
@@ -414,7 +414,7 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
         dxdt[2] = x[5];
 
         dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
-        dxdt[4] = He*ke*( external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] -  ke*ke*x[1];
+        dxdt[4] = He*ke*( external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
         dxdt[5] = Hi*ki*0.25*C*sigm(0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
 
     };
