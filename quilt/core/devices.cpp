@@ -177,6 +177,7 @@ InhomPoissonSpikeSource::InhomPoissonSpikeSource( Population * pop,
     // Sets the label for the performance manager
     perf_mgr = std::make_shared<PerformanceManager>("InhomPoissSS of pop " + to_string(pop->id.get_id()));
     perf_mgr->set_tasks({"injection"});
+    perf_mgr->set_scales({{"injection", pop->n_neurons}});
     PerformanceRegistrar::get_instance().add_manager(perf_mgr);
 }
 
@@ -223,6 +224,8 @@ using std::to_string;
 /**
  * Injects a partition of the target population. For multithreading.
 */
+// ThreadSafeFile test_outfile("inhom_record.txt");
+
 void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffer, 
                                                 double now, double dt, 
                                                 int start_id, int end_id, 
@@ -356,7 +359,8 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
 
                 // Adds a spike to the neuron's queue
                 pop->neurons[i]->incoming_spikes.emplace(this->weights[i], proposed_next_spike_time);
-                // outfile.write( to_string(i) +  " "  + to_string(proposed_next_spike_time)); // DEBUG
+                // test_outfile.write( to_string(i) +  " "  + to_string(proposed_next_spike_time));
+
                 generated_spikes++;
 
                 // Resets threshold and integration leftover
