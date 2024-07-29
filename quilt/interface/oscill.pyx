@@ -27,9 +27,15 @@ cdef class Oscillator:
         # Gets the object from the shared pointer
         cdef cinter.Oscillator * osc = self._osc.get()
         return np.array(osc.get_history())
-    
+
+    @property
+    def rate_history(self):
+        cdef cinter.Oscillator * osc = self._osc.get()
+        return np.array(osc.get_rate_history())
+
     @property
     def input_history(self):
+        # Gets the object from the shared pointer
         cdef cinter.Oscillator * osc = self._osc.get()
         return np.array(osc.input_history)
     

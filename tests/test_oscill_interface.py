@@ -64,6 +64,19 @@ def test_history():
     net.run(time=100)
     net.oscillators['lTCV'].history
 
+
+def test_rate_history():
+    global_coupling = 0.01
+    conduction_speed = 1.0
+    net = OscillatorNetwork.homogeneous_from_TVB('tests/connectivity_76.zip', 
+                                                {'oscillator_type':'jansen-rit'}, 
+                                                global_weight=global_coupling, 
+                                                conduction_speed=conduction_speed)
+    net.build()
+    net.initialize(np.zeros((net.n_oscillators, 6)), dt=1)
+    net.run(time=100)
+    net.oscillators['lTCV'].rate_history
+
 if __name__=="__main__":
-    test_run()
+    # test_rate_history()
     pass

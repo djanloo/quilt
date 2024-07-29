@@ -518,6 +518,7 @@ class OscillatorNetwork:
     def homogeneous_from_TVB(cls, connectivity_file, oscillator_parameters, global_weight=1.0, conduction_speed=1.0):
 
         net = cls()
+        net.oscillators = dict()
         net.features['oscillators'] = dict()
         net.features['connectivity'] = dict()
         net.features['centers'] = dict()
@@ -529,6 +530,7 @@ class OscillatorNetwork:
                 centres = zip_ref.read("centres.txt")
                 for line in centres.decode('utf-8').splitlines():
                     name, x, y, z = line.split()
+                    net.oscillators[name] = None # Adds them with None so they can be listed
                     net.features['oscillators'][name] = oscillator_parameters # Stores duplicates of the parameter for a-posteriori inhomogeneity
                     net.features['centers'][name] = np.array([float(v) for v in [x,y,z]])
             else:

@@ -513,6 +513,9 @@ void test_multiscale_base(){
     ParaMap * transd_paramap = new ParaMap();
     transd_paramap->add_float("initialization_rate", 0.0f);
     transd_paramap->add_float("generation_window", 12.0f);
+    transd_paramap->add_float("weight", 0.5f);
+    transd_paramap->add_float("weight_delta", 0.01f);
+
 
     shared_ptr <Transducer> transd (new Transducer(&spikepop, transd_paramap, &multi_net));
 
@@ -568,16 +571,19 @@ void test_multiscale_base(){
     }
 
     PerformanceRegistrar::get_instance().print_records();
+
+    cout << "Rate history:"<< endl;
+    osc_net.oscillators[0]->get_rate_history();
 }
 
 
 int main(){ 
-    test_spiking();
+    // test_spiking();
     // test_sparse();
     // test_poisson();
     // test_NCERK();
     // test_oscill();
     // test_inhom_poisson();
-    // test_multiscale_base();
+    test_multiscale_base();
 }
 

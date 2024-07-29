@@ -82,6 +82,8 @@ public:
             }
             return eeg_history;
         }
+    
+    virtual vector<double> get_rate_history(){throw runtime_error("Using virtual get_rate_history() of base Oscillator");};
 
     // Setter methods
     void set_evolution_context(EvolutionContext* evo);
@@ -162,6 +164,7 @@ class jansen_rit_oscillator : public Oscillator{
         float U;
         jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
         double sigm(double v);
+        vector<double> get_rate_history() override;
 };
 
 class leon_jansen_rit_oscillator : public Oscillator{
