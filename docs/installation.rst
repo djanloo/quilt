@@ -3,23 +3,20 @@ Installation
 
 Linux
 -----
-Requires boost at least v1.74 (default installation is in /usr/include)
+Requires boost at least v1.74:
+
+.. code-block:: bash
+   
+   sudo apt-install libboost-all-dev
+
+To install quilt run:
 
 .. code-block:: bash
    
    git clone https://github.com/djanloo/quilt.git
-   git submodule init
-   git submodule update
-   sudo apt-install libboost-all-dev
-   pip install -r requirements.txt
-   make
-
-The code will be built inplace by default and will not be installed globally. 
-To make the module accessible be sure to add the path of the root folder to your ``PYTHONPATH``:
-
-.. code-block:: bash
-   
-   export PYTHONPATH=path/to/quilt:$PYTHONPATH
+   cd quilt
+   git submodule init && git submodule update
+   pip install .
 
 Windows
 -------
@@ -33,12 +30,10 @@ MacOs
 TODO
 
 
-
-
-The core of quilt is written in C++. The ``main()`` function is contained in quilt/src_cpp/test_file.cpp. To compile it run
+The core of the simulator is written in C++. To produce an executable using the ``main()`` function that is contained in quilt/core/main.cpp, run:
 
 .. code-block:: bash
    
-   make quilt.exe
+   make exe
 
 
