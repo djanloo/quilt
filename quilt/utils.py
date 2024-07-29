@@ -124,3 +124,49 @@ def spectral_properties(signal, sampling_frequency=1e3):
     )
     
     return result
+
+
+def alpha_power(signal, sampling_frequency=1e3):
+    T = len(signal)
+    f, PSD = welch(signal, 
+                   sampling_frequency, 
+                   nperseg = T/2,
+                   noverlap= T/4,
+                   nfft=None, 
+                   scaling='density', 
+                   window='hamming')
+
+    alpha_mask = (f>=8)&(f<12)
+    alpha_power = simpson(PSD[alpha_mask], x=f[alpha_mask])
+
+    return alpha_power
+
+def beta_power(signal, sampling_frequency=1e3):
+    T = len(signal)
+    f, PSD = welch(signal, 
+                   sampling_frequency, 
+                   nperseg = T/2,
+                   noverlap= T/4,
+                   nfft=None, 
+                   scaling='density', 
+                   window='hamming')
+
+    beta_mask = (f>=12)&(f<30)
+    beta_power = simpson(PSD[beta_mask], x=f[beta_mask])
+
+    return beta_power
+
+def gamma_power(signal, sampling_frequency=1e3):
+    T = len(signal)
+    f, PSD = welch(signal, 
+                   sampling_frequency, 
+                   nperseg = T/2,
+                   noverlap= T/4,
+                   nfft=None, 
+                   scaling='density', 
+                   window='hamming')
+
+    gamma_mask = (f>=30)&(f<50)
+    gamma_power = simpson(PSD[gamma_mask], x=f[gamma_mask])
+
+    return gamma_power
