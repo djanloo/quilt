@@ -39,13 +39,10 @@ double JRJRLink::get(int axis, double now){
         get_global_logger().log(ERROR, "Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
         throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
     }
-    // cout << "Getting past from JRJR link" << endl;
-    // cout << "JRJR got "<<result<< endl;
     return result;
 }
 
 double LJRLJRLink::get(int axis, double now){
-    // cout << "Getting past from LJRLJR link" << endl;
     if (axis != 6){
         get_global_logger().log(ERROR, "Leon-Jansen-Rit model can only ask for axis 6 (differential activity)");
         throw runtime_error("Leon-Jansen-Rit model can only ask for axis 6 (differential activity)");
