@@ -47,7 +47,6 @@ jobs:
     # deployment taken from https://coderefinery.github.io/documentation/gh_workflow/
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
-      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
       with:
         publish_branch: gh-pages
         github_token: ${{ secrets.GITHUB_TOKEN }}
