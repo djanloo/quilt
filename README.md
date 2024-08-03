@@ -1,8 +1,10 @@
+<h2 align="center">
+<img src="https://github.com/djanloo/quilt/blob/main/assets/logo.svg" width="150">
+</h2><br>
+
+
 [![CI](https://github.com/djanloo/quilt/actions/workflows/ci.yml/badge.svg)](https://github.com/djanloo/quilt/actions/workflows/ci.yml)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/djanloo/quilt/deploy_docs.yml?label=docs)](https://djanloo.github.io/quilt/)
-
-![Page 5](https://github.com/user-attachments/assets/7a28ca95-516f-415e-97c0-6329665504e7)
-
 
 A multiscale neural simulator.
 
