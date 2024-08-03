@@ -11,7 +11,9 @@ import os
 project = 'quilt'
 copyright = '2024, djanloo'
 author = 'djanloo'
-release = '0.0.1'
+
+# Do not change manually, use bumpver update
+release = '0.3.4'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

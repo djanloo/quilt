@@ -1,3 +1,25 @@
+/**
+ * @file base.hpp
+ * @author Gianluca Becuzzi (becuzzigianluca@gmail.com)
+ * @brief Base objects for the quilt multiscale simulator.
+ * 
+ * @copyright Copyright (c) 2024 Gianluca Becuzzi
+ * 
+ * 
+ * This file contains the declaration of:
+ *  - code utils
+ *      - exceptions
+ *      - thread safe files
+ *      - logger
+ *      - performance manager
+ *      - progress bar
+ *  - simulation base objects:
+ *      - evolution contextes
+ *      - hierarchical ids
+ *      - continuous Runge-Kutta integrator
+ *      - matrix projections
+ * 
+ */
 #pragma once
 #include "../pcg/include/pcg_random.hpp"
 
