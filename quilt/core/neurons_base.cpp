@@ -10,33 +10,6 @@
 
 #include <boost/numeric/odeint.hpp>
 
-
-// namespace utilities{
-
-//     void nan_check(double value, const std::string& str){
-//         if (std::isnan(value)){
-//             throw std::runtime_error(str);
-//         }
-//     }
-
-//     // This one costs a lot of time
-//     void nan_check_vect(const std::vector<double>& vect, const std::string& str){
-//         std::vector<bool> are_nan;
-//         bool somebody_is_nan = false;
-
-//         for (auto value : vect){
-//             somebody_is_nan = somebody_is_nan || std::isnan(value) || std::isinf(value);
-//             are_nan.push_back( std::isnan(value) || std::isinf(value));
-//         }
-//         if (somebody_is_nan){
-//             std::cerr << "vector is nan: [" ;
-//             for (auto val : are_nan) {std::cerr << val <<" ";} std::cerr << " ]" << std::endl;
-            
-//             throw std::runtime_error(str);
-//         }
-//     }
-// }
-
 // Synapse::min_delay is used to check if the timestep is small enough
 // Sets the minimim delay to infinity, take smaller values when building the network
 float Synapse::min_delay = std::numeric_limits<float>::infinity();
@@ -64,7 +37,7 @@ void Neuron::connect(Neuron * neuron, double weight, double delay){
 
 
 void Neuron::handle_incoming_spikes(){
-    // get_global_logger().log(WARNING, "Handling spikes");
+
     while (!(incoming_spikes.empty())){ // This loop will be broken later
 
         auto spike = incoming_spikes.top();
@@ -108,9 +81,7 @@ void Neuron::handle_incoming_spikes(){
 
 
 void Neuron::evolve(){
-    // get_global_logger().log(WARNING, "Evolving neuron");
     if (spike_flag){
-        // cout << "Spike flag was True at t: "<< evo->now <<endl;
         on_spike();
         spike_flag = false;
     }
@@ -122,28 +93,6 @@ void Neuron::evolve(){
                                 };
 
     stepper.do_step(lambda, this->state, evo->now, evo->dt);
-
-    // Process incoming spikes from t and t+dt
-    // Note: it is conceptually wrong to first evaluate incoming spikes and then do the step
-    // because EXACTLY at time t the spikes are not arrived yet
-    // The other way of doing this is to evaluate at the beginning of the evolution the spikes
-    // that arrived from t-dt and t
-    // handle_incoming_spikes();
-
-    // THIS CHECKS NANS
-    // auto before_step = state;
-
-    // Checks for NaNs after the step
-    // try{
-    //     stepper.do_step(lambda, this->state, evo->now, evo->dt);
-    //     utilities::nan_check_vect(this->state, "NaN in neuron state");
-
-    // }catch (const std::runtime_error &e){
-    //     std::cerr << "State before step: ";
-    //     for (auto val : before_step){ std::cerr << val << " ";}
-    //     std::cerr << std::endl;
-    //     throw e;
-    // }
 }
 
 void Neuron::emit_spike(){
@@ -154,8 +103,7 @@ void Neuron::emit_spike(){
     state[0] = population->neuroparam->V_peak;
 
     spike_flag = true;
-    // This is done at the beginning of the next evolution
-    // this-> on_spike(evo);
+
 }
 
 void Neuron::on_spike(){
@@ -194,6 +142,7 @@ NeuroParam::NeuroParam(ParaMap & paramap) : NeuroParam(){
 
 }
 
+// 
 void NeuroParam::add(const std::string & key, float value){paramap.add(key, value);}
 
 // Initialises the Neurofactory instance to null pointer

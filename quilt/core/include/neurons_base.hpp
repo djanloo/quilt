@@ -8,12 +8,8 @@
 #include <limits>
 #include <string>
 
-// #define MAX_GSYN_EXC 15.0 //!< Not in use: max value of excitatory synaptic conductance
-// #define MAX_GSYN_INH 15.0 //!< Not in use: max value of inhibitory synaptic conductance
-
 #define MAX_POTENTIAL_SLOPE 50/0.1      //!< Cutoff value of potential slope [mV/ms]
 #define OSCILLATORY_AMPLITUDE_MIN  0.01 //!< Minimal value for an oscillatory input to be considered valid [pA]
-// #define MAX_SPIKE_QUEUE_LENGTH 10000 //!< Not in use: spike queue lenght before warning
 
 typedef std::vector<double> dynamical_state;
 
