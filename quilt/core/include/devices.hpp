@@ -1,3 +1,19 @@
+/**
+ * @file devices.hpp
+ * @author Gianluca Becuzzi  (becuzzigianluca@gmail.com)
+ * @brief Devices for the quilt multiscale simulator.
+ * 
+ * @copyright Copyright (c) 2024 Gianluca Becuzzi
+ * 
+ * 
+ * This file contains dthe declarations of:
+ * - monitors:
+ *      - PopulationSpikeMonitor
+ *      - PopulationRateMonitor
+ * - injectors:
+ *      - PoissonSpikeSource
+ *      - InhomPoissonSpikeSource
+ */
 #pragma once
 
 #include "base.hpp"

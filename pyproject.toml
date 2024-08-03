@@ -76,3 +76,7 @@ push = true
 "meson.build" = [
     "^version: '{version}'$",
 ]
+
+"docs/conf.py" = [
+    "^release = '{version}'$"
+]
