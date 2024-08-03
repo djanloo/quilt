@@ -204,4 +204,57 @@ class NeuroParam{
 };
 
 
+class NeuroFactory{
+    
+    public:
+        typedef std::function<Neuron* ( Population *)> neuron_constructor;
+        typedef std::function<NeuroParam* (ParaMap)> neuroparam_constructor;
 
+        void add_neuron(string neuron_model, neuron_constructor nc, neuroparam_constructor npc){
+            neuro_constructors_[neuron_model] = nc;
+            neuroparam_constructors_[neuron_model] = npc;
+        }
+        NeuroParam * get_neuroparam(string neuron_model, ParaMap & params){\
+            NeuroParam * neuroparam;
+            try{
+                neuroparam = neuroparam_constructors_[neuron_model](params);
+            }catch (std::out_of_range & e){
+                throw std::invalid_argument("Neuron model <" + neuron_model + "> does not exixt.");
+            }
+            return neuroparam;
+        }
+        Neuron * get_neuron(string neuron_model, Population * pop){
+            Neuron * neuron;
+            try{
+                neuron = neuro_constructors_[neuron_model](pop);
+            }catch (std::out_of_range & e){
+                throw std::invalid_argument("Neuron model <" + neuron_model + "> does not exixt.");
+            }
+            return neuron;
+        }
+
+        static NeuroFactory * get_neuro_factory(){
+            if (instance == nullptr){
+                instance = new NeuroFactory();
+            }
+        return instance;
+        }
+
+        template <class N>
+        static Neuron * neuron_maker(Population * pop){
+            return new N(pop);
+        }
+
+        template <class NP>
+        static NeuroParam * neuroparam_maker(ParaMap params){
+            return new NP(params);
+        }
+
+    private:
+        static NeuroFactory * instance;
+        NeuroFactory(){}
+
+        map<string, neuron_constructor> neuro_constructors_;
+        map<string, neuroparam_constructor> neuroparam_constructors_;
+        
+};

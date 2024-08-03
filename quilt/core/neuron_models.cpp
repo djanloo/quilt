@@ -118,7 +118,6 @@ void aeif_neuron::on_spike(){
     aeif_param * p = static_cast<aeif_param*>(population->neuroparam);
     state[0]  = p->V_reset;
     state[3] += p->ada_b;
-    // cout << "AEIF neuron spiked at t: "<<evo->now<<endl;
 }
 
 // *********************************** AQIF2 **************************************************//
@@ -150,5 +149,15 @@ void aqif2_neuron::on_spike(){
     state[3] += p->ada_b;
 }
 
-
-NeuroFactory * NeuroFactory::instance = nullptr;
+/**************************** SIOF workaround *******************/
+/**
+ * Registers the Neuron models in the Neurofactory
+ */
+struct NeuronModelRegistrar {
+    NeuronModelRegistrar() {
+        NeuroFactory::get_neuro_factory()->add_neuron("aeif", NeuroFactory::neuron_maker<aeif_neuron>, NeuroFactory::neuroparam_maker<aeif_param>);
+        NeuroFactory::get_neuro_factory()->add_neuron("aqif", NeuroFactory::neuron_maker<aqif_neuron>, NeuroFactory::neuroparam_maker<aqif_param>);
+        NeuroFactory::get_neuro_factory()->add_neuron("aqif2", NeuroFactory::neuron_maker<aqif2_neuron>, NeuroFactory::neuroparam_maker<aqif2_param>);
+        NeuroFactory::get_neuro_factory()->add_neuron("izhikevich", NeuroFactory::neuron_maker<izhikevich_neuron>, NeuroFactory::neuroparam_maker<izhikevich_param>);
+    }
+} neuron_model_registrar;
