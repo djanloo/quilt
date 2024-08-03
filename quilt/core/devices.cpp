@@ -245,32 +245,18 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
 
     int generated_spikes = 0;
     
-    // vector<double> produced_spikes; //DEBUG
-
     // Gets an independent random number generator
     RNG * thread_rng = rng_disp->get_rng();
 
-    // inhomlog.log(DEBUG, "Starting generation " + to_string(generation));\
 
     for (int i = start_id; i < end_id; i++)
     {
-        // produced_spikes = vector<double>(0); //DEBUG
-        // stringstream ss;
-
-        // ss << "Starting neuron " << i <<". Current state:"<< endl;
-        // ss << "last_integration_extrema: " << integration_start[i] << endl;
-        // ss << "integration_leftovers: "<< integration_leftovers[i] << endl;
-        // ss << "integration threshold: "<< integration_thresholds[i] << endl; 
 
         last_spike_time_index = static_cast<int>(integration_start[i]/dt);
         // inhomlog.log(DEBUG, ss.str());
 
         // If the neuron has a spike OVER this generation window, it must be skipped
         if (integration_start[i] > currently_generated_time + generation_window_length){
-            // inhomlog.log(DEBUG, "Neuron " + to_string(i) + " had a spike over the generation window");
-            // inhomlog.log(DEBUG, "\tcurrently_generated_time:" + std::to_string(currently_generated_time));
-            // inhomlog.log(DEBUG, "\tgeneration window:" + std::to_string(generation_window_length));
-            // inhomlog.log(DEBUG, "\tlast spike time:" + std::to_string(integration_start[i]));
 
             // Skip the neuron, the appropriate generation will take care of him
             continue;
@@ -278,9 +264,6 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
         
         do{
             timesteps_done = 0;
-            // stringstream ss;
-            // ss << "neuron " << i <<  ": integration of r(t) started at t = " << (last_spike_time_index + timestep_done)*dt;
-            // inhomlog.log(DEBUG, ss.str());
             
             // This loop goes on until the integral of the rate overcomes the exp-distributed random variable y
             // OR if the loop reaches the end of the buffer.
@@ -311,14 +294,6 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
                         << "rate = " << avg_rate_in_timestep << " at seek_index="<< seek_buffer_index; 
                     get_global_logger().log(ERROR, ss.str());
                 }
-                // Does a check on the values of the average instantaneous rate
-                // A typical interval of rates should be [10, 2000] Hz
-                // if ( (avg_rate_in_timestep < 10)|(avg_rate_in_timestep > 2000) ){
-                //     std::stringstream msg;
-                //     msg << "Unusual value for instanteneous rate in InhomogeneousPoissonSpikeSource::inject - "
-                //         << "rate = " + std::to_string(avg_rate_in_timestep)  + "Hz";
-                //     get_global_logger().log(WARNING, msg.str());
-                // }
 
                 // Conversion to ms^(-1)
                 avg_rate_in_timestep /= 1e3;
@@ -347,7 +322,7 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
                     msg += "neuron: " + to_string(i) + "\n";
                     msg += "last spike produced: " + to_string(integration_start[i]) + "\n";
                     msg += "proposed spike: " + to_string(proposed_next_spike_time) + "\n";
-                    // inhomlog.log(ERROR, msg);
+
                     throw runtime_error(msg);
                 }
                 
@@ -367,37 +342,23 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
                 integration_thresholds[i] = -std::log(thread_rng->get_uniform());
                 integration_leftovers[i] = 0.0;
 
-                // stringstream ss;
-                // ss << "Emitted a spike at t = " << proposed_next_spike_time;
-                // inhomlog.log(DEBUG, ss.str());
-
             }else{
 
                 // Tells the next generation that for the i-th neuron the integration
                 // was already carried out up to the end of the window
                 integration_start[i] = currently_generated_time + generation_window_length;
 
-                // stringstream ss;
-                // ss << "Window ended without spike emission. Setting integration extrema for neuron " << i << " as " << integration_start[i] 
-                //     << " (currently generated time: " << currently_generated_time << " and window: "<< generation_window_length << " )";
-                // inhomlog.log(DEBUG, ss.str());
             }
 
 
         } while (integration_start[i] < currently_generated_time + generation_window_length);
 
-        // ss.str("");ss.clear();
-
-        // ss << "Ended neuron " << i <<". Final state:"<< endl;
-        // ss << "last_integration_extrema: " << integration_start[i] << endl;
-        // ss << "integration_leftovers: "<< integration_leftovers[i] << endl;
-        // ss << "integration threshold: "<< integration_thresholds[i] << endl; 
-        // inhomlog.log(DEBUG, ss.str());
     } 
 
     // Frees the RNG dispatcher
     rng_disp->free();
 }
+
 /**
  * Creates (easy) population partitions and start threads to generate spikes using `InhomogeneousPoissonSPikeSource::_inject_partition()`
 */
@@ -416,11 +377,6 @@ void InhomPoissonSpikeSource::inject(EvolutionContext * evo){
         stringstream ss;
         ss <<  "InhomPoiss is injecting - now is " << evo->now << " with dt "<<evo->dt; 
         get_global_logger().log(DEBUG,ss.str());
-
-        // inhomlog.log(DEBUG, "Before this generation, " + std::to_string(nullcalls) + " null calls were performed");
-        // inhomlog.log(DEBUG, "\tnow:" + std::to_string(evo->now));
-        // inhomlog.log(DEBUG, "\tcurrently_generated_time:" + std::to_string(currently_generated_time));
-        // inhomlog.log(DEBUG, "Starting generation " + std::to_string(generation) + " - [ " + to_string(currently_generated_time) + " -> " + to_string(currently_generated_time + generation_window_length) + "]");
     }
 
     // Evaluates the rate function and stores it in the buffer

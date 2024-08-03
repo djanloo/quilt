@@ -1,6 +1,5 @@
 #pragma once
-#include "base.hpp"
-#include "links.hpp" // Needed?
+#include "links.hpp"
 #include "oscillators.hpp"
 
 #include <memory>
@@ -11,7 +10,6 @@ using std::shared_ptr;
 
 // Forward declarations
 class Population;
-class PoissonSpikeSource;
 class InhomPoissonSpikeSource;
 class PopulationSpikeMonitor;
 class SpikingNetwork;
