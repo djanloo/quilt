@@ -6,7 +6,7 @@
 [![CI](https://github.com/djanloo/quilt/actions/workflows/ci.yml/badge.svg)](https://github.com/djanloo/quilt/actions/workflows/ci.yml)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/djanloo/quilt/deploy_docs.yml?label=docs)](https://djanloo.github.io/quilt/)
 
-A multiscale neural simulator.
+Quick Unified Integration of muLTiscale neural networks
 
 https://github.com/user-attachments/assets/bc45ee0b-0610-40a4-8ea2-2879ace5e6c7
 
