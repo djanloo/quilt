@@ -430,7 +430,7 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
 
 vector<double> jansen_rit_oscillator::get_rate_history(){
     vector<double> rate(memory_integrator.state_history.size(), 0);
-    for (unsigned int i; i < rate.size(); i++){
+    for (unsigned int i = 0; i < rate.size(); i++){
         rate[i] = sigm(memory_integrator.state_history[i][0]);
     }
     return rate;

@@ -140,7 +140,7 @@ PerformanceManager::~PerformanceManager(){
 }
 
 void PerformanceManager::set_tasks(vector<string> task_names){
-    for (int i = 0; i < task_names.size(); i++ ){
+    for (unsigned int i = 0; i < task_names.size(); i++ ){
         task_duration[task_names[i]] = std::chrono::nanoseconds::zero();
         task_count[task_names[i]] = 0;
         task_scale[task_names[i]] = 1;

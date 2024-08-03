@@ -341,8 +341,8 @@ Population::~Population()
 }
 
 SpikingNetwork::SpikingNetwork()
-    :   evocontext_initialized(false),
-        id()
+    :   id(),
+        evocontext_initialized(false)
 {
     perf_mgr = std::make_shared<PerformanceManager>("spiking network");
     perf_mgr->set_tasks({"simulation", "monitorize", "inject"});
