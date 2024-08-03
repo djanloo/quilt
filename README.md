@@ -8,6 +8,8 @@
 
 A multiscale neural simulator.
 
+https://github.com/user-attachments/assets/bc45ee0b-0610-40a4-8ea2-2879ace5e6c7
+
 ## Installation
 A virtual environment is highly recommended. 
 - on `Linux`:
