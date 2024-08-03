@@ -385,15 +385,15 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
     space_dimension = 6;
 
     // Parameters default from references
-    He = params->get("He", 3.25);   // mV
-    Hi = params->get("Hi", 22.0);   // mV
-    ke = params->get("ke", 0.1);   // ms^(-1)
-    ki = params->get("ki", 0.05);    // ms^(-1)
-    rmax = params->get("rmax", 0.005); // ms^(-1)
-    v0 = params->get("v0", 6.0);    // mV
+    He = params->get("He", 3.25);       // mV
+    Hi = params->get("Hi", 22.0);       // mV
+    ke = params->get("ke", 0.1);        // ms^(-1)
+    ki = params->get("ki", 0.05);       // ms^(-1)
+    rmax = params->get("rmax", 0.005);  // ms^(-1)
+    v0 = params->get("v0", 6.0);        // mV
     C = params->get("C", 135.0); 
-    s = params->get("s", 0.56);     // mV^-1
-    U = params->get("U", 0.13);
+    s = params->get("s", 0.56);         // mV^-1
+    U = params->get("U", 0.13);         // ms^(-1)
 
     // The system of ODEs implementing the evolution equation 
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)

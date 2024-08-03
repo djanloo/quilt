@@ -158,10 +158,25 @@ class test_oscillator : public Oscillator{
         test_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
 };
 
+
+/** 
+ * @brief The Jansen-Rit oscillator
+ * 
+ * 
+ * From Jansen, B.H., Rit, V.G. Electroencephalogram and visual evoked potential generation in a mathematical model of coupled cortical columns. Biol. Cybern. 73, 357–366 (1995). https://doi.org/10.1007/BF00199471
+ * 
+ */
 class jansen_rit_oscillator : public Oscillator{
     public:
-        float ke, ki, He, Hi, v0, C, s, rmax;
-        float U;
+        float ke;   //!< Rate constant for postsynaptic population response to excitatory input [ms^(-1)]. Default 0.1.
+        float ki;   //!< Rate constant for postsynaptic population response to inhibitory input [ms^(-1)]. Default 0.05.
+        float He;   //!< Maximum amplitude of the excitatory postsynaptic population response [mV]. Default 3.25.
+        float Hi;   //!< Maximum amplitude of the inhibitory postsynaptic population response [mV]. Default 22.0.
+        float C;    //!< Connectivity constant: pyramidal to spiny stellate. Default 135.
+        float v0;   //!< Population mean ﬁring threshold potential [mV]. Default 6.0.
+        float s;    //!< Firing rate sigmoid function voltage sensitivity parameter [mV]. Default 0.56.
+        float rmax; //!< Maximum population mean ﬁring rate [ms^(-1)]. Default 0.005.
+        float U;    //!< Bifurcation parameter: background constant input [ms^(-1)]. Default 0.13.
         jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
         double sigm(double v);
         vector<double> get_rate_history() override;

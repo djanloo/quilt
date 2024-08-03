@@ -164,7 +164,12 @@ class Neuron{
 };
 
 
-/** The container of neuron parameters. Each specific model has its own.*/
+/**
+ * @brief A container for the parameters of each neuron type
+ * 
+ * This class is necessary to store population-wise the information about the neurons and to grant efficient access to parameter values
+ * 
+ */
 class NeuroParam{ 
 
     protected:
@@ -199,7 +204,11 @@ class NeuroParam{
         void add(const std::string & key, float value);
 };
 
-
+/**
+ * @class NeuroFactory
+ * @brief A factory for generating neuron objects
+ * 
+*/
 class NeuroFactory{
     
     public:
