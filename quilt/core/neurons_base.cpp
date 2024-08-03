@@ -196,3 +196,5 @@ NeuroParam::NeuroParam(ParaMap & paramap) : NeuroParam(){
 
 void NeuroParam::add(const std::string & key, float value){paramap.add(key, value);}
 
+// Initialises the Neurofactory instance to null pointer
+NeuroFactory * NeuroFactory::instance = nullptr;

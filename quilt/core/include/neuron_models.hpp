@@ -3,15 +3,6 @@
 #include "base.hpp"
 #include "neurons_base.hpp"
 
-// The menu:
-// class EvolutionContext;
-// class HierarchicalID;
-// class ParaMap;
-// class Spike;
-// class Synapse;
-// class Population;
-// class Projection;
-
 /**
  * @brief The adaptive quadratic integrate-and-fire neuron
  *
@@ -207,84 +198,4 @@ class aqif2_param : public aqif_param {
         }
 }; 
 
-// TODO: this must be implemented in future
-// /**
-//  * @class poisson_neuron
-//  * @brief the neuron for poisson populations
-// */
-// class poisson_neuron : public Neuron{
-//     public:
-//         poisson_neuron(Population * population);
-//         void evolve_state(const neuron_state &x , neuron_state &dxdt , const double t ) override;
-//         void on_spike(EvolutionContext * evo) override;
-// };
 
-// /**
-//  * @class poisson_param
-//  * @brief Container for parameters of `poisson_neuron`
-// */
-// class poisson_param : public NeuroParam{
-//     public:
-//         float rate; //!< The rate of each neuron
-//         poisson_param ()
-// };
-
-
-class NeuroFactory{
-    
-    public:
-        typedef std::function<Neuron* ( Population *)> neuron_constructor;
-        typedef std::function<NeuroParam* (ParaMap)> neuroparam_constructor;
-
-        void add_neuron(string neuron_model, neuron_constructor nc, neuroparam_constructor npc){
-            neuro_constructors_[neuron_model] = nc;
-            neuroparam_constructors_[neuron_model] = npc;
-        }
-        NeuroParam * get_neuroparam(string neuron_model, ParaMap & params){\
-            NeuroParam * neuroparam;
-            try{
-                neuroparam = neuroparam_constructors_[neuron_model](params);
-            }catch (std::out_of_range & e){
-                throw std::invalid_argument("Neuron model <" + neuron_model + "> does not exixt.");
-            }
-            return neuroparam;
-        }
-        Neuron * get_neuron(string neuron_model, Population * pop){
-            Neuron * neuron;
-            try{
-                neuron = neuro_constructors_[neuron_model](pop);
-            }catch (std::out_of_range & e){
-                throw std::invalid_argument("Neuron model <" + neuron_model + "> does not exixt.");
-            }
-            return neuron;
-        }
-
-        static NeuroFactory * get_neuro_factory(){
-            if (instance == nullptr){
-                return new NeuroFactory();
-            }
-        return instance;
-        }
-
-    private:
-        static NeuroFactory * instance;
-        NeuroFactory(){
-            add_neuron("aeif", neuron_maker<aeif_neuron>, neuroparam_maker<aeif_param>);
-            add_neuron("aqif", neuron_maker<aqif_neuron>, neuroparam_maker<aqif_param>);
-            add_neuron("aqif2", neuron_maker<aqif2_neuron>, neuroparam_maker<aqif2_param>);
-            add_neuron("izhikevich", neuron_maker<izhikevich_neuron>, neuroparam_maker<izhikevich_param>);
-        }
-        map<string, neuron_constructor> neuro_constructors_;
-        map<string, neuroparam_constructor> neuroparam_constructors_;
-
-        template <class N>
-        static Neuron * neuron_maker(Population * pop){
-            return new N(pop);
-        }
-
-        template <class NP>
-        static NeuroParam * neuroparam_maker(ParaMap params){
-            return new NP(params);
-        }
-        
-};
