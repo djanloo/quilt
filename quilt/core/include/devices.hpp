@@ -6,7 +6,7 @@
  * @copyright Copyright (c) 2024 Gianluca Becuzzi
  * 
  * 
- * This file contains dthe declarations of:
+ * This file contains the declarations of:
  * - monitors:
  *      - PopulationSpikeMonitor
  *      - PopulationRateMonitor
