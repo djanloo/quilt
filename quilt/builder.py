@@ -664,6 +664,10 @@ class MultiscaleNetwork:
     def transducer_histories(self):
         return self._interface.transducer_histories
     
+    @property
+    def n_timesteps_initialization(self):
+        return self._interface.n_timesteps_initialization
+
     def set_multiscale_projections(self, file=None, 
                                     T2O_coupling=None, O2T_coupling=None, 
                                     T2O=None, O2T=None):
