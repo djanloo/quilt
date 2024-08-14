@@ -282,14 +282,15 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
     // Some verbose output
     double t0 = evo->now;
     int n_steps_total = static_cast<int>(time/evo->dt);
-    if (verbosity > 0){
-        std::cout << "Running network consisting of " << oscillators.size() << " oscillators for " << n_steps_total <<" timesteps"<<std::endl;
-    }
+
+    stringstream ss;
+    ss <<  "Running network consisting of " << oscillators.size() << " oscillators for " << n_steps_total <<" timesteps";
+    get_global_logger().log(INFO, ss.str());
 
     // Evolve
     progress bar(n_steps_total, verbosity);
+    perf_mgr.start_recording("evolution");
 
-    auto start = std::chrono::high_resolution_clock::now();
     while (evo->now < t0 + time){
             
         // Gets the new values
@@ -304,9 +305,13 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
         evo->do_step();
         ++bar;
     }
-    auto end = std::chrono::high_resolution_clock::now();
-    cout << "Simulation took " << std::chrono::duration_cast<std::chrono::seconds>(end-start).count()<< " seconds ";
-    cout << "( " << static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end-start).count())/n_steps_total<< " ms/step)" << endl;
+    perf_mgr.end_recording("evolution");
+
+
+    // Prints performance
+    if (verbosity > 0){
+        PerformanceRegistrar::get_instance().print_records();
+    }
 }
 
 /****************************************** OSCILLATOR FACTORY ******************************************/
