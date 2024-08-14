@@ -30,7 +30,7 @@ cdef class ParaMap:
 
     
     def __dealloc__(self):
-        print("Cython DEBUG: deallocating ParaMap")
+        # print("Cython DEBUG: deallocating ParaMap")
         if self._paramap != NULL:
             del self._paramap
     
