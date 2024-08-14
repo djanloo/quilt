@@ -7,7 +7,6 @@
 #include <string>
 #include <iomanip> // for std::setprecision
 
-// #include <boost/timer/progress_display.hpp>
 #include "include/base.hpp"
 
 #define PERFMGR_OUTPUT_DIGITS 1
@@ -24,7 +23,6 @@ namespace settings {
     string global_logfile = "";
 
     void set_verbosity(int value) {
-        // std::cout << "Set verbosity to " << value << std::endl;
         if ((value < 0)|(value > 4)){
             stringstream ss;
             ss << "Verbosity must be between 0(NO OUTPUT) and 4(DEBUG)";
@@ -83,10 +81,6 @@ Logger::Logger(const string& filename)
 
 Logger::~Logger() { logFile.close(); } 
 
-// void Logger::set_level(LogLevel level){
-//     output_level = level;
-// }
-  
 void Logger::log(LogLevel level, const string& message) 
 {   
     // Do not print level under the current one
@@ -255,10 +249,7 @@ void PerformanceRegistrar::cleanup(){
 HierarchicalID::HierarchicalID()
             :   parent(NULL),
                 local_id(0),
-                n_subclasses(0)
-{
-    // get_global_logger().log(DEBUG, "Initialized a ROOT HierarchicalID - " + to_string(local_id));
-}
+                n_subclasses(0){}
 
 HierarchicalID::HierarchicalID(HierarchicalID * parent)
     :   parent(parent),
@@ -266,8 +257,8 @@ HierarchicalID::HierarchicalID(HierarchicalID * parent)
 {
     local_id = parent->n_subclasses;
     parent->n_subclasses ++;
-    // get_global_logger().log(DEBUG, "Initialized a NON ROOT HierarchicalID - " + to_string(local_id));
 }
+
 int HierarchicalID::get_id(){return local_id;}
 
 EvolutionContext::EvolutionContext(double dt)
@@ -285,7 +276,6 @@ int EvolutionContext::index_of(double time)
     if (time < 0.0){
         stringstream ss;
         ss <<"Requested index of a negative time: " << time <<" ms.";
-        // get_global_logger().log(WARNING, ss.str() + "Throwing an exception, will it be catched?" );
         throw negative_time_exception(ss.str());
         }
 
@@ -302,8 +292,6 @@ double EvolutionContext::deviation_of(double time)
     // Deviation is by definition positive
     deviation = (deviation < 0) ? 0.0 : deviation;
     stringstream ss;
-    // ss << "Deviation in EC is " << deviation;
-    // get_global_logger().log(WARNING, ss.str());
     return deviation;
 }
 
@@ -391,36 +379,6 @@ double ContinuousRK::get_past(int axis, double abs_time){
     // Updates using the interpolant
     for (int nu = 0; nu < 4; nu++){
         y += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
-    }
-
-    /**      *      *                  DEBUG        *        *                */
-
-    double checkval = state_history[bin_id][axis];
-    double delta_value = 0.0;
-    b_func_values = b_functions(1.0);
-
-    for (int nu = 0; nu < 4; nu++){
-        delta_value += evo->dt * b_func_values[nu] * evaluation_history[bin_id][nu][axis];
-    }
-    checkval += delta_value;
-   
-    if ( std::abs(checkval - state_history[bin_id+1][axis])/checkval > 0.005){
-        stringstream msg;
-        msg << "NCERK interpolated at theta = 1 is different from the next point." << endl
-            << "Interpolating at t = " << std::setprecision(std::numeric_limits<double>::max_digits10) << abs_time << "( n = "<< bin_id << " theta = " << theta <<")" << endl
-            << "X[n] = "<< state_history[bin_id][axis]<< endl
-            << "X[n+1] = "<< state_history[bin_id+1][axis]<< endl
-            << "interpolation(theta=1) =" << checkval << endl
-            << "delta(theta = 1) = "<< delta_value << endl;
-
-        for (int nu = 0; nu< 4; nu++){
-            msg << "b_"<<nu << "(theta = 1 ): "<< b_func_values[nu]<<endl;
-            msg << "b_"<<nu << ": "<< b[nu] << endl;
-
-            msg << "\tadding to delta b_"<<nu <<" * K_"<<nu <<endl
-                << "\t\t K_"<< nu <<" = " << evaluation_history[bin_id][nu][axis] << endl;
-        }
-        get_global_logger().log(ERROR, msg.str());
     }
 
     return y;
