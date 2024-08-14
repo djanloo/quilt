@@ -68,9 +68,6 @@ public:
     // This returns the interpolated past using the continuous Runge-Kutta method
     double get_past(unsigned int axis, double t)
     {
-        // std::stringstream ss;
-        // ss << "Getting past of oscillator " << id.get_id() << ": t = " << t << " - returning "<< memory_integrator.get_past(axis, t);
-        // get_global_logger().log(WARNING,ss.str() );
         return memory_integrator.get_past(axis, t);
     }
 
@@ -87,6 +84,9 @@ public:
 
     // Setter methods
     void set_evolution_context(EvolutionContext* evo);
+
+    // Utils
+    void print_info();
 
 private:
     EvolutionContext* evo;  /**< Pointer to the evolution context for the oscillator. */

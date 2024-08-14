@@ -45,6 +45,11 @@ cdef class Oscillator:
         cdef cinter.Oscillator * osc = self._osc.get()
         return np.array(osc.get_eeg())
 
+    def print_info(self):
+        # Gets the object from the shared pointer
+        cdef cinter.Oscillator * osc = self._osc.get()
+        osc.print_info()
+
 
 cdef class OscillatorNetwork:
 
@@ -72,6 +77,11 @@ cdef class OscillatorNetwork:
     def homogeneous(cls, int N, base.ParaMap params):
         cdef OscillatorNetwork net = cls()
         net._oscillator_network = new cinter.OscillatorNetwork(N, params._paramap)
+        
+        # this is for bug #37
+        # stores a copy of the paramap to prevent early deallocation
+        net._paramap = params
+
         net.wrap_oscillators()
         return net
     

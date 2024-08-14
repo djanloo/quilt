@@ -413,8 +413,6 @@ double ContinuousRK::get_past(int axis, double abs_time){
             << "interpolation(theta=1) =" << checkval << endl
             << "delta(theta = 1) = "<< delta_value << endl;
 
-
-
         for (int nu = 0; nu< 4; nu++){
             msg << "b_"<<nu << "(theta = 1 ): "<< b_func_values[nu]<<endl;
             msg << "b_"<<nu << ": "<< b[nu] << endl;
@@ -422,22 +420,6 @@ double ContinuousRK::get_past(int axis, double abs_time){
             msg << "\tadding to delta b_"<<nu <<" * K_"<<nu <<endl
                 << "\t\t K_"<< nu <<" = " << evaluation_history[bin_id][nu][axis] << endl;
         }
-        // msg << "evaluation history is:" <<endl;
-        // for (int kk = 0; kk < evaluation_history.size(); kk++){
-        //     msg << "( ";
-        //     for (int nu=0; nu<4; nu++){
-        //         msg << evaluation_history[kk][nu][0] << ", ";
-        //     }
-        //     msg << ") -- ";
-        // }
-
-        // msg << endl<< "state history is:" <<endl;
-        // for (int kk = 0; kk < state_history.size(); kk++){
-        //     msg << "( ";
-        //     msg << state_history[kk][0];
-        //     msg << ") -- ";
-        // }
-
         get_global_logger().log(ERROR, msg.str());
     }
 
@@ -510,17 +492,6 @@ void ContinuousRK::compute_next(){
         }
     }//~Updates the state
     
-    // stringstream ss;
-    // ss << "Creating new state at index " << state_history.size() <<endl;
-
-    // ss << "for axis 0:"<< endl;
-    // ss << "\t new_state: " << proposed_state[0]<<endl;
-    // ss << "Ks: ";
-    // for (int nu = 0; nu < 4; nu++){
-    //     ss << proposed_evaluation[nu][0] << " ";
-    // }
-
-    // get_global_logger().log(WARNING, ss.str());
 }
 
 void ContinuousRK::fix_next(){

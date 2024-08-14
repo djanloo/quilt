@@ -18,11 +18,13 @@ cdef class MultiscaleNetwork:
     cdef cinter.MultiscaleNetwork * _multiscale_network 
     cdef cinter.EvolutionContext * _evo_short
     cdef cinter.EvolutionContext * _evo_long
+    cdef int _n_timesteps_initialization
 
     # def __cinit__(self, spiking.SpikingNetwork spikenet, oscill.OscillatorNetwork oscnet):
     #     self._multiscale_network = new cinter.MultiscaleNetwork(spikenet._spiking_network, oscnet._oscillator_network)
 
     def __init__(self, spiking.SpikingNetwork spikenet, oscill.OscillatorNetwork oscnet):
+        self._n_timesteps_initialization = 0
         self._multiscale_network = new cinter.MultiscaleNetwork(spikenet._spiking_network, oscnet._oscillator_network)
 
     def add_transducer(self, spiking.Population population, base.ParaMap params):
@@ -39,6 +41,7 @@ cdef class MultiscaleNetwork:
     
     def initialize(self, np.ndarray[np.double_t, ndim=2, mode='c'] states):
         self._multiscale_network.oscnet.initialize(self._evo_long, states)
+        self._n_timesteps_initialization = <int>(self._evo_long.now/self._evo_long.dt)
         self._multiscale_network.spikenet.run(self._evo_short, self._evo_long.now, 1)
 
     def run(self, time=10):
@@ -51,6 +54,10 @@ cdef class MultiscaleNetwork:
         for i in range(n_transd):
             histories.append(self._multiscale_network.transducers[i].get().history)
         return histories
+
+    @property
+    def n_timesteps_initialization(self):
+        return self._n_timesteps_initialization
 
 
 

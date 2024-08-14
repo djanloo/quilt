@@ -395,7 +395,16 @@ class ParaMap{
         /** 
          * @brief Default constructor for ParaMap.
          */
-        ParaMap():value_map(){};
+        ParaMap():value_map(){
+            stringstream ss;
+            ss << "New paramap created @" <<this; 
+            get_global_logger().log(DEBUG, ss.str());
+        }
+
+        ~ParaMap(){
+            stringstream ss; ss << "Destroyed ParaMap @" << this;
+            get_global_logger().log(DEBUG,ss.str());
+        }   
 
         /**
          * @brief Constructor for ParaMap with initial values.
@@ -436,6 +445,10 @@ class ParaMap{
             auto it = value_map.find(key);
             if (it == value_map.end()){
                 value_map[key] = default_value;
+                stringstream ss;
+                ss << "Paramap at index "<< this << " with map value at " << &value_map << ": attribute " << key << " defaulted to value "<< default_value<< endl;
+                ss << "Now paramap is "<< *(this);
+                get_global_logger().log(DEBUG, ss.str());
                 return default_value;
             }
             else{
@@ -471,13 +484,10 @@ class ParaMap{
          * @return The modified output stream.
          */
         friend std::ostream& operator<<(std::ostream& os, const ParaMap& paramap){
-            os << "<ParaMap>" << endl;
+            os << "<ParaMap@"<<&(paramap)<<"> (" << paramap.value_map.size() << " values, table@"<<&(paramap.value_map)<<")" << endl;
             for (const auto& entry : paramap.value_map) {
                 os << "\t" <<entry.first << ": ";
-                // if (std::holds_alternative<int>(entry.second)){
-                //     os <<std::get<int>(entry.second);
-                //     os << " (int)";
-                // }
+
                 if (std::holds_alternative<float>(entry.second)){
                     os <<std::get<float>(entry.second);
                     os << " (float)";
