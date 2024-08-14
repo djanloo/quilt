@@ -23,6 +23,15 @@ void Oscillator::set_evolution_context(EvolutionContext * evo)
     }
 };
 
+void Oscillator::print_info(){
+    stringstream ss;
+    ss << "Printing info for oscillator:" << endl;
+    ss << "Oscillator type: "<< oscillator_type << endl;
+    cout << "Paramap at index " << params << endl;
+    ss << "Parameters: "<< *(params); 
+    cout << ss.str()<<endl;
+}
+
 // Homogeneous network builder
 OscillatorNetwork::OscillatorNetwork(int N, ParaMap * params)
     :   perf_mgr("oscillator network"),
@@ -70,6 +79,7 @@ OscillatorNetwork::OscillatorNetwork(vector<ParaMap *> params)
 
 void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_params)
 {
+    get_global_logger().log(DEBUG, "Starting to build links in OscillatorNetwork");
     if (!has_oscillators){
         get_global_logger().log(ERROR,"Could not link oscillators since the network does not have oscillators yet.");
         throw runtime_error("Could not link oscillators since the network does not have oscillators yet.");
@@ -112,6 +122,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
 
 void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds)
 {
+    get_global_logger().log(DEBUG, "Starting initialization of OscillatorNetwork");
+
     if (init_conds.size() != oscillators.size()){
         get_global_logger().log(ERROR, "Number of initial conditions is not equal to number of oscillators");
         throw runtime_error("Number of initial conditions is not equal to number of oscillators");
