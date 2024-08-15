@@ -263,7 +263,7 @@ void MultiscaleNetwork::run(double time, int verbosity){
 
     int n_steps_total = static_cast<int>(time / evo_long->dt) ;
     
-    progress bar(n_steps_total, verbosity); 
+    // progress bar(n_steps_total, verbosity); 
     while (evo_long -> now < time){
 
         // Evolve the short timescale until it catches up with 
@@ -280,7 +280,7 @@ void MultiscaleNetwork::run(double time, int verbosity){
         perf_mgr->start_recording("evolve_oscnet");
         oscnet->evolve();
         perf_mgr->end_recording("evolve_oscnet");
-        ++bar;
+        // ++bar;
     }
     PerformanceRegistrar::get_instance().print_records();
 }
