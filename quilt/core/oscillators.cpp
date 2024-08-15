@@ -108,7 +108,6 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
     {
         for (unsigned int j = 0; j < proj->end_dimension; j++)
         {
-            
             if (std::abs(proj->weights[i][j]) > WEIGHT_EPS)
             {                   
                 oscillators[j]->incoming_osc.push_back(get_link_factory().get_link(oscillators[i], oscillators[j], proj->weights[i][j], proj->delays[i][j], link_params));
@@ -125,7 +124,7 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
     }
     has_links = true;
 
-    // Counts the disconnected nodes
+    // Counts the disconnected nodes (no outputs)
     int count = 0;
     for ( unsigned int i=0; i< proj->start_dimension; i++){
         if (has_no_outputs[i]) count++;
@@ -135,7 +134,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
         ss << "OscillatorNetwork: " << count << " nodes where found to have no outputs";
         get_global_logger().log(WARNING, ss.str());
     }
-    
+
+    // Counts the disconnected nodes (no outputs)
     count=0;
     for ( unsigned int i=0; i< proj->end_dimension; i++){
         if (has_no_inputs[i]) count++;
