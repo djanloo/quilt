@@ -1,5 +1,4 @@
 from libcpp.vector cimport vector
-from libcpp.memory cimport shared_ptr
 
 import numpy as np
 cimport numpy as np
@@ -14,41 +13,31 @@ def set_verbosity(v):
     VERBOSITY = v
 
 cdef class Oscillator:
-    # cdef shared_ptr[cinter.Oscillator] _osc
 
     def __cinit__(self):
         pass
 
-    cdef wrap(self, shared_ptr[cinter.Oscillator] osc):
+    cdef wrap(self, cinter.Oscillator * osc):
         self._osc = osc
 
     @property
     def history(self):
-        # Gets the object from the shared pointer
-        cdef cinter.Oscillator * osc = self._osc.get()
-        return np.array(osc.get_history())
+        return np.array(self._osc.get_history())
 
     @property
     def rate_history(self):
-        cdef cinter.Oscillator * osc = self._osc.get()
-        return np.array(osc.get_rate_history())
+        return np.array(self._osc.get_rate_history())
 
     @property
     def input_history(self):
-        # Gets the object from the shared pointer
-        cdef cinter.Oscillator * osc = self._osc.get()
-        return np.array(osc.input_history)
+        return np.array(self._osc.input_history)
     
     @property
     def eeg(self):
-        # Gets the object from the shared pointer
-        cdef cinter.Oscillator * osc = self._osc.get()
-        return np.array(osc.get_eeg())
+        return np.array(self._osc.get_eeg())
 
     def print_info(self):
-        # Gets the object from the shared pointer
-        cdef cinter.Oscillator * osc = self._osc.get()
-        osc.print_info()
+        self._osc.print_info()
 
 
 cdef class OscillatorNetwork:
@@ -61,17 +50,6 @@ cdef class OscillatorNetwork:
     # whatever number of arguments
     def __init__(self):
         self.oscillators = list()
-
-    def wrap_oscillators(self):
-        cdef unsigned int i = 0
-        cdef shared_ptr[cinter.Oscillator] _osc
-        cdef Oscillator osc
-
-        for i in range(self._oscillator_network.oscillators.size()):
-            _osc = self._oscillator_network.oscillators[i]
-            osc = Oscillator()
-            osc.wrap(_osc)
-            self.oscillators.append(osc)
         
     @classmethod
     def homogeneous(cls, int N, base.ParaMap params):
@@ -82,7 +60,13 @@ cdef class OscillatorNetwork:
         # stores a copy of the paramap to prevent early deallocation
         net._paramap = params
 
-        net.wrap_oscillators()
+        # wraps the oscillators
+        cdef Oscillator temp
+        for i in range(net._oscillator_network.oscillators.size()):
+            temp = Oscillator()
+            temp.wrap(net._oscillator_network.oscillators[i])
+            net.oscillators.append(temp)
+
         return net
     
     @classmethod
@@ -93,7 +77,14 @@ cdef class OscillatorNetwork:
 
         cdef OscillatorNetwork net = cls()
         net._oscillator_network = new cinter.OscillatorNetwork(paramap_list.paramap_vector)
-        net.wrap_oscillators()
+
+        # wraps the oscillators
+        cdef Oscillator temp
+        for i in range(net._oscillator_network.oscillators.size()):
+            temp = Oscillator()
+            temp.wrap(net._oscillator_network.oscillators[i])
+            net.oscillators.append(temp)
+            
         return net
 
     def build_connections(self, base.Projection proj, base.ParaMap params):
@@ -110,6 +101,7 @@ cdef class OscillatorNetwork:
         self._oscillator_network.initialize(self._evo, states)
 
     def __dealloc__(self):
+        print("Cython: called dealloc on OscillatorNetwork")
         if self._oscillator_network != NULL:
             del self._oscillator_network
 

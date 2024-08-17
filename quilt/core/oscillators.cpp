@@ -14,7 +14,7 @@ Oscillator::Oscillator(ParaMap * params, OscillatorNetwork * oscnet)
 
 void Oscillator::set_evolution_context(EvolutionContext * evo)
 {
-    get_global_logger().log(DEBUG, "set EvolutionContext of Oscillator");
+    // get_global_logger().log(DEBUG, "set EvolutionContext of Oscillator");
     this->evo = evo;
     memory_integrator.set_evolution_context(evo);
     for (auto & incoming_link : incoming_osc)
@@ -101,8 +101,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
     }
 
     // Checks whether a node is uselesss
-    vector<bool> has_outputs(proj->start_dimension, true);
-    vector<bool> has_inputs(proj->end_dimension, true);
+    vector<bool> has_outputs(proj->start_dimension, false);
+    vector<bool> has_inputs(proj->end_dimension, false);
 
     for (unsigned int i =0; i < proj->start_dimension; i++)
     {
@@ -117,8 +117,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
                 // Takes trace of maximum delay
                 if (proj->delays[i][j] > max_delay) max_delay = proj->delays[i][j];
 
-                has_outputs[i] = false;
-                has_inputs[j] = false;
+                has_outputs[i] = true;
+                has_inputs[j] = true;
             }
         }
     }
@@ -272,6 +272,10 @@ void OscillatorNetwork::evolve(){
         throw runtime_error("The network must be initialized before evolving");
     }
 
+    if (!has_links){
+        get_global_logger().log(WARNING, "Evolving an oscillator network without links");
+    }
+
     Logger &log = get_global_logger();
     std::stringstream ss;
 
@@ -310,14 +314,12 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
 
     // Some verbose output
     double t0 = evo->now;
-    int n_steps_total = static_cast<int>(time/evo->dt);
 
     stringstream ss;
-    ss <<  "Running network consisting of " << oscillators.size() << " oscillators for " << n_steps_total <<" timesteps";
+    ss <<  "Running network consisting of " << oscillators.size() << " oscillators";
     get_global_logger().log(INFO, ss.str());
 
     // Evolve
-    progress bar(n_steps_total, verbosity);
     perf_mgr.start_recording("evolution");
 
     while (evo->now < t0 + time){
@@ -332,7 +334,6 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
             oscillator->memory_integrator.fix_next();
         }
         evo->do_step();
-        ++bar;
     }
     perf_mgr.end_recording("evolution");
 
@@ -343,13 +344,20 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
     }
 }
 
+OscillatorNetwork::~OscillatorNetwork(){
+    for (auto osc : oscillators){
+        delete osc;
+    }
+    get_global_logger().log(DEBUG, "Destroyed OscillatorNetwork");    
+}
+
 /****************************************** OSCILLATOR FACTORY ******************************************/
 // Singleton method to return a unique instance of OscillatorFactory
 OscillatorFactory& get_oscillator_factory(){
     static OscillatorFactory osc_factory;
     return osc_factory;
 }
-shared_ptr<Oscillator> OscillatorFactory::get_oscillator(string const& oscillator_type, ParaMap * params, OscillatorNetwork * osc_net)
+Oscillator * OscillatorFactory::get_oscillator(string const& oscillator_type, ParaMap * params, OscillatorNetwork * osc_net)
         {
             auto it = _constructor_map.find(oscillator_type);
             if (it == _constructor_map.end()) { 

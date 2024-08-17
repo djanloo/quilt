@@ -5,7 +5,6 @@
 #include <memory>
 
 using std::vector;
-using std::shared_ptr;
 
 // Forward declarations
 class Oscillator;
@@ -18,8 +17,8 @@ class Oscillator;
  */
 class Link {
 public:
-    shared_ptr<Oscillator> source; ///< The source oscillator of the link.
-    shared_ptr<Oscillator> target; ///< The target oscillator of the link.
+    Oscillator * source; ///< The source oscillator of the link.
+    Oscillator * target; ///< The target oscillator of the link.
     float weight; ///< Weight of the link.
     float delay; ///< Delay in the link.
     ParaMap* params; ///< Parameters associated with the link.
@@ -32,7 +31,7 @@ public:
      * @param delay Delay in the link.
      * @param params Parameters associated with the link.
      */
-    Link(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
+    Link(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
         : source(source),
           target(target),
           weight(weight),
@@ -68,7 +67,7 @@ protected:
  * @brief Factory class for creating different link types.
  */
 class LinkFactory {
-    typedef std::function<Link*(shared_ptr<Oscillator>, shared_ptr<Oscillator>, float, float, ParaMap*)> linker;
+    typedef std::function<Link*(Oscillator *, Oscillator *, float, float, ParaMap*)> linker;
 
 public:
     LinkFactory();
@@ -95,7 +94,7 @@ public:
      * @param params Parameters associated with the link.
      * @return A pointer to the created link.
      */
-    Link* get_link(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params);
+    Link* get_link(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params);
 
 private:
     std::map<std::pair<std::string, std::string>, linker> _linker_map; ///< Map of oscillator type pairs to linker functions.
@@ -103,7 +102,7 @@ private:
 
 // Builder method for Link-derived objects
 template <typename DERIVED>
-Link * link_maker(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap * params)
+Link * link_maker(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap * params)
 {
     return new DERIVED(source, target, weight, delay, params);
 }
@@ -127,7 +126,7 @@ public:
      * @param delay Delay in the link.
      * @param params Parameters associated with the link.
      */
-    JRJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
+    JRJRLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
         : Link(source, target, weight, delay, params) {}
 
     /**
@@ -152,7 +151,7 @@ public:
      * @param delay Delay in the link.
      * @param params Parameters associated with the link.
      */
-    LJRLJRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
+    LJRLJRLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
         : Link(source, target, weight, delay, params) {}
 
     /**

@@ -6,7 +6,6 @@ cimport oscill
 
 import numpy as np
 cimport numpy as np
-# from libcpp.memory cimport shared_ptr
 
 cdef class Transducer:
     cdef cinter.Transducer * _transducer
@@ -52,7 +51,7 @@ cdef class MultiscaleNetwork:
         cdef int n_transd = self._multiscale_network.transducers.size()
         histories = []
         for i in range(n_transd):
-            histories.append(self._multiscale_network.transducers[i].get().history)
+            histories.append(self._multiscale_network.transducers[i].history)
         return histories
 
     @property

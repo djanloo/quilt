@@ -308,7 +308,7 @@ void test_oscill(){
 
     for (int i=0; i < TT; i++ ){
         for (auto oscill : osc_net.oscillators){
-            auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+            auto osc_casted = static_cast<jansen_rit_oscillator*>(oscill);
             OscFile << 1000 * osc_casted->sigm(osc_casted->get_history()[i][0]) << " ";
         }
         OscFile << endl;
@@ -517,9 +517,7 @@ void test_multiscale_base(){
     transd_paramap->add_float("weight_delta", 0.01f);
 
 
-    shared_ptr <Transducer> transd (new Transducer(&spikepop, transd_paramap, &multi_net));
-
-    multi_net.transducers.push_back(transd);
+    multi_net.transducers.push_back(new Transducer(&spikepop, transd_paramap, &multi_net));
 
     vector<vector<float>> T2Oweights {{0.5}}; 
     vector<vector<float>> T2Odelays {{15}}; 
@@ -557,7 +555,7 @@ void test_multiscale_base(){
 
     for (int i=0; i < TT; i++ ){
         for (auto oscill : osc_net.oscillators){
-            auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(oscill);
+            auto osc_casted = static_cast<jansen_rit_oscillator*>(oscill);
             OscFile << 1000 * osc_casted->sigm(osc_casted->get_history()[i][0]) << " ";
         }
         OscFile << endl;
@@ -566,7 +564,7 @@ void test_multiscale_base(){
     ofstream OscInterp("osc_interpol.txt");
 
     for (int i=0; i < static_cast<int>(evo_long.now / evo_short.dt) ; i++){
-        auto osc_casted = std::static_pointer_cast<jansen_rit_oscillator>(osc_net.oscillators[0]);
+        auto osc_casted = static_cast<jansen_rit_oscillator*>(osc_net.oscillators[0]);
         OscInterp << 1000 * osc_casted->sigm(osc_casted->get_past(0, i*evo_short.dt)) << endl;
     }
 

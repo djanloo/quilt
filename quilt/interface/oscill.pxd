@@ -1,14 +1,10 @@
-from libcpp.memory cimport shared_ptr
-
 cimport cinterface as cinter
 
 from base cimport ParaMap
 
 cdef class Oscillator:
-    cdef shared_ptr[cinter.Oscillator] _osc
-    cdef wrap(self, shared_ptr[cinter.Oscillator] osc)
-
-
+    cdef cinter.Oscillator* _osc
+    cdef wrap(self,cinter.Oscillator * osc)
 
 cdef class OscillatorNetwork:
     cdef cinter.OscillatorNetwork * _oscillator_network
