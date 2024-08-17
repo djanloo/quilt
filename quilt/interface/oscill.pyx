@@ -101,7 +101,6 @@ cdef class OscillatorNetwork:
         self._oscillator_network.initialize(self._evo, states)
 
     def __dealloc__(self):
-        print("Cython: called dealloc on OscillatorNetwork")
         if self._oscillator_network != NULL:
             del self._oscillator_network
 
