@@ -351,6 +351,7 @@ class ContinuousRK{
         vector<double> b_functions(double theta);
 
         ContinuousRK(){};
+        ~ContinuousRK(){get_global_logger().log(DEBUG, "Destroyed ContinuousRK");}
 
         vector<dynamical_state> state_history;
 

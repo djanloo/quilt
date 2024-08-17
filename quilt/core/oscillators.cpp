@@ -14,7 +14,7 @@ Oscillator::Oscillator(ParaMap * params, OscillatorNetwork * oscnet)
 
 void Oscillator::set_evolution_context(EvolutionContext * evo)
 {
-    get_global_logger().log(DEBUG, "set EvolutionContext of Oscillator");
+    // get_global_logger().log(DEBUG, "set EvolutionContext of Oscillator");
     this->evo = evo;
     memory_integrator.set_evolution_context(evo);
     for (auto & incoming_link : incoming_osc)
@@ -314,14 +314,12 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
 
     // Some verbose output
     double t0 = evo->now;
-    int n_steps_total = static_cast<int>(time/evo->dt);
 
     stringstream ss;
-    ss <<  "Running network consisting of " << oscillators.size() << " oscillators for " << n_steps_total <<" timesteps";
+    ss <<  "Running network consisting of " << oscillators.size() << " oscillators";
     get_global_logger().log(INFO, ss.str());
 
     // Evolve
-    progress bar(n_steps_total, verbosity);
     perf_mgr.start_recording("evolution");
 
     while (evo->now < t0 + time){
@@ -336,7 +334,6 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
             oscillator->memory_integrator.fix_next();
         }
         evo->do_step();
-        ++bar;
     }
     perf_mgr.end_recording("evolution");
 
@@ -353,7 +350,7 @@ OscillatorFactory& get_oscillator_factory(){
     static OscillatorFactory osc_factory;
     return osc_factory;
 }
-shared_ptr<Oscillator> OscillatorFactory::get_oscillator(string const& oscillator_type, ParaMap * params, OscillatorNetwork * osc_net)
+Oscillator * OscillatorFactory::get_oscillator(string const& oscillator_type, ParaMap * params, OscillatorNetwork * osc_net)
         {
             auto it = _constructor_map.find(oscillator_type);
             if (it == _constructor_map.end()) { 

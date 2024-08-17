@@ -72,7 +72,7 @@ class MultiscaleNetwork{
     public:
         SpikingNetwork * spikenet;
         OscillatorNetwork * oscnet;
-        vector<shared_ptr<Transducer>> transducers;
+        vector<Transducer *> transducers;
 
         MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet);
 
@@ -101,7 +101,7 @@ class MultiscaleNetwork{
 */
 class T2JRLink: public Link{
     public:
-         T2JRLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
+         T2JRLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
         : Link(source, target, weight, delay, params) {}
 
         /**
@@ -118,7 +118,7 @@ class T2JRLink: public Link{
 */
 class JR2TLink: public Link{
     public:
-         JR2TLink(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay, ParaMap* params)
+         JR2TLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
         : Link(source, target, weight, delay, params) {}
 
         double get(int axis, double now) override;
