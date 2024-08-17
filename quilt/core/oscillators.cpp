@@ -101,8 +101,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
     }
 
     // Checks whether a node is uselesss
-    vector<bool> has_outputs(proj->start_dimension, true);
-    vector<bool> has_inputs(proj->end_dimension, true);
+    vector<bool> has_outputs(proj->start_dimension, false);
+    vector<bool> has_inputs(proj->end_dimension, false);
 
     for (unsigned int i =0; i < proj->start_dimension; i++)
     {
@@ -117,8 +117,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
                 // Takes trace of maximum delay
                 if (proj->delays[i][j] > max_delay) max_delay = proj->delays[i][j];
 
-                has_outputs[i] = false;
-                has_inputs[j] = false;
+                has_outputs[i] = true;
+                has_inputs[j] = true;
             }
         }
     }
@@ -270,6 +270,10 @@ void OscillatorNetwork::evolve(){
     if (!is_initialized){
         get_global_logger().log(ERROR,"The network must be initialized before evolving" );
         throw runtime_error("The network must be initialized before evolving");
+    }
+
+    if (!has_links){
+        get_global_logger().log(WARNING, "Evolving an oscillator network without links");
     }
 
     Logger &log = get_global_logger();
