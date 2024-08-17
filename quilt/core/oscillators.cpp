@@ -101,8 +101,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
     }
 
     // Checks whether a node is uselesss
-    vector<bool> has_no_outputs(proj->start_dimension, true);
-    vector<bool> has_no_inputs(proj->end_dimension, true);
+    vector<bool> has_outputs(proj->start_dimension, true);
+    vector<bool> has_inputs(proj->end_dimension, true);
 
     for (unsigned int i =0; i < proj->start_dimension; i++)
     {
@@ -117,8 +117,8 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
                 // Takes trace of maximum delay
                 if (proj->delays[i][j] > max_delay) max_delay = proj->delays[i][j];
 
-                has_no_outputs[i] = false;
-                has_no_inputs[j] = false;
+                has_outputs[i] = false;
+                has_inputs[j] = false;
             }
         }
     }
@@ -127,22 +127,22 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
     // Counts the disconnected nodes (no outputs)
     int count = 0;
     for ( unsigned int i=0; i< proj->start_dimension; i++){
-        if (has_no_outputs[i]) count++;
+        if (!has_outputs[i]) count++;
     }
     if (count > 0){
         stringstream ss;
-        ss << "OscillatorNetwork: " << count << " nodes where found to have no outputs";
+        ss << "OscillatorNetwork: " << count << " nodes were found to have no outputs";
         get_global_logger().log(WARNING, ss.str());
     }
 
     // Counts the disconnected nodes (no outputs)
     count=0;
     for ( unsigned int i=0; i< proj->end_dimension; i++){
-        if (has_no_inputs[i]) count++;
+        if (!has_inputs[i]) count++;
     }
     if (count > 0){
         stringstream ss;
-        ss << "OscillatorNetwork: " << count << " nodes where found to have no inputs";
+        ss << "OscillatorNetwork: " << count << " nodes were found to have no inputs";
         get_global_logger().log(WARNING, ss.str());
     }
 
