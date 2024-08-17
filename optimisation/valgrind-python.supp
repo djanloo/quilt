@@ -5,8 +5,8 @@
 #  Here's an example of running valgrind:
 #
 #	cd python/dist/src
-#	valgrind --tool=memcheck --suppressions=Misc/valgrind-python.supp \
-#		./python -E ./Lib/test/regrtest.py -u gui,network
+#	valgrind --tool=memcheck --suppressions=valgrind-python.supp \
+#                                         python -E -tt ./my_python_script.py
 #
 # You must edit Objects/obmalloc.c and uncomment Py_USING_MEMORY_DEBUGGER
 # to use the preferred suppressions with address_in_range.
