@@ -401,9 +401,6 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
 
     perf_mgr->start_recording("simulation");
 
-    int n_steps_done  = 0;
-    int n_steps_total = static_cast<int>(time / evo->dt) ;
-
     int n_neurons_total = 0;
     for (auto pop : populations){n_neurons_total += pop->n_neurons;}
         
@@ -452,8 +449,6 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
             population -> evolve();
         }
         evo -> do_step();
-
-        n_steps_done++;
     }
     perf_mgr->end_recording("simulation");
 

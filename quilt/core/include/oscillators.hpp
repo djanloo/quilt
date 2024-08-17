@@ -10,8 +10,6 @@ class Link;
 using std::vector;
 using std::cout;
 using std::endl;
-using std::shared_ptr;
-using std::make_shared;
 using std::runtime_error;
 
 class OscillatorNetwork;
@@ -40,7 +38,9 @@ public:
      * @param oscnet Pointer to the oscillator network.
     */
     Oscillator(ParaMap* params, OscillatorNetwork* oscnet);
-
+    ~Oscillator(){
+        get_global_logger().log(DEBUG, "Destroyed Oscillator");
+    }
     /**
      * @brief Virtual function representing the evolution of the oscillator's state.
      * @param x Current state of the oscillator.
@@ -97,11 +97,11 @@ private:
  * @param OSC Type of the oscillator.
  * @param params Parameter map for the oscillator.
  * @param osc Pointer to the oscillator network.
- * @return Shared pointer to the created oscillator.
+ * @return Raw pointer to the created oscillator.
 */
 template <class OSC>
-shared_ptr<Oscillator> oscillator_maker(ParaMap* params, OscillatorNetwork* osc){
-    return make_shared<OSC>(params, osc);
+Oscillator * oscillator_maker(ParaMap* params, OscillatorNetwork* osc){
+    return new OSC(params, osc);
 }
 
 /**
@@ -109,7 +109,7 @@ shared_ptr<Oscillator> oscillator_maker(ParaMap* params, OscillatorNetwork* osc)
  * @brief Factory class for creating oscillators of different types.
 */
 class OscillatorFactory {
-    typedef std::function<shared_ptr<Oscillator>(ParaMap*, OscillatorNetwork*)> constructor;
+    typedef std::function<Oscillator *(ParaMap*, OscillatorNetwork*)> constructor;
 
 public:
     /**
@@ -127,9 +127,9 @@ public:
      * @param oscillator_type Type of the oscillator.
      * @param params Parameter map for the oscillator.
      * @param osc_net Pointer to the oscillator network.
-     * @return Shared pointer to the created oscillator.
+     * @return Pointer to the created oscillator.
     */
-    shared_ptr<Oscillator> get_oscillator(string const& oscillator_type, ParaMap* params, OscillatorNetwork* osc_net);
+    Oscillator * get_oscillator(string const& oscillator_type, ParaMap* params, OscillatorNetwork* osc_net);
 
     /**
      * @brief Constructor for the OscillatorFactory class.
@@ -196,7 +196,7 @@ class leon_jansen_rit_oscillator : public Oscillator{
 class OscillatorNetwork{
     public:
         HierarchicalID id;
-        vector<shared_ptr<Oscillator>> oscillators;
+        vector<Oscillator*> oscillators;
 
         // Homogeneous constructor: 
         // each oscillator has the same parameters
@@ -206,6 +206,7 @@ class OscillatorNetwork{
         // each oscillator has it own parameters
         OscillatorNetwork(vector<ParaMap*> params);
 
+        ~OscillatorNetwork();
         
         // Homogenous link builder:
         // each link has the same parameters

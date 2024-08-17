@@ -233,7 +233,7 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     // Counts disconnected
     // No inputs
     int count = 0;
-    for (int i = 0; i < transducers.size(); i++){
+    for (unsigned int i = 0; i < transducers.size(); i++){
         if (!transducer_has_inputs[i]) count ++;
     }
     if (count > 0){
@@ -243,7 +243,7 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     }
     // No outputs
     count = 0;
-    for (int i = 0; i < transducers.size(); i++){
+    for (unsigned int i = 0; i < transducers.size(); i++){
         if (!transducer_has_outputs[i]) count ++;
     }
     if (count > 0){
@@ -258,7 +258,7 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
 }
 
 void MultiscaleNetwork::add_transducer(Population * population, ParaMap * params){
-    transducers.push_back(make_shared<Transducer>(population, params, this));
+    transducers.push_back(new Transducer(population, params, this));
 }
 
 void MultiscaleNetwork::run(double time, int verbosity){
@@ -274,8 +274,6 @@ void MultiscaleNetwork::run(double time, int verbosity){
         << " )";
 
     get_global_logger().log(INFO, ss.str());
-
-    int n_steps_total = static_cast<int>(time / evo_long->dt) ;
     
     while (evo_long -> now < time){
 
@@ -304,7 +302,7 @@ double T2JRLink::get(int axis, double now){
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
-    double result = weight * 1e-3 * std::static_pointer_cast<Transducer>(source)->get_past(axis, now - delay); //axis is useless
+    double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(axis, now - delay); //axis is useless
     return result;
 }
 
@@ -314,7 +312,7 @@ double JR2TLink::get(int axis, double now){
 
     // Returns the rate of the oscillator back in the past 
     double v0 =  source->get_past(axis, now - delay);
-    double rate = std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(v0);
+    double rate = static_cast<jansen_rit_oscillator*>(source)->sigm(v0);
     double result = weight * rate;
 
     //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
