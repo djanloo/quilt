@@ -97,7 +97,7 @@ private:
  * @param OSC Type of the oscillator.
  * @param params Parameter map for the oscillator.
  * @param osc Pointer to the oscillator network.
- * @return Shared pointer to the created oscillator.
+ * @return Raw pointer to the created oscillator.
 */
 template <class OSC>
 Oscillator * oscillator_maker(ParaMap* params, OscillatorNetwork* osc){
@@ -127,7 +127,7 @@ public:
      * @param oscillator_type Type of the oscillator.
      * @param params Parameter map for the oscillator.
      * @param osc_net Pointer to the oscillator network.
-     * @return Shared pointer to the created oscillator.
+     * @return Pointer to the created oscillator.
     */
     Oscillator * get_oscillator(string const& oscillator_type, ParaMap* params, OscillatorNetwork* osc_net);
 
@@ -206,9 +206,7 @@ class OscillatorNetwork{
         // each oscillator has it own parameters
         OscillatorNetwork(vector<ParaMap*> params);
 
-        ~OscillatorNetwork(){
-            get_global_logger().log(DEBUG, "Destroyed OscillatorNetwork");
-        }
+        ~OscillatorNetwork();
         
         // Homogenous link builder:
         // each link has the same parameters

@@ -5,7 +5,6 @@
 #include <memory>
 
 using std::vector;
-using std::shared_ptr;
 
 // Forward declarations
 class Oscillator;

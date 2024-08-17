@@ -344,6 +344,13 @@ void OscillatorNetwork::run(EvolutionContext * evo, double time, int verbosity)
     }
 }
 
+OscillatorNetwork::~OscillatorNetwork(){
+    for (auto osc : oscillators){
+        delete osc;
+    }
+    get_global_logger().log(DEBUG, "Destroyed OscillatorNetwork");    
+}
+
 /****************************************** OSCILLATOR FACTORY ******************************************/
 // Singleton method to return a unique instance of OscillatorFactory
 OscillatorFactory& get_oscillator_factory(){
