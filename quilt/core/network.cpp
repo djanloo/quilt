@@ -66,8 +66,6 @@ void SparseProjection::build_sector(sparse_t * sector, RNGDispatcher * rng_dispa
 
 void SparseProjection::build_multithreaded()
 {
-    // cout << "Building multithreaded" << endl;
-
     // If the population is really small 
     // start one thread per neuron
     int n_threads = N_THREADS_BUILD;
@@ -108,7 +106,6 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
             new_weight = std::exp(weight_mu + weight_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
         }catch (const boost::wrapexcept<std::overflow_error>& e){
             cerr << "overflow in erf_inv:" << endl;
-            // cerr << "u: " << u <<endl;
             cerr << "weight mu: " << weight_mu << endl;
             cerr << "weight sigma:"<< weight_sigma <<endl;
             throw(e);
@@ -123,7 +120,6 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
             new_delay = std::exp(delay_mu + delay_sigma * sqrt(2)* boost::math::erf_inv( 2.0 * u - 1.0));
         }catch (const boost::wrapexcept<std::overflow_error>& e){
             cerr << "overflow:" << endl;
-            // cerr << "u: " << u <<endl;
             cerr << "delay mu: " << delay_mu << endl;
             cerr << "delay sigma:"<< delay_sigma << endl;
             throw(e);
@@ -134,13 +130,6 @@ const std::pair<float, float> SparseLognormProjection::get_weight_delay(RNG* rng
 
     // Inhibitory 
     if (type == 1) new_weight *=  -1;
-
-    // // Zero-delay
-    // if ((delay_mu == 0.0)&&(delay_sigma ==0.0)){
-    //     cerr << "SparseLogNormProjection::get_weight_delay -> Delay mu and delay sigma are zero: d_mu="<<delay_mu <<" d_sigma="<<delay_sigma<<endl;
-    //     new_delay = 0.0;
-    // }
-
 
     if (std::isnan(new_weight) ) throw runtime_error("Nan in delay generation");
     if (std::isnan(new_delay) ) throw runtime_error("Nan in weight generation for delay_mu, delay_sigma = " + std::to_string(delay_mu) + ", " + std::to_string(delay_sigma));
@@ -251,7 +240,6 @@ void Population::project(const SparseProjection * projection, Population * effer
             neurons[connection.first.first]->connect(efferent_population->neurons[connection.first.second], connection.second.first, connection.second.second);
         }
     }
-    // cout << "Performed " << connections << " connections between pop:"<< this->id.get_id() << " and pop:"<< efferent_population->id.get_id() << endl; 
 }
 
 void Population::evolve()
@@ -408,9 +396,6 @@ void SpikingNetwork::evolve(){
 void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
 {  
     stringstream ss;
-    // if (verbosity > 0){
-    //     get_global_logger().set_level(INFO);
-    // }
     ss << "Evolving spiking network from t= "<< evo->now << " to t= " << time;
     get_global_logger().log(INFO, ss.str());
 
