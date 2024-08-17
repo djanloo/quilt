@@ -1,6 +1,5 @@
 from libcpp.vector cimport vector
 from libcpp.string cimport string
-from libcpp.memory cimport shared_ptr
 
 cdef extern from "../core/include/base.hpp" namespace "settings":
 
@@ -117,7 +116,7 @@ cdef extern from "../core/include/oscillators.hpp":
         void print_info()
 
     cdef cppclass OscillatorNetwork:
-        vector [shared_ptr[Oscillator]] oscillators 
+        vector [Oscillator*] oscillators 
 
         # Homogeneous constructor: only one type of oscillator
         OscillatorNetwork(int, ParaMap *)
@@ -140,7 +139,7 @@ cdef extern from "../core/include/multiscale.hpp":
         MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
         OscillatorNetwork * oscnet
         SpikingNetwork * spikenet
-        vector[shared_ptr[Transducer]] transducers
+        vector[Transducer*] transducers
         void build_multiscale_projections(Projection * projT2O, Projection * projO2T) except +
         void add_transducer(Population * population, ParaMap * params)
         void run(double time, int verbosity) except +

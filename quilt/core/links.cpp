@@ -20,7 +20,7 @@ LinkFactory::LinkFactory()
     add_linker(std::make_pair("leon-jansen-rit", "leon-jansen-rit"), link_maker<LJRLJRLink>);
 }
 
-Link * LinkFactory::get_link(shared_ptr<Oscillator> source, shared_ptr<Oscillator> target, float weight, float delay,  ParaMap * params)
+Link * LinkFactory::get_link(Oscillator * source, Oscillator * target, float weight, float delay,  ParaMap * params)
 {
     std::pair<string, string> key = std::make_pair(source->oscillator_type, target->oscillator_type);
     // cout << "Link factory: making link (" + key.first + "-->" + key.second <<")"<< endl;
@@ -34,7 +34,7 @@ Link * LinkFactory::get_link(shared_ptr<Oscillator> source, shared_ptr<Oscillato
 
 /************************************************* LINK MODELS ************************************************8*/
 double JRJRLink::get(int axis, double now){
-    double result = weight * std::static_pointer_cast<jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
+    double result = weight * static_cast<jansen_rit_oscillator*>(source)->sigm(source->get_past(axis, now - delay));
     if (axis != 0){
         get_global_logger().log(ERROR, "Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
         throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
@@ -47,7 +47,7 @@ double LJRLJRLink::get(int axis, double now){
         get_global_logger().log(ERROR, "Leon-Jansen-Rit model can only ask for axis 6 (differential activity)");
         throw runtime_error("Leon-Jansen-Rit model can only ask for axis 6 (differential activity)");
     }
-    double result = weight * std::static_pointer_cast<leon_jansen_rit_oscillator>(source)->sigm(source->get_past(axis, now - delay));
+    double result = weight * static_cast<leon_jansen_rit_oscillator*>(source)->sigm(source->get_past(axis, now - delay));
     return result;
 }
 
