@@ -135,7 +135,7 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
         get_global_logger().log(WARNING, ss.str());
     }
 
-    // Counts the disconnected nodes (no outputs)
+    // Counts the disconnected nodes (no inputs)
     count=0;
     for ( unsigned int i=0; i< proj->end_dimension; i++){
         if (!has_inputs[i]) count++;
