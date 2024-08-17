@@ -441,16 +441,10 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
         std::cerr << message << std::endl;
     }
 
-    // if (verbosity > 0){
-    //     std::cout << "Running network consisting of " << n_neurons_total << " neurons for " << n_steps_total <<" timesteps"<<std::endl;
-    // }    
-
     // Synchronize evolution of each nested object
     set_evolution_context(evo);
 
     // Evolve
-    // progress bar(n_steps_total, verbosity);
-
     while (evo -> now < time){
 
         // Gathering from populations
@@ -475,7 +469,6 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
         evo -> do_step();
 
         n_steps_done++;
-        // ++bar;
     }
     perf_mgr->end_recording("simulation");
 
