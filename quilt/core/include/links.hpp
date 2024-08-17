@@ -163,3 +163,28 @@ public:
     double get(int axis, double now) override;
 };
 
+
+/**
+ * @brief Derived class for a specific link model (JRJR).
+ */
+class NJRNJRLink : public Link {
+public:
+    /**
+     * @brief Constructor for JRJRLink.
+     * @param source Source oscillator.
+     * @param target Target oscillator.
+     * @param weight Weight of the link.
+     * @param delay Delay in the link.
+     * @param params Parameters associated with the link.
+     */
+    NJRNJRLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
+        : Link(source, target, weight, delay, params) {}
+
+    /**
+     * @brief Get the value of the link for a specific axis at the given time.
+     * @param axis The axis for which to get the value.
+     * @param now Current time.
+     * @return The value of the link.
+     */
+    double get(int axis, double now) override;
+};
