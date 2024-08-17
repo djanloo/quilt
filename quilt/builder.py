@@ -491,7 +491,7 @@ class OscillatorNetwork:
     def initialize(self, states, dt=0.1):
         self._interface.initialize(states, dt=dt)
 
-    def run(self, dt=0.2, time=1):
+    def run(self, time=1):
         if not self.is_built:
             self.build()
         self._interface.run(time=time)
@@ -578,6 +578,10 @@ class OscillatorNetwork:
     
     def reg_id(self, reg_name):
         return {reg:i for reg, i in zip(self.oscillators, range(self.n_oscillators))}[reg_name]
+    
+    @property
+    def tau_init(self):
+        return np.max(self.features['connectivity']['delays'])
 
 class EEGcap:
     def __init__(self, region_mapping_file, eeg_gain_file):
