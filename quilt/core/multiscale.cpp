@@ -183,6 +183,10 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
 
     logmsg.str(""); logmsg.clear();
 
+    // Checks for disconnected transducers
+    vector<bool> transducer_has_inputs(transducers.size(), false);
+    vector<bool> transducer_has_outputs(transducers.size(), false);
+
     // T->O
     int new_connections = 0;
     for (unsigned int i = 0; i < transducers.size(); i++){
@@ -199,6 +203,8 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
                 if (projT2O->delays[i][j] < oscnet->min_delay) oscnet->min_delay = projT2O->delays[i][j];
                 // Takes trace of maximum delay
                 if (projT2O->delays[i][j] > oscnet->max_delay) oscnet->max_delay = projT2O->delays[i][j];
+                
+                transducer_has_outputs[i] = true;
             }
         }
     }
@@ -219,9 +225,33 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
                 // Takes trace of maximum delay
                 if (projO2T->delays[i][j] > oscnet->max_delay) oscnet->max_delay = projO2T->delays[i][j];
 
+                transducer_has_inputs[j] = true;
             }
         }
     }
+
+    // Counts disconnected
+    // No inputs
+    int count = 0;
+    for (int i = 0; i < transducers.size(); i++){
+        if (!transducer_has_inputs[i]) count ++;
+    }
+    if (count > 0){
+        stringstream ss;
+        ss << "MultiscaleNetwork: " << count << " transducers were found to have no inputs";
+        get_global_logger().log(WARNING, ss.str());
+    }
+    // No outputs
+    count = 0;
+    for (int i = 0; i < transducers.size(); i++){
+        if (!transducer_has_outputs[i]) count ++;
+    }
+    if (count > 0){
+        stringstream ss;
+        ss << "MultiscaleNetwork: " << count << " transducers were found to have no outputs";
+        get_global_logger().log(WARNING, ss.str());
+    }
+
     logmsg << "Multiscale connections done "<< "(added "<< new_connections<< " links)";
     log.log(INFO, logmsg.str());
     return;
