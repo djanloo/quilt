@@ -233,7 +233,7 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     // Counts disconnected
     // No inputs
     int count = 0;
-    for (int i = 0; i < transducers.size(); i++){
+    for (unsigned int i = 0; i < transducers.size(); i++){
         if (!transducer_has_inputs[i]) count ++;
     }
     if (count > 0){
@@ -243,7 +243,7 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     }
     // No outputs
     count = 0;
-    for (int i = 0; i < transducers.size(); i++){
+    for (unsigned int i = 0; i < transducers.size(); i++){
         if (!transducer_has_outputs[i]) count ++;
     }
     if (count > 0){
@@ -274,8 +274,6 @@ void MultiscaleNetwork::run(double time, int verbosity){
         << " )";
 
     get_global_logger().log(INFO, ss.str());
-
-    int n_steps_total = static_cast<int>(time / evo_long->dt) ;
     
     while (evo_long -> now < time){
 
