@@ -126,7 +126,7 @@ cdef extern from "../core/include/oscillators.hpp":
         OscillatorNetwork(vector[ParaMap *])
 
         # Homogeneous connections: only one type of link
-        void build_connections(Projection *, ParaMap *)
+        void build_connections(Projection *, ParaMap *) except +
 
         # Evolutions methods
         void run(EvolutionContext * evo, double t, int verbosity) except +

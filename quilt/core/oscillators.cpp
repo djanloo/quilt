@@ -374,6 +374,7 @@ OscillatorFactory::OscillatorFactory(){
     add_constructor("test", oscillator_maker<test_oscillator>);
     add_constructor("jansen-rit", oscillator_maker<jansen_rit_oscillator>);
     add_constructor("leon-jansen-rit", oscillator_maker<leon_jansen_rit_oscillator>);
+    add_constructor("noisy-jansen-rit", oscillator_maker<noisy_jansen_rit_oscillator>);
 }
 
 // **************************************** OSCILLATOR MODELS ***************************************** //
@@ -483,6 +484,75 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
 }
 
 vector<double> jansen_rit_oscillator::get_rate_history(){
+    vector<double> rate(memory_integrator.state_history.size(), 0);
+    for (unsigned int i = 0; i < rate.size(); i++){
+        rate[i] = sigm(memory_integrator.state_history[i][0]);
+    }
+    return rate;
+}
+
+//*********************** NOISY JANSEN-RIT  ******************************/
+
+
+// Auxiliary for Jansen-Rit
+double noisy_jansen_rit_oscillator::sigm(double v)
+{
+    return rmax / (1.0 + std::exp(s*(v0-v)));
+}
+
+noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet) 
+    :   Oscillator(params, oscnet), rng()
+{
+    oscillator_type = "noisy-jansen-rit";
+    space_dimension = 6;
+
+    // Parameters default from references
+    He = params->get("He", 3.25);       // mV
+    Hi = params->get("Hi", 22.0);       // mV
+    ke = params->get("ke", 0.1);        // ms^(-1)
+    ki = params->get("ki", 0.05);       // ms^(-1)
+    rmax = params->get("rmax", 0.005);  // ms^(-1)
+    v0 = params->get("v0", 6.0);        // mV
+    C = params->get("C", 135.0); 
+    s = params->get("s", 0.56);         // mV^-1
+    U = params->get("U", 0.13);         // ms^(-1)
+
+    sigma_noise = params->get("sigma", 0.0f);
+
+    // The system of ODEs implementing the evolution equation 
+    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
+    {
+
+        double external_currents = 0;
+        for (auto input : incoming_osc)
+        {
+            external_currents += input->get(0, t);
+        }
+        double external_inputs = U + external_currents + sigma_noise * 2 * (rng.get_uniform()-0.5);
+
+        // This is mostly a test
+        input_history.push_back(external_inputs);
+
+        dxdt[0] = x[3];
+        dxdt[1] = x[4];
+        dxdt[2] = x[5];
+
+        dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
+        dxdt[4] = He*ke*( external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
+        dxdt[5] = Hi*ki*0.25*C*sigm(0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
+
+    };
+
+    // Sets the variable of interest for the EEG
+    // In this case it corresponds to the pyramidal cells lumped potential
+    eeg_voi = [](const dynamical_state & x){return x[1] - x[2];};
+
+    // Sets the stuff of the CRK
+    memory_integrator.set_dimension(space_dimension);
+    memory_integrator.set_evolution_equation(evolve_state);
+}
+
+vector<double> noisy_jansen_rit_oscillator::get_rate_history(){
     vector<double> rate(memory_integrator.state_history.size(), 0);
     for (unsigned int i = 0; i < rate.size(); i++){
         rate[i] = sigm(memory_integrator.state_history[i][0]);
