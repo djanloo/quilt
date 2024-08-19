@@ -28,6 +28,12 @@ inc_np = include_directories(incdir_numpy)
 numpy_nodepr_api = ['-DNPY_NO_DEPRECATED_API=NPY_1_9_API_VERSION']
 np_dep = declare_dependency(include_directories: inc_np, compile_args: numpy_nodepr_api)
 
+# This uses deprecated numpy API
+# Useful because sometimes the 'no deprecated API' arg raises errors
+# Before switching to this, clean the build directory
+#
+# np_dep = declare_dependency(include_directories: inc_np)
+
 foreach name : pyx_ext_names
 
     cython_cpp_lib = py.extension_module(
