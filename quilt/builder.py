@@ -428,7 +428,7 @@ class NeuronCatalogue:
         catalogue.neuron_names = []
         
         if not os.path.exists(catalogue.yaml_file):
-            raise FileNotFoundError("YAML file not found")
+            raise FileNotFoundError(f"YAML file '{yaml_file}' not found")
         
         with open(catalogue.yaml_file, "r") as f:
             catalogue.neurons_dict = yaml.safe_load(f)

@@ -12,7 +12,7 @@ build-backend = "mesonpy"
 [project]
 name = "quilt"
 dynamic = ["version"]
-description = "A neural multiscale simulator"
+description = "A multiscale neural simulator"
 authors = [{name = "Gianluca Becuzzi", email = "becuzzigianluca@gmail.com"}]
 
 dependencies = [
