@@ -123,3 +123,32 @@ class JR2TLink: public Link{
 
         double get(int axis, double now) override;
 };
+
+/**
+ * @brief Link between a transducer and a Noisy-Jansen-Rit oscillator
+ * 
+*/
+class T2NJRLink: public Link{
+    public:
+         T2NJRLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
+        : Link(source, target, weight, delay, params) {}
+
+        /**
+         * Returns the firing rate of the population linked to the transducer.
+         * Firign rate is averaged on the long timescale.
+         * 
+         * Note: the averaging is performed by `Transducer::get_past()` method
+        */
+        double get(int axis, double now) override;
+};
+
+/**
+ * @brief Link between a Noisy-Jansen-Rit oscillator and a transducer
+*/
+class NJR2TLink: public Link{
+    public:
+         NJR2TLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
+        : Link(source, target, weight, delay, params) {}
+
+        double get(int axis, double now) override;
+};

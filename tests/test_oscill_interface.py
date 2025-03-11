@@ -78,5 +78,5 @@ def test_rate_history():
     net.oscillators['lTCV'].rate_history
 
 if __name__=="__main__":
-    # test_rate_history()
+    test_rate_history()
     pass

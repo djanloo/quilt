@@ -321,22 +321,43 @@ double JR2TLink::get(int axis, double now){
     return result;
 }
 
+double T2NJRLink::get(int axis, double now){
+    // This function is called by Oscillator objects linked to this transducer
+    // during their evolution function
+
+    // Returns the activity of the spiking population back in the past
+    // Note that the average on the large time scale is done by Transducer::get_past()
+    double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(axis, now - delay); //axis is useless
+    return result;
+}
+
+double NJR2TLink::get(int axis, double now){
+
+    if (axis != 0) throw runtime_error("Noisy-Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
+
+    // Returns the rate of the oscillator back in the past 
+    double v0 =  source->get_past(axis, now - delay);
+    double rate = static_cast<jansen_rit_oscillator*>(source)->sigm(v0);
+    double result = weight * rate;
+
+    //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
+    result *= 1e3;
+
+    return result;
+}
+
 /**************************** SIOF workaround *******************/
-/**
- * Registers the Jansen-Rit to Transducer link in the link factory
- */
-struct JR2TTypeRegistrar {
-    JR2TTypeRegistrar() {
-        get_link_factory().add_linker(std::make_pair("jansen-rit", "transducer"), link_maker<JR2TLink>);
-    }
-} jr2t_registrar;
 
+template <typename LinkType>
+void register_link(const std::string& from, const std::string& to) {
+    get_link_factory().add_linker(std::make_pair(from, to), link_maker<LinkType>);
+}
 
-/**
- * Registers the Transducer to Jansen-Rit link in the link factory
- */
-struct T2JRTypeRegistrar {
-    T2JRTypeRegistrar() {
-        get_link_factory().add_linker(std::make_pair("transducer", "jansen-rit"), link_maker<T2JRLink>);
+struct LinkRegistrar {
+    LinkRegistrar() {
+        register_link<JR2TLink>("jansen-rit", "transducer");
+        register_link<T2JRLink>("transducer", "jansen-rit");
+        register_link<NJR2TLink>("noisy-jansen-rit", "transducer");
+        register_link<T2NJRLink>("transducer", "noisy-jansen-rit");
     }
-} t2jr_registrar;
+} link_registrar;
