@@ -38,8 +38,8 @@ cdef class MultiscaleNetwork:
 
         self._multiscale_network.set_evolution_contextes(self._evo_short, self._evo_long)
     
-    def initialize(self, np.ndarray[np.double_t, ndim=2, mode='c'] states):
-        self._multiscale_network.oscnet.initialize(self._evo_long, states)
+    def initialize(self, tau, vmin, vmax):
+        self._multiscale_network.oscnet.initialize(self._evo_long, tau, vmin, vmax)
         self._n_timesteps_initialization = <int>(self._evo_long.now/self._evo_long.dt)
         self._multiscale_network.spikenet.run(self._evo_short, self._evo_long.now, 1)
 

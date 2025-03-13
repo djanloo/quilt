@@ -130,7 +130,7 @@ cdef extern from "../core/include/oscillators.hpp":
 
         # Evolutions methods
         void run(EvolutionContext * evo, double t, int verbosity) except +
-        void initialize(EvolutionContext * evo, vector[vector[double]] init_state)
+        void initialize(EvolutionContext * evo, double tau, double vmin, double vmax)
 
 # -------------------- MULTISCALE --------------------#
 

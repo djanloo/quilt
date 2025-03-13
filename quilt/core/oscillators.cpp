@@ -149,18 +149,15 @@ void OscillatorNetwork::build_connections(Projection * proj, ParaMap * link_para
     get_global_logger().log(INFO, "Built links in OscillatorNetwork");
 }
 
-void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_state> init_conds)
+void OscillatorNetwork::initialize(EvolutionContext * evo, double tau, double vmin, double vmax)
 {
     get_global_logger().log(DEBUG, "Starting initialization of OscillatorNetwork");
-
-    if (init_conds.size() != oscillators.size()){
-        get_global_logger().log(ERROR, "Number of initial conditions is not equal to number of oscillators");
-        throw runtime_error("Number of initial conditions is not equal to number of oscillators");
-    }
 
     if (!has_links){
         get_global_logger().log(WARNING, "Initializing an OscillatorNetwork without links");
     }
+    
+    ColoredNoiseGenerator cng(tau, evo->dt, vmin, vmax);
     
     // Adds a timestep to max_delay (this is useful for multiscale)
     // because Transuducers need an half-big-timestep in the past
@@ -193,22 +190,23 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
         get_global_logger().log(WARNING, logmsg.str());
 
     }
-    
+
+    // Number of timesteps of initialization
     int n_init_pts = static_cast<int>(std::ceil(max_delay/evo->dt) + 1);
 
-    for (unsigned int i = 0; i < init_conds.size(); i++ ){
-        vector<dynamical_state> new_K(4, vector<double>(oscillators[i]->get_space_dimension()));
+    for (unsigned int i = 0; i < oscillators.size(); i++ ){
+
+        // Colored noise to initialize the i-th oscillator
+        vector<double> initialization_noise = cng.generate_rescaled(n_init_pts);
 
         // Adds n_init_points values for the state X
+        // All the axis are set to 0 except for the first (output)
+        vector<double> state(oscillators[i]->get_space_dimension(), 0);
         for (int n = 0; n < n_init_pts; n++){
-            //Checks that the initialization is right in dimension
-            if (init_conds[i].size() != oscillators[i]->space_dimension){
-                get_global_logger().log(ERROR, "Initial conditions have not the right space dimension");
-                throw runtime_error("Initial conditions have not the right space dimension");
-            }
+            state[0] = initialization_noise[n];
             
             // Adds initial condition as value of X 
-            oscillators[i]->memory_integrator.state_history.push_back(init_conds[i]);
+            oscillators[i]->memory_integrator.state_history.push_back(state);
         }
 
         /*
@@ -238,6 +236,7 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, vector<dynamical_stat
         NOTE: this section is the one that originated BUG #18
 
         */
+       vector<dynamical_state> new_K(4, vector<double>(oscillators[i]->get_space_dimension()));
 
         for (int n = 0; n < n_init_pts - 1; n++){
 

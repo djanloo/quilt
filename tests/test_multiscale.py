@@ -134,9 +134,8 @@ def test_initialize():
 
     multinet.build()
 
-    states = np.random.uniform(0, 0.05, size=6*oscnet.n_oscillators).reshape(oscnet.n_oscillators, 6)
     multinet.set_evolution_contextes(dt_short=0.1, dt_long=1.0)
-    multinet.initialize(states)
+    multinet.initialize(tau=1, vmin=0.0, vmax=0.25)
 
 def test_run():
     # Builds the spiking network
@@ -172,9 +171,8 @@ def test_run():
 
     multinet.build()
 
-    states = np.random.uniform(0, 0.05, size=6*oscnet.n_oscillators).reshape(oscnet.n_oscillators, 6)
     multinet.set_evolution_contextes(dt_short=0.1, dt_long=1.0)
-    multinet.initialize(states)
+    multinet.initialize(tau=1, vmin=0.0, vmax=0.25)
 
     print("Printing max times:")
     for _ in [O2T_delays, T2O_delays, oscnet.features['connectivity']['delays']]:
@@ -217,9 +215,8 @@ def test_get_history():
 
     multinet.build()
 
-    states = np.random.uniform(0, 0.05, size=6*oscnet.n_oscillators).reshape(oscnet.n_oscillators, 6)
     multinet.set_evolution_contextes(dt_short=0.1, dt_long=1.0)
-    multinet.initialize(states)
+    multinet.initialize(tau=1, vmin=0.0, vmax=0.25)
 
     multinet.run(time=100)
 

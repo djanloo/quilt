@@ -488,8 +488,8 @@ class OscillatorNetwork:
 
         self.oscillators = dict()
     
-    def initialize(self, states, dt=0.1):
-        self._interface.initialize(states, dt=dt)
+    def initialize(self, tau, vmin, vmax, dt=0.1):
+        self._interface.initialize(tau, vmin, vmax, dt=dt)
 
     def run(self, time=1):
         if not self.is_built:
@@ -763,10 +763,10 @@ class MultiscaleNetwork:
             raise RuntimeError("Network must be built before setting the evolution contextes")
         self._interface.set_evolution_contextes(dt_short, dt_long)
 
-    def initialize(self, states):
+    def initialize(self, tau, vmin, vmax):
         if not self.is_built:
             self.build()
-        self._interface.initialize(states)
+        self._interface.initialize(tau, vmin, vmax)
     
     def run(self, time):
         if not self.is_built:

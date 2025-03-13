@@ -240,7 +240,7 @@ class OscillatorNetwork{
         void build_connections(Projection * proj, vector<ParaMap*> links_params);
 
 
-        void initialize(EvolutionContext * evo, vector<dynamical_state> init_conds);
+        void initialize(EvolutionContext * evo, double tau, double vmin, double vmax);
         void evolve();
         void run(EvolutionContext * evo, double time, int verbosity);
 
