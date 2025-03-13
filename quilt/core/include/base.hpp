@@ -35,6 +35,8 @@
 #include <mutex>
 #include <functional>
 
+#include <algorithm>
+
 #include <variant>
 #include <ctime> 
 #include <fstream> 
@@ -192,14 +194,16 @@ class RNG{
         // Seeded constructor
         RNG(const uint64_t seed)
             :   rng(seed),
-                uniform(std::numeric_limits<double>::epsilon(), 1.0 - std::numeric_limits<double>::epsilon())
+                uniform(std::numeric_limits<double>::epsilon(), 1.0 - std::numeric_limits<double>::epsilon()),
+                normal(0.0, 1.0)
         {
             // Nothing to do here
         }
 
         // Random source constructor
         RNG()
-            :   uniform(std::numeric_limits<double>::epsilon(), 1.0 - std::numeric_limits<double>::epsilon())
+            :   uniform(std::numeric_limits<double>::epsilon(), 1.0 - std::numeric_limits<double>::epsilon()),
+                normal(0.0, 1.0)
         {
                 pcg_extras::seed_seq_from<std::random_device> seed_source;
                 rng = pcg32(seed_source);
@@ -207,10 +211,12 @@ class RNG{
 
         double get_uniform(){return uniform(rng);}
         int get_int(){return static_cast<int>(rng());}
+        double get_gaussian(double mean = 0.0, double stddev = 1.0) {return mean + stddev * normal(rng);}
 
     private:        
         pcg32 rng;
         std::uniform_real_distribution<double> uniform;
+        std::normal_distribution<double> normal;
 };
 
 class RNGDispatcher{
@@ -537,6 +543,57 @@ class Projection{
         int n_links = 0;
 };
 
+
+class ColoredNoiseGenerator{
+    public:
+        ColoredNoiseGenerator(double tau, double dt, double vmin=0, double vmax=1)
+            : tau(tau),
+              dt(dt),
+              vmin(vmin),
+              vmax(vmax),
+              rng()
+              {}
+        
+        vector<double> generate_unbounded(double T) {
+                int N = static_cast<int>(T/dt);
+                vector<double> noise(N, 0.0);
+            
+                double alpha = dt / (tau + dt);
+            
+                for (int i = 1; i < N; ++i) {
+                    noise[i] = (1 - alpha) * noise[i - 1] + alpha * rng.get_gaussian();
+                }
+                
+                return noise;
+            }
+
+        vector<double> generate_rescaled(double T){
+            vector<double> noise = generate_unbounded(T);
+
+            // Fin max abs value
+            double maxabs = 0;
+            for (unsigned int i = 0; i < noise.size(); i++){
+                if (std::abs(noise[i]) > maxabs){maxabs = std::abs(noise[i]);}
+            }
+            
+            // Rescale to [-1, 1]
+            for (unsigned int i = 0; i < noise.size(); i++){
+                noise[i] = noise[i]/maxabs;
+            }
+
+            // Rescale sigmoidal to [vmin, vmax]
+            for (unsigned int i = 0; i < noise.size(); i++){
+                noise[i] = vmin + (vmax - vmin) / (1.0 + exp(-noise[i]));
+            }
+            return noise;
+        }
+
+        double tau;
+        double dt;
+        double vmin;
+        double vmax;
+        RNG rng;
+};
 
 
 /**

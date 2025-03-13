@@ -574,6 +574,15 @@ void test_multiscale_base(){
     osc_net.oscillators[0]->get_rate_history();
 }
 
+void test_colorednoisegenerator(){
+    ColoredNoiseGenerator cng(10, 0.1, 0.1, 0.25);
+    ofstream cng_data("cng_data.txt");
+    vector<double> noise = cng.generate_rescaled(100);
+    for (auto n : noise){
+        cng_data << n << endl;
+    }
+    return;
+}
 
 int main(){ 
     // test_spiking();
@@ -582,6 +591,7 @@ int main(){
     // test_NCERK();
     // test_oscill();
     // test_inhom_poisson();
-    test_multiscale_base();
+    // test_multiscale_base();
+    test_colorednoisegenerator();
 }
 

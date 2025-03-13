@@ -507,15 +507,15 @@ noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, Oscil
     space_dimension = 6;
 
     // Parameters default from references
-    He = params->get("He", 3.25);       // mV
-    Hi = params->get("Hi", 22.0);       // mV
-    ke = params->get("ke", 0.1);        // ms^(-1)
-    ki = params->get("ki", 0.05);       // ms^(-1)
-    rmax = params->get("rmax", 0.005);  // ms^(-1)
-    v0 = params->get("v0", 6.0);        // mV
-    C = params->get("C", 135.0); 
-    s = params->get("s", 0.56);         // mV^-1
-    U = params->get("U", 0.13);         // ms^(-1)
+    He = params->get("He", 3.25f);       // mV
+    Hi = params->get("Hi", 22.0f);       // mV
+    ke = params->get("ke", 0.1f);        // ms^(-1)
+    ki = params->get("ki", 0.05f);       // ms^(-1)
+    rmax = params->get("rmax", 0.005f);  // ms^(-1)
+    v0 = params->get("v0", 6.0f);        // mV
+    C = params->get("C", 135.0f); 
+    s = params->get("s", 0.56f);         // mV^-1
+    U = params->get("U", 0.13f);         // ms^(-1)
 
     sigma_noise = params->get("sigma", 0.0f);
 
