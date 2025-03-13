@@ -552,7 +552,11 @@ class ColoredNoiseGenerator{
               vmin(vmin),
               vmax(vmax),
               rng()
-              {}
+              {
+                if (vmin>=vmax){
+                    throw runtime_error("ColoredNoiseGenerator was given a negative normalization interval");
+                }
+              }
         
         vector<double> generate_unbounded(int N) {
 
