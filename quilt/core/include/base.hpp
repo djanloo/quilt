@@ -554,9 +554,9 @@ class ColoredNoiseGenerator{
               rng()
               {}
         
-        vector<double> generate_unbounded(double T) {
-                int N = static_cast<int>(T/dt);
-                vector<double> noise(N, 0.0);
+        vector<double> generate_unbounded(int N) {
+
+            vector<double> noise(N, 0.0);
             
                 double alpha = dt / (tau + dt);
             
@@ -567,8 +567,8 @@ class ColoredNoiseGenerator{
                 return noise;
             }
 
-        vector<double> generate_rescaled(double T){
-            vector<double> noise = generate_unbounded(T);
+        vector<double> generate_rescaled(int N){
+            vector<double> noise = generate_unbounded(N);
 
             // Fin max abs value
             double maxabs = 0;

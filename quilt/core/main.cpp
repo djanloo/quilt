@@ -234,23 +234,9 @@ void test_oscill(){
 
     OscillatorNetwork osc_net = OscillatorNetwork(N, params);
 
-    vector<dynamical_state> init_cond;
-    for (int i=0; i< N; i++){
-        vector<double> initstate(6, 2);
-
-        initstate[0] = 0.07 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[1] = 23.9 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[2] = 16.2 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[3] = -0.14/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[4] = 5.68/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-        initstate[5] = 108.2/1e6 * (1+ static_cast<double>(rand())/RAND_MAX);
-
-        init_cond.push_back(initstate);
-        // cout << *(osc_net.oscillators[i]->params);
-    }    
-
+   
     osc_net.build_connections(proj, link_params);
-    osc_net.initialize(&evo, init_cond);
+    osc_net.initialize(&evo, 10, 0.1, 0.25);
     
     ofstream file("output.txt");
     osc_net.run(&evo, 2000, 1);
@@ -483,22 +469,6 @@ void test_multiscale_base(){
     oscill_paramap->add("oscillator_type", "jansen-rit");
     OscillatorNetwork osc_net = OscillatorNetwork(1, oscill_paramap);
 
-    vector<dynamical_state> init_cond;
-    for (int i=0; i< 1; i++){
-        vector<double> initstate(6, 2);
-
-        initstate[0] = 0.5 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
-        initstate[1] = 23.9 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
-        initstate[2] = 16.2 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
-        initstate[3] = -0.14/1e3 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
-        initstate[4] = 5.68/1e3 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
-        initstate[5] = 108.2/1e3 * (1+ 0*static_cast<double>(rand())/RAND_MAX);
-
-        
-        init_cond.push_back(initstate);
-        // cout << *(osc_net.oscillators[i]->params);
-    }    
-
 
     // cout << "After init the long timescale is " << evo_long->now <<endl;
 
@@ -534,7 +504,7 @@ void test_multiscale_base(){
     multi_net.set_evolution_contextes(&evo_short, &evo_long);
 
     // logger.log(INFO, "initializing oscillator network" );    
-    osc_net.initialize(&evo_long, init_cond);
+    osc_net.initialize(&evo_long, 10, 0.1, 0.25);
 
     // logger.log(INFO, "initializing spiking network" );    
     spike_net.run(&evo_short, evo_long.now, 1);
@@ -577,7 +547,7 @@ void test_multiscale_base(){
 void test_colorednoisegenerator(){
     ColoredNoiseGenerator cng(10, 0.1, 0.1, 0.25);
     ofstream cng_data("cng_data.txt");
-    vector<double> noise = cng.generate_rescaled(100);
+    vector<double> noise = cng.generate_rescaled(10000);
     for (auto n : noise){
         cng_data << n << endl;
     }
