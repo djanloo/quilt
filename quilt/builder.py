@@ -5,12 +5,15 @@ from time import time
 import copy
 import warnings
 import zipfile
+import pickle
 
 import yaml
 import numpy as np
 from rich import print
 from rich.progress import track
-from scipy.signal import butter, sosfiltfilt
+# from scipy.signal import butter, sosfiltfilt
+from mne.filter import filter_data
+from scipy.stats import zscore
 
 import quilt.interface.base as base
 import quilt.interface.spiking as spiking
@@ -473,6 +476,7 @@ class OscillatorNetwork:
         self.n_oscillators = None
         self.connectivity = None
         self.oscillators = dict()
+        self.dt = None
 
         # Here is stored the information about network structure
         # without having to build it
@@ -488,7 +492,8 @@ class OscillatorNetwork:
 
         self.oscillators = dict()
     
-    def initialize(self, tau, vmin, vmax, dt=0.1):
+    def initialize(self, tau, vmin, vmax, dt=1.0):
+        self.dt = dt
         self._interface.initialize(tau, vmin, vmax, dt=dt)
 
     def run(self, time=1):
@@ -584,42 +589,78 @@ class OscillatorNetwork:
         return np.max(self.features['connectivity']['delays'])
 
 class EEGcap:
-    def __init__(self, region_mapping_file, eeg_gain_file):
-        self.regions = np.loadtxt(region_mapping_file)
-        self.eeg_gain = np.load(eeg_gain_file)
-
-        self.n_regions = len(np.unique(self.regions))
-        self.n_electrodes = self.eeg_gain.shape[0]
-
-        self.weights = np.zeros((self.n_electrodes, self.n_regions))
-
-        for j in range(self.n_electrodes):
-            for k in range(self.n_regions):
-                node_is_in_region = (self.regions == k)
-                self.weights[j, k] = np.sum(self.eeg_gain[j, node_is_in_region])
+    '''Class to compute EEG from an OscillatorNetwork
     
-    def eeg(self, network,
-            bandpass_edges=[0.5, 140], 
-            sampling_frequency=1e3,
-            filter_signal=True
+    Attributes
+    ----------
+        node_based_lfm_file: str
+            the file of the nlfm data. Must be a dict having fields 'nodes' (list[str]), 'electrodes' (lis[str]) and 'nlfm' (2D array)
+        position_map_file: str
+            the file of the channel-position map (e.g. Oostenveld's map)
+    '''
+    def __init__(self, 
+                node_based_lfm_file: str,
+                position_map_file: str
+                 ):
+        # Load the NLFM data
+        with open(node_based_lfm_file, 'rb') as f:
+            nlfm_data = pickle.load(f)
+
+        # Set nodes and regions
+        self.nodes = nlfm_data['nodes']
+        self.electrodes = nlfm_data['electrodes']
+        self.nlfm_gain = nlfm_data['nlfm']
+
+        # Load position map
+        with open(position_map_file, 'rb') as f:
+            self.position_map = pickle.load(f)
+        
+        # Compute positions
+        self.electrodes_position = np.array([self.position_map[electrode] for electrode in self.electrodes])
+
+
+    def eeg(self, network: OscillatorNetwork,
+            filter_kwargs,
+            cut_initialization=True,
+            zscore_signals=True
             ):
+        """Returns the EEG of the oscillator network.
+        
+        Arguments
+        ---------
+
+        filter_kwargs: dict
+            the arguments of mne.filter.filter_data to process the EEG
+        """
+
+        # Check if the nodes of the OscillatorNetwork are the same
+        difference_nodes = set(self.nodes) - set(network.oscillators.keys())
+        if (len(difference_nodes)):
+            warnings.warn(f"Nodes of the NLFM does not correspond to the network oscillators:\nDifferences: {difference_nodes}")
+
 
         T = len(network.oscillators[list(network.oscillators.keys())[0]].history)
-        signal = np.zeros((self.n_electrodes, T))
-        sos = butter(5, bandpass_edges, 'bandpass', fs=sampling_frequency, output='sos')
+        signals = np.zeros((len(self.nodes), T))
 
         # Takes the timeseries once to avoid overhead due to data request
-        time_series = np.zeros((self.n_regions, T))
+        time_series = np.zeros((len(self.nodes), T))
 
-        for k, oscillator_name in enumerate(network.oscillators):
-            time_series[k] = network.oscillators[oscillator_name].eeg # Uses the eeg method of oscillator that gives the right VOI
+        for i,node in enumerate(self.nodes):
+            time_series[i] = network.oscillators[node].eeg # Uses the eeg method of oscillator that gives the right VOI
 
-        for j in range(self.n_electrodes):
-            for k in range(self.n_regions):
-                signal[j] += self.weights[j, k] * time_series[k] 
-            if filter_signal:
-                signal[j] = sosfiltfilt(sos, signal[j])
-        return signal
+        signals = np.dot(self.nlfm_gain, time_series)
+
+        if cut_initialization:
+            signals = signals[:, int(network.tau_init/network.dt):]
+
+        if "sfreq" in filter_kwargs:
+            del  filter_kwargs['sfreq']
+        signals = filter_data(signals, 
+                             sfreq=1000.0/network.dt, # Time is in ms
+                             **filter_kwargs)
+        if zscore_signals:
+            signals = zscore(signals, axis=1)
+        return signals
 
 
 class MultiscaleNetwork:
