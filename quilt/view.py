@@ -3,6 +3,10 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import networkx as nx
 import zipfile
+import mne
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
+from matplotlib.colors import Normalize
+from eeg import EEGholder
 
 import pyvista as pv
 
@@ -105,3 +109,64 @@ def plot_neural_field(regional_attribute, surface_zipfile=None, region_mapping=N
 
     plotter = pv.Plotter(notebook=True)
     plotter.add_mesh(mesh, scalars=color_faces, cmap="plasma", show_edges=False)
+
+def plot_mutual_info(eeg : EEGholder, threshold, ax=None):
+    """Plots the network induced mby the thresholded MI matrix """
+
+    # If the MI is not computed yet
+    if eeg.MI is None:
+        print("Computing mutual info using bins")
+        eeg.compute_mutual_info(bins=15)
+
+    if ax is None:
+        fig, ax = plt.subplots()
+
+    G = nx.Graph()
+    pos2d = eeg.pos_azimuthal
+    for i in range(eeg.n_channels):
+        G.add_node(eeg.channel_names[i], pos=pos2d[i])
+
+    for i in range(eeg.n_channels):
+        for j in range(i + 1, eeg.n_channels):
+            if eeg.MI[i, j] > threshold:
+                G.add_edge(eeg.channel_names[i], eeg.channel_names[j], weight=eeg.MI[i, j])
+
+    pos_net = {eeg.channel_names[i]: (pos2d[i, 0], pos2d[i, 1]) for i in range(eeg.n_channels)}
+    edges = G.edges(data=True)
+
+    # Color is MI
+    edge_colors = [data['weight'] for _, _, data in edges]
+    # Line thickness is \propto MI
+    edge_lws = [2*data['weight'] for _, _, data in edges]
+
+    # Plots an empty field to show just the head
+    mne.viz.plot_topomap( eeg.MI.diagonal()*0, pos2d, show=False, 
+                            cmap="Greys", sphere=0.5,
+                            extrapolate="head", axes=ax)
+
+    nx.draw_networkx_nodes(G, pos_net, node_color="k", node_size=1, ax=ax)
+    alpha = np.round(MinMaxScaler((0.01, 1)).fit_transform(np.array(edge_colors)[:,None]).squeeze(), 3)
+
+    nx.draw_networkx_edges(G, pos_net, 
+            alpha = alpha,
+            edge_color=edge_colors, width=edge_lws,
+            edge_cmap=plt.cm.rainbow,ax=ax)
+
+    plt.colorbar(plt.cm.ScalarMappable(cmap=plt.cm.rainbow, norm=Normalize(vmin=np.min(edge_colors), vmax=np.max(edge_colors))), 
+                ax=ax, label="Mutual Information")
+
+def plot_entropy(eeg: EEGholder, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots()
+    
+    if eeg.entropy is None:
+        print("Computing entropy using bins")
+        eeg.compute_entropy(bins=15)
+
+    pos2d = eeg.pos_azimuthal
+    mne.viz.plot_topomap( eeg.entropy, pos2d, show=False, 
+                        cmap="rainbow", sphere=0.5,
+                        extrapolate="head", axes=ax)
+    
+    plt.colorbar(plt.cm.ScalarMappable(cmap=plt.cm.rainbow, norm=Normalize(vmin=np.min(eeg.entropy), vmax=np.max(eeg.entropy))), 
+                ax=ax, label="Entropy")

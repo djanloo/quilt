@@ -2,6 +2,7 @@ py = import('python').find_installation(pure: false)
 
 python_sources = [
   'builder.py',
+  'eeg.py',
   'utils.py'
 ]
 
