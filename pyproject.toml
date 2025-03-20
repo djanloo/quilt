@@ -56,7 +56,7 @@ view = [
 ]
 
 [bumpver]
-current_version = "0.6.0"
+current_version = "0.6.1"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version to {new_version}"
 tag_message = "{new_version}"
