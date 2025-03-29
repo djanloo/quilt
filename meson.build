@@ -9,7 +9,7 @@ project('quilt',
         ],
 # DO NOT CHANGE MANUALLY
 # use `bumpver update` instead
-version: '0.6.1'
+version: '0.6.2'
 )
 
 subdir('quilt')
