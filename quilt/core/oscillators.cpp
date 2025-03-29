@@ -518,6 +518,17 @@ noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, Oscil
 
     sigma_noise = params->get("sigma", 0.0f);
 
+    // Extension to connectivity parameters
+    epsC_exc_pre = params->get("epsC_exc_pre", 0.0f);
+    epsC_exc_post = params->get("epsC_exc_post", 0.0f);
+    epsC_inh_pre = params->get("epsC_inh_pre", 0.0f);
+    epsC_inh_post = params->get("epsC_inh_post", 0.0f);
+
+    if ((epsC_exc_pre<-1)|(epsC_exc_post<-1)|(epsC_inh_pre<-1)|(epsC_inh_post<-1)){
+        throw runtime_error("negative connectivity in noisy-jansen-rit (epsC < -1)");
+    }
+
+
     // The system of ODEs implementing the evolution equation 
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
     {
@@ -537,8 +548,8 @@ noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, Oscil
         dxdt[2] = x[5];
 
         dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
-        dxdt[4] = He*ke*( external_inputs + 0.8*C*sigm(C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
-        dxdt[5] = Hi*ki*0.25*C*sigm(0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
+        dxdt[4] = He*ke*( external_inputs + (1+epsC_exc_post)*0.8*C*sigm((1+epsC_exc_pre)*1.0*C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
+        dxdt[5] = Hi*ki*(1+epsC_inh_post)*0.25*C*sigm((1+ epsC_inh_pre)*0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
 
     };
 

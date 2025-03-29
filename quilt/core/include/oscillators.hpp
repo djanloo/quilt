@@ -194,7 +194,13 @@ class noisy_jansen_rit_oscillator : public Oscillator{
         float s;    //!< Firing rate sigmoid function voltage sensitivity parameter [mV]. Default 0.56.
         float rmax; //!< Maximum population mean ﬁring rate [ms^(-1)]. Default 0.005.
         float U;    //!< Bifurcation parameter: background constant input [ms^(-1)]. Default 0.13.
-        float sigma_noise;
+        float sigma_noise; //!< Variability of the uniformly distributed white noise. Default 0.0.
+        
+        // Extension of the connectivity parameters
+        float epsC_exc_pre;    //!< Relative variation of connectivity: C1 -> (1+ delta)*1.0*C
+        float epsC_exc_post;   //!< Relative variation of connectivity: C2 -> (1+ delta)*0.8*C
+        float epsC_inh_pre;    //!< Relative variation of connectivity: C3 -> (1+delta)*0.25*C
+        float epsC_inh_post;   //!< Relative variation of connectivity: C4 -> (1+delta)*0.25*C
 
         noisy_jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
         double sigm(double v);
