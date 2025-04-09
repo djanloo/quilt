@@ -618,6 +618,10 @@ class MultiscaleNetwork:
             self.features['transducers'][td['name']] = {key:val for key, val in td.items() if key != 'name'}
 
         self.is_built = False
+
+        # Timesteps
+        self.dt_short = None
+        self.dt_long = None
     
     @property
     def n_transducers(self):
@@ -638,6 +642,22 @@ class MultiscaleNetwork:
     @property
     def n_timesteps_initialization(self):
         return self._interface.n_timesteps_initialization
+    
+    @property
+    def oscillators(self):
+        '''Shorthand for EEGcap compatibility'''
+        return self.oscillator_network.oscillators
+
+    @property
+    def tau_init(self):
+        '''Shorthand for EEGcap compatibility'''
+        return self.oscillator_network.tau_init
+
+    @property
+    def dt(self):
+        '''Shorthand for EEGcap compatibility'''
+        return self.oscillator_network.dt
+
 
     def set_multiscale_projections(self, file=None, 
                                     T2O_coupling=None, O2T_coupling=None, 
@@ -729,11 +749,14 @@ class MultiscaleNetwork:
         if not self.is_built:
             raise RuntimeError("Network must be built before setting the evolution contextes")
         self._interface.set_evolution_contextes(dt_short, dt_long)
+        self.dt_long = dt_long
+        self.dt_short = dt_short
 
     def initialize(self, tau, vmin, vmax):
         if not self.is_built:
             self.build()
         self._interface.initialize(tau, vmin, vmax)
+        self.oscillator_network.dt = self.dt_long
     
     def run(self, time):
         if not self.is_built:
