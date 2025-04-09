@@ -2,6 +2,8 @@ import warnings
 import pickle 
 
 import numpy as np
+import matplotlib.pyplot as plt
+
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from scipy import signal
 from scipy.stats import zscore
@@ -10,8 +12,9 @@ from sklearn.feature_selection import mutual_info_regression
 from rich.progress import track
 
 from mne.filter import filter_data
-from sklearn.neighbors import NearestNeighbors
+from mne.viz import plot_topomap
 
+from sklearn.neighbors import NearestNeighbors
 from quilt.builder import OscillatorNetwork
 
 def entropy_knn(data, k=3):
@@ -52,6 +55,81 @@ def azimuthal_equidistant_projection(positions_3d):
         x_2d = r * np.cos(phi)
         y_2d = r * np.sin(phi)
         return np.column_stack((x_2d, y_2d))
+
+
+
+def sort_electrodes(electrode_names, position_map=None, return_dims=False):
+    left = []
+    center = []
+    right = []
+
+    for electrode in electrode_names:
+        if electrode[-1] == 'z':
+            center+= [electrode]
+        else:
+            n = int(electrode[-1])
+            if n%2 ==0:
+                right += [electrode]
+            else:
+                left += [electrode]
+    
+    if position_map is not None:
+        ## Sorted by rostro-caudal dimension
+        order = lambda x: position_map[x][1] 
+        left = sorted(left, key=order, reverse=True)
+        center = sorted(center, key=order, reverse=True)
+        right = sorted(right, key=order, reverse=True)
+    else:
+        # Sorts by alphabetical order
+        left = sorted(left)
+        center = sorted(center)
+        right = sorted(right)
+    
+    result = (right + center + left,)
+
+    # Adds the counts if requested
+    if return_dims:
+        result += (dict(right=len(right), center=len(center), left=len(left)),)
+
+    return result
+
+
+class EEGPSDholder:
+    def __init__(self, psd, f, channel_names, position_map):
+        self.psd = psd
+        self.channel_names = channel_names
+        self.position_map = position_map
+        self.positions = np.array([self.position_map[ch] for ch in self.channel_names])
+        self.positions2Dazim = azimuthal_equidistant_projection(self.positions)
+        self.positions2Dproj = self.positions[:, 0:2]
+
+        self.positions2Dproj /= np.linalg.norm(self.positions2Dproj, keepdims=True)
+        self.positions2Dazim /= np.linalg.norm(self.positions2Dazim, keepdims=True)
+
+        self.f = f
+
+        # Normalization
+        for i in range(len(channel_names)):
+            self.psd[i] = self.psd[i] / np.trapz(self.psd[i], x=f)
+
+    def bandpower(self, band):
+        
+        bandpowers = np.zeros(self.psd.shape[0])
+        fmask = (self.f>band[0])&(self.f<band[1])
+        for i in range(len(self.channel_names)):
+            bandpowers[i] = np.trapz(self.psd[i][fmask],x=self.f[fmask] )
+
+        return bandpowers
+    
+    def plot_band_topomap(self, band, ax=None):
+        if ax is None:
+            fig, ax = plt.subplots()
+        
+        return plot_topomap(self.bandpower(band), self.positions2Dazim, 
+                            axes=ax, 
+                            contours=0,
+                            sphere=0.15, image_interp='cubic')
+    
 
 class EEGholder:
     """Aggregate class for EEG in raw format. This class is Deprecated.
@@ -294,7 +372,7 @@ class EEGcap:
 
     def eeg(self, network: OscillatorNetwork,
             filter_kwargs,
-            cut_initialization=True,
+            init_to_skip=1,
             zscore_signals=True
             ):
         """Returns the EEG of the oscillator network.
@@ -322,8 +400,8 @@ class EEGcap:
 
         signals = np.dot(self.nlfm_gain, time_series)
 
-        if cut_initialization:
-            signals = signals[:, int(network.tau_init/network.dt):]
+        if init_to_skip > 0:
+            signals = signals[:, init_to_skip*int(network.tau_init/network.dt):]
 
         if "sfreq" in filter_kwargs:
             del  filter_kwargs['sfreq']
