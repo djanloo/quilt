@@ -230,7 +230,11 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
                                                 double now, double dt, 
                                                 int start_id, int end_id, 
                                                 RNGDispatcher * rng_disp){
-    
+    /** NOTE: this function could be somewhat optimized by precomputing the cumulative sum.
+     * This, by the wy would prevent form the computation of two sums:  avg_rate = 0.5(rate[t] + rate[t+1]) and leftovers[i] += avg_rate
+     * and would need however to compute the difference: integrate_cumsum[t] - integrate_cumsum[last_spike].avg_rate_in_timestep
+    */                                           
+
     // DECOMMENT IF THIS METHOD CREATES TROUBLE
     // inhomlog.set_level(INFO);
 
@@ -247,7 +251,6 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
     
     // Gets an independent random number generator
     RNG * thread_rng = rng_disp->get_rng();
-
 
     for (int i = start_id; i < end_id; i++)
     {
