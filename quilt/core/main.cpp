@@ -400,21 +400,21 @@ void test_inhom_poisson(){
                                         {"E_in",-65.0f}
                                         };
     ParaMap spiking_paramap = ParaMap(map_of_params);
-    Population spikepop = Population(5000, &spiking_paramap, &spike_net);
+    Population spikepop = Population(2000, &spiking_paramap, &spike_net);
 
     // Now create a dummy double(void) function that mimicks the Link::get() method
     std::function<double(float)> ratefunc = [](float now){
         // cout << "Getting rate"<< endl;
         double t_sec = now * 1e-3;
-        double u = sin(6.28 * 2.5 * t_sec);
-        return 200*u*u + 100;
+        double u = sin(6.28 * 5 * t_sec);
+        return 500*u*u + 100;
     };
 
     InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 100);
     EvolutionContext evo(0.1);
     // ips.inject(&evo);
     spike_net.add_injector(&ips);
-    spike_net.run(&evo, 300, 1);
+    spike_net.run(&evo, 250, 1);
 
 }
 
@@ -560,8 +560,8 @@ int main(){
     // test_poisson();
     // test_NCERK();
     // test_oscill();
-    // test_inhom_poisson();
+    test_inhom_poisson();
     // test_multiscale_base();
-    test_colorednoisegenerator();
+    // test_colorednoisegenerator();
 }
 
