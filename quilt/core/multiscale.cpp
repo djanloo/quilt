@@ -327,6 +327,7 @@ double T2NJRLink::get(int axis, double now){
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
+    // Note 2: the negative rates are interpreted as inhibitory inputs. 
     double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(axis, now - delay); //axis is useless
     return result;
 }

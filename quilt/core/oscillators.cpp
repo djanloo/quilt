@@ -533,23 +533,36 @@ noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, Oscil
     evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
     {
 
-        double external_currents = 0;
+        double ext_exc_inputs = 0;  // External excitatory inputs
+        double ext_inh_inputs = 0;  // External inhibitory inputs
+        double ext_temp = 0;        // Temporary variable
+
+        // If the input is excitatory filters through the
+        // excitatory response function
         for (auto input : incoming_osc)
         {
-            external_currents += input->get(0, t);
+            ext_temp = input->get(0, t);
+            if (ext_temp >= 0){
+                ext_exc_inputs += ext_temp;
+            }else{
+                ext_inh_inputs += ext_temp;
+            }
         }
-        double external_inputs = U + external_currents + sigma_noise * 2 * (rng.get_uniform()-0.5);
+        // Adds the bifurcation parameter and the noise
+        ext_exc_inputs += U + sigma_noise * 2 * (rng.get_uniform()-0.5);
 
         // This is mostly a test
-        input_history.push_back(external_inputs);
+        input_history.push_back(ext_exc_inputs);
+        input_history.push_back(ext_inh_inputs);
 
+        // Sets up the diffeq
         dxdt[0] = x[3];
         dxdt[1] = x[4];
         dxdt[2] = x[5];
 
         dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
-        dxdt[4] = He*ke*( external_inputs + (1+epsC_exc_post)*0.8*C*sigm((1+epsC_exc_pre)*1.0*C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
-        dxdt[5] = Hi*ki*(1+epsC_inh_post)*0.25*C*sigm((1+ epsC_inh_pre)*0.25*C*x[0]) - 2*ki*x[5] - ki*ki*x[2];
+        dxdt[4] = He*ke*( ext_exc_inputs + (1+epsC_exc_post)*0.8*C*sigm((1+epsC_exc_pre)*1.0*C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
+        dxdt[5] = Hi*ki*( ext_inh_inputs + (1+epsC_inh_post)*0.25*C*sigm((1+ epsC_inh_pre)*0.25*C*x[0])) - 2*ki*x[5] - ki*ki*x[2];
 
     };
 
