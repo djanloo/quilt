@@ -10,6 +10,62 @@ from eeg import EEGholder
 
 import pyvista as pv
 
+class ParcelledCortexPlot:
+    '''Plotter for a scalar field on the surface'''
+
+    def __init__(self, surface_zipfile, vertex_mapping, screenshot_dpi=300, width_inches=5, height_inches=4):
+        
+        # Loads vetrices and triangles from the goddam zip file
+        with zipfile.ZipFile(surface_zipfile, 'r') as zip_ref:
+            vertices = np.loadtxt(zip_ref.open('vertices.txt'))
+            triangles = np.loadtxt(zip_ref.open('triangles.txt')).astype(int)
+        
+        # Suffered region mapping goes here
+        self.mapping = np.loadtxt(vertex_mapping).astype(int)
+        self.node_ids = np.sort(np.unique(self.mapping))
+
+        # Compute dict of mapping
+        self.node_vertex_map = {}
+        for node_id in self.node_ids:
+            is_in_node = self.mapping == node_id
+            self.node_vertex_map[node_id] = np.where(is_in_node)
+
+        # Makes the pyvista mesh
+        self.mesh = pv.PolyData()
+        self.mesh.points = vertices
+        self.mesh.faces = np.hstack([[3, *tr] for tr in triangles]).astype(int)
+
+        # Default params
+        self.screenshot_window_size = [screenshot_dpi * width_inches, screenshot_dpi * height_inches]
+        self.viz_window_size = [600, 600]
+        self.mesh_viz_kwargs = dict( 
+            specular=0.5,         
+            specular_power=10,     
+            diffuse=0.8,           
+            ambient=0.2,      
+            opacity=1,    
+            show_edges=False,
+            interpolate_before_map=False,
+            smooth_shading=True,
+        )
+
+    def set_scalar(self, scalar_field, name='scalar'):
+        if len(scalar_field) != len(self.node_ids):
+            raise ValueError("Scalar field has different size than nodes")
+
+        # Assing vertex scalar based on mapping
+        vertex_values = np.zeros(len(self.mesh.points))
+        for node in node:
+            vertex_values[self.node_vertex_map[node]] = scalar_field
+
+        self.mesh.point_data[name] = vertex_values
+    
+    def plot(self, scalar_name='scalar'):
+        self.plotter = pv.Plotter(window_size=self.viz_window_size)
+        self.plotter.enable_parallel_projection()
+        self.plotter.set_background("white")
+
+    
 def animate_spiking(spiking_network):
 
     fig, ax = plt.subplots()
