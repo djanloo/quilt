@@ -413,17 +413,21 @@ class EEGcap:
         self.signals = signals
         return signals
     
-    def get_electrode_projection(self):
+    def get_electrode_projection(self, method='equidist'):
         positions_3d = self.electrodes_position/np.linalg.norm(self.electrodes_position, axis=1, keepdims=True)
-        x, y, z = positions_3d[:, 0], positions_3d[:, 1], positions_3d[:, 2]
-        
-        theta = np.arccos(z) 
-        phi = np.arctan2(y, x)
-        
-        r = theta / np.pi
-        x_2d = r * np.cos(phi)
-        y_2d = r * np.sin(phi)
-        return np.column_stack((x_2d, y_2d))
+
+        if method == 'equidist':
+            x, y, z = positions_3d[:, 0], positions_3d[:, 1], positions_3d[:, 2]
+            
+            theta = np.arccos(z) 
+            phi = np.arctan2(y, x)
+            
+            r = theta / np.pi
+            x_2d = r * np.cos(phi)
+            y_2d = r * np.sin(phi)
+            return np.column_stack((x_2d, y_2d))
+        if method == 'cartesian':
+            return positions_3d[:, :2]
     
     def compute_normalized_psd(self, fmax=45):
         """Computes the PSD of each channel. By default the spectral resolution is 0.5Hz."""

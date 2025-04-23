@@ -34,6 +34,7 @@ class SpikingNetwork:
         # without a built network.
         # Features is a dict having possible fields ['populations', 'projections', 'devices']
         self.features = dict() 
+        self.dt = None
 
     def monitorize_spikes(self, populations=None):
         if self.is_built:
@@ -72,7 +73,7 @@ class SpikingNetwork:
 
     
     def run(self, dt=0.1, time=1):
-
+        self.dt = 0.1
         if not self.is_built:
             self.build()
         self._interface.run(dt, time)
@@ -219,6 +220,28 @@ class SpikingNetwork:
     def n_populations(self):
         return len(self.populations.keys())
     
+    def get_firing_rates(self, delta_ms=1, sliding=True):
+        block_size = int(delta_ms/self.dt) 
+
+        firing_rates = dict()
+
+        for pop in self.populations:
+            x = self.populations[pop].get_data('spikes')
+
+            if sliding:
+                window = np.ones(block_size)
+                conv = np.convolve(x, window, mode='valid')
+                conv_hz = conv * 1000 / delta_ms / self.populations[pop].n_neurons
+                firing_rates[pop] = conv_hz
+            else:
+                cut_len = len(x) - len(x) % block_size
+                x_cut = x[:cut_len]
+                x_reshaped = x_cut.reshape(-1, block_size)
+                sums = x_reshaped.sum(axis=1)
+                firing_rates[pop] = sums / delta_ms * 1000 / self.populations[pop].n_neurons
+
+        return firing_rates
+
     def pop_id(self, pop_name):
         return {pop:i for pop, i in zip(self.populations, range(self.n_populations))}[pop_name]
 
@@ -476,7 +499,7 @@ class OscillatorNetwork:
         self.n_oscillators = None
         self.connectivity = None
         self.oscillators = dict()
-        self.dt = None
+        self.dt = None 
 
         # Here is stored the information about network structure
         # without having to build it
@@ -662,6 +685,9 @@ class MultiscaleNetwork:
     def set_multiscale_projections(self, file=None, 
                                     T2O_coupling=None, O2T_coupling=None, 
                                     T2O=None, O2T=None):
+        
+        self.features['T2O_coupling'] = T2O_coupling
+        self.features['O2T_coupling'] = O2T_coupling
 
         if file is not None:
             T2O, O2T = self._get_mproj_from_yaml(file, T2O_coupling=T2O_coupling, O2T_coupling=O2T_coupling)
@@ -751,6 +777,9 @@ class MultiscaleNetwork:
         self._interface.set_evolution_contextes(dt_short, dt_long)
         self.dt_long = dt_long
         self.dt_short = dt_short
+
+        # This is a workaround TODO: get dt from C++ object for spikenet
+        self.spiking_network.dt = dt_short
 
     def initialize(self, tau, vmin, vmax):
         if not self.is_built:
