@@ -583,6 +583,102 @@ vector<double> noisy_jansen_rit_oscillator::get_rate_history(){
     return rate;
 }
 
+//*********************** BINOISY JANSEN-RIT  ******************************/
+
+
+// Auxiliary for Jansen-Rit
+double binoisy_jansen_rit_oscillator::sigm(double v)
+{
+    return rmax / (1.0 + std::exp(s*(v0-v)));
+}
+
+binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet) 
+    :   Oscillator(params, oscnet), rng()
+{
+    oscillator_type = "binoisy-jansen-rit";
+    space_dimension = 6;
+
+    // Parameters default from references
+    He = params->get("He", 3.25f);       // mV
+    Hi = params->get("Hi", 22.0f);       // mV
+    ke = params->get("ke", 0.1f);        // ms^(-1)
+    ki = params->get("ki", 0.05f);       // ms^(-1)
+    rmax = params->get("rmax", 0.005f);  // ms^(-1)
+    v0 = params->get("v0", 6.0f);        // mV
+    C = params->get("C", 135.0f); 
+    s = params->get("s", 0.56f);         // mV^-1
+    U = params->get("U", 0.13f);         // ms^(-1)
+
+    // Extension of the noise parameters
+    sigma_exc = params->get("sigma_exc", 0.0f);
+    sigma_inh = params->get("sigma_inh", 0.0f);
+
+    // Extension to connectivity parameters
+    epsC_exc_pre = params->get("epsC_exc_pre", 0.0f);
+    epsC_exc_post = params->get("epsC_exc_post", 0.0f);
+    epsC_inh_pre = params->get("epsC_inh_pre", 0.0f);
+    epsC_inh_post = params->get("epsC_inh_post", 0.0f);
+
+    if ((epsC_exc_pre<-1)|(epsC_exc_post<-1)|(epsC_inh_pre<-1)|(epsC_inh_post<-1)){
+        throw runtime_error("negative connectivity in noisy-jansen-rit (epsC < -1)");
+    }
+
+    // The system of ODEs implementing the evolution equation 
+    evolve_state = [this](const dynamical_state & x, dynamical_state & dxdt, double t)
+    {
+
+        double ext_exc_inputs = 0;  // External excitatory inputs
+        double ext_inh_inputs = 0;  // External inhibitory inputs
+        double ext_temp = 0;        // Temporary variable
+
+        // If the input is excitatory filters through the
+        // excitatory response function
+        for (auto input : incoming_osc)
+        {
+            ext_temp = input->get(0, t);
+            if (ext_temp >= 0){
+                ext_exc_inputs += ext_temp;
+            }else{
+                ext_inh_inputs += ext_temp;
+            }
+        }
+        // Adds the bifurcation parameter and the noise
+        ext_exc_inputs += U + sigma_exc * rng.get_uniform();
+        ext_inh_inputs += sigma_inh * rng.get_uniform();
+
+        // This is mostly a test
+        input_history.push_back(ext_exc_inputs);
+        input_history.push_back(ext_inh_inputs);
+
+        // Sets up the diffeq
+        dxdt[0] = x[3];
+        dxdt[1] = x[4];
+        dxdt[2] = x[5];
+
+        dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
+        dxdt[4] = He*ke*( ext_exc_inputs + (1+epsC_exc_post)*0.8*C*sigm((1+epsC_exc_pre)*1.0*C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
+        dxdt[5] = Hi*ki*( -ext_inh_inputs + (1+epsC_inh_post)*0.25*C*sigm((1+ epsC_inh_pre)*0.25*C*x[0])) - 2*ki*x[5] - ki*ki*x[2];
+
+    };
+
+    // Sets the variable of interest for the EEG
+    // In this case it corresponds to the pyramidal cells lumped potential
+    eeg_voi = [](const dynamical_state & x){return x[1] - x[2];};
+
+    // Sets the stuff of the CRK
+    memory_integrator.set_dimension(space_dimension);
+    memory_integrator.set_evolution_equation(evolve_state);
+}
+
+vector<double> binoisy_jansen_rit_oscillator::get_rate_history(){
+    vector<double> rate(memory_integrator.state_history.size(), 0);
+    for (unsigned int i = 0; i < rate.size(); i++){
+        rate[i] = sigm(memory_integrator.state_history[i][0]);
+    }
+    return rate;
+}
+
+
 
 /************************ LEON JANSEN RIT *************************************/
 

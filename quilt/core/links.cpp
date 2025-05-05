@@ -14,6 +14,7 @@ LinkFactory::LinkFactory()
     add_linker(std::make_pair("base", "base"), link_maker<Link>);
     add_linker(std::make_pair("jansen-rit", "jansen-rit"), link_maker<JRJRLink>);
     add_linker(std::make_pair("noisy-jansen-rit", "noisy-jansen-rit"), link_maker<NJRNJRLink>);
+    add_linker(std::make_pair("binoisy-jansen-rit", "binoisy-jansen-rit"), link_maker<BNJRBNJRLink>);
     add_linker(std::make_pair("leon-jansen-rit", "leon-jansen-rit"), link_maker<LJRLJRLink>);
 }
 
@@ -57,3 +58,11 @@ double NJRNJRLink::get(int axis, double now){
     return result;
 }
 
+double BNJRBNJRLink::get(int axis, double now){
+    double result = weight * static_cast<noisy_jansen_rit_oscillator*>(source)->sigm(source->get_past(axis, now - delay));
+    if (axis != 0){
+        get_global_logger().log(ERROR, "binoisy Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
+        throw runtime_error("binoisy Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
+    }
+    return result;
+}

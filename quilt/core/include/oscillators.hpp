@@ -211,6 +211,36 @@ class noisy_jansen_rit_oscillator : public Oscillator{
 };
 
 
+class binoisy_jansen_rit_oscillator : public Oscillator{
+    public:
+        float ke;   //!< Rate constant for postsynaptic population response to excitatory input [ms^(-1)]. Default 0.1.
+        float ki;   //!< Rate constant for postsynaptic population response to inhibitory input [ms^(-1)]. Default 0.05.
+        float He;   //!< Maximum amplitude of the excitatory postsynaptic population response [mV]. Default 3.25.
+        float Hi;   //!< Maximum amplitude of the inhibitory postsynaptic population response [mV]. Default 22.0.
+        float C;    //!< Connectivity constant: pyramidal to spiny stellate. Default 135.
+        float v0;   //!< Population mean ﬁring threshold potential [mV]. Default 6.0.
+        float s;    //!< Firing rate sigmoid function voltage sensitivity parameter [mV]. Default 0.56.
+        float rmax; //!< Maximum population mean ﬁring rate [ms^(-1)]. Default 0.005.
+        float U;    //!< Bifurcation parameter: background constant input [ms^(-1)]. Default 0.13.
+
+        // Extension of the noise parameter
+        float sigma_exc; //!< Variability of the uniformly distributed excitatory white noise. Default 0.0.
+        float sigma_inh; //!< Variability of the uniformly distributed excitatory white noise. Default 0.0.
+
+        // Extension of the connectivity parameters
+        float epsC_exc_pre;    //!< Relative variation of connectivity: C1 -> (1+ delta)*1.0*C
+        float epsC_exc_post;   //!< Relative variation of connectivity: C2 -> (1+ delta)*0.8*C
+        float epsC_inh_pre;    //!< Relative variation of connectivity: C3 -> (1+delta)*0.25*C
+        float epsC_inh_post;   //!< Relative variation of connectivity: C4 -> (1+delta)*0.25*C
+
+        binoisy_jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet);
+        double sigm(double v);
+        vector<double> get_rate_history() override;
+    
+    private:
+        RNG rng;
+};
+
 
 class leon_jansen_rit_oscillator : public Oscillator{
     public:
