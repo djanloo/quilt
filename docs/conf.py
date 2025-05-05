@@ -13,7 +13,7 @@ copyright = '2024, djanloo'
 author = 'djanloo'
 
 # Do not change manually, use bumpver update
-release = '0.7.0'
+release = '0.7.1'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
