@@ -562,7 +562,7 @@ noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, Oscil
 
         dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
         dxdt[4] = He*ke*( ext_exc_inputs + (1+epsC_exc_post)*0.8*C*sigm((1+epsC_exc_pre)*1.0*C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
-        dxdt[5] = Hi*ki*( ext_inh_inputs + (1+epsC_inh_post)*0.25*C*sigm((1+ epsC_inh_pre)*0.25*C*x[0])) - 2*ki*x[5] - ki*ki*x[2];
+        dxdt[5] = Hi*ki*( -ext_inh_inputs + (1+epsC_inh_post)*0.25*C*sigm((1+ epsC_inh_pre)*0.25*C*x[0])) - 2*ki*x[5] - ki*ki*x[2];
 
     };
 
