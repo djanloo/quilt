@@ -428,6 +428,8 @@ class EEGcap:
             return np.column_stack((x_2d, y_2d))
         if method == 'cartesian':
             return positions_3d[:, :2]
+        else:
+            raise ValueError("Method must be either 'equidist' or 'cartesian'")
     
     def compute_normalized_psd(self, fmax=45):
         """Computes the PSD of each channel. By default the spectral resolution is 0.5Hz."""
