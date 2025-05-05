@@ -1,0 +1,326 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage &mdash; quilt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5a057da9"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python code references" href="autodoc_py.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            quilt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#with-python-jupyter">with Python/Jupyter</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#neuron-catalogues">Neuron catalogues</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#spiking-networks">Spiking networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#oscillator-networks">Oscillator networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiscale-networks">Multiscale networks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiscale-connectome">Multiscale connectome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i-o-and-running">I/O and running</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#in-pure-c">in pure C++</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc_py.html">Python code references</a></li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc_cpp.html">C++ code references</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">quilt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage">
+<h1>Usage<a class="headerlink" href="#usage" title="Link to this heading"></a></h1>
+<section id="with-python-jupyter">
+<h2>with Python/Jupyter<a class="headerlink" href="#with-python-jupyter" title="Link to this heading"></a></h2>
+<p>Configuration files are written in yaml.</p>
+<section id="neuron-catalogues">
+<h3>Neuron catalogues<a class="headerlink" href="#neuron-catalogues" title="Link to this heading"></a></h3>
+<p>A catalogue is a list of neuron models:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># neuron_catalogue.yml</span>
+
+<span class="nt">D1_neuron</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">neuron_type</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">aeif</span>
+<span class="w">    </span><span class="nt">C_m </span><span class="p">:</span><span class="w">         </span><span class="l l-Scalar l-Scalar-Plain">40.</span>
+<span class="w">    </span><span class="nt">G_L </span><span class="p">:</span><span class="w">         </span><span class="l l-Scalar l-Scalar-Plain">200.0</span>
+
+<span class="w">    </span><span class="nt">E_l</span><span class="p">:</span><span class="w">        </span><span class="l l-Scalar l-Scalar-Plain">-70.0</span>
+<span class="w">    </span><span class="nt">V_reset</span><span class="p">:</span><span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">-55.0</span>
+<span class="w">    </span><span class="nt">V_peak</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">tau_refrac</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+
+<span class="w">    </span><span class="c1"># Exp pars</span>
+<span class="w">    </span><span class="nt">delta_T</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">2</span>
+<span class="w">    </span><span class="nt">V_th</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">-40</span>
+
+<span class="w">    </span><span class="c1"># Adapting pars</span>
+<span class="w">    </span><span class="nt">ada_a</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">0.0</span>
+<span class="w">    </span><span class="nt">ada_b</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">5.0</span>
+<span class="w">    </span><span class="nt">ada_tau_w</span><span class="p">:</span><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">100.0</span>
+
+<span class="w">    </span><span class="c1"># Syn pars</span>
+<span class="w">    </span><span class="nt">tau_ex</span><span class="p">:</span><span class="w">   </span><span class="l l-Scalar l-Scalar-Plain">10.</span>
+<span class="w">    </span><span class="nt">tau_in</span><span class="p">:</span><span class="w">   </span><span class="l l-Scalar l-Scalar-Plain">5.5</span>
+<span class="w">    </span><span class="nt">E_ex</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.</span>
+<span class="w">    </span><span class="nt">E_in</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">-65.</span>
+</pre></div>
+</div>
+<p>To load a neuron catalogue:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">quilt.builder</span> <span class="kn">import</span> <span class="n">NeuronCatalogue</span>
+<span class="n">catalogue</span> <span class="o">=</span> <span class="n">NeuronCatalogue</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s2">&quot;neuron_catalogue.yml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="spiking-networks">
+<h3>Spiking networks<a class="headerlink" href="#spiking-networks" title="Link to this heading"></a></h3>
+<p>Spiking networks are defined by a list of populations and projections.
+Each population uses a model defined in a catalogue.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># network_model.yml</span>
+
+<span class="nt">populations</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">D1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6000</span>
+<span class="w">    </span><span class="nt">neuron_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">D1_neuron</span>
+<span class="w">  </span><span class="nt">D2</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">6000</span>
+<span class="w">    </span><span class="nt">neuron_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">D2_neuron</span>
+
+<span class="c1"># Note: projections must be in the A-&gt;B format</span>
+<span class="nt">projections</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">D1-&gt;D1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">fan_in</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">364</span>
+<span class="w">    </span><span class="nt">delay</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">1.7</span>
+<span class="w">    </span><span class="nt">weight</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.12</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">inh</span>
+
+<span class="w">  </span><span class="nt">D1-&gt;D2</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">fan_in</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">84</span>
+<span class="w">    </span><span class="nt">delay</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">1.7</span>
+<span class="w">    </span><span class="nt">weight</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.30</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">inh</span>
+
+<span class="w">  </span><span class="nt">D2-&gt;D1</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">fan_in</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">392</span>
+<span class="w">    </span><span class="nt">delay</span><span class="p">:</span><span class="w">      </span><span class="l l-Scalar l-Scalar-Plain">1.7</span>
+<span class="w">    </span><span class="nt">weight</span><span class="p">:</span><span class="w">     </span><span class="l l-Scalar l-Scalar-Plain">0.36</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w">       </span><span class="l l-Scalar l-Scalar-Plain">inh</span>
+</pre></div>
+</div>
+<p>The parameters of a projection between an efferent population of size <code class="docutils literal notranslate"><span class="pre">N</span></code> and an afferent population of size <code class="docutils literal notranslate"><span class="pre">M</span></code> are (see <a class="reference external" href="https://github.com/djanloo/quilt/issues/2">here</a>):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">fan_in</span></code>: average incoming synapses of the afferent neuron</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delay</span></code>: central value of delay (lognorm distributed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delay_delta</span></code>: standard deviation of delay (lognorm distributed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight</span></code>: central value of weight (lognorm distributed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">weight_delta</span></code>: standard deviation of weight (lognorm distributed)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code>: <code class="docutils literal notranslate"><span class="pre">inh</span></code> or <code class="docutils literal notranslate"><span class="pre">exc</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>To build a spiking network:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">quilt.builder</span> <span class="kn">import</span> <span class="n">SpikingNetwork</span>
+<span class="n">spikenet</span> <span class="o">=</span> <span class="n">SpikingNetwork</span><span class="o">.</span><span class="n">from_yaml</span><span class="p">(</span><span class="s2">&quot;network_model.yml&quot;</span><span class="p">,</span> <span class="s2">&quot;neuron_catalogue.yml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="oscillator-networks">
+<h3>Oscillator networks<a class="headerlink" href="#oscillator-networks" title="Link to this heading"></a></h3>
+<p>To build an oscillator (cortical) network a large-scale connectivity of the network is needed.
+The most common format of large-scale connectivities it the format of The Virtual Brain. A TVB connectome is made of</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>a dictionary of the geometrical centers of the regions</p></li>
+<li><p>a matrix of weights</p></li>
+<li><p>a matrix of delays</p></li>
+</ul>
+</div></blockquote>
+<p>often grrouped in a zip file.</p>
+<p>Given that, a homogeneous network can be constructed with</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">oscnet</span> <span class="o">=</span> <span class="n">OscillatorNetwork</span><span class="o">.</span><span class="n">homogeneous_from_TVB</span><span class="p">(</span><span class="s2">&quot;/connectivity_desikan.zip&quot;</span><span class="p">,</span>
+                                              <span class="p">{</span><span class="s1">&#39;oscillator_type&#39;</span><span class="p">:</span><span class="s1">&#39;jansen-rit&#39;</span><span class="p">,</span>
+                                              <span class="s1">&#39;U&#39;</span><span class="p">:</span><span class="mf">0.12</span><span class="p">},</span>
+                                              <span class="n">global_weight</span><span class="o">=</span><span class="mf">5.0</span><span class="p">,</span>
+                                              <span class="n">conduction_speed</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The dictionary provided to the function is used to set the parameters of the oscillators.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Check the spelling for the name of parameters in the documentation of each oscillator since no errors are raised for mispelled parameters.</p>
+</div>
+</section>
+<section id="multiscale-networks">
+<h3>Multiscale networks<a class="headerlink" href="#multiscale-networks" title="Link to this heading"></a></h3>
+<p>Multiscale networks require an instance of <a class="reference internal" href="autodoc_py.html#quilt.builder.SpikingNetwork" title="quilt.builder.SpikingNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">quilt.builder.SpikingNetwork</span></code></a> and <a class="reference internal" href="autodoc_py.html#quilt.builder.OscillatorNetwork" title="quilt.builder.OscillatorNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">quilt.builder.OscillatorNetwork</span></code></a>.
+Furthermore a multiscale connectome must be given, but this will be explained in the next section.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">multinet</span> <span class="o">=</span> <span class="n">MultiscaleNetwork</span><span class="p">(</span><span class="n">spikenet</span><span class="p">,</span> <span class="n">oscnet</span><span class="p">,</span> <span class="s2">&quot;./transducers.yaml&quot;</span><span class="p">)</span>
+<span class="n">multinet</span><span class="o">.</span><span class="n">set_multiscale_projections</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="s2">&quot;putamen_weights.yaml&quot;</span><span class="p">,</span>
+                                  <span class="n">T2O_coupling</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span>
+                                  <span class="n">O2T_coupling</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="multiscale-connectome">
+<h3>Multiscale connectome<a class="headerlink" href="#multiscale-connectome" title="Link to this heading"></a></h3>
+<p>Transducers (supersynapses) target only one population each.
+Their parameters are set in a supersynapse config file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># transducers.yaml</span>
+
+<span class="nt">transducers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">D1_td</span>
+<span class="w">    </span><span class="nt">population</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">D1</span>
+<span class="w">    </span><span class="nt">initialization_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span>
+<span class="w">    </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.3</span>
+<span class="w">    </span><span class="nt">weight_delta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<span class="w">    </span><span class="nt">generation_window</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">D2_td</span>
+<span class="w">    </span><span class="nt">population</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">D2</span>
+<span class="w">    </span><span class="nt">initialization_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">500</span>
+<span class="w">    </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.3</span>
+<span class="w">    </span><span class="nt">weight_delta</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.05</span>
+<span class="w">    </span><span class="nt">generation_window</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+</pre></div>
+</div>
+<p>Also, the connectivity of the supersynapses to each cortical oscillator must be set in a configuration file like:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># putamen_weights.yaml</span>
+<span class="nt">D1_td</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">incoming</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">r_superiorfrontal</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">13.13</span>
+<span class="w">      </span><span class="nt">delay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">    </span><span class="nt">l_superiorfrontal</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">13.13</span>
+<span class="w">      </span><span class="nt">delay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">   </span><span class="c1"># ...</span>
+
+<span class="nt">SNR_td</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">outgoing</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">r_superiorfrontal</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">13.13</span>
+<span class="w">      </span><span class="nt">delay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">    </span><span class="nt">l_superiorfrontal</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">weight</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">13.13</span>
+<span class="w">      </span><span class="nt">delay</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">    </span><span class="c1"># ...</span>
+</pre></div>
+</div>
+</section>
+<section id="i-o-and-running">
+<h3>I/O and running<a class="headerlink" href="#i-o-and-running" title="Link to this heading"></a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Adds a 25 pA current from t=10ms to t=20ms</span>
+<span class="n">spikenet</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="s2">&quot;STR1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_injector</span><span class="p">(</span><span class="mf">25.0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># Adds an excitatory poisson injector with rate 500 Hz and weight 0.1</span>
+<span class="n">sn</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="s2">&quot;GPi&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">add_poisson_spike_injector</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># Saves spikes</span>
+<span class="n">spikenet</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="s2">&quot;STR1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">monitorize_spikes</span><span class="p">()</span>
+
+<span class="c1"># Saves neurons&#39; states</span>
+<span class="n">spikenet</span><span class="o">.</span><span class="n">populations</span><span class="p">[</span><span class="s2">&quot;STR1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">monitorize_states</span><span class="p">()</span>
+
+<span class="c1"># Runs for 10 ms</span>
+<span class="n">spikenet</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">time</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="in-pure-c">
+<h2>in pure C++<a class="headerlink" href="#in-pure-c" title="Link to this heading"></a></h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This is under construction</p>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autodoc_py.html" class="btn btn-neutral float-right" title="Python code references" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, djanloo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

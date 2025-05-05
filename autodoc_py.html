@@ -1,0 +1,373 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python code references &mdash; quilt 0.7.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5a057da9"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="C++ code references" href="autodoc_cpp.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            quilt
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Python code references</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.build"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.dt"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.dt</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.initialize"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.initialize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.n_oscillators"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.n_oscillators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.n_populations"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.n_populations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.n_timesteps_initialization"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.n_timesteps_initialization</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.n_transducers"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.n_transducers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.oscillators"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.oscillators</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.run"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.set_evolution_contextes"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.set_evolution_contextes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.set_multiscale_projections"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.set_multiscale_projections()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.tau_init"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.tau_init</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.transducer_histories"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.transducer_histories</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.MultiscaleNetwork.transducer_id"><code class="docutils literal notranslate"><span class="pre">MultiscaleNetwork.transducer_id()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quilt.builder.NeuronCatalogue"><code class="docutils literal notranslate"><span class="pre">NeuronCatalogue</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.NeuronCatalogue.from_yaml"><code class="docutils literal notranslate"><span class="pre">NeuronCatalogue.from_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.NeuronCatalogue.update"><code class="docutils literal notranslate"><span class="pre">NeuronCatalogue.update()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quilt.builder.OscillatorNetwork"><code class="docutils literal notranslate"><span class="pre">OscillatorNetwork</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.OscillatorNetwork.build"><code class="docutils literal notranslate"><span class="pre">OscillatorNetwork.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.OscillatorNetwork.homogeneous_from_TVB"><code class="docutils literal notranslate"><span class="pre">OscillatorNetwork.homogeneous_from_TVB()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.OscillatorNetwork.initialize"><code class="docutils literal notranslate"><span class="pre">OscillatorNetwork.initialize()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.OscillatorNetwork.reg_id"><code class="docutils literal notranslate"><span class="pre">OscillatorNetwork.reg_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.OscillatorNetwork.run"><code class="docutils literal notranslate"><span class="pre">OscillatorNetwork.run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.OscillatorNetwork.tau_init"><code class="docutils literal notranslate"><span class="pre">OscillatorNetwork.tau_init</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quilt.builder.ParametricSpikingNetwork"><code class="docutils literal notranslate"><span class="pre">ParametricSpikingNetwork</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.ParametricSpikingNetwork.from_dict"><code class="docutils literal notranslate"><span class="pre">ParametricSpikingNetwork.from_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.ParametricSpikingNetwork.from_yaml"><code class="docutils literal notranslate"><span class="pre">ParametricSpikingNetwork.from_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.ParametricSpikingNetwork.set_parameters"><code class="docutils literal notranslate"><span class="pre">ParametricSpikingNetwork.set_parameters()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#quilt.builder.SpikingNetwork"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.build"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.build()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.from_yaml"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.from_yaml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.get_firing_rates"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.get_firing_rates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.interface"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.interface</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.monitorize_spikes"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.monitorize_spikes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.monitorize_states"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.monitorize_states()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.n_populations"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.n_populations</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.pop_id"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.pop_id()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.refresh_all"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.refresh_all()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#quilt.builder.SpikingNetwork.run"><code class="docutils literal notranslate"><span class="pre">SpikingNetwork.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="autodoc_cpp.html">C++ code references</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">quilt</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Python code references</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/autodoc_py.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-quilt.builder">
+<span id="python-code-references"></span><h1>Python code references<a class="headerlink" href="#module-quilt.builder" title="Link to this heading"></a></h1>
+<p>A module for building objects from configuration files.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">quilt.builder.</span></span><span class="sig-name descname"><span class="pre">MultiscaleNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spiking_network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#quilt.builder.SpikingNetwork" title="quilt.builder.SpikingNetwork"><span class="pre">SpikingNetwork</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">oscillator_network</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#quilt.builder.OscillatorNetwork" title="quilt.builder.OscillatorNetwork"><span class="pre">OscillatorNetwork</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">transducers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#MultiscaleNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.MultiscaleNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#MultiscaleNetwork.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.build" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.dt">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dt</span></span><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.dt" title="Link to this definition"></a></dt>
+<dd><p>Shorthand for EEGcap compatibility</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#MultiscaleNetwork.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.initialize" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.n_oscillators">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_oscillators</span></span><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.n_oscillators" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.n_populations">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_populations</span></span><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.n_populations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.n_timesteps_initialization">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_timesteps_initialization</span></span><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.n_timesteps_initialization" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.n_transducers">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_transducers</span></span><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.n_transducers" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.oscillators">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">oscillators</span></span><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.oscillators" title="Link to this definition"></a></dt>
+<dd><p>Shorthand for EEGcap compatibility</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#MultiscaleNetwork.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.run" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.set_evolution_contextes">
+<span class="sig-name descname"><span class="pre">set_evolution_contextes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt_short</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt_long</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#MultiscaleNetwork.set_evolution_contextes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.set_evolution_contextes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.set_multiscale_projections">
+<span class="sig-name descname"><span class="pre">set_multiscale_projections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T2O_coupling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">O2T_coupling</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">T2O</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">O2T</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#MultiscaleNetwork.set_multiscale_projections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.set_multiscale_projections" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.tau_init">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tau_init</span></span><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.tau_init" title="Link to this definition"></a></dt>
+<dd><p>Shorthand for EEGcap compatibility</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.transducer_histories">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transducer_histories</span></span><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.transducer_histories" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.MultiscaleNetwork.transducer_id">
+<span class="sig-name descname"><span class="pre">transducer_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">td_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#MultiscaleNetwork.transducer_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.MultiscaleNetwork.transducer_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quilt.builder.NeuronCatalogue">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">quilt.builder.</span></span><span class="sig-name descname"><span class="pre">NeuronCatalogue</span></span><a class="reference internal" href="_modules/quilt/builder.html#NeuronCatalogue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.NeuronCatalogue" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.NeuronCatalogue.from_yaml">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">yaml_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#NeuronCatalogue.from_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.NeuronCatalogue.from_yaml" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.NeuronCatalogue.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">neuron_model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#NeuronCatalogue.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.NeuronCatalogue.update" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quilt.builder.OscillatorNetwork">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">quilt.builder.</span></span><span class="sig-name descname"><span class="pre">OscillatorNetwork</span></span><a class="reference internal" href="_modules/quilt/builder.html#OscillatorNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.OscillatorNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.OscillatorNetwork.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#OscillatorNetwork.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.OscillatorNetwork.build" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.OscillatorNetwork.homogeneous_from_TVB">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">homogeneous_from_TVB</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connectivity_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">oscillator_parameters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">conduction_speed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#OscillatorNetwork.homogeneous_from_TVB"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.OscillatorNetwork.homogeneous_from_TVB" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.OscillatorNetwork.initialize">
+<span class="sig-name descname"><span class="pre">initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tau</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vmax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#OscillatorNetwork.initialize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.OscillatorNetwork.initialize" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.OscillatorNetwork.reg_id">
+<span class="sig-name descname"><span class="pre">reg_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reg_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#OscillatorNetwork.reg_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.OscillatorNetwork.reg_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.OscillatorNetwork.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#OscillatorNetwork.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.OscillatorNetwork.run" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.OscillatorNetwork.tau_init">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tau_init</span></span><a class="headerlink" href="#quilt.builder.OscillatorNetwork.tau_init" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quilt.builder.ParametricSpikingNetwork">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">quilt.builder.</span></span><span class="sig-name descname"><span class="pre">ParametricSpikingNetwork</span></span><a class="reference internal" href="_modules/quilt/builder.html#ParametricSpikingNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.ParametricSpikingNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#quilt.builder.SpikingNetwork" title="quilt.builder.SpikingNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpikingNetwork</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.ParametricSpikingNetwork.from_dict">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">susceptibility_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#ParametricSpikingNetwork.from_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.ParametricSpikingNetwork.from_dict" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.ParametricSpikingNetwork.from_yaml">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">susceptibility_files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#ParametricSpikingNetwork.from_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.ParametricSpikingNetwork.from_yaml" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.ParametricSpikingNetwork.set_parameters">
+<span class="sig-name descname"><span class="pre">set_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#ParametricSpikingNetwork.set_parameters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.ParametricSpikingNetwork.set_parameters" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">quilt.builder.</span></span><span class="sig-name descname"><span class="pre">SpikingNetwork</span></span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">progress_bar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.build" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.from_yaml">
+<em class="property"><span class="k"><span class="pre">classmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_yaml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron_file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.from_yaml"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.from_yaml" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.get_firing_rates">
+<span class="sig-name descname"><span class="pre">get_firing_rates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delta_ms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sliding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.get_firing_rates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.get_firing_rates" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.interface">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">interface</span></span><a class="headerlink" href="#quilt.builder.SpikingNetwork.interface" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.monitorize_spikes">
+<span class="sig-name descname"><span class="pre">monitorize_spikes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.monitorize_spikes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.monitorize_spikes" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.monitorize_states">
+<span class="sig-name descname"><span class="pre">monitorize_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">populations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.monitorize_states"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.monitorize_states" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.n_populations">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">n_populations</span></span><a class="headerlink" href="#quilt.builder.SpikingNetwork.n_populations" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.pop_id">
+<span class="sig-name descname"><span class="pre">pop_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pop_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.pop_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.pop_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.refresh_all">
+<span class="sig-name descname"><span class="pre">refresh_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.refresh_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.refresh_all" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="quilt.builder.SpikingNetwork.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/quilt/builder.html#SpikingNetwork.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#quilt.builder.SpikingNetwork.run" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="autodoc_cpp.html" class="btn btn-neutral float-right" title="C++ code references" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, djanloo.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
