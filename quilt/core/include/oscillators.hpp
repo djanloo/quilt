@@ -221,7 +221,10 @@ class binoisy_jansen_rit_oscillator : public Oscillator{
         float v0;   //!< Population mean ﬁring threshold potential [mV]. Default 6.0.
         float s;    //!< Firing rate sigmoid function voltage sensitivity parameter [mV]. Default 0.56.
         float rmax; //!< Maximum population mean ﬁring rate [ms^(-1)]. Default 0.005.
-        float U;    //!< Bifurcation parameter: background constant input [ms^(-1)]. Default 0.13.
+
+        // Extension of the bifurcation parameters
+        float U_exc;    //!< Bifurcation parameter: background constant excitatory input [ms^(-1)]. Default 0.13.
+        float U_inh;    //!< Bifurcation parameter: background constant excitatory input [ms^(-1)]. Default 0.13.
 
         // Extension of the noise parameter
         float sigma_exc; //!< Variability of the uniformly distributed excitatory white noise. Default 0.0.

@@ -56,7 +56,7 @@ double Transducer::incoming_rate(double now){
     ss << "Transducer: incoming rates are: "<< endl;
     for (auto input : incoming_osc){
         try {
-        single_input_rate = input->get(0, now);
+        single_input_rate = input->get(0, now); // This is a rate since it is "sigmed"
         ss << single_input_rate << ", ";
         }
         catch (negative_time_exception & e){

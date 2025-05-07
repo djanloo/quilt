@@ -374,6 +374,8 @@ OscillatorFactory::OscillatorFactory(){
     add_constructor("jansen-rit", oscillator_maker<jansen_rit_oscillator>);
     add_constructor("leon-jansen-rit", oscillator_maker<leon_jansen_rit_oscillator>);
     add_constructor("noisy-jansen-rit", oscillator_maker<noisy_jansen_rit_oscillator>);
+    add_constructor("binoisy-jansen-rit", oscillator_maker<binoisy_jansen_rit_oscillator>);
+
 }
 
 // **************************************** OSCILLATOR MODELS ***************************************** //
@@ -432,6 +434,7 @@ double jansen_rit_oscillator::sigm(double v)
     return rmax / (1.0 + std::exp(s*(v0-v)));
 }
 
+/****************************** JANSEN-RIT *********************************************** */
 jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork * oscnet) 
     :   Oscillator(params, oscnet)
 {
@@ -462,6 +465,40 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
 
         // This is mostly a test
         input_history.push_back(external_inputs);
+        
+        /**
+         * For each type of neuron:
+         *  --> rate = S( potential ) [with some linear scaling]
+         *  --> only potentials are additive
+         * 
+         * V is obtained by alpha-function response:
+         *      --> h(tau) = H c tau e^{-c tau} 
+         *          --> c inverse time constant
+         *          --> Intensity constant
+         *      --> v(t) = int_0^{inf} h(tau) rate(t-tau) dtau
+         * 
+         * with the time constant and intensity depending ON THE NEUROTRANSMITTER
+         * 
+         * Instead of convolving, each v is obtained by solving:
+         *  v''(t) = H c rate(t) - 2cv'(t) - c^2 v(t)
+         * that becomes first order by calling v' = z and z=shit
+         * 
+         * The voltage of pyramidal cells is thus the voltage due to NMDA minus the voltage due to GABA
+         * v_pyramidal = x[1] - x[2]
+         * 
+         * The input (in terms of potential) for the other neurons is x[0]
+         * because it's the NMDA potential response due to the rate S(x[1]-x[2]) of pyramidal cells
+         * 
+         *
+         * x[0] = voltage due to the rate of pyramidal neurons (NMDA potential)
+         * x[1] = voltage due to the rate of excitatory neurons (NMDA potential)
+         * x[2] = voltage due to the rate of inhibitory neurons (GABA potential)
+         * 
+         * x[3] = filter auxiliary
+         * x[4] = filter auxiliary
+         * x[5] = filter auxiliary
+         * 
+         */
 
         dxdt[0] = x[3];
         dxdt[1] = x[4];
@@ -548,6 +585,7 @@ noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, Oscil
                 ext_inh_inputs += ext_temp;
             }
         }
+        input_history.push_back(ext_exc_inputs);
         // Adds the bifurcation parameter and the noise
         ext_exc_inputs += U + sigma_noise * 2 * (rng.get_uniform()-0.5);
 
@@ -607,7 +645,11 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
     v0 = params->get("v0", 6.0f);        // mV
     C = params->get("C", 135.0f); 
     s = params->get("s", 0.56f);         // mV^-1
-    U = params->get("U", 0.13f);         // ms^(-1)
+
+    // Extension of the bifurcation parameter
+    U_exc = params->get("U_exc", 0.13f);         // ms^(-1)
+    U_inh = params->get("U_inh", 0.13f);         // ms^(-1)
+
 
     // Extension of the noise parameters
     sigma_exc = params->get("sigma_exc", 0.0f);
@@ -643,8 +685,16 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
             }
         }
         // Adds the bifurcation parameter and the noise
-        ext_exc_inputs += U + sigma_exc * rng.get_uniform();
-        ext_inh_inputs += sigma_inh * rng.get_uniform();
+        ext_exc_inputs += U_exc + sigma_exc * rng.get_uniform();
+        ext_inh_inputs -= U_inh + sigma_inh * rng.get_uniform();
+        
+        // Test
+        if (ext_exc_inputs < 0.0){
+            ext_exc_inputs = 0.0;
+        }
+        if (ext_inh_inputs > 0){
+            ext_inh_inputs = 0;
+        }
 
         // This is mostly a test
         input_history.push_back(ext_exc_inputs);
@@ -680,7 +730,7 @@ vector<double> binoisy_jansen_rit_oscillator::get_rate_history(){
 
 
 
-/************************ LEON JANSEN RIT *************************************/
+// /************************ LEON JANSEN RIT *************************************/
 
 // Auxiliary for Leon-Jansen-Rit
 // I know it's the same function I'm not dumb
