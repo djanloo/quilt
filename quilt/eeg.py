@@ -59,6 +59,19 @@ def azimuthal_equidistant_projection(positions_3d):
 
 
 def sort_electrodes(electrode_names, position_map=None, return_dims=False):
+
+    if not (isinstance(position_map, dict) or isinstance(position_map, str)):
+        raise TypeError("position map must be dict or str (filepath)")
+    
+    if isinstance(position_map, str):
+        with open(position_map, "rb") as f:
+            position_map = pickle.load(f)
+    
+    for electrode in electrode_names:
+        if electrode not in position_map.keys():
+            raise KeyError(f"Channel {electrode} is missing in the position map")
+
+
     left = []
     center = []
     right = []
