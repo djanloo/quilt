@@ -599,7 +599,7 @@ noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, Oscil
         dxdt[2] = x[5];
 
         dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
-        dxdt[4] = He*ke*( ext_exc_inputs + (1+epsC_exc_post)*0.8*C*sigm((1+epsC_exc_pre)*1.0*C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
+        dxdt[4] = He*ke*(  ext_exc_inputs + (1+epsC_exc_post)*0.8*C*sigm((1+epsC_exc_pre)*1.0*C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
         dxdt[5] = Hi*ki*( -ext_inh_inputs + (1+epsC_inh_post)*0.25*C*sigm((1+ epsC_inh_pre)*0.25*C*x[0])) - 2*ki*x[5] - ki*ki*x[2];
 
     };
@@ -650,7 +650,6 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
     U_exc = params->get("U_exc", 0.13f);         // ms^(-1)
     U_inh = params->get("U_inh", 0.13f);         // ms^(-1)
 
-
     // Extension of the noise parameters
     sigma_exc = params->get("sigma_exc", 0.0f);
     sigma_inh = params->get("sigma_inh", 0.0f);
@@ -684,11 +683,16 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
                 ext_inh_inputs += ext_temp;
             }
         }
+
+        // Saves clean inputs
+        input_history.push_back(ext_exc_inputs);
+        input_history.push_back(ext_inh_inputs);
+
         // Adds the bifurcation parameter and the noise
         ext_exc_inputs += U_exc + sigma_exc * rng.get_uniform();
         ext_inh_inputs -= U_inh + sigma_inh * rng.get_uniform();
         
-        // Test
+        // Safety guard
         if (ext_exc_inputs < 0.0){
             ext_exc_inputs = 0.0;
         }
@@ -696,7 +700,7 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
             ext_inh_inputs = 0;
         }
 
-        // This is mostly a test
+        // Saves noisy inputs
         input_history.push_back(ext_exc_inputs);
         input_history.push_back(ext_inh_inputs);
 
@@ -706,7 +710,7 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
         dxdt[2] = x[5];
 
         dxdt[3] = He*ke*sigm( x[1] - x[2]) - 2*ke*x[3] - ke*ke*x[0];
-        dxdt[4] = He*ke*( ext_exc_inputs + (1+epsC_exc_post)*0.8*C*sigm((1+epsC_exc_pre)*1.0*C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
+        dxdt[4] = He*ke*(  ext_exc_inputs + (1+epsC_exc_post)*0.8*C*sigm((1+epsC_exc_pre)*1.0*C*x[0]) ) - 2*ke*x[4] - ke*ke*x[1];
         dxdt[5] = Hi*ki*( -ext_inh_inputs + (1+epsC_inh_post)*0.25*C*sigm((1+ epsC_inh_pre)*0.25*C*x[0])) - 2*ki*x[5] - ki*ki*x[2];
 
     };
