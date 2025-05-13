@@ -110,7 +110,7 @@ class T2JRLink: public Link{
          * 
          * Note: the averaging is performed by `Transducer::get_past()` method
         */
-        double get(int axis, double now) override;
+        double get_rate(double now) override;
 };
 
 /**
@@ -121,7 +121,7 @@ class JR2TLink: public Link{
          JR2TLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
         : Link(source, target, weight, delay, params) {}
 
-        double get(int axis, double now) override;
+        double get_rate(double now) override;
 };
 
 /**
@@ -139,7 +139,7 @@ class T2NJRLink: public Link{
          * 
          * Note: the averaging is performed by `Transducer::get_past()` method
         */
-        double get(int axis, double now) override;
+        double get_rate(double now) override;
 };
 
 /**
@@ -150,7 +150,7 @@ class NJR2TLink: public Link{
          NJR2TLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
         : Link(source, target, weight, delay, params) {}
 
-        double get(int axis, double now) override;
+        double get_rate(double now) override;
 };
 
 
@@ -169,7 +169,7 @@ class T2BNJRLink: public Link{
          * 
          * Note: the averaging is performed by `Transducer::get_past()` method
         */
-        double get(int axis, double now) override;
+        double get_rate(double now) override;
 };
 
 /**
@@ -180,5 +180,5 @@ class BNJR2TLink: public Link{
         BNJR2TLink(Oscillator * source, Oscillator * target, float weight, float delay, ParaMap* params)
         : Link(source, target, weight, delay, params) {}
 
-        double get(int axis, double now) override;
+        double get_rate( double now) override;
 };

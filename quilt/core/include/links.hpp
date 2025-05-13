@@ -46,7 +46,7 @@ public:
      * @param now Current time for the inner steps of Runge-Kutta.
      * @return The value of the link.
      */
-    virtual double get(int /*axis*/, double /*now*/) {
+    virtual double get_rate(double /*now*/) {
         throw std::runtime_error("Using virtual `get()` of LinkBase");
     };
 
@@ -135,7 +135,7 @@ public:
      * @param now Current time.
      * @return The value of the link.
      */
-    double get(int axis, double now) override;
+    double get_rate(double now) override;
 };
 
 /**
@@ -160,7 +160,7 @@ public:
      * @param now Current time.
      * @return The value of the link.
      */
-    double get(int axis, double now) override;
+    double get_rate(double now) override;
 };
 
 
@@ -186,7 +186,7 @@ public:
      * @param now Current time.
      * @return The value of the link.
      */
-    double get(int axis, double now) override;
+    double get_rate(double now) override;
 };
 
 
@@ -212,6 +212,6 @@ class BNJRBNJRLink : public Link {
          * @param now Current time.
          * @return The value of the link.
          */
-        double get(int axis, double now) override;
+        double get_rate(double now) override;
     };
     

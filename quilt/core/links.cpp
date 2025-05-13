@@ -33,14 +33,10 @@ Link * LinkFactory::get_link(Oscillator * source, Oscillator * target, float wei
 };
 
 /************************************************* LINK MODELS ************************************************8*/
-double JRJRLink::get(int axis, double now){
+double JRJRLink::get_rate(double now){
     double result = 0;
     if (LONG_INTERNEURONS){
-        result = weight * static_cast<jansen_rit_oscillator*>(source)->sigm(source->get_past(axis, now - delay));
-        if (axis != 0){
-            get_global_logger().log(ERROR, "Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
-            throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
-        }
+        result = weight * static_cast<jansen_rit_oscillator*>(source)->sigm(source->get_past(0, now - delay));
     }
     else{
         result = weight * static_cast<jansen_rit_oscillator*>(source)->sigm(source->get_past(1, now - delay)-source->get_past(2, now - delay));
@@ -48,23 +44,15 @@ double JRJRLink::get(int axis, double now){
     return result;
 }
 
-double LJRLJRLink::get(int axis, double now){
-    if (axis != 6){
-        get_global_logger().log(ERROR, "Leon-Jansen-Rit model can only ask for axis 6 (differential activity)");
-        throw runtime_error("Leon-Jansen-Rit model can only ask for axis 6 (differential activity)");
-    }
-    double result = weight * static_cast<leon_jansen_rit_oscillator*>(source)->sigm(source->get_past(axis, now - delay));
+double LJRLJRLink::get_rate(double now){
+    double result = weight * static_cast<leon_jansen_rit_oscillator*>(source)->sigm(source->get_past(6, now - delay));
     return result;
 }
 
-double NJRNJRLink::get(int axis, double now){
+double NJRNJRLink::get_rate(double now){
     double result = 0;
     if (LONG_INTERNEURONS){
-        result = weight * static_cast<noisy_jansen_rit_oscillator*>(source)->sigm(source->get_past(axis, now - delay));
-        if (axis != 0){
-            get_global_logger().log(ERROR, "noisy Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
-            throw runtime_error("noisy Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
-        }
+        result = weight * static_cast<noisy_jansen_rit_oscillator*>(source)->sigm(source->get_past(0, now - delay));
     }
     else{
         result = weight * static_cast<noisy_jansen_rit_oscillator*>(source)->sigm(source->get_past(1, now - delay)-source->get_past(2, now - delay));
@@ -72,14 +60,10 @@ double NJRNJRLink::get(int axis, double now){
     return result;
 }
 
-double BNJRBNJRLink::get(int axis, double now){
+double BNJRBNJRLink::get_rate(double now){
     double result = 0;
     if (LONG_INTERNEURONS){
-        result = weight * static_cast<binoisy_jansen_rit_oscillator*>(source)->sigm(source->get_past(axis, now - delay));
-        if (axis != 0){
-            get_global_logger().log(ERROR, "binoisy Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
-            throw runtime_error("binoisy Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
-        }
+        result = weight * static_cast<binoisy_jansen_rit_oscillator*>(source)->sigm(source->get_past(0, now - delay));
     }
     else{
         result = weight * static_cast<binoisy_jansen_rit_oscillator*>(source)->sigm(source->get_past(1, now - delay)-source->get_past(2, now - delay));

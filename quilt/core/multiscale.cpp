@@ -48,7 +48,8 @@ Transducer::~Transducer(){
 }
 
 double Transducer::incoming_rate(double now){
-
+    //  THIS METHOD MUST RETURN Hz !!!!
+    
     double rate = 0;    // Remember that this is a weighted sum
     double single_input_rate = 0;
 
@@ -56,7 +57,7 @@ double Transducer::incoming_rate(double now){
     ss << "Transducer: incoming rates are: "<< endl;
     for (auto input : incoming_osc){
         try {
-        single_input_rate = input->get(0, now); // This is a rate since it is "sigmed"
+        single_input_rate = input->get_rate(now); // This is a rate since it is "sigmed"
         ss << single_input_rate << ", ";
         }
         catch (negative_time_exception & e){
@@ -296,23 +297,22 @@ void MultiscaleNetwork::run(double time, int verbosity){
 
 /******************************************** MULTISCALE LINK MODELS *******************************************8*/
 
-double T2JRLink::get(int axis, double now){
+double T2JRLink::get_rate(double now){
     // This function is called by Oscillator objects linked to this transducer
     // during their evolution function
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
-    double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(axis, now - delay); //axis is useless
+    double result =  static_cast<Transducer*>(source)->get_past(0, now - delay);
+    result *= weight * 1e-3;
     return result;
 }
 
-double JR2TLink::get(int axis, double now){
-
-    if (axis != 0) throw runtime_error("Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
+double JR2TLink::get_rate(double now){
 
     // Returns the rate of the oscillator back in the past 
-    double v0 =  source->get_past(axis, now - delay);
-    double rate = static_cast<jansen_rit_oscillator*>(source)->sigm(v0);
+    double v_p =  source->get_past(1, now - delay)-source->get_past(2, now - delay);
+    double rate = static_cast<jansen_rit_oscillator*>(source)->sigm(v_p);
     double result = weight * rate;
 
     //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
@@ -321,24 +321,23 @@ double JR2TLink::get(int axis, double now){
     return result;
 }
 
-double T2NJRLink::get(int axis, double now){
+double T2NJRLink::get_rate(double now){
     // This function is called by Oscillator objects linked to this transducer
     // during their evolution function
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
     // Note 2: the negative rates are interpreted as inhibitory inputs. 
-    double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(axis, now - delay); //axis is useless
+    double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(0, now - delay); //axis is useless
     return result;
 }
 
-double NJR2TLink::get(int axis, double now){
+double NJR2TLink::get_rate(double now){
 
-    if (axis != 0) throw runtime_error("BiNoisy-Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
 
     // Returns the rate of the oscillator back in the past 
-    double v0 =  source->get_past(axis, now - delay);
-    double rate = static_cast<noisy_jansen_rit_oscillator*>(source)->sigm(v0);
+    double v_p =  source->get_past(1, now - delay)-source->get_past(2, now - delay);
+    double rate = static_cast<noisy_jansen_rit_oscillator*>(source)->sigm(v_p);
     double result = weight * rate;
 
     //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
@@ -347,24 +346,22 @@ double NJR2TLink::get(int axis, double now){
     return result;
 }
 
-double T2BNJRLink::get(int axis, double now){
+double T2BNJRLink::get_rate(double now){
     // This function is called by Oscillator objects linked to this transducer
     // during their evolution function
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
     // Note 2: the negative rates are interpreted as inhibitory inputs. 
-    double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(axis, now - delay); //axis is useless
+    double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(0, now - delay); 
     return result;
 }
 
-double BNJR2TLink::get(int axis, double now){
-
-    if (axis != 0) throw runtime_error("BiNoisy-Jansen-Rit model can only ask for axis 0 (pyramidal neurons)");
+double BNJR2TLink::get_rate( double now){
 
     // Returns the rate of the oscillator back in the past 
-    double v0 =  source->get_past(axis, now - delay);
-    double rate = static_cast<binoisy_jansen_rit_oscillator*>(source)->sigm(v0);
+    double v_p =  source->get_past(1, now - delay)-source->get_past(2, now - delay);
+    double rate = static_cast<binoisy_jansen_rit_oscillator*>(source)->sigm(v_p);
     double result = weight * rate;
 
     //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
