@@ -102,7 +102,7 @@ void PoissonSpikeSource::set_rate(float new_rate){
     rate = new_rate; 
 }
 
-
+// NOTE: this should be the only point in which a rate is expressed in Hz (for user-friendlyness.. friendiness.. friedness.. meh)
 void PoissonSpikeSource::inject(EvolutionContext * evo)
 {
     if (evo->dt * (rate*1e-3)  >= 1.0){
@@ -123,7 +123,7 @@ void PoissonSpikeSource::inject(EvolutionContext * evo)
         while (next_spike_times[i] < evo->now + evo->dt)
         {
 
-            delta = -std::log(rng.get_uniform())/this->rate * 1000;
+            delta = -std::log(rng.get_uniform())/(this->rate * 1e-3);
             if (delta < 0){
                 string msg = "Poisson time increment was < 0.\n";
                 msg += "\tdelta_t = " + std::to_string(delta) + "\n";
@@ -226,7 +226,7 @@ using std::to_string;
 */
 // ThreadSafeFile test_outfile("inhom_record.txt");
 
-void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffer, 
+void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffer, // must be in ms^-1 !!!
                                                 double now, double dt, 
                                                 int start_id, int end_id, 
                                                 RNGDispatcher * rng_disp){
@@ -297,9 +297,6 @@ void InhomPoissonSpikeSource::_inject_partition(const vector<double> &rate_buffe
                         << "rate = " << avg_rate_in_timestep << " at seek_index="<< seek_buffer_index; 
                     get_global_logger().log(ERROR, ss.str());
                 }
-
-                // Conversion to ms^(-1)
-                avg_rate_in_timestep /= 1e3;
 
                 // Trapezoidal rule
                 integration_leftovers[i] += avg_rate_in_timestep * dt;                

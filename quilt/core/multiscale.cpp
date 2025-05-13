@@ -48,7 +48,7 @@ Transducer::~Transducer(){
 }
 
 double Transducer::incoming_rate(double now){
-    //  THIS METHOD MUST RETURN Hz !!!!
+    //  THIS METHOD MUST RETURN ms^-1 !!!!
     
     double rate = 0;    // Remember that this is a weighted sum
     double single_input_rate = 0;
@@ -98,7 +98,7 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
 
     // This conversion is awful to see (issue 36)
     avg_rate /= (T*population->n_neurons); // ms^(-1)
-    avg_rate *= 1000; // Hz
+    // avg_rate *= 1000; // Hz
 
     return avg_rate;
 }
@@ -304,7 +304,7 @@ double T2JRLink::get_rate(double now){
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
     double result =  static_cast<Transducer*>(source)->get_past(0, now - delay);
-    result *= weight * 1e-3;
+    result *= weight;
     return result;
 }
 
@@ -314,9 +314,6 @@ double JR2TLink::get_rate(double now){
     double v_p =  source->get_past(1, now - delay)-source->get_past(2, now - delay);
     double rate = static_cast<jansen_rit_oscillator*>(source)->sigm(v_p);
     double result = weight * rate;
-
-    //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
-    result *= 1e3;
 
     return result;
 }
@@ -328,7 +325,8 @@ double T2NJRLink::get_rate(double now){
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
     // Note 2: the negative rates are interpreted as inhibitory inputs. 
-    double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(0, now - delay); //axis is useless
+    double result = static_cast<Transducer*>(source)->get_past(0, now - delay); //axis is useless
+    result *= weight; //returns the same type of Transducer::get_past() : should be ms^-1
     return result;
 }
 
@@ -340,8 +338,6 @@ double NJR2TLink::get_rate(double now){
     double rate = static_cast<noisy_jansen_rit_oscillator*>(source)->sigm(v_p);
     double result = weight * rate;
 
-    //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
-    result *= 1e3;
 
     return result;
 }
@@ -353,7 +349,7 @@ double T2BNJRLink::get_rate(double now){
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
     // Note 2: the negative rates are interpreted as inhibitory inputs. 
-    double result = weight * 1e-3 * static_cast<Transducer*>(source)->get_past(0, now - delay); 
+    double result = weight * static_cast<Transducer*>(source)->get_past(0, now - delay); 
     return result;
 }
 
@@ -363,9 +359,6 @@ double BNJR2TLink::get_rate( double now){
     double v_p =  source->get_past(1, now - delay)-source->get_past(2, now - delay);
     double rate = static_cast<binoisy_jansen_rit_oscillator*>(source)->sigm(v_p);
     double result = weight * rate;
-
-    //NOTE: Jansen-Rit Model is in ms^-1. Result must be converted.
-    result *= 1e3;
 
     return result;
 }

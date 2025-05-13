@@ -407,7 +407,7 @@ void test_inhom_poisson(){
         // cout << "Getting rate"<< endl;
         double t_sec = now * 1e-3;
         double u = sin(6.28 * 5 * t_sec);
-        return 500*u*u + 100;
+        return 1e-3*(500*u*u + 100); // Conversion to ms^-1 !!!!
     };
 
     InhomPoissonSpikeSource ips(&spikepop, ratefunc, 0.5, 0.0 , 100);
