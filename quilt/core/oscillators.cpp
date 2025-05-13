@@ -390,7 +390,7 @@ harmonic_oscillator::harmonic_oscillator(ParaMap * params, OscillatorNetwork * o
         dxdt[0] = x[1];
 
         for (auto input : incoming_osc){
-            dxdt[1] += x[0] - k*input->get(0, t) ;
+            dxdt[1] += x[0] - k*input->get_rate(t) ;
         }  
     };
 
@@ -459,7 +459,7 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
         double external_currents = 0;
         for (auto input : incoming_osc)
         {
-            external_currents += input->get(0, t);
+            external_currents += input->get_rate(t);
         }
         double external_inputs = U + external_currents;
 
@@ -578,7 +578,7 @@ noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, Oscil
         // excitatory response function
         for (auto input : incoming_osc)
         {
-            ext_temp = input->get(0, t);
+            ext_temp = input->get_rate(t);
             if (ext_temp >= 0){
                 ext_exc_inputs += ext_temp;
             }else{
@@ -676,7 +676,7 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
         // excitatory response function
         for (auto input : incoming_osc)
         {
-            ext_temp = input->get(0, t);
+            ext_temp = input->get_rate(t);
             if (ext_temp >= 0){
                 ext_exc_inputs += ext_temp;
             }else{
@@ -830,7 +830,7 @@ leon_jansen_rit_oscillator::leon_jansen_rit_oscillator(ParaMap * params, Oscilla
 
         for (auto input : incoming_osc)
         {
-            external_currents += input->get(6, t);
+            external_currents += input->get_rate(t);
         }
 
         // Vs
