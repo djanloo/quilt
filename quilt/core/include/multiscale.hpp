@@ -55,7 +55,7 @@ class Transducer: public Oscillator{
          * thus must be a double(double) function.
          * 
         */
-        double incoming_rate(double now);
+        double neural_mass_rate(double now);
 
         /**
          * T -> O
@@ -63,7 +63,15 @@ class Transducer: public Oscillator{
          * The get_past() method is used by Oscillators to get the input in the DDEs due to the tranducer activity.
          * It must thus return the rate of the spiking population in the past.
         */
-        double get_past(unsigned int axis, double time);
+        double spiking_pop_rate(double time);
+
+        /** 
+         * Explicitly overrides non-usable oscillator methods.
+         */
+        double get_past(unsigned int /*axis*/, double /*time*/) override {
+            throw runtime_error("Transducer::get_past(double) cannot be called.\n Use Transducer::spiking_pop_rate(time) or Transducer::neural_mass_rate(now).\nIf you see this error, SOMETHING IS REALLY MESSED UP.");
+        }
+
         vector<double> history;
 
 };
