@@ -66,7 +66,7 @@ public:
     }
 
     // This returns the interpolated past using the continuous Runge-Kutta method
-    double get_past(unsigned int axis, double t)
+    virtual double get_past(unsigned int axis, double t)
     {
         return memory_integrator.get_past(axis, t);
     }
