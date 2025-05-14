@@ -14,7 +14,7 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
     monitor = population->spiking_network->add_spike_monitor(population);
 
     // Builds the injector
-    std::function<double(double)> bound_rate_function = [this](double now){ return this->incoming_rate(now); };
+    std::function<double(double)> bound_rate_function = [this](double now){ return this->neural_mass_rate(now); };
     float weight, weight_delta;
 
     weight = params->get<float>("weight");
@@ -47,7 +47,7 @@ Transducer::~Transducer(){
     delete injector;
 }
 
-double Transducer::incoming_rate(double now){
+double Transducer::neural_mass_rate(double now){
     //  THIS METHOD MUST RETURN ms^-1 !!!!
     
     double rate = 0;    // Remember that this is a weighted sum
@@ -78,7 +78,7 @@ double Transducer::incoming_rate(double now){
 }
 
 
-double Transducer::get_past(unsigned int /*axis*/, double time)
+double Transducer::spiking_pop_rate(double time)
 {
     // I want to get the avg rate of the pop in [t-T/2, t+T/2]
     EvolutionContext * oscnet_evo = multinet->oscnet->get_evolution_context();
@@ -99,6 +99,11 @@ double Transducer::get_past(unsigned int /*axis*/, double time)
     // This conversion is awful to see (issue 36)
     avg_rate /= (T*population->n_neurons); // ms^(-1)
     // avg_rate *= 1000; // Hz
+
+    stringstream ss;
+    ss << "Transducer::get_past() returning " << avg_rate << " ms^-1" << endl;
+    get_global_logger().log(DEBUG, ss.str());
+
 
     return avg_rate;
 }
@@ -303,7 +308,7 @@ double T2JRLink::get_rate(double now){
 
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
-    double result =  static_cast<Transducer*>(source)->get_past(0, now - delay);
+    double result =  static_cast<Transducer*>(source)->spiking_pop_rate(now - delay);
     result *= weight;
     return result;
 }
@@ -311,8 +316,9 @@ double T2JRLink::get_rate(double now){
 double JR2TLink::get_rate(double now){
 
     // Returns the rate of the oscillator back in the past 
-    double v_p =  source->get_past(1, now - delay)-source->get_past(2, now - delay);
-    double rate = static_cast<jansen_rit_oscillator*>(source)->sigm(v_p);
+    jansen_rit_oscillator * casted = static_cast<jansen_rit_oscillator*>(source);
+    double v_p =  casted->get_past(1, now - delay)-casted->get_past(2, now - delay);
+    double rate = casted->sigm(v_p);
     double result = weight * rate;
 
     return result;
@@ -325,7 +331,7 @@ double T2NJRLink::get_rate(double now){
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
     // Note 2: the negative rates are interpreted as inhibitory inputs. 
-    double result = static_cast<Transducer*>(source)->get_past(0, now - delay); //axis is useless
+    double result =  static_cast<Transducer*>(source)->spiking_pop_rate(now - delay);
     result *= weight; //returns the same type of Transducer::get_past() : should be ms^-1
     return result;
 }
@@ -334,8 +340,9 @@ double NJR2TLink::get_rate(double now){
 
 
     // Returns the rate of the oscillator back in the past 
-    double v_p =  source->get_past(1, now - delay)-source->get_past(2, now - delay);
-    double rate = static_cast<noisy_jansen_rit_oscillator*>(source)->sigm(v_p);
+    noisy_jansen_rit_oscillator * casted = static_cast<noisy_jansen_rit_oscillator*>(source);
+    double v_p =  casted->get_past(1, now - delay)-casted->get_past(2, now - delay);
+    double rate = casted->sigm(v_p);
     double result = weight * rate;
 
 
@@ -349,7 +356,10 @@ double T2BNJRLink::get_rate(double now){
     // Returns the activity of the spiking population back in the past
     // Note that the average on the large time scale is done by Transducer::get_past()
     // Note 2: the negative rates are interpreted as inhibitory inputs. 
-    double result = weight * static_cast<Transducer*>(source)->get_past(0, now - delay); 
+    double result =  static_cast<Transducer*>(source)->spiking_pop_rate(now - delay);
+    stringstream ss;
+    ss << "T2BNJRLink::get_rate() is returning " << result << " ms^-1" << endl;
+    get_global_logger().log(DEBUG, ss.str());
     return result;
 }
 
@@ -359,6 +369,7 @@ double BNJR2TLink::get_rate( double now){
     double v_p =  source->get_past(1, now - delay)-source->get_past(2, now - delay);
     double rate = static_cast<binoisy_jansen_rit_oscillator*>(source)->sigm(v_p);
     double result = weight * rate;
+    
 
     return result;
 }
