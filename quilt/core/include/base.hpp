@@ -332,6 +332,10 @@ class ContinuousRK{
         vector<double> b = {1.0/6.0, 1.0/3.0, 1.0/3.0, 1.0/6.0};
         vector<double> c = {0, 0.5, 0.5, 1};
 
+        // EXPERIMENTAL
+        vector<bool> is_stoch = {false, false, false, false, true, true};
+
+
         // These two make it possible to do a sequential updating of a set of CRK.
         // The system of equation (if no vanishing delays are present)
         // requires to update just one subsystem at a time since all the other variables

@@ -445,11 +445,15 @@ void ContinuousRK::compute_next(){
     // Updates the state
     proposed_state = state_history.back();
     for (unsigned int i = 0; i < space_dimension; i++){
-        for (int nu = 0; nu < 4; nu++){
-            proposed_state[i] += evo->dt * b[nu] * proposed_evaluation[nu][i];
+        if (is_stoch[i]){
+            proposed_state[i] += evo->dt * proposed_evaluation[0][i];
+        }
+        else{
+            for (int nu = 0; nu < 4; nu++){
+                proposed_state[i] += evo->dt * b[nu] * proposed_evaluation[nu][i];
+            }
         }
     }//~Updates the state
-    
 }
 
 void ContinuousRK::fix_next(){
