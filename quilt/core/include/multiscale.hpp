@@ -98,6 +98,7 @@ class MultiscaleNetwork{
         std::shared_ptr<PerformanceManager> perf_mgr;
     private:
         bool timescales_initialized;
+        bool multiscale_connections_done;
         EvolutionContext * evo_short;
         EvolutionContext * evo_long;
 };

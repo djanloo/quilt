@@ -256,13 +256,12 @@ void OscillatorNetwork::initialize(EvolutionContext * evo, double tau, double vm
     }
 
     is_initialized = true;
-    Logger &log = get_global_logger();
-    log.log(INFO, "Initialized past of OscillatorNetwork");
+    get_global_logger().log(INFO, "Initialized past of OscillatorNetwork");
     stringstream ss;
     ss << "Oscillators initialized with " << oscillators[0]->memory_integrator.state_history.size() << " states"
         << " and " << oscillators[0]->memory_integrator.evaluation_history.size() << " evaluations ";
     ss << "since (max_delay + dt) = " << max_delay;
-    log.log(INFO, ss.str());
+    get_global_logger().log(INFO, ss.str());
 }
 
 void OscillatorNetwork::evolve(){
@@ -275,11 +274,10 @@ void OscillatorNetwork::evolve(){
         get_global_logger().log(WARNING, "Evolving an oscillator network without links");
     }
 
-    Logger &log = get_global_logger();
     std::stringstream ss;
 
     ss << "Evolving OSCILLATOR network (t = "<<evo->now <<" -> "<< evo->now + evo->dt << ")";
-    log.log(DEBUG, ss.str());
+    get_global_logger().log(DEBUG, ss.str());
 
     perf_mgr.start_recording("evolution");
 
@@ -522,7 +520,7 @@ jansen_rit_oscillator::jansen_rit_oscillator(ParaMap * params, OscillatorNetwork
 vector<double> jansen_rit_oscillator::get_rate_history(){
     vector<double> rate(memory_integrator.state_history.size(), 0);
     for (unsigned int i = 0; i < rate.size(); i++){
-        rate[i] = sigm(memory_integrator.state_history[i][0]);
+        rate[i] = sigm(memory_integrator.state_history[i][1] -memory_integrator.state_history[i][2] );
     }
     return rate;
 }
@@ -616,7 +614,7 @@ noisy_jansen_rit_oscillator::noisy_jansen_rit_oscillator(ParaMap * params, Oscil
 vector<double> noisy_jansen_rit_oscillator::get_rate_history(){
     vector<double> rate(memory_integrator.state_history.size(), 0);
     for (unsigned int i = 0; i < rate.size(); i++){
-        rate[i] = sigm(memory_integrator.state_history[i][0]);
+        rate[i] = sigm(memory_integrator.state_history[i][1] -memory_integrator.state_history[i][2] );
     }
     return rate;
 }
@@ -670,17 +668,19 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
 
         double ext_exc_inputs = 0;  // External excitatory inputs
         double ext_inh_inputs = 0;  // External inhibitory inputs
-        double ext_temp = 0;        // Temporary variable
 
         // If the input is excitatory filters through the
         // excitatory response function
+        int inh_inputs_counter=0, exc_inputs_counter=0;
         for (auto input : incoming_osc)
         {
-            ext_temp = input->get_rate(t);
+            double ext_temp = input->get_rate(t);
             if (ext_temp >= 0){
                 ext_exc_inputs += ext_temp;
+                exc_inputs_counter ++;
             }else{
                 ext_inh_inputs += ext_temp;
+                inh_inputs_counter++;
             }
         }
 
@@ -691,14 +691,6 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
         // Adds the bifurcation parameter and the noise
         ext_exc_inputs += U_exc + sigma_exc * rng.get_uniform();
         ext_inh_inputs -= U_inh + sigma_inh * rng.get_uniform();
-        
-        // Safety guard
-        if (ext_exc_inputs < 0.0){
-            ext_exc_inputs = 0.0;
-        }
-        if (ext_inh_inputs > 0){
-            ext_inh_inputs = 0;
-        }
 
         // Saves noisy inputs
         input_history.push_back(ext_exc_inputs);
@@ -727,7 +719,7 @@ binoisy_jansen_rit_oscillator::binoisy_jansen_rit_oscillator(ParaMap * params, O
 vector<double> binoisy_jansen_rit_oscillator::get_rate_history(){
     vector<double> rate(memory_integrator.state_history.size(), 0);
     for (unsigned int i = 0; i < rate.size(); i++){
-        rate[i] = sigm(memory_integrator.state_history[i][0]);
+        rate[i] = sigm(memory_integrator.state_history[i][1] -memory_integrator.state_history[i][2] );
     }
     return rate;
 }

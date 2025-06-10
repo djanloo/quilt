@@ -30,8 +30,9 @@ Transducer::Transducer(Population * population, ParaMap * params, MultiscaleNetw
 
     // Sets the rate for negative times (Adds the injectorinitialization)
     initialization_rate = static_cast<double>(params->get<float>("initialization_rate")); 
-    get_global_logger().log(INFO, "Transducer initialization rate is " + to_string(initialization_rate));
-
+    get_global_logger().log(INFO, "Transducer initialization rate is " + to_string(initialization_rate) + "Hz");
+    initialization_rate *= 1e-3; // Conversion to ms
+    
     evolve_state = [this](const dynamical_state & /*x*/, dynamical_state & /*dxdt*/, double /*t*/)
     {
         throw runtime_error("Calling 'evolve_state' of a transducer object is not allowed");
@@ -49,7 +50,14 @@ Transducer::~Transducer(){
 
 double Transducer::neural_mass_rate(double now){
     //  THIS METHOD MUST RETURN ms^-1 !!!!
-    
+
+    // If there are no links skip all
+    if (incoming_osc.size() == 0){
+        stringstream ss;
+        ss << "Transducer has no incoming links form oscillators. Transducer::neural_mass_rate() returning 0."<< endl;
+        return 0;
+    }
+
     double rate = 0;    // Remember that this is a weighted sum
     double single_input_rate = 0;
 
@@ -69,7 +77,7 @@ double Transducer::neural_mass_rate(double now){
         rate += single_input_rate;
     }
     ss<<endl;
-    ss << "Transducer::incoming_rate returning " << rate;
+    ss << "Transducer::neural_mass_rate returning " << rate;
     get_global_logger().log(DEBUG, ss.str());
     
     history.push_back(rate);
@@ -101,9 +109,8 @@ double Transducer::spiking_pop_rate(double time)
     // avg_rate *= 1000; // Hz
 
     stringstream ss;
-    ss << "Transducer::get_past() returning " << avg_rate << " ms^-1" << endl;
+    ss << "Transducer::spiking_pop_rate() returning " << avg_rate << " ms^-1" << endl;
     get_global_logger().log(DEBUG, ss.str());
-
 
     return avg_rate;
 }
@@ -111,7 +118,8 @@ double Transducer::spiking_pop_rate(double time)
 MultiscaleNetwork::MultiscaleNetwork(SpikingNetwork * spikenet, OscillatorNetwork * oscnet)
     :   spikenet(spikenet),
         oscnet(oscnet),
-        timescales_initialized(false)
+        timescales_initialized(false),
+        multiscale_connections_done(false)
 {
     n_populations = spikenet->populations.size();
     n_oscillators = oscnet->oscillators.size();
@@ -166,7 +174,7 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     // Probably I must step onto matrices of ParaMaps
     ParaMap * link_params = new ParaMap();
     std::stringstream logmsg;
-    Logger &log = get_global_logger();
+
 
     // Dimension check 1
     if( (projT2O->start_dimension != transducers.size())|((projT2O->end_dimension != n_oscillators))){
@@ -185,7 +193,7 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     }
 
     logmsg << "Performing connections between "<< transducers.size() << " transducers and " << n_oscillators << " oscillators";
-    log.log(INFO, logmsg.str());
+    get_global_logger().log(INFO, logmsg.str());
 
     logmsg.str(""); logmsg.clear();
 
@@ -205,9 +213,9 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
                                                                                             link_params)); // Remember: link params is none here
                 new_connections++;
 
-                // Takes trace of minimum delay
+                // Tracks minimum delay
                 if (projT2O->delays[i][j] < oscnet->min_delay) oscnet->min_delay = projT2O->delays[i][j];
-                // Takes trace of maximum delay
+                // Tracks maximum delay
                 if (projT2O->delays[i][j] > oscnet->max_delay) oscnet->max_delay = projT2O->delays[i][j];
                 
                 transducer_has_outputs[i] = true;
@@ -259,7 +267,10 @@ void MultiscaleNetwork::build_multiscale_projections(Projection * projT2O, Proje
     }
 
     logmsg << "Multiscale connections done "<< "(added "<< new_connections<< " links)";
-    log.log(INFO, logmsg.str());
+    get_global_logger().log(INFO, logmsg.str());
+
+    multiscale_connections_done = true;
+
     return;
 }
 
@@ -270,6 +281,9 @@ void MultiscaleNetwork::add_transducer(Population * population, ParaMap * params
 void MultiscaleNetwork::run(double time, int verbosity){
     if (!timescales_initialized){
         throw runtime_error("Evolution contextes for the slow and fast timescale must be initialized.");
+    }
+    if (!multiscale_connections_done){
+        throw runtime_error("No multiscale connections were build. This is wrong.");
     }
 
     std::stringstream ss;
@@ -332,19 +346,17 @@ double T2NJRLink::get_rate(double now){
     // Note that the average on the large time scale is done by Transducer::get_past()
     // Note 2: the negative rates are interpreted as inhibitory inputs. 
     double result =  static_cast<Transducer*>(source)->spiking_pop_rate(now - delay);
-    result *= weight; //returns the same type of Transducer::get_past() : should be ms^-1
+    result *= weight;
     return result;
 }
 
 double NJR2TLink::get_rate(double now){
-
 
     // Returns the rate of the oscillator back in the past 
     noisy_jansen_rit_oscillator * casted = static_cast<noisy_jansen_rit_oscillator*>(source);
     double v_p =  casted->get_past(1, now - delay)-casted->get_past(2, now - delay);
     double rate = casted->sigm(v_p);
     double result = weight * rate;
-
 
     return result;
 }
@@ -357,9 +369,8 @@ double T2BNJRLink::get_rate(double now){
     // Note that the average on the large time scale is done by Transducer::get_past()
     // Note 2: the negative rates are interpreted as inhibitory inputs. 
     double result =  static_cast<Transducer*>(source)->spiking_pop_rate(now - delay);
-    stringstream ss;
-    ss << "T2BNJRLink::get_rate() is returning " << result << " ms^-1" << endl;
-    get_global_logger().log(DEBUG, ss.str());
+    result *= weight;
+
     return result;
 }
 

@@ -443,7 +443,14 @@ class EEGcap:
             return positions_3d[:, :2]
         else:
             raise ValueError("Method must be either 'equidist' or 'cartesian'")
-    
+        
+    def get_electrode_id(self, electrode_name):
+        first = np.where(self.electrodes == electrode_name)[0]
+        if len(first) == 0:
+            raise ValueError(f"EEGcap: could not find id of electrode {electrode_name}")
+        return first[0]
+
+
     def compute_normalized_psd(self, fmax=45):
         """Computes the PSD of each channel. By default the spectral resolution is 0.5Hz."""
         if self.signals is None:
