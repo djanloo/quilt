@@ -55,11 +55,11 @@ class aqif_param : public NeuroParam {
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
             try {
-                k = paramap.get<float>("k");
-                V_th = paramap.get<float>("V_th");
-                ada_a = paramap.get<float>("ada_a");
-                ada_b = paramap.get<float>("ada_b");
-                ada_tau_w = paramap.get<float>("ada_tau_w");
+                k = paramap.get("k", 1.0f);
+                V_th = paramap.get("V_th", -30.0f);
+                ada_a = paramap.get("ada_a", -20.0f);
+                ada_b = paramap.get("ada_b", 70.0f);
+                ada_tau_w = paramap.get("ada_tau_w", 100.0f);
             }catch (const std::out_of_range & e){
                 std::string error_message = "Error in aqif neuron: ";
                 error_message += e.what();
@@ -158,12 +158,12 @@ class aeif_param : public NeuroParam{
                     throw std::runtime_error("Incompatible type of neuron in ParaMap");
             }
             try{
-                G_L = paramap.get<float>("G_L");
-                delta_T = paramap.get<float>("delta_T");
-                V_th = paramap.get<float>("V_th");
-                ada_a = paramap.get<float>("ada_a");
-                ada_b = paramap.get<float>("ada_b");
-                ada_tau_w = paramap.get<float>("ada_tau_w");
+                G_L = paramap.get("G_L", 3.0f);
+                delta_T = paramap.get("delta_T", 2.0f);
+                V_th = paramap.get("V_th", -55.0f);
+                ada_a = paramap.get("ada_a", 3.0f);
+                ada_b = paramap.get("ada_b", 200.0f);
+                ada_tau_w = paramap.get("ada_tau_w", 20.0f);
             } catch (const std::out_of_range & e){
                 std::string error_message = "Error in aeif neuron: ";
                 error_message += e.what();
@@ -171,7 +171,21 @@ class aeif_param : public NeuroParam{
             }
         }
 };
-
+// neuron_type: aeif
+//   C_m: 80 
+//   G_L: 3
+//   E_l: -55.8
+//   delta_T: 1.8
+//   V_th: -55.2
+//   E_ex: 0
+//   E_in: -72
+//   I_e: 15
+//   tau_ex: 120 # Estimated from Ammari et al 2012 (was 12)
+//   tau_in: 2.1
+//   ada_tau_w: 20
+//   ada_a: 3
+//   ada_b: 200
+//   V_peak: 20
 
 class aqif2_neuron : public Neuron{
     public:

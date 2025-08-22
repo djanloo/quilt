@@ -445,10 +445,8 @@ class EEGcap:
             raise ValueError("Method must be either 'equidist' or 'cartesian'")
         
     def get_electrode_id(self, electrode_name):
-        first = np.where(self.electrodes == electrode_name)[0]
-        if len(first) == 0:
-            raise ValueError(f"EEGcap: could not find id of electrode {electrode_name}")
-        return first[0]
+        electrode_id = {e:i for i,e in enumerate(self.electrodes)}
+        return electrode_id[electrode_name]
 
 
     def compute_normalized_psd(self, fmax=45):

@@ -224,7 +224,7 @@ class NeuroFactory{
             try{
                 neuroparam = neuroparam_constructors_[neuron_model](params);
             }catch (std::out_of_range & e){
-                throw std::invalid_argument("Neuron model <" + neuron_model + "> does not exixt.");
+                throw std::invalid_argument("Error in creating neuroparam for <" + neuron_model + ">: " + e.what());
             }
             return neuroparam;
         }
@@ -233,7 +233,7 @@ class NeuroFactory{
             try{
                 neuron = neuro_constructors_[neuron_model](pop);
             }catch (std::out_of_range & e){
-                throw std::invalid_argument("Neuron model <" + neuron_model + "> does not exixt.");
+                throw std::invalid_argument("Error in creating neuroparam for <" + neuron_model + ">: " + e.what());
             }
             return neuron;
         }

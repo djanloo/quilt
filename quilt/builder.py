@@ -241,6 +241,27 @@ class SpikingNetwork:
                 firing_rates[pop] = sums / delta_ms * 1000 / self.populations[pop].n_neurons
 
         return firing_rates
+    
+    def get_neuron_states(self):
+
+        states = dict()
+
+        for pop in self.populations:
+            x = self.populations[pop].get_data('states')
+            states[pop] = np.swapaxes(x, 0, 1)
+            # if sliding:
+            #     window = np.ones(block_size)
+            #     conv = np.convolve(x, window, mode='valid')
+            #     conv_hz = conv * 1000 / delta_ms / self.populations[pop].n_neurons
+            #     firing_rates[pop] = conv_hz
+            # else:
+            #     cut_len = len(x) - len(x) % block_size
+            #     x_cut = x[:cut_len]
+            #     x_reshaped = x_cut.reshape(-1, block_size)
+            #     sums = x_reshaped.sum(axis=1)
+            #     firing_rates[pop] = sums / delta_ms * 1000 / self.populations[pop].n_neurons
+
+        return states
 
     def pop_id(self, pop_name):
         return {pop:i for pop, i in zip(self.populations, range(self.n_populations))}[pop_name]
@@ -690,7 +711,9 @@ class MultiscaleNetwork:
         self.features['O2T_coupling'] = O2T_coupling
 
         if file is not None:
-            T2O, O2T = self._get_mproj_from_yaml(file, T2O_coupling=T2O_coupling, O2T_coupling=O2T_coupling)
+            T2O, O2T = self._get_mproj_from_yaml(file, 
+                                                 T2O_coupling=T2O_coupling, 
+                                                 O2T_coupling=O2T_coupling)
             self.features["O2T_projection"] = O2T
             self.features["T2O_projection"] = T2O
         elif T2O is not None and O2T is not None:

@@ -122,17 +122,17 @@ NeuroParam::NeuroParam(ParaMap & paramap) : NeuroParam(){
     neur_type = paramap.get<string>("neuron_type");
 
     // Soma
-    E_l = paramap.get<float>("E_l");
-    C_m = paramap.get<float>("C_m");
-    V_reset = paramap.get<float>("V_reset");
-    V_peak = paramap.get<float>("V_peak");
-    tau_refrac = paramap.get<float>("tau_refrac");
+    E_l = paramap.get("E_l", -70.0f);
+    C_m = paramap.get("C_m", 15.0f);
+    V_reset = paramap.get("V_reset", -60.0f);
+    V_peak = paramap.get("V_peak", 5.0f);
+    tau_refrac = paramap.get("tau_refrac", 0.0f);
 
     // Synapses
-    tau_ex = paramap.get<float>("tau_ex");
-    tau_in = paramap.get<float>("tau_in");
-    E_ex = paramap.get<float>("E_ex");
-    E_in = paramap.get<float>("E_in");
+    tau_ex = paramap.get("tau_ex", 12.0f);
+    tau_in = paramap.get("tau_in", 10.0f);
+    E_ex = paramap.get("E_ex", 0.0f);
+    E_in = paramap.get("E_in", -80.0f);
     
     // External inputs (default is zero)
     // Note: omitting the float 'f' will cause runtime errors

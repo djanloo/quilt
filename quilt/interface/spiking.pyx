@@ -147,7 +147,7 @@ cdef class Population:
             else:
                 return np.array(self._state_monitor.get_history())
         else:
-            raise KeyError(f"Invalid data request to population: '{what}'")
+            raise KeyError(f"Invalid data request to population: '{what}' (can be either 'spikes' or 'states')")
 
     def print_info(self):
         self._population.print_info()
