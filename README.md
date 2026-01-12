@@ -31,10 +31,7 @@ Most brain simulators focus on a single scale:
 - either **macroscopic** (neural mass / mean-field models)
 - or **microscopic** (spiking neurons)
 
-This project explores what happens when you **don’t choose** — and instead let multiple scales interact dynamically.
-
-The simulator is intended as a research and experimentation tool, not a finalized biological model.
-
+This project explores what happens when both these two scales join the game.  
 ---
 
 ## Current Status
@@ -44,13 +41,9 @@ The simulator is intended as a research and experimentation tool, not a finalize
 The simulator is under active development.  
 APIs, model implementations, and parameter choices may change.
 
-Expect rough edges. That’s the point.
-
-
 ## Installation
-A virtual environment is highly recommended. 
 - on `Linux`:
-  - install boost: ```sudo apt-get install libboost-all-dev```
+  - install boost: ```sudo apt install libboost-all-dev```
   - update submodules: ```git submodule init && git submodule update```
   - install using pip ```pip install .```
 - on `Windows`: for now only WSL was tested. [Install it](https://learn.microsoft.com/en-us/windows/wsl/install) and follow the instructions for Linux.
