@@ -1,5 +1,5 @@
 <h2 align="center">
-<img src="https://github.com/djanloo/quilt/blob/main/assets/logo.svg" width="150">
+<img src="https://github.com/djanloo/quilt/blob/main/assets/logo.svg" width="250">
 </h2><br>
 
 
