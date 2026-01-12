@@ -1,5 +1,5 @@
-<h2 align="center">
-<img src="https://github.com/djanloo/quilt/blob/main/assets/logo.svg" width="250">
+<h2 align="left">
+<img src="/assets/logo.svg" width=250><img src="/assets/sub-logo.svg" width="300">
 </h2><br>
 
 [![CI](https://github.com/djanloo/quilt/actions/workflows/ci.yml/badge.svg)](https://github.com/djanloo/quilt/actions/workflows/ci.yml)
