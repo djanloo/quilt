@@ -155,6 +155,7 @@ class SpikingNetwork{
         std::vector<PopInjector*> injectors;
         void add_injector(PopInjector * injector)
         {
+            get_global_logger().log(INFO, "Adding injector to spiking population");
             this->injectors.push_back(injector);
         }
 

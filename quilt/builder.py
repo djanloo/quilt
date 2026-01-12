@@ -265,6 +265,12 @@ class SpikingNetwork:
 
     def pop_id(self, pop_name):
         return {pop:i for pop, i in zip(self.populations, range(self.n_populations))}[pop_name]
+    
+    def add_DBS_monophasic_electrode(self, pop_name, I, period, pulse_width, t_min=None, t_max=None):
+        self.populations[pop_name].add_monophasic_dbs_injector(I, period, pulse_width, t_min=t_min, t_max=t_max)
+
+    def add_DBS_biphasic_electrode(self, pop_name, Ipos, Ineg, pw_pos, pw_neg, period,t_min=None, t_max=None):
+        self.populations[pop_name].add_biphasic_dbs_injector(Ipos, Ineg, pw_pos, pw_neg, period, t_min=t_min, t_max=t_max)
 
 class ParametricSpikingNetwork(SpikingNetwork):
 
@@ -681,7 +687,7 @@ class MultiscaleNetwork:
 
     @property
     def transducer_histories(self):
-        return self._interface.transducer_histories
+        return np.array(self._interface.transducer_histories)
     
     @property
     def n_timesteps_initialization(self):
@@ -702,6 +708,16 @@ class MultiscaleNetwork:
         '''Shorthand for EEGcap compatibility'''
         return self.oscillator_network.dt
 
+    def get_eegs(self, eegcap, filter_kwargs, init_to_skip=1, zscore_signals=True):
+        """This method adjusts the +2 timesteps required for issue 18"""
+        signals = eegcap.eeg(self.oscillator_network, filter_kwargs, init_to_skip=init_to_skip, zscore_signals=zscore_signals)
+        signals = signals[:, :-2]
+        return signals
+
+    def get_firing_rates(self, delta_ms=1, sliding=False, init_to_skip=1):
+        frs = self.oscillator_network.get_firing_rates(delta_ms=delta_ms, sliding=sliding)
+        trimmed_frs = {pop:frs[pop][init_to_skip*int(self.tau_init/self.dt):] for pop in frs}
+        return trimmed_frs
 
     def set_multiscale_projections(self, file=None, 
                                     T2O_coupling=None, O2T_coupling=None, 

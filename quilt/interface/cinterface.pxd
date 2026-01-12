@@ -53,7 +53,13 @@ cdef extern from "../core/include/devices.hpp":
 
     cdef cppclass PopCurrentInjector:
         PopCurrentInjector(Population * pop, double I, double t_min, double t_max)
-    
+
+    cdef cppclass MonoPhasicDBSinjector:
+        MonoPhasicDBSinjector(Population * pop, double I, double t_min, double t_max, double pulse_width, double period_width)
+
+    cdef cppclass BiphasicDBSinjector:
+        BiphasicDBSinjector(Population * pop, float I_pos, float I_neg, float t_min, float t_max, float pulse_width_pos, float pulse_width_neg, float period_width)
+
     cdef cppclass PoissonSpikeSource:
         PoissonSpikeSource( Population * pop,
                             float rate, float weight, float weight_delta,
@@ -97,6 +103,8 @@ cdef extern from "../core/include/network.hpp":
 
         # I/O
         void add_injector(PopCurrentInjector * injector)
+        void add_injector(MonoPhasicDBSinjector * injector)
+        void add_injector(BiphasicDBSinjector * injector)
         void add_injector(PoissonSpikeSource * injector)
 
         PopulationSpikeMonitor * add_spike_monitor(Population * population)

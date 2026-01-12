@@ -55,6 +55,8 @@ double Transducer::neural_mass_rate(double now){
     if (incoming_osc.size() == 0){
         stringstream ss;
         ss << "Transducer has no incoming links form oscillators. Transducer::neural_mass_rate() returning 0."<< endl;
+
+        history.push_back(0);
         return 0;
     }
 
@@ -69,8 +71,9 @@ double Transducer::neural_mass_rate(double now){
         ss << single_input_rate << ", ";
         }
         catch (negative_time_exception & e){
-            // If this error is raised the link tried to get a non existing past
+            // If this error is raiplt.axvline(317)sed the link tried to get a non existing past
             get_global_logger().log(DEBUG, "transducer using burn-in value for incoming oscillator rate: " + to_string(initialization_rate) + " Hz");
+            history.push_back(initialization_rate);
             return initialization_rate;
         }
 
@@ -301,7 +304,6 @@ void MultiscaleNetwork::run(double time, int verbosity){
         // the long timescale
         perf_mgr->start_recording("evolve_spikenet");
         while (evo_short->now < evo_long->now){
-            
             spikenet->evolve();
         }
         perf_mgr->end_recording("evolve_spikenet");
@@ -374,13 +376,12 @@ double T2BNJRLink::get_rate(double now){
     return result;
 }
 
-double BNJR2TLink::get_rate( double now){
+double BNJR2TLink::get_rate(double now){
 
     // Returns the rate of the oscillator back in the past 
     double v_p =  source->get_past(1, now - delay)-source->get_past(2, now - delay);
     double rate = static_cast<binoisy_jansen_rit_oscillator*>(source)->sigm(v_p);
     double result = weight * rate;
-    
 
     return result;
 }

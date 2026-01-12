@@ -109,6 +109,30 @@ cdef class Population:
         cdef cinter.PopCurrentInjector * injector = new cinter.PopCurrentInjector(self._population, I, t_min, t_max)
         self.spikenet._spiking_network.add_injector(injector)
     
+    def add_monophasic_dbs_injector(self, I, period, pw, t_min=None, t_max=None):
+
+        # Adapt to C++ convention that tmax< tmin means no stop
+        if t_min is None:
+            t_min = 0
+        if t_max is None:
+            t_max = -1
+
+        print("quilt.interface.spiking is creating a DBS monophasic electrode")
+        cdef cinter.MonoPhasicDBSinjector * injector = new cinter.MonoPhasicDBSinjector(self._population, I, t_min, t_max, pw, period)
+        self.spikenet._spiking_network.add_injector(injector)
+
+    def add_biphasic_dbs_injector(self, Ipos, Ineg, pw_pos, pw_neg, period, t_min=None, t_max=None):
+
+        # Adapt to C++ convention that tmax< tmin means no stop
+        if t_min is None:
+            t_min = 0
+        if t_max is None:
+            t_max = -1
+
+        print("quilt.interface.spiking is creating a DBS biphasic electrode")
+        cdef cinter.BiphasicDBSinjector * injector = new cinter.BiphasicDBSinjector(self._population, Ipos, Ineg, t_min, t_max, pw_pos, pw_neg , period)
+        self.spikenet._spiking_network.add_injector(injector)
+
     def add_poisson_spike_injector(self, rate, weight, weight_delta, t_min=None, t_max=None):
 
         # Adapt to C++ convention that tmax< tmin means no stop

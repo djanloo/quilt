@@ -6,23 +6,32 @@ import zipfile
 import mne
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from matplotlib.colors import Normalize
-from eeg import EEGholder
+from quilt.eeg import EEGholder
 
 import pyvista as pv
 
 class ParcelledCortexPlot:
     '''Plotter for a scalar field on the surface'''
 
-    def __init__(self, surface_zipfile, vertex_mapping, screenshot_dpi=300, width_inches=5, height_inches=4):
+    def __init__(self, surface_zipfile, connectivity_zipfile, vertex_mapping, 
+                 screenshot_dpi=300, width_inches=5, height_inches=4):
         
         # Loads vetrices and triangles from the goddam zip file
         with zipfile.ZipFile(surface_zipfile, 'r') as zip_ref:
             vertices = np.loadtxt(zip_ref.open('vertices.txt'))
             triangles = np.loadtxt(zip_ref.open('triangles.txt')).astype(int)
         
+        # Loads the oscillator names
+        with zipfile.ZipFile(connectivity_zipfile, 'r') as zip_ref:
+            self.nodenames = np.loadtxt(zip_ref.open('centres.txt'), dtype=str)
+            self.nodenames = self.nodenames[:,0]
+
         # Suffered region mapping goes here
         self.mapping = np.loadtxt(vertex_mapping).astype(int)
         self.node_ids = np.sort(np.unique(self.mapping))
+
+        # Match node-node_id
+        self.node_node_id = {node:id_ for node, id_ in zip(self.nodenames, self.node_ids)}
 
         # Compute dict of mapping
         self.node_vertex_map = {}
@@ -36,7 +45,7 @@ class ParcelledCortexPlot:
         self.mesh.faces = np.hstack([[3, *tr] for tr in triangles]).astype(int)
 
         # Default params
-        self.screenshot_window_size = [screenshot_dpi * width_inches, screenshot_dpi * height_inches]
+        self.screenshot_window_size = [int(screenshot_dpi * width_inches), int(screenshot_dpi * height_inches)]
         self.viz_window_size = [600, 600]
         self.mesh_viz_kwargs = dict( 
             specular=0.5,         
@@ -49,21 +58,43 @@ class ParcelledCortexPlot:
             smooth_shading=True,
         )
 
-    def set_scalar(self, scalar_field, name='scalar'):
-        if len(scalar_field) != len(self.node_ids):
+    def screenshot(self,name='screenshot.png'):
+        self.plotter.camera.zoom(1.5)
+        self.plotter.screenshot(name, window_size=self.screenshot_window_size)
+
+    
+    def set_scalar(self, scalar_field_dict, name='scalar'):
+        if len(scalar_field_dict) != len(self.node_ids):
             raise ValueError("Scalar field has different size than nodes")
 
         # Assing vertex scalar based on mapping
         vertex_values = np.zeros(len(self.mesh.points))
-        for node in node:
-            vertex_values[self.node_vertex_map[node]] = scalar_field
+        for node in scalar_field_dict:
+            vertex_values[self.node_vertex_map[self.node_node_id[node]]] = scalar_field_dict[node]
 
         self.mesh.point_data[name] = vertex_values
     
-    def plot(self, scalar_name='scalar'):
+    def plot(self, scalar_name='scalar', clim=None ,cmap=plt.cm.RdPu_r, 
+             scalar_bar_title=None, scalar_bar_fontsize=9, scalar_bar=True):
         self.plotter = pv.Plotter(window_size=self.viz_window_size)
         self.plotter.enable_parallel_projection()
         self.plotter.set_background("white")
+
+        actor = self.plotter.add_mesh(
+                self.mesh,
+                scalars=scalar_name,  
+                cmap=cmap,
+                show_scalar_bar=scalar_bar,
+                scalar_bar_args=dict(font_family='times', 
+                                     title=scalar_bar_title,
+                                     title_font_size=scalar_bar_fontsize, 
+                                     label_font_size=int(scalar_bar_fontsize/1.5)),
+                clim=clim,
+                **self.mesh_viz_kwargs
+                )
+    
+    def show(self):
+        self.plotter.show()
 
     
 def animate_spiking(spiking_network):

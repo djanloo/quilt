@@ -149,6 +149,9 @@ void aqif2_neuron::on_spike(){
     state[3] += p->ada_b;
 }
 
+//*************************** GATED *****************************/
+
+
 /**************************** SIOF workaround *******************/
 /**
  * Registers the Neuron models in the Neurofactory

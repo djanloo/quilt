@@ -63,6 +63,74 @@ void PopCurrentInjector::inject(EvolutionContext * evo)
     }
 }
 
+void MonoPhasicDBSinjector::inject(EvolutionContext* evo)
+{
+    double t = evo->now;
+
+    // Se siamo oltre t_max, disattiva
+    if (t > t_max) {
+        if (!deactivated) {
+            get_global_logger().log(INFO, 
+                "MonoPhasicDBSinjector deactivated at t=" + std::to_string(t));
+        }
+        deactivated = true;
+        return;
+    }
+
+    // Se non è ancora partito
+    if (t < t_min) {
+        return;
+    }
+
+    // Calcola la fase nello stimolo (dove ci troviamo nel ciclo)
+    double cycle_pos = fmod(t, period_width);
+
+    if (cycle_pos < pulse_width) {
+        // Inietta corrente
+        pop->neuroparam->I_e = I;  // Corrente fissa
+    } else {
+        // Nessuna corrente tra gli impulsi
+        pop->neuroparam->I_e = 0.0;
+    }
+}
+
+void BiphasicDBSinjector::inject(EvolutionContext* evo)
+{
+    double t = evo->now;
+
+    // Disattiva se oltre t_max
+    if (t > t_max) {
+        if (!deactivated) {
+            get_global_logger().log(INFO, 
+                "BiphasicDBSinjector deactivated at t=" + std::to_string(t));
+        }
+        deactivated = true;
+        return;
+    }
+
+    // Se non è ancora iniziato
+    if (t < t_min) {
+        return;
+    }
+
+    // Calcola posizione all'interno del ciclo
+    double cycle_pos = fmod(t, period_width);
+
+    if (cycle_pos < pulse_width_pos) {
+        // Prima fase positiva
+        pop->neuroparam->I_e = I;
+    } 
+    else if (cycle_pos < pulse_width_pos + pulse_width_neg) {
+        // Seconda fase negativa
+        pop->neuroparam->I_e = -I_neg;
+    } 
+    else {
+        // Nessuna corrente
+        pop->neuroparam->I_e = 0.0;
+    }
+}
+
+
 PoissonSpikeSource::PoissonSpikeSource(Population * pop, float rate, float weight, float weight_delta, double t_min, double t_max)
     :   PopInjector(pop),
         rate(rate), 
