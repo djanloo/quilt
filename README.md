@@ -1,14 +1,51 @@
 <h2 align="center">
-<img src="https://github.com/djanloo/quilt/blob/main/assets/logo.svg" width="150">
+<img src="https://github.com/djanloo/quilt/blob/main/assets/logo.svg" width="250">
 </h2><br>
-
 
 [![CI](https://github.com/djanloo/quilt/actions/workflows/ci.yml/badge.svg)](https://github.com/djanloo/quilt/actions/workflows/ci.yml)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/djanloo/quilt/deploy_docs.yml?label=docs)](https://djanloo.github.io/quilt/)
 
-Quick Unified Integration of muLTiscale neural networks
 
 https://github.com/user-attachments/assets/bc45ee0b-0610-40a4-8ea2-2879ace5e6c7
+
+# A Multiscale Whole-Brain Simulator
+
+QUILT (Quick Unified Integration of muLTiscale neural networks) is a neural simulation framework combining **neural mass models** and **spiking neural networks** to simulate whole-brain dynamics across multiple levels of description.
+
+The goal of this project is to bridge large-scale brain activity and fine-grained neuronal dynamics within a single, coherent simulation environment.
+
+---
+
+## Overview
+
+This simulator integrates:
+- **Neural Mass Models (NMMs)** for large-scale, population-level brain dynamics  
+- **Spiking Neural Networks (SNNs)** for detailed, neuron-level activity  
+- A coupling mechanism that allows information to flow **across scales**
+
+---
+
+## Motivation
+
+Most brain simulators focus on a single scale:
+- either **macroscopic** (neural mass / mean-field models)
+- or **microscopic** (spiking neurons)
+
+This project explores what happens when you **don’t choose** — and instead let multiple scales interact dynamically.
+
+The simulator is intended as a research and experimentation tool, not a finalized biological model.
+
+---
+
+## Current Status
+
+⚠️ **Work in progress**
+
+The simulator is under active development.  
+APIs, model implementations, and parameter choices may change.
+
+Expect rough edges. That’s the point.
+
 
 ## Installation
 A virtual environment is highly recommended. 
