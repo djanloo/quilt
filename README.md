@@ -1,6 +1,6 @@
 <h2 align="left">
 <img src="/assets/logo.svg" width=250><img src="/assets/sub-logo.svg" width="300">
-</h2><br>
+</h2>
 
 [![CI](https://github.com/djanloo/quilt/actions/workflows/ci.yml/badge.svg)](https://github.com/djanloo/quilt/actions/workflows/ci.yml)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/djanloo/quilt/deploy_docs.yml?label=docs)](https://djanloo.github.io/quilt/)
@@ -32,6 +32,7 @@ Most brain simulators focus on a single scale:
 - or **microscopic** (spiking neurons)
 
 This project explores what happens when both these two scales join the game.  
+
 ---
 
 ## Current Status
