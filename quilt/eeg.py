@@ -449,22 +449,22 @@ class EEGcap:
         return electrode_id[electrode_name]
 
 
-    def compute_normalized_psd(self, fmax=45):
+    def compute_normalized_psd(self, fs, fmax=45):
         """Computes the PSD of each channel. By default the spectral resolution is 0.5Hz."""
         if self.signals is None:
             raise RuntimeError("Compute the eeg of a network first")
         self.psds = []
 
         for i in range(len(self.electrodes)):
-            f, psd = signal.welch(self.signals[i], fs=self.fs, nperseg=2*self.fs, noverlap=self.fs)
+            f, psd = signal.welch(self.signals[i], fs=fs, nperseg=2*fs, noverlap=fs)
             self.psds.append(psd)
         psds = np.array(self.psds)
 
-        psds = psds[f<=fmax]
+        psds = psds[:, f<=fmax]
         f = f[f<=fmax]
 
         for i in range(len(psds)):
-            self.psds[i] /= np.trapz(self.psds[i], x=self.f)
+            psds[i] /= np.trapz(psds[i], x=f)
 
         return f, psds
 

@@ -36,7 +36,7 @@ class SpikingNetwork:
         self.features = dict() 
         self.dt = None
 
-    def monitorize_spikes(self, populations=None):
+    def monitor_spikes(self, populations=None):
         if self.is_built:
             warnings.warn("Adding monitors after building the network will trigger another rebuild")
             self.is_built = False
@@ -50,7 +50,7 @@ class SpikingNetwork:
         
         self.spike_monitored_pops = self.spike_monitored_pops.union(populations)
 
-    def monitorize_states(self, populations=None):
+    def monitor_states(self, populations=None):
         if self.is_built:
             warnings.warn("Adding monitors after building the network will trigger another rebuild")
             self.is_built = False
@@ -66,10 +66,10 @@ class SpikingNetwork:
 
     def _build_monitors(self):
         for pop in self.spike_monitored_pops:
-            self.populations[pop].monitorize_spikes()
+            self.populations[pop].monitor_spikes()
         
         for pop in self.state_monitored_pops:
-            self.populations[pop].monitorize_states()
+            self.populations[pop].monitor_states()
 
     
     def run(self, dt=0.1, time=1):

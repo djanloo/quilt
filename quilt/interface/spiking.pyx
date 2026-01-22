@@ -152,22 +152,22 @@ cdef class Population:
         cdef cinter.PoissonSpikeSource * injector = new cinter.PoissonSpikeSource(self._population, rate, weight, weight_delta, t_min, t_max)
         self.spikenet._spiking_network.add_injector(injector)
 
-    def monitorize_spikes(self):
+    def monitor_spikes(self):
         self._spike_monitor = self.spikenet._spiking_network.add_spike_monitor(self._population)
     
-    def monitorize_states(self):
+    def monitor_states(self):
         self._state_monitor = self.spikenet._spiking_network.add_state_monitor(self._population)
     
     def get_data(self, what):
 
         if what == "spikes":
             if self._spike_monitor == NULL:
-                raise KeyError("Spikes were not monitorized for this population")
+                raise KeyError("Spikes were not monitored for this population")
             else:
                 return np.array(self._spike_monitor.get_history())
         elif what == "states":
             if self._state_monitor == NULL:
-                raise KeyError("States were not monitorized for this population")
+                raise KeyError("States were not monitored for this population")
             else:
                 return np.array(self._state_monitor.get_history())
         else:

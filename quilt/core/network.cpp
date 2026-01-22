@@ -333,7 +333,7 @@ SpikingNetwork::SpikingNetwork()
         evocontext_initialized(false)
 {
     perf_mgr = std::make_shared<PerformanceManager>("spiking network");
-    perf_mgr->set_tasks({"simulation", "monitorize", "inject"});
+    perf_mgr->set_tasks({"simulation", "monitor", "inject"});
     PerformanceRegistrar::get_instance().add_manager(perf_mgr);
 }
 
@@ -430,11 +430,11 @@ void SpikingNetwork::run(EvolutionContext * evo, double time, int verbosity)
     while (evo -> now < time){
 
         // Gathering from populations
-        perf_mgr->start_recording("monitorize");
+        perf_mgr->start_recording("monitor");
         for (const auto& population_monitor : this->population_monitors){
             population_monitor->gather();
         }
-        perf_mgr->end_recording("monitorize");
+        perf_mgr->end_recording("monitor");
 
         // Injection of currents
         perf_mgr->start_recording("inject");
