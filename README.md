@@ -1,6 +1,6 @@
-<h2 align="center">
-<img src="https://github.com/djanloo/quilt/blob/main/assets/logo.svg" width="250">
-</h2><br>
+<h2 align="left">
+<img src="/assets/logo.svg" width=250><img src="/assets/sub-logo.svg" width="300">
+</h2>
 
 [![CI](https://github.com/djanloo/quilt/actions/workflows/ci.yml/badge.svg)](https://github.com/djanloo/quilt/actions/workflows/ci.yml)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/djanloo/quilt/deploy_docs.yml?label=docs)](https://djanloo.github.io/quilt/)
@@ -32,9 +32,7 @@ Most brain simulators focus on a single scale:
 - either **macroscopic** (neural mass / mean-field models)
 - or **microscopic** (spiking neurons)
 
-This project explores what happens when you **don’t choose** — and instead let multiple scales interact dynamically.
-
-The simulator is intended as a research and experimentation tool, not a finalized biological model.
+This project explores what happens when both these two scales join the game.  
 
 ---
 
@@ -45,13 +43,9 @@ The simulator is intended as a research and experimentation tool, not a finalize
 The simulator is under active development.  
 APIs, model implementations, and parameter choices may change.
 
-Expect rough edges. That’s the point.
-
-
 ## Installation
-A virtual environment is highly recommended. 
 - on `Linux`:
-  - install boost: ```sudo apt-get install libboost-all-dev```
+  - install boost: ```sudo apt install libboost-all-dev```
   - update submodules: ```git submodule init && git submodule update```
   - install using pip ```pip install .```
 - on `Windows`: for now only WSL was tested. [Install it](https://learn.microsoft.com/en-us/windows/wsl/install) and follow the instructions for Linux.
