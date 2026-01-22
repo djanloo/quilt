@@ -5,8 +5,9 @@
 [![CI](https://github.com/djanloo/quilt/actions/workflows/ci.yml/badge.svg)](https://github.com/djanloo/quilt/actions/workflows/ci.yml)
 [![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/djanloo/quilt/deploy_docs.yml?label=docs)](https://djanloo.github.io/quilt/)
 
+![Cortex Animation](assets/movie.gif)
 
-https://github.com/user-attachments/assets/bc45ee0b-0610-40a4-8ea2-2879ace5e6c7
+<!-- https://github.com/user-attachments/assets/bc45ee0b-0610-40a4-8ea2-2879ace5e6c7 -->
 
 # A Multiscale Whole-Brain Simulator
 

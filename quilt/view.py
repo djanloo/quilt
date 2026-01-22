@@ -75,12 +75,12 @@ class ParcelledCortexPlot:
         self.mesh.point_data[name] = vertex_values
     
     def plot(self, scalar_name='scalar', clim=None ,cmap=plt.cm.RdPu_r, 
-             scalar_bar_title=None, scalar_bar_fontsize=9, scalar_bar=True):
-        self.plotter = pv.Plotter(window_size=self.viz_window_size)
+             scalar_bar_title=None, scalar_bar_fontsize=9, scalar_bar=True, off_screen=False):
+        self.plotter = pv.Plotter(window_size=self.viz_window_size, off_screen=off_screen)
         self.plotter.enable_parallel_projection()
         self.plotter.set_background("white")
 
-        actor = self.plotter.add_mesh(
+        self.actor = self.plotter.add_mesh(
                 self.mesh,
                 scalars=scalar_name,  
                 cmap=cmap,
